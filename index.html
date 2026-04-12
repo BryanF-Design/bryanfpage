@@ -25,28 +25,51 @@
 
   <!-- Google Tag Manager -->
   <script>
-    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;
-    f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-TMZWGFVJ');
+    (function () {
+      function loadDeferredTrackers() {
+        if (loadDeferredTrackers.loaded) return;
+        loadDeferredTrackers.loaded = true;
+
+        (function(w,d,s,l,i){
+          w[l]=w[l]||[];
+          w[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'});
+          var f=d.getElementsByTagName(s)[0];
+          var j=d.createElement(s);
+          var dl=l!='dataLayer' ? '&l='+l : '';
+          j.async=true;
+          j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+          f.parentNode.insertBefore(j,f);
+        })(window, document, 'script', 'dataLayer', 'GTM-TMZWGFVJ');
+
+        (function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments);};
+          t=l.createElement(r);
+          t.async=1;
+          t.src='https://www.clarity.ms/tag/'+i;
+          y=l.getElementsByTagName(r)[0];
+          y.parentNode.insertBefore(t,y);
+        })(window, document, 'clarity', 'script', 'waefgm17ob');
+      }
+
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadDeferredTrackers, { timeout: 3000 });
+      } else {
+        window.addEventListener('load', function () { setTimeout(loadDeferredTrackers, 1200); }, { once: true });
+      }
+    })();
   </script>
   <!-- End Google Tag Manager -->
-  <script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "waefgm17ob");
-  </script>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-    rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  </noscript>
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css?v=2.1" />
@@ -418,7 +441,7 @@
           <!-- Project: Golden Republic -->
           <article class="project-card reveal">
             <div class="project-card__cover">
-              <img src="img/portfolio/goldenrepublicsite.png" alt="Golden Republic – sitio web" loading="lazy"
+              <img src="img/portfolio/goldenrepublicsite.jpg" alt="Golden Republic – sitio web" loading="lazy"
                 width="800" height="600" />
               <div class="project-card__overlay" aria-hidden="true"></div>
               <div class="project-card__logo-wrap">
@@ -446,7 +469,7 @@
           <!-- Project: Brasa Prive -->
           <article class="project-card reveal">
             <div class="project-card__cover">
-              <img src="img/portfolio/brasaprivesite.png" alt="Brasa Prive – sitio web" loading="lazy" width="800"
+              <img src="img/portfolio/brasaprivesite.jpg" alt="Brasa Prive – sitio web" loading="lazy" width="800"
                 height="600" />
               <div class="project-card__overlay" aria-hidden="true"></div>
               <div class="project-card__logo-wrap">
@@ -474,7 +497,7 @@
           <!-- Project: Servicio ECEM -->
           <article class="project-card reveal">
             <div class="project-card__cover">
-              <img src="img/portfolio/ecemsite.png" alt="Servicio ECEM – sitio web" loading="lazy" width="800"
+              <img src="img/portfolio/ecemsite.jpg" alt="Servicio ECEM – sitio web" loading="lazy" width="800"
                 height="600" />
               <div class="project-card__overlay" aria-hidden="true"></div>
               <div class="project-card__logo-wrap">
@@ -502,7 +525,7 @@
           <!-- Project: Industrias Tritton -->
           <article class="project-card reveal">
             <div class="project-card__cover">
-              <img src="img/portfolio/trittonsite.png" alt="Industrias Tritton – sitio web" loading="lazy"
+              <img src="img/portfolio/trittonsite.jpg" alt="Industrias Tritton – sitio web" loading="lazy"
                 width="800" height="600" />
               <div class="project-card__overlay" aria-hidden="true"></div>
               <div class="project-card__logo-wrap">
@@ -929,7 +952,7 @@
                 <p class="ft-pay-note" id="ftPayStatus" data-i18n="ft_pay_status_idle">Elige tu método de pago para continuar con tu proyecto.</p>
                 <div class="ft-transfer-card" id="ftTransferCard" hidden>
                   <div class="ft-transfer-head">
-                    <img src="img/BBVA_logo_2025.svg.png" alt="BBVA" loading="lazy" />
+                    <img src="img/BBVA_logo_2025.svg.png" alt="BBVA" loading="lazy" width="960" height="288" />
                     <strong data-i18n="ft_transfer_title">Transferencia bancaria BBVA</strong>
                   </div>
                   <ul class="ft-transfer-list">
@@ -1146,7 +1169,7 @@
 
           <!-- Mercado Pago -->
           <div class="footer-payments__item" title="Mercado Pago disponible">
-            <img src="img/MP_RGB_HANDSHAKE_pluma_horizontal.png" alt="Mercado Pago" style="filter:none;height:18px;width:auto;" />
+            <img src="img/MP_RGB_HANDSHAKE_pluma_horizontal.png" alt="Mercado Pago" width="1049" height="426" style="filter:none;height:18px;width:auto;" />
             <span>Mercado Pago</span>
           </div>
 
@@ -1181,7 +1204,7 @@
       <div class="modal__grid">
         <!-- Photo -->
         <div class="modal__photo">
-          <img src="img/me/ME.png" alt="BryanF – Foto" loading="lazy" />
+          <img src="img/me/ME.png" alt="BryanF – Foto" loading="lazy" width="704" height="747" />
         </div>
 
         <!-- Text -->

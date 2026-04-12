@@ -39,6 +39,30 @@
   })();
 
   /* ============================================================
+     2. IMAGE LOADING HINTS (performance)
+     ============================================================ */
+  (function initImagePerfHints() {
+    var lazyTargets = document.querySelectorAll('main img, footer img, #aboutOverlay img');
+    lazyTargets.forEach(function (img) {
+      if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
+    });
+
+    document.querySelectorAll('img').forEach(function (img) {
+      if (!img.hasAttribute('decoding')) img.setAttribute('decoding', 'async');
+      if (img.getAttribute('loading') === 'lazy' && !img.hasAttribute('fetchpriority')) {
+        img.setAttribute('fetchpriority', 'low');
+      }
+    });
+
+    var navbarLogo = document.querySelector('.navbar__logo img');
+    if (navbarLogo) {
+      navbarLogo.setAttribute('loading', 'eager');
+      navbarLogo.setAttribute('fetchpriority', 'high');
+      navbarLogo.setAttribute('decoding', 'sync');
+    }
+  })();
+
+  /* ============================================================
      19. PRODUCTION POLISH OVERRIDES
      ============================================================ */
   (function initProductionPolish() {
@@ -668,6 +692,8 @@
      6. MOUSE-FOLLOWING GLOW
      ============================================================ */
   (function initGlow() {
+    if (window.matchMedia('(hover: none)').matches || window.matchMedia('(pointer: coarse)').matches) return;
+
     var glow = document.getElementById('glow');
     if (!glow) return;
 

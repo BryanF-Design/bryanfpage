@@ -1115,6 +1115,18 @@ body.cursor-hover .cursor-ring {
 
 .project-card:hover .project-card__glow { opacity: 1; }
 
+@supports (content-visibility: auto) {
+  .projects,
+  .faq,
+  .clients,
+  #fast-track-section,
+  .cta,
+  .footer {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 900px;
+  }
+}
+
 /* ── 17. CLIENTS ── */
 .clients {
   padding-block: clamp(3rem, 6vh, 5rem);
