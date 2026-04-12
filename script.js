@@ -1967,7 +1967,7 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
     var intents = [
       {
         key: 'pricing',
-        keywords: ['precio', 'costo', 'cuanto cuesta', 'cotizacion', 'cotizar', 'pago', 'pagos', 'stripe', 'mercado pago', 'anticipo', 'transferencia', 'metodos de pago'],
+        keywords: ['precio', 'precios', 'costo', 'costos', 'cuanto cuesta', 'cotizacion', 'cotizar', 'cotizador', 'pago', 'pagos', 'stripe', 'mercado pago', 'anticipo', 'transferencia', 'metodos de pago'],
         reply: 'Te ayudo con eso. El costo depende del alcance y módulos que necesites. Te llevo al <strong>configurador</strong> para que obtengas una referencia clara en MXN.',
         target: '#fast-track-section',
         after: function() {
@@ -1977,13 +1977,13 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
       },
       {
         key: 'services',
-        keywords: ['servicios', 'que hacen', 'wordpress', 'tiendas', 'branding', 'seo', 'automatizacion', 'desarrollo web'],
+        keywords: ['servicio', 'servicios', 'que hacen', 'que incluye', 'incluye el servicio', 'wordpress', 'tiendas', 'branding', 'seo', 'automatizacion', 'desarrollo web'],
         reply: 'Perfecto. Te muestro la parte de <strong>servicios</strong> para que veas cómo trabajamos branding, desarrollo, SEO y automatización.',
         target: '#servicios'
       },
       {
         key: 'projects',
-        keywords: ['trabajos', 'portafolio', 'proyectos', 'ejemplos', 'casos'],
+        keywords: ['trabajos', 'portafolio', 'proyectos', 'proyecto', 'ejemplos', 'casos'],
         reply: 'Excelente, te llevo a <strong>Trabajos destacados</strong> para que revises casos reales y estilo de ejecución.',
         target: '#projects'
       },
@@ -2063,6 +2063,7 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
     let startX = 0;
     let startScroll = 0;
     chipsWrap.addEventListener('pointerdown', function(ev) {
+      if (ev.target && ev.target.closest && ev.target.closest('.lumina-chip')) return;
       pointerActive = true;
       startX = ev.clientX;
       startScroll = chipsWrap.scrollLeft;

@@ -14,6 +14,14 @@
   <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
   <link rel="dns-prefetch" href="//www.googletagmanager.com" />
   <link rel="preconnect" href="https://www.clarity.ms" crossorigin />
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4GLGP6X573"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-4GLGP6X573');
+  </script>
 
   <!-- Google Tag Manager -->
   <script>
@@ -28,13 +36,11 @@
   <script>
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({ event: 'tracking_boot', ga4_measurement_id: 'G-4GLGP6X573' });
-    if (location.hostname && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
-      (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "waefgm17ob");
-    }
+    (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "waefgm17ob");
   </script>
 
   <!-- Google Fonts -->
