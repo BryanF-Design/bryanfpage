@@ -23,6 +23,12 @@
   (function initPreloader() {
     const el = document.getElementById('preloader');
     if (!el) return;
+    var isMobile = window.matchMedia('(max-width: 767px)').matches;
+    if (isMobile) {
+      el.classList.add('hidden');
+      sessionStorage.setItem('bd-preloader-seen', '1');
+      return;
+    }
 
     const seen = sessionStorage.getItem('bd-preloader-seen');
     if (seen) {
@@ -677,6 +683,10 @@
   (function initHeadroom() {
     var navbar = document.getElementById('navbar');
     if (!navbar) return;
+    if (window.matchMedia('(max-width: 767px)').matches) {
+      navbar.classList.add('scrolled');
+      return;
+    }
 
     var lastY = window.scrollY;
     var ticking = false;
