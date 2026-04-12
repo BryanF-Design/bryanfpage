@@ -929,14 +929,33 @@
                     <strong data-i18n="ft_transfer_title">Transferencia bancaria BBVA</strong>
                   </div>
                   <ul class="ft-transfer-list">
-                    <li><span data-i18n="ft_transfer_bank">Banco</span><strong>BBVA Bancomer</strong></li>
+                    <li>
+                      <span data-i18n="ft_transfer_bank">Banco</span>
+                      <div class="ft-transfer-value">
+                        <strong id="ftTransferBank">BBVA Bancomer</strong>
+                      </div>
+                    </li>
                     <li><span data-i18n="ft_transfer_owner">Titular</span><strong>Bryan Fernando López López</strong></li>
-                    <li><span data-i18n="ft_transfer_account">Cuenta</span><strong>1534366643</strong></li>
-                    <li><span>CLABE</span><strong>012180015343666431</strong></li>
+                    <li>
+                      <span data-i18n="ft_transfer_account">Cuenta</span>
+                      <div class="ft-transfer-value">
+                        <strong id="ftTransferAccount">1534366643</strong>
+                        <button type="button" class="ft-copy-btn" data-copy-target="ftTransferAccount">Copiar</button>
+                      </div>
+                    </li>
+                    <li>
+                      <span>CLABE</span>
+                      <div class="ft-transfer-value">
+                        <strong id="ftTransferClabe">012180015343666431</strong>
+                        <button type="button" class="ft-copy-btn" data-copy-target="ftTransferClabe">Copiar</button>
+                      </div>
+                    </li>
                     <li><span>SWIFT</span><strong>BCMRMXMMPYM</strong></li>
                   </ul>
+                  <p class="ft-copy-feedback" id="ftTransferCopyFeedback" aria-live="polite"></p>
                   <p data-i18n="ft_transfer_note">Cuando completes la transferencia, envía tu comprobante por WhatsApp o correo para validar el pago. Iniciamos tu proyecto en cuanto quede confirmado.</p>
                   <div class="ft-transfer-actions">
+                    <button type="button" class="ft-btn ft-btn--ghost" id="ftCopyTransferAllBtn"><i class="fa-regular fa-copy"></i> Copiar todos los datos</button>
                     <a href="https://wa.me/525663012505" target="_blank" rel="noopener noreferrer" class="ft-btn ft-btn--primary"><i class="fa-brands fa-whatsapp"></i> <span data-i18n="ft_transfer_whatsapp">Enviar comprobante por WhatsApp</span></a>
                     <a href="mailto:bryanf@bryanfdesign.com.mx,pandita250599@gmail.com?subject=Comprobante%20de%20transferencia%20-%20BryanF%20Design" class="ft-btn ft-btn--secondary"><i class="fa-solid fa-envelope"></i> <span data-i18n="ft_transfer_email">Enviar comprobante por correo</span></a>
                     <button type="button" class="ft-btn ft-btn--ghost" id="ftTransferDoneBtn" data-i18n="ft_transfer_continue">Ya envié el comprobante, continuar</button>
@@ -1512,6 +1531,17 @@
     </div>
 
     <p class="lumina-footer-note">LUMINA puede cometer errores. Verifica datos importantes.</p>
+  </div>
+
+  <div class="app-actions-dock" id="appActionsDock" aria-label="Accesos rápidos">
+    <button type="button" class="app-actions-dock__btn" id="appDockLuminaBtn" aria-label="Abrir Lumina">
+      <i class="fa-solid fa-robot" aria-hidden="true"></i>
+      <span>Lumina</span>
+    </button>
+    <button type="button" class="app-actions-dock__btn" id="appDockA11yBtn" aria-label="Abrir accesibilidad">
+      <i class="fa-solid fa-universal-access" aria-hidden="true"></i>
+      <span>Accesibilidad</span>
+    </button>
   </div>
 
   <!-- Script -->

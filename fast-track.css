@@ -479,6 +479,14 @@
   background: rgba(0, 0, 0, 0.18);
 }
 
+#fast-track-section .ft-transfer-value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
 #fast-track-section .ft-transfer-list span {
   color: var(--ft-muted);
   font-size: 0.82rem;
@@ -488,6 +496,48 @@
   font-size: 0.86rem;
   text-align: right;
   overflow-wrap: anywhere;
+}
+
+#fast-track-section .ft-copy-btn {
+  border-radius: 999px;
+  border: 1px solid rgba(180, 227, 50, 0.35);
+  background: rgba(180, 227, 50, 0.08);
+  color: var(--ft-brand);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  padding: 0.4rem 0.55rem;
+  transition: var(--ft-trans);
+}
+
+#fast-track-section .ft-copy-btn:hover {
+  background: var(--ft-brand);
+  color: #0d1117;
+  border-color: var(--ft-brand);
+}
+
+#fast-track-section .ft-copy-btn.is-copied {
+  background: rgba(180, 227, 50, 0.22);
+  border-color: rgba(180, 227, 50, 0.7);
+}
+
+#fast-track-section .ft-copy-btn.is-error {
+  border-color: rgba(255, 123, 123, 0.7);
+  color: #ffb3b3;
+  background: rgba(255, 123, 123, 0.1);
+}
+
+#fast-track-section .ft-copy-feedback {
+  margin: 0.6rem 0 0;
+  min-height: 1.1em;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: transparent;
+}
+
+#fast-track-section .ft-copy-feedback.is-visible {
+  color: var(--ft-brand);
 }
 
 #fast-track-section .ft-transfer-card p {
@@ -589,7 +639,11 @@
   }
 
   #fast-track-section .ft-side {
-    order: -1;
+    order: 2;
+  }
+
+  #fast-track-section .ft-pay-cta {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -609,6 +663,12 @@
     border-radius: 14px;
   }
 
+  #fast-track-section .ft-field input,
+  #fast-track-section .ft-field textarea,
+  #fast-track-section #ftCouponCode {
+    font-size: 16px;
+  }
+
   #fast-track-section .ft-form-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -618,11 +678,26 @@
     align-items: flex-start;
   }
 
-  #fast-track-section .ft-module__content,
   #fast-track-section .ft-summary-row,
   #fast-track-section .ft-total {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  #fast-track-section .ft-module__content {
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  #fast-track-section .ft-transfer-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.45rem;
+  }
+
+  #fast-track-section .ft-transfer-value {
+    width: 100%;
+    justify-content: space-between;
   }
 
   #fast-track-section .ft-coupon-row {

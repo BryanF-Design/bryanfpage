@@ -44,6 +44,7 @@
   (function initProductionPolish() {
     var root = document.getElementById('fast-track-section');
     if (!root) return;
+    window.__FT_PRODUCTION_POLISH_ACTIVE = true;
 
     var API_BASE = String(window.PAYMENTS_API_BASE || '').replace(/\/$/, '');
     var WA_PHONE = '525663012505';
@@ -56,6 +57,9 @@
       payTransferBtn: document.getElementById('ftPayTransferBtn'),
       transferCard: document.getElementById('ftTransferCard'),
       transferDoneBtn: document.getElementById('ftTransferDoneBtn'),
+      transferCopyButtons: root.querySelectorAll('.ft-copy-btn[data-copy-target]'),
+      copyTransferAllBtn: document.getElementById('ftCopyTransferAllBtn'),
+      transferCopyFeedback: document.getElementById('ftTransferCopyFeedback'),
       payStatus: document.getElementById('ftPayStatus'),
       couponCode: document.getElementById('ftCouponCode'),
       couponMsg: document.getElementById('ftCouponMsg'),
@@ -174,6 +178,44 @@
 
     function hideTransferCard() {
       if (dom.transferCard) dom.transferCard.hidden = true;
+    }
+
+    function setTransferCopyFeedback(message, ok) {
+      if (!dom.transferCopyFeedback) return;
+      dom.transferCopyFeedback.textContent = message || '';
+      dom.transferCopyFeedback.classList.toggle('is-visible', Boolean(message));
+      dom.transferCopyFeedback.style.color = ok ? '#b4e332' : '#ff7b7b';
+      if (!message) return;
+      window.clearTimeout(setTransferCopyFeedback._timer);
+      setTransferCopyFeedback._timer = window.setTimeout(function() {
+        if (dom.transferCopyFeedback) {
+          dom.transferCopyFeedback.textContent = '';
+          dom.transferCopyFeedback.classList.remove('is-visible');
+        }
+      }, 2200);
+    }
+
+    async function copyText(textValue) {
+      var text = String(textValue || '').trim();
+      if (!text) return false;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+      } catch (_err) {}
+      var helper = document.createElement('textarea');
+      helper.value = text;
+      helper.setAttribute('readonly', '');
+      helper.style.position = 'fixed';
+      helper.style.opacity = '0';
+      document.body.appendChild(helper);
+      helper.select();
+      helper.setSelectionRange(0, helper.value.length);
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (_copyErr) { ok = false; }
+      document.body.removeChild(helper);
+      return ok;
     }
 
     async function createPayment(endpoint, methodKey, successText) {
@@ -346,11 +388,14 @@
       var status = params.get('status');
       if (!status) return;
       if (status === 'success' || status === 'approved') {
+        trackEvent('payment_completed', { method: params.get('provider') || 'unknown', status: status, source: 'return_url' });
         setStatus(window.currentLang === 'en' ? 'Payment confirmed. Please complete onboarding.' : 'Pago confirmado. Completa tu onboarding para iniciar.', true);
         showOnboarding();
       } else if (status === 'pending') {
+        trackEvent('payment_pending', { method: params.get('provider') || 'unknown', status: status, source: 'return_url' });
         setStatus(window.currentLang === 'en' ? 'Payment pending confirmation.' : 'Pago pendiente de confirmación.', false);
       } else if (status === 'cancel' || status === 'failure') {
+        trackEvent('payment_failed', { method: params.get('provider') || 'unknown', status: status, source: 'return_url' });
         setStatus(window.currentLang === 'en' ? 'Payment not completed. You can try again.' : 'El pago no se completó. Puedes intentarlo nuevamente.', false);
       }
       params.delete('status');
@@ -455,6 +500,38 @@
         e.preventDefault();
         e.stopImmediatePropagation();
         showOnboarding();
+      }, true);
+      Array.from(dom.transferCopyButtons || []).forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var targetId = btn.getAttribute('data-copy-target');
+          var target = targetId ? document.getElementById(targetId) : null;
+          copyText(target ? target.textContent : '').then(function(ok) {
+            var originalText = btn.textContent;
+            btn.textContent = ok ? 'Copiado' : 'No se pudo copiar';
+            btn.classList.add(ok ? 'is-copied' : 'is-error');
+            window.setTimeout(function() {
+              btn.textContent = originalText;
+              btn.classList.remove('is-copied', 'is-error');
+            }, 1400);
+            setTransferCopyFeedback(ok ? 'Dato copiado correctamente.' : 'No se pudo copiar. Inténtalo de nuevo.', ok);
+          });
+        });
+      });
+      if (dom.copyTransferAllBtn) dom.copyTransferAllBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var fullText = [
+          'Banco: BBVA Bancomer',
+          'Titular: Bryan Fernando López López',
+          'Cuenta: 1534366643',
+          'CLABE: 012180015343666431',
+          'SWIFT: BCMRMXMMPYM'
+        ].join('\n');
+        copyText(fullText).then(function(ok) {
+          setTransferCopyFeedback(ok ? 'Datos completos copiados.' : 'No se pudieron copiar los datos completos.', ok);
+        });
       }, true);
 
       Array.from(dom.actionButtons).forEach(function(btn) {
@@ -1809,6 +1886,7 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
   const input = document.getElementById('luminaInput');
   const sendBtn = document.getElementById('luminaSend');
   const chips = document.querySelectorAll('.lumina-chip');
+  const chipsWrap = document.getElementById('luminaChips');
 
   let chatHistory = [
     { role: 'system', content: SYSTEM_PROMPT }
@@ -1865,6 +1943,38 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
       handleSend();
     });
   });
+
+  function initChipScroller() {
+    if (!chipsWrap) return;
+    chipsWrap.addEventListener('wheel', function(ev) {
+      if (Math.abs(ev.deltaY) > Math.abs(ev.deltaX)) {
+        chipsWrap.scrollLeft += ev.deltaY;
+        ev.preventDefault();
+      }
+    }, { passive: false });
+
+    let pointerActive = false;
+    let startX = 0;
+    let startScroll = 0;
+    chipsWrap.addEventListener('pointerdown', function(ev) {
+      pointerActive = true;
+      startX = ev.clientX;
+      startScroll = chipsWrap.scrollLeft;
+      chipsWrap.classList.add('is-dragging');
+      if (chipsWrap.setPointerCapture) chipsWrap.setPointerCapture(ev.pointerId);
+    });
+    chipsWrap.addEventListener('pointermove', function(ev) {
+      if (!pointerActive) return;
+      var distance = ev.clientX - startX;
+      chipsWrap.scrollLeft = startScroll - distance;
+    });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(function(evtName) {
+      chipsWrap.addEventListener(evtName, function() {
+        pointerActive = false;
+        chipsWrap.classList.remove('is-dragging');
+      });
+    });
+  }
 
   function addMessage(text, sender) {
     const div = document.createElement('div');
@@ -1981,6 +2091,7 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
     }
   }
 
+  initChipScroller();
 })();
 
 
@@ -2128,23 +2239,56 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
   })();
 
   /* ============================================================
-     17. FLOATING BUTTONS FOOTER HIDER
+     17. MOBILE APP ACTIONS DOCK
+     ============================================================ */
+  (function initMobileAppActionsDock() {
+    var dockLuminaBtn = document.getElementById('appDockLuminaBtn');
+    var dockA11yBtn = document.getElementById('appDockA11yBtn');
+    var luminaFab = document.getElementById('luminaFab');
+    var a11yFab = document.getElementById('a11yFab');
+    var a11yMenu = document.getElementById('a11yMenu');
+    if (!dockLuminaBtn && !dockA11yBtn) return;
+
+    if (dockLuminaBtn) {
+      dockLuminaBtn.addEventListener('click', function() {
+        if (luminaFab) luminaFab.click();
+      });
+    }
+
+    if (dockA11yBtn) {
+      dockA11yBtn.addEventListener('click', function() {
+        if (a11yFab) {
+          a11yFab.click();
+          return;
+        }
+        if (!a11yMenu) return;
+        if (a11yMenu.hasAttribute('hidden')) a11yMenu.removeAttribute('hidden');
+        else a11yMenu.setAttribute('hidden', '');
+      });
+    }
+  })();
+
+  /* ============================================================
+     18. FLOATING BUTTONS FOOTER HIDER
      ============================================================ */
   (function initFloatingHider() {
     var footer = document.querySelector('.footer');
     var luminaFab = document.getElementById('luminaFab');
     var a11yModule = document.querySelector('.a11y-module');
+    var appDock = document.getElementById('appActionsDock');
     
-    if(!footer || (!luminaFab && !a11yModule)) return;
+    if(!footer || (!luminaFab && !a11yModule && !appDock)) return;
     
     var observer = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
         if (entry.isIntersecting) {
           if(luminaFab) luminaFab.classList.add('hide-floating');
           if(a11yModule) a11yModule.classList.add('hide-floating');
+          if(appDock) appDock.classList.add('hide-floating');
         } else {
           if(luminaFab) luminaFab.classList.remove('hide-floating');
           if(a11yModule) a11yModule.classList.remove('hide-floating');
+          if(appDock) appDock.classList.remove('hide-floating');
         }
       });
     }, { rootMargin: '0px', threshold: 0.1 });
@@ -2156,6 +2300,7 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
      18. FAST TRACK CONFIGURATOR (ISOLATED SECTION)
      ============================================================ */
   (function initFastTrackSection() {
+    if (window.__FT_PRODUCTION_POLISH_ACTIVE) return;
     var root = document.getElementById('fast-track-section');
     if (!root) return;
 
