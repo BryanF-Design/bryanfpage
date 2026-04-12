@@ -1,0 +1,17 @@
+RewriteEngine On
+
+# Do not rewrite real files/directories
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Keep API routes untouched for Node app
+RewriteRule ^api/ - [L]
+
+# Friendly static pages
+RewriteRule ^privacidad/?$ privacidad.html [L,NC]
+RewriteRule ^terminos/?$ terminos.html [L,NC]
+
+# Optional fallback for extensionless html pages (only if file exists)
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^([^/.]+)$ $1.html [L,NC]
