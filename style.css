@@ -2487,7 +2487,7 @@ body.in-fast-track .lumina-fab__tooltip {
   position: fixed;
   right: 1.5rem;
   bottom: 5.5rem;
-  z-index: 100;
+  z-index: 1100;
   width: calc(100vw - 3rem);
   max-width: 380px;
   height: 600px;
@@ -2732,10 +2732,14 @@ body.in-fast-track .lumina-fab__tooltip {
 
 @media (max-width: 480px) {
   .lumina-panel {
-    bottom: 0; right: 0; left: 0;
-    width: 100%; max-width: none;
-    height: 100dvh; max-height: 100dvh;
-    border-radius: 0;
+    left: .45rem;
+    right: .45rem;
+    bottom: calc(env(safe-area-inset-bottom) + .45rem);
+    width: auto;
+    max-width: none;
+    height: min(76dvh, 560px);
+    max-height: min(76dvh, 560px);
+    border-radius: 16px;
     display: flex;
     flex-direction: column;
   }
@@ -3076,6 +3080,24 @@ body.in-fast-track .a11y-menu {
 }
 
 @media (max-width: 860px) {
+  body.lumina-open .app-actions-dock {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(12px);
+  }
+
+  .lumina-panel {
+    left: .6rem;
+    right: .6rem;
+    bottom: calc(env(safe-area-inset-bottom) + .65rem);
+    width: auto;
+    max-width: none;
+    height: min(72dvh, 620px);
+    max-height: min(72dvh, 620px);
+    border-radius: 18px;
+    transform-origin: bottom center;
+  }
+
   .app-actions-dock {
     position: fixed;
     left: 50%;
@@ -3139,7 +3161,7 @@ body.in-fast-track .a11y-menu {
     left: auto;
     right: .8rem;
     bottom: calc(env(safe-area-inset-bottom) + 4.2rem);
-    z-index: 1003;
+    z-index: 1110;
   }
 
   .a11y-fab {
@@ -3154,18 +3176,27 @@ body.in-fast-track .a11y-menu {
     width: auto;
     max-width: none;
     transform-origin: bottom center;
+    z-index: 1120;
+    pointer-events: auto;
   }
 
   body.in-fast-track .app-actions-dock {
     opacity: .96;
     transform: translateX(-50%) translateY(0);
   }
+
 }
 
 @media (max-width: 600px) {
   .a11y-module {
     bottom: max(1rem, env(safe-area-inset-bottom));
     left: 1rem;
+  }
+}
+
+@media (max-width: 860px) {
+  body.in-fast-track .a11y-menu {
+    display: block !important;
   }
 }
 

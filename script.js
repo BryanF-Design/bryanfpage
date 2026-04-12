@@ -1887,6 +1887,8 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
   const sendBtn = document.getElementById('luminaSend');
   const chips = document.querySelectorAll('.lumina-chip');
   const chipsWrap = document.getElementById('luminaChips');
+  const a11yMenu = document.getElementById('a11yMenu');
+  if (!fab || !panel || !closeBtn || !messagesContainer || !input || !sendBtn) return;
 
   let chatHistory = [
     { role: 'system', content: SYSTEM_PROMPT }
@@ -1899,7 +1901,12 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
     if (e) e.stopPropagation();
     const isHidden = panel.hasAttribute('hidden');
     if (isHidden) {
+      if (a11yMenu) {
+        a11yMenu.setAttribute('hidden', '');
+        document.body.classList.remove('a11y-open');
+      }
       panel.removeAttribute('hidden');
+      document.body.classList.add('lumina-open');
       fab.style.transform = 'scale(0)';
       fab.style.opacity = '0';
       fab.style.pointerEvents = 'none';
@@ -1907,9 +1914,13 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
         addMessage('Bienvenido. Soy Lumina y puedo ayudarte con estrategia, cotización, tiempos de entrega, pagos y el mejor plan para tu proyecto web.', 'ai');
         hasOpened = true;
       }
-      setTimeout(() => input.focus(), 300);
+      setTimeout(() => {
+        input.focus({ preventScroll: true });
+        scrollToBottom();
+      }, 220);
     } else {
       panel.setAttribute('hidden', '');
+      document.body.classList.remove('lumina-open');
       fab.style.transform = '';
       fab.style.opacity = '1';
       fab.style.pointerEvents = 'all';
@@ -2002,7 +2013,7 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
     isTyping = false;
     input.disabled = false;
     sendBtn.disabled = false;
-    setTimeout(() => input.focus(), 10);
+    setTimeout(() => input.focus({ preventScroll: true }), 10);
   }
 
   function scrollToBottom() {
@@ -2217,15 +2228,32 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
     var menu = document.getElementById('a11yMenu');
     if (!fab || !menu) return;
 
+    function setMenuOpen(open) {
+      if (open) {
+        menu.removeAttribute('hidden');
+        document.body.classList.add('a11y-open');
+        fab.setAttribute('aria-expanded', 'true');
+      } else {
+        menu.setAttribute('hidden', '');
+        document.body.classList.remove('a11y-open');
+        fab.setAttribute('aria-expanded', 'false');
+      }
+    }
+
     fab.addEventListener('click', function(e) {
       e.stopPropagation();
-      if(menu.hasAttribute('hidden')) menu.removeAttribute('hidden');
-      else menu.setAttribute('hidden','');
+      setMenuOpen(menu.hasAttribute('hidden'));
     });
 
     document.addEventListener('click', function(e) {
       if(!menu.contains(e.target) && e.target !== fab && !fab.contains(e.target)) {
-        menu.setAttribute('hidden','');
+        setMenuOpen(false);
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        setMenuOpen(false);
       }
     });
 
@@ -2251,19 +2279,31 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
 
     if (dockLuminaBtn) {
       dockLuminaBtn.addEventListener('click', function() {
+        if (a11yMenu) {
+          a11yMenu.setAttribute('hidden', '');
+          document.body.classList.remove('a11y-open');
+        }
         if (luminaFab) luminaFab.click();
       });
     }
 
     if (dockA11yBtn) {
       dockA11yBtn.addEventListener('click', function() {
+        if (document.body.classList.contains('lumina-open') && luminaFab) {
+          luminaFab.click();
+        }
         if (a11yFab) {
           a11yFab.click();
           return;
         }
         if (!a11yMenu) return;
-        if (a11yMenu.hasAttribute('hidden')) a11yMenu.removeAttribute('hidden');
-        else a11yMenu.setAttribute('hidden', '');
+        if (a11yMenu.hasAttribute('hidden')) {
+          a11yMenu.removeAttribute('hidden');
+          document.body.classList.add('a11y-open');
+        } else {
+          a11yMenu.setAttribute('hidden', '');
+          document.body.classList.remove('a11y-open');
+        }
       });
     }
   })();
