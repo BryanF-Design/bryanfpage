@@ -1946,10 +1946,105 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
 
   sendBtn.addEventListener('click', handleSend);
 
+  function normalizeIntentText(value) {
+    return String(value || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
+  }
+
+  function scrollToSection(selector, offset) {
+    var section = document.querySelector(selector);
+    if (!section) return false;
+    var top = section.getBoundingClientRect().top + window.scrollY - (offset || 92);
+    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    return true;
+  }
+
+  function getQuickActionIntent(rawText) {
+    var text = normalizeIntentText(rawText);
+    var intents = [
+      {
+        key: 'pricing',
+        keywords: ['precio', 'costo', 'cuanto cuesta', 'cotizacion', 'cotizar', 'pago', 'pagos', 'stripe', 'mercado pago', 'anticipo', 'transferencia', 'metodos de pago'],
+        reply: 'Te ayudo con eso. El costo depende del alcance y módulos que necesites. Te llevo al <strong>configurador</strong> para que obtengas una referencia clara en MXN.',
+        target: '#fast-track-section',
+        after: function() {
+          var pricingCard = document.querySelector('#fast-track-section .ft-card h3');
+          if (pricingCard) pricingCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      },
+      {
+        key: 'services',
+        keywords: ['servicios', 'que hacen', 'wordpress', 'tiendas', 'branding', 'seo', 'automatizacion', 'desarrollo web'],
+        reply: 'Perfecto. Te muestro la parte de <strong>servicios</strong> para que veas cómo trabajamos branding, desarrollo, SEO y automatización.',
+        target: '#servicios'
+      },
+      {
+        key: 'projects',
+        keywords: ['trabajos', 'portafolio', 'proyectos', 'ejemplos', 'casos'],
+        reply: 'Excelente, te llevo a <strong>Trabajos destacados</strong> para que revises casos reales y estilo de ejecución.',
+        target: '#projects'
+      },
+      {
+        key: 'coupons',
+        keywords: ['cupon', 'cupones', 'promocion', 'promociones', 'descuento', 'descuentos'],
+        reply: 'Claro. Si hay cupón activo lo puedes aplicar en el configurador. Si hoy no hay activo, te recomiendo revisar redes o preguntarnos directo por WhatsApp.',
+        target: '#fast-track-section',
+        after: function() {
+          var couponInput = document.getElementById('ftCouponCode');
+          if (couponInput) couponInput.focus({ preventScroll: true });
+        }
+      },
+      {
+        key: 'contact',
+        keywords: ['contacto', 'hablar con alguien', 'whatsapp', 'asesoria', 'asesoria', 'empecemos', 'iniciar proyecto'],
+        reply: 'Vamos a avanzar. Te llevo al cierre para que inicies de inmediato o, si prefieres, pasamos directo al configurador para cotizar.',
+        target: '.cta',
+        after: function() {
+          var ctaPrimary = document.getElementById('ctaCotizarBtn') || document.getElementById('heroTalkBtn');
+          if (ctaPrimary) ctaPrimary.focus({ preventScroll: true });
+        }
+      }
+    ];
+
+    for (var i = 0; i < intents.length; i += 1) {
+      var intent = intents[i];
+      for (var k = 0; k < intent.keywords.length; k += 1) {
+        if (text.indexOf(intent.keywords[k]) > -1) {
+          return intent;
+        }
+      }
+    }
+    return null;
+  }
+
+  function runQuickAction(intent, promptText) {
+    if (!intent) return false;
+    addMessage(promptText, 'user');
+    addMessage(intent.reply, 'ai');
+    window.setTimeout(function() {
+      if (intent.target) scrollToSection(intent.target, 88);
+      if (typeof intent.after === 'function') {
+        window.setTimeout(intent.after, 300);
+      }
+    }, 220);
+    trackEvent('lumina_quick_action', {
+      source: 'lumina_chip',
+      intent: intent.key,
+      target: intent.target || 'none'
+    });
+    return true;
+  }
+
   // Chips
   chips.forEach(chip => {
     chip.addEventListener('click', () => {
-      input.value = chip.getAttribute('data-msg');
+      var chipMessage = chip.getAttribute('data-msg') || chip.textContent || '';
+      var intent = getQuickActionIntent(chipMessage);
+      if (runQuickAction(intent, chipMessage)) return;
+      input.value = chipMessage;
       input.style.height = 'auto';
       handleSend();
     });
@@ -2239,6 +2334,10 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
         fab.setAttribute('aria-expanded', 'false');
       }
     }
+    window.__setA11yMenuOpen = setMenuOpen;
+    window.__toggleA11yMenu = function() {
+      setMenuOpen(menu.hasAttribute('hidden'));
+    };
 
     fab.addEventListener('click', function(e) {
       e.stopPropagation();
@@ -2291,6 +2390,10 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
       dockA11yBtn.addEventListener('click', function() {
         if (document.body.classList.contains('lumina-open') && luminaFab) {
           luminaFab.click();
+        }
+        if (typeof window.__toggleA11yMenu === 'function') {
+          window.__toggleA11yMenu();
+          return;
         }
         if (a11yFab) {
           a11yFab.click();
