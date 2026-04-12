@@ -6,6 +6,16 @@
 
 (function () {
   'use strict';
+  var ACTIVE_COUPONS = (window.ACTIVE_COUPONS && typeof window.ACTIVE_COUPONS === 'object') ? window.ACTIVE_COUPONS : {};
+  window.dataLayer = window.dataLayer || [];
+
+  function trackEvent(name, payload) {
+    try {
+      window.dataLayer.push(Object.assign({ event: name }, payload || {}));
+    } catch (_err) {}
+  }
+
+  trackEvent('page_view', { page_path: window.location.pathname, page_title: document.title });
 
   /* ============================================================
      1. PRELOADER
@@ -26,6 +36,420 @@
       el.classList.add('hidden');
       sessionStorage.setItem('bd-preloader-seen', '1');
     }, 1400);
+  })();
+
+  /* ============================================================
+     19. PRODUCTION POLISH OVERRIDES
+     ============================================================ */
+  (function initProductionPolish() {
+    var root = document.getElementById('fast-track-section');
+    if (!root) return;
+
+    var API_BASE = String(window.PAYMENTS_API_BASE || '').replace(/\/$/, '');
+    var WA_PHONE = '525663012505';
+    var ACTIVE = (window.ACTIVE_COUPONS && typeof window.ACTIVE_COUPONS === 'object') ? window.ACTIVE_COUPONS : {};
+    var state = { coupon: { code: '', discountType: null, discountValue: 0 }, payment: null };
+
+    var dom = {
+      payStripeBtn: document.getElementById('ftPayStripeBtn'),
+      payMPBtn: document.getElementById('ftPayMPBtn'),
+      payTransferBtn: document.getElementById('ftPayTransferBtn'),
+      transferCard: document.getElementById('ftTransferCard'),
+      transferDoneBtn: document.getElementById('ftTransferDoneBtn'),
+      payStatus: document.getElementById('ftPayStatus'),
+      couponCode: document.getElementById('ftCouponCode'),
+      couponMsg: document.getElementById('ftCouponMsg'),
+      applyCouponBtn: document.getElementById('ftApplyCouponBtn'),
+      form: document.getElementById('ftOnboardingForm'),
+      actionButtons: root.querySelectorAll('[data-ft-action]'),
+      formAlert: document.getElementById('ftFormAlert'),
+      attachments: document.getElementById('ftAttachments'),
+      configState: document.getElementById('ftStateConfig'),
+      onboardingState: document.getElementById('ftStateOnboarding'),
+      wizardSummary: document.getElementById('ftWizardSummary')
+    };
+
+    function apiUrl(path) { return API_BASE ? (API_BASE + path) : path; }
+    function formatMXN(value) { return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(value || 0); }
+    function t(key, fallback) {
+      var lang = window.currentLang || 'es';
+      if (window.LANG && window.LANG[lang] && window.LANG[lang][key] !== undefined) return window.LANG[lang][key];
+      return fallback || key;
+    }
+
+    function setStatus(msg, ok) {
+      if (!dom.payStatus) return;
+      dom.payStatus.textContent = msg;
+      dom.payStatus.style.color = ok ? '#b4e332' : '#d4d8d0';
+    }
+
+    function setFormAlert(msg, kind) {
+      if (!dom.formAlert) return;
+      dom.formAlert.textContent = msg || '';
+      dom.formAlert.classList.remove('is-error', 'is-success', 'is-info');
+      if (kind) dom.formAlert.classList.add(kind);
+    }
+
+    function getSummaryItems() {
+      var items = [];
+      var activePlan = root.querySelector('.ft-plan--active') || root.querySelector('.ft-plan[data-ft-plan="full"]');
+      var planName = activePlan ? (activePlan.querySelector('strong') ? activePlan.querySelector('strong').textContent.trim() : 'Servicio web') : 'Servicio web';
+      var planPrice = activePlan ? parseInt(String(activePlan.querySelector('.ft-plan__price') ? activePlan.querySelector('.ft-plan__price').textContent : '0').replace(/[^\d]/g, ''), 10) : 0;
+      items.push({ source: planName, price: Number.isFinite(planPrice) ? planPrice : 0 });
+
+      root.querySelectorAll('.ft-module-cb:checked').forEach(function(input) {
+        var card = input.closest('.ft-module');
+        var title = card && card.querySelector('.ft-module__title') ? card.querySelector('.ft-module__title').textContent.trim() : 'Módulo';
+        var priceText = card && card.querySelector('.ft-module__meta') ? card.querySelector('.ft-module__meta').textContent : '';
+        var price = parseInt(String(priceText).replace(/[^\d]/g, ''), 10) || 0;
+        if (input.value === 'sections') {
+          var extraCount = parseInt((document.getElementById('ftSectionsCount') || { textContent: '0' }).textContent || '0', 10) || 0;
+          if (extraCount > 0) items.push({ source: 'Secciones adicionales x' + extraCount, price: extraCount * 350 });
+        } else {
+          items.push({ source: title, price: price });
+        }
+      });
+      return items;
+    }
+
+    function getPaymentMode() {
+      var selected = root.querySelector('input[name="ftPaymentMode"]:checked');
+      return selected ? selected.value : 'liquidacion';
+    }
+
+    function getTotals() {
+      var subtotal = getSummaryItems().reduce(function(acc, item) { return acc + item.price; }, 0);
+      var projectTotal = subtotal;
+      if (state.coupon.discountValue > 0) {
+        if (state.coupon.discountType === 'percent') projectTotal = subtotal - (subtotal * (state.coupon.discountValue / 100));
+        if (state.coupon.discountType === 'fixed') projectTotal = subtotal - state.coupon.discountValue;
+      }
+      projectTotal = Math.max(0, Math.round(projectTotal));
+      var payableNow = getPaymentMode() === 'anticipo' ? Math.round(projectTotal * 0.5) : projectTotal;
+      return { projectTotal: projectTotal, payableNow: payableNow };
+    }
+
+    function getPayload() {
+      var totals = getTotals();
+      var items = getSummaryItems();
+      return {
+        monto: totals.projectTotal,
+        modalidad: getPaymentMode(),
+        descripcion: 'Configura tu Proyecto Web - ' + (items[0] ? items[0].source : 'Servicio web'),
+        metadata: {
+          flow: 'fast-track',
+          modules: items.slice(1).map(function(item) { return item.source; }),
+          coupon: state.coupon.code || 'none'
+        }
+      };
+    }
+
+    function renderWizardSummary() {
+      if (!dom.wizardSummary) return;
+      var rows = getSummaryItems();
+      var totals = getTotals();
+      dom.wizardSummary.innerHTML = rows.map(function(item) {
+        return '<span class="ft-wizard-chip">' + item.source + ' - ' + formatMXN(item.price) + '</span>';
+      }).join('') + '<span class="ft-wizard-chip">Total proyecto: ' + formatMXN(totals.projectTotal) + '</span><span class="ft-wizard-chip">Pago ahora: ' + formatMXN(totals.payableNow) + '</span>';
+    }
+
+    function showOnboarding() {
+      if (dom.configState) dom.configState.classList.remove('ft-state--active');
+      if (dom.onboardingState) dom.onboardingState.classList.add('ft-state--active');
+      renderWizardSummary();
+      if (dom.onboardingState) dom.onboardingState.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function showTransferCard() {
+      if (dom.transferCard) dom.transferCard.hidden = false;
+      state.payment = { method: 'transferencia_bbva', amount: getTotals().payableNow };
+      setStatus(window.currentLang === 'en' ? 'Bank transfer selected. Send your receipt to validate payment.' : 'Transferencia seleccionada. Envía tu comprobante para validar el pago.', true);
+    }
+
+    function hideTransferCard() {
+      if (dom.transferCard) dom.transferCard.hidden = true;
+    }
+
+    async function createPayment(endpoint, methodKey, successText) {
+      hideTransferCard();
+      try {
+        var response = await fetch(apiUrl(endpoint), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(getPayload())
+        });
+        var data = await response.json();
+        if (!response.ok || data.error) throw new Error(data.error || 'Error de pago');
+        if (endpoint.indexOf('stripe') > -1 && data.checkoutUrl) window.open(data.checkoutUrl, '_blank', 'noopener,noreferrer');
+        if (endpoint.indexOf('mercadopago') > -1 && data.initPoint) window.open(data.initPoint, '_blank', 'noopener,noreferrer');
+        state.payment = { method: methodKey, amount: data.amount || getTotals().payableNow, reference: data.preferenceId || data.checkoutUrl || '' };
+        setStatus(successText, true);
+      } catch (err) {
+        setStatus((window.currentLang === 'en' ? 'Payment error: ' : 'Error de pago: ') + err.message, false);
+      }
+    }
+
+    async function readAttachments() {
+      var files = Array.from((dom.attachments && dom.attachments.files) || []).slice(0, 5);
+      var valid = files.filter(function(file) { return file.size > 0 && file.size <= (7 * 1024 * 1024); });
+      return Promise.all(valid.map(function(file) {
+        return new Promise(function(resolve) {
+          var reader = new FileReader();
+          reader.onload = function(evt) {
+            var dataUrl = String(evt.target && evt.target.result || '');
+            var base64 = dataUrl.indexOf(',') > -1 ? dataUrl.split(',')[1] : dataUrl;
+            resolve({ name: file.name, type: file.type || 'application/octet-stream', size: file.size, base64: base64 });
+          };
+          reader.onerror = function() { resolve(null); };
+          reader.readAsDataURL(file);
+        });
+      })).then(function(rows) { return rows.filter(Boolean); });
+    }
+
+    function buildWhatsAppText(action, formData) {
+      var actionLabel = {
+        start: 'Enviar información y comenzar',
+        later: 'La envío después',
+        help: 'No tengo esta información, por favor ayúdame'
+      }[action] || action;
+      var totals = getTotals();
+      var items = getSummaryItems();
+      var lines = [
+        '*INICIO DE PROYECTO - BRYANF DESIGN*',
+        '',
+        '*Acción:* ' + actionLabel,
+        '*Servicio:* ' + (items[0] ? items[0].source : 'Servicio web'),
+        '*Módulos:* ' + (items.slice(1).map(function(item) { return item.source; }).join(', ') || 'Sin extras'),
+        '*Modalidad:* ' + (getPaymentMode() === 'anticipo' ? '50% anticipo' : 'Pago completo'),
+        '*Total proyecto:* ' + formatMXN(totals.projectTotal),
+        '*Pago ahora:* ' + formatMXN(totals.payableNow),
+        '*Cupón:* ' + (state.coupon.code || 'Sin cupón'),
+        '',
+        '*Nombre completo:* ' + (formData.get('fullName') || 'Sin definir'),
+        '*Negocio:* ' + (formData.get('businessName') || 'Sin definir'),
+        '*WhatsApp:* ' + (formData.get('contactPhone') || 'Sin definir'),
+        '*Correo:* ' + (formData.get('contactEmail') || 'Sin definir'),
+        '*Contacto secundario:* ' + (formData.get('secondaryContact') || 'Sin definir'),
+        '*Productos/servicios:* ' + (formData.get('services') || 'Sin definir'),
+        '*Descripción del proyecto:* ' + (formData.get('projectBrief') || 'Sin definir'),
+        '*Objetivos del sitio:* ' + (formData.get('mainGoal') || 'Sin definir'),
+        '*Referencias:* ' + (formData.get('references') || 'Sin definir')
+      ];
+      if (state.payment) lines.push('', '*Pago:* ' + state.payment.method);
+      return lines.join('\n');
+    }
+
+    async function submitOnboarding(action) {
+      if (!dom.form) return;
+      var formData = new FormData(dom.form);
+      var fullName = String(formData.get('fullName') || '').trim();
+      var businessName = String(formData.get('businessName') || '').trim();
+      var contactPhone = String(formData.get('contactPhone') || '').trim();
+      if (!fullName || !businessName || !contactPhone) {
+        setFormAlert(t('ft_onboard_required', 'Completa nombre completo, nombre del negocio y WhatsApp para continuar.'), 'is-error');
+        return;
+      }
+      setFormAlert(t('ft_onboard_sending', 'Enviando onboarding...'), 'is-info');
+
+      var attachments = await readAttachments();
+      var payload = {
+        action: action,
+        source: 'fast-track',
+        summaryItems: getSummaryItems(),
+        totals: getTotals(),
+        paymentMode: getPaymentMode(),
+        payment: state.payment || { method: 'pendiente' },
+        coupon: state.coupon,
+        form: {
+          fullName: fullName,
+          businessName: businessName,
+          contactPhone: contactPhone,
+          contactEmail: String(formData.get('contactEmail') || '').trim(),
+          secondaryContact: String(formData.get('secondaryContact') || '').trim(),
+          services: String(formData.get('services') || '').trim(),
+          projectBrief: String(formData.get('projectBrief') || '').trim(),
+          mainGoal: String(formData.get('mainGoal') || '').trim(),
+          references: String(formData.get('references') || '').trim()
+        },
+        attachments: attachments
+      };
+
+      try {
+        var response = await fetch(apiUrl('/api/onboarding-submit'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        var data = await response.json();
+        if (!response.ok || data.error) throw new Error(data.error || 'No se pudo enviar');
+        setFormAlert(t('ft_onboard_sent', 'Brief enviado correctamente. Te contactaremos para iniciar el proyecto.'), 'is-success');
+        window.open('https://wa.me/' + WA_PHONE + '?text=' + encodeURIComponent(buildWhatsAppText(action, formData)), '_blank', 'noopener,noreferrer');
+      } catch (_err) {
+        setFormAlert(t('ft_onboard_error', 'No se pudo enviar en este momento. Intenta de nuevo o contáctanos por WhatsApp.'), 'is-error');
+      }
+    }
+
+    function applyCouponOverride(e) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      if (!dom.couponCode || !dom.couponMsg) return;
+      var code = String(dom.couponCode.value || '').trim().toUpperCase();
+      state.coupon = { code: '', discountType: null, discountValue: 0 };
+      if (!code) {
+        dom.couponMsg.textContent = '';
+        return;
+      }
+      var couponData = ACTIVE[code];
+      if (couponData && typeof couponData === 'object') {
+        state.coupon = {
+          code: code,
+          discountType: couponData.type === 'fixed' ? 'fixed' : 'percent',
+          discountValue: Math.max(0, Number(couponData.value || 0))
+        };
+        dom.couponMsg.textContent = window.currentLang === 'en' ? 'Coupon applied successfully.' : 'Cupón aplicado correctamente.';
+        dom.couponMsg.style.color = '#b4e332';
+      } else if (Object.keys(ACTIVE).length === 0) {
+        dom.couponMsg.textContent = window.currentLang === 'en' ? 'There are no active coupons right now.' : 'No hay cupones activos por el momento.';
+        dom.couponMsg.style.color = '#d4d8d0';
+      } else {
+        dom.couponMsg.textContent = window.currentLang === 'en' ? 'Invalid coupon.' : 'Cupón inválido.';
+        dom.couponMsg.style.color = '#ff6b6b';
+      }
+      var changeEvent = new Event('change', { bubbles: true });
+      if (dom.couponCode) dom.couponCode.dispatchEvent(changeEvent);
+    }
+
+    function handleReturnStatus() {
+      var params = new URLSearchParams(window.location.search);
+      var status = params.get('status');
+      if (!status) return;
+      if (status === 'success' || status === 'approved') {
+        setStatus(window.currentLang === 'en' ? 'Payment confirmed. Please complete onboarding.' : 'Pago confirmado. Completa tu onboarding para iniciar.', true);
+        showOnboarding();
+      } else if (status === 'pending') {
+        setStatus(window.currentLang === 'en' ? 'Payment pending confirmation.' : 'Pago pendiente de confirmación.', false);
+      } else if (status === 'cancel' || status === 'failure') {
+        setStatus(window.currentLang === 'en' ? 'Payment not completed. You can try again.' : 'El pago no se completó. Puedes intentarlo nuevamente.', false);
+      }
+      params.delete('status');
+      var cleanUrl = window.location.pathname + (params.toString() ? ('?' + params.toString()) : '') + window.location.hash;
+      window.history.replaceState({}, '', cleanUrl);
+    }
+
+    function reorderSections() {
+      var main = document.querySelector('main');
+      var faq = document.getElementById('faq');
+      var cta = document.querySelector('.cta');
+      if (!main || !faq || !cta || !root) return;
+      main.insertBefore(faq, cta);
+    }
+
+    function setMobileConfiguratorMode() {
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          document.body.classList.toggle('in-fast-track', entry.isIntersecting);
+        });
+      }, { threshold: 0.35 });
+      observer.observe(root);
+    }
+
+    function normalizeLuminaQuickChips() {
+      var wrap = document.getElementById('luminaChips');
+      if (!wrap) return;
+      var chips = [
+        { text: 'Qué incluye el servicio', msg: '¿Qué incluye el servicio base de BryanF Design para una web nueva?' },
+        { text: 'Cómo funciona el cotizador', msg: '¿Cómo funciona el cotizador y qué módulos recomiendas para mi negocio?' },
+        { text: 'Cupones activos', msg: '¿Tienen cupones activos ahora mismo?' },
+        { text: 'Tiempos y proceso', msg: '¿Cuánto tardan en entregar y cómo es el proceso de trabajo?' },
+        { text: 'Transferencia bancaria', msg: 'Si pago por transferencia BBVA, ¿cómo envío mi comprobante?' },
+        { text: 'Branding, SEO y mantenimiento', msg: '¿Me pueden ayudar con branding, SEO, performance y mantenimiento continuo?' }
+      ];
+      wrap.innerHTML = chips.map(function(chip) {
+        return '<button class="lumina-chip" data-msg="' + chip.msg.replace(/"/g, '&quot;') + '">' + chip.text + '</button>';
+      }).join('');
+    }
+
+    function setupClientBrands() {
+      var clientsSection = document.querySelector('.clients');
+      var millerCard = document.querySelector('.client-card--miller');
+      if (!clientsSection || !millerCard) return;
+
+      function open() { clientsSection.classList.add('clients--expanded'); }
+      function close() { clientsSection.classList.remove('clients--expanded'); }
+
+      millerCard.setAttribute('role', 'button');
+      millerCard.setAttribute('tabindex', '0');
+      millerCard.setAttribute('aria-expanded', 'false');
+
+      millerCard.addEventListener('mouseenter', function() {
+        open();
+        millerCard.setAttribute('aria-expanded', 'true');
+      });
+      millerCard.addEventListener('mouseleave', function() {
+        if (window.matchMedia('(max-width: 980px)').matches) return;
+        close();
+        millerCard.setAttribute('aria-expanded', 'false');
+      });
+      millerCard.addEventListener('click', function() {
+        clientsSection.classList.toggle('clients--expanded');
+        millerCard.setAttribute('aria-expanded', clientsSection.classList.contains('clients--expanded') ? 'true' : 'false');
+      });
+      millerCard.addEventListener('keydown', function(ev) {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          ev.preventDefault();
+          millerCard.click();
+        }
+      });
+      document.addEventListener('click', function(ev) {
+        if (!clientsSection.contains(ev.target)) {
+          close();
+          millerCard.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    function bindEvents() {
+      var simBtn = document.getElementById('ftSimulateSuccessBtn');
+      if (simBtn) simBtn.remove();
+      setStatus(t('ft_pay_status_idle', 'Elige tu método de pago para continuar con tu proyecto.'), false);
+
+      if (dom.applyCouponBtn) dom.applyCouponBtn.addEventListener('click', applyCouponOverride, true);
+      if (dom.payStripeBtn) dom.payStripeBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        createPayment('/api/stripe-checkout', 'stripe', window.currentLang === 'en' ? 'Stripe checkout opened successfully.' : 'Stripe abierto correctamente. Completa tu pago para continuar.');
+      }, true);
+      if (dom.payMPBtn) dom.payMPBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        createPayment('/api/mercadopago', 'mercado_pago', window.currentLang === 'en' ? 'Mercado Pago checkout opened successfully.' : 'Mercado Pago abierto correctamente. Completa tu pago para continuar.');
+      }, true);
+      if (dom.payTransferBtn) dom.payTransferBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        showTransferCard();
+      }, true);
+      if (dom.transferDoneBtn) dom.transferDoneBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        showOnboarding();
+      }, true);
+
+      Array.from(dom.actionButtons).forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          submitOnboarding(btn.getAttribute('data-ft-action') || 'start');
+        }, true);
+      });
+    }
+
+    bindEvents();
+    handleReturnStatus();
+    reorderSections();
+    setMobileConfiguratorMode();
+    normalizeLuminaQuickChips();
+    setupClientBrands();
   })();
 
   /* ============================================================
@@ -755,6 +1179,70 @@
     }
   };
 
+  Object.assign(window.LANG.es, {
+    ft_coupon_ph: 'Ingresa tu cupón',
+    ft_coupon_disclaimer: '¿Tienes un cupón? Revisa nuestras redes sociales o pregunta a Lumina si hay alguno activo.',
+    ft_pay_transfer: 'Pagar por transferencia',
+    ft_pay_status_idle: 'Elige tu método de pago para continuar con tu proyecto.',
+    ft_transfer_title: 'Transferencia bancaria BBVA',
+    ft_transfer_bank: 'Banco',
+    ft_transfer_owner: 'Titular',
+    ft_transfer_account: 'Cuenta',
+    ft_transfer_note: 'Cuando completes la transferencia, envía tu comprobante por WhatsApp o correo para validar el pago. Iniciamos tu proyecto en cuanto quede confirmado.',
+    ft_transfer_whatsapp: 'Enviar comprobante por WhatsApp',
+    ft_transfer_email: 'Enviar comprobante por correo',
+    ft_transfer_continue: 'Ya envié el comprobante, continuar',
+    ft_usd_disclaimer: 'Referencia en USD disponible al pagar. El tipo de cambio final depende de tu banco o plataforma.',
+    ft_onboard_title: 'Inicio de proyecto',
+    ft_onboard_sub: 'Pago confirmado. Comparte esta información para arrancar producción de inmediato.',
+    ft_field_full_name: 'Nombre completo *',
+    ft_field_business: 'Nombre del negocio *',
+    ft_field_contact_secondary: 'Nombre de contacto secundario',
+    ft_field_whatsapp: 'WhatsApp *',
+    ft_field_goal: 'Objetivos del sitio',
+    ft_field_project_brief: 'Descripción breve del proyecto',
+    ft_field_notes: 'Referencias o inspiración',
+    ft_field_files: 'Archivos adjuntos',
+    ft_field_files_help: 'Puedes adjuntar propuestas, logos, PDFs o referencias (máx. 5 archivos de 7 MB cada uno).',
+    ft_onboard_required: 'Completa nombre completo, nombre del negocio y WhatsApp para continuar.',
+    ft_onboard_sending: 'Enviando onboarding...',
+    ft_onboard_sent: 'Brief enviado correctamente. Te contactaremos para iniciar el proyecto.',
+    ft_onboard_error: 'No se pudo enviar en este momento. Intenta de nuevo o contáctanos por WhatsApp.',
+    cq_coupon_ph: 'Ingresa tu cupón'
+  });
+
+  Object.assign(window.LANG.en, {
+    ft_coupon_ph: 'Enter your coupon',
+    ft_coupon_disclaimer: 'Do you have a coupon? Check our social media or ask Lumina if any coupon is active.',
+    ft_pay_transfer: 'Pay by bank transfer',
+    ft_pay_status_idle: 'Choose your payment method to continue your project.',
+    ft_transfer_title: 'BBVA bank transfer',
+    ft_transfer_bank: 'Bank',
+    ft_transfer_owner: 'Account holder',
+    ft_transfer_account: 'Account',
+    ft_transfer_note: 'Once your transfer is complete, send your receipt by WhatsApp or email so we can validate payment. We start your project as soon as it is confirmed.',
+    ft_transfer_whatsapp: 'Send receipt by WhatsApp',
+    ft_transfer_email: 'Send receipt by email',
+    ft_transfer_continue: 'I already sent the receipt, continue',
+    ft_usd_disclaimer: 'USD reference is available at checkout. Final exchange rate depends on your bank or platform.',
+    ft_onboard_title: 'Project kickoff',
+    ft_onboard_sub: 'Payment confirmed. Share this information so we can start production right away.',
+    ft_field_full_name: 'Full name *',
+    ft_field_business: 'Business name *',
+    ft_field_contact_secondary: 'Secondary contact name',
+    ft_field_whatsapp: 'WhatsApp *',
+    ft_field_goal: 'Website goals',
+    ft_field_project_brief: 'Short project brief',
+    ft_field_notes: 'References or inspiration',
+    ft_field_files: 'Attachments',
+    ft_field_files_help: 'Attach proposals, logos, PDFs, or references (max 5 files, 7 MB each).',
+    ft_onboard_required: 'Please complete full name, business name, and WhatsApp to continue.',
+    ft_onboard_sending: 'Sending onboarding...',
+    ft_onboard_sent: 'Brief sent successfully. We will contact you to kick off your project.',
+    ft_onboard_error: 'We could not send it right now. Please try again or contact us on WhatsApp.',
+    cq_coupon_ph: 'Enter your coupon'
+  });
+
   window.currentLang = 'es';
   var selectedFiles = [];
   var API_BASE = String(window.PAYMENTS_API_BASE || '').replace(/\/$/, '');
@@ -808,6 +1296,7 @@
 
   function openCotizar() {
     if (!overlay) return;
+    trackEvent('cotizador_click', { source: 'site_cta' });
     overlay.removeAttribute('hidden');
     document.body.style.overflow = 'hidden';
     setTimeout(function () {
@@ -823,7 +1312,7 @@
     overlay.setAttribute('hidden', '');
   }
 
-  ['ctaCotizarBtn','navTalkBtn','footerTalkBtn','footerStartBtn','mobileCotizarBtn'].forEach(function (id) {
+  ['ctaCotizarBtn','navTalkBtn','heroTalkBtn','footerTalkBtn','footerStartBtn','mobileCotizarBtn'].forEach(function (id) {
     var el = document.getElementById(id);
     if (el) el.addEventListener('click', openCotizar);
   });
@@ -1121,6 +1610,37 @@
   }
 
   /* ── Inteligencia Artificial ── */
+  if (applyCouponBtn) {
+    applyCouponBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      var code = document.getElementById('cqCouponCode').value.trim().toUpperCase();
+      var msgEl = document.getElementById('cqCouponMsg');
+      cqDiscount = 0;
+      cqCoupon = '';
+      if (!code) {
+        msgEl.textContent = '';
+        updateEstimator();
+        return;
+      }
+      var couponData = ACTIVE_COUPONS[code];
+      if (couponData && typeof couponData === 'object') {
+        if (couponData.type === 'percent') cqDiscount = Math.max(0, Number(couponData.value || 0));
+        if (couponData.type === 'fixed') cqDiscount = Math.max(0, Number(couponData.value || 0));
+        cqCoupon = code;
+        msgEl.textContent = window.currentLang === 'en' ? 'Coupon applied successfully.' : 'Cupón aplicado correctamente.';
+        msgEl.style.color = '#25d366';
+      } else if (Object.keys(ACTIVE_COUPONS).length === 0) {
+        msgEl.textContent = window.currentLang === 'en' ? 'There are no active coupons right now.' : 'No hay cupones activos por el momento.';
+        msgEl.style.color = '#d4d8d0';
+      } else {
+        msgEl.textContent = window.currentLang === 'en' ? 'Invalid coupon.' : 'Cupón inválido.';
+        msgEl.style.color = '#ff4d4d';
+      }
+      updateEstimator();
+    }, true);
+  }
+
   var aiBtn = document.getElementById('cqAiBtn');
   if (aiBtn) {
     aiBtn.addEventListener('click', function() {
@@ -1129,7 +1649,7 @@
       setErr('cqMsgErr', '');
       
       var origText = document.getElementById('cqAiText').innerHTML;
-      document.getElementById('cqAiText').innerHTML = '⏳ Analizando con Lumina IA...';
+      document.getElementById('cqAiText').innerHTML = 'Analizando con Lumina IA...';
       
       fetch(apiUrl('/api/openai-chat'), {
         method: 'POST',
@@ -1239,25 +1759,26 @@
 (function() {
   const API_BASE = String(window.PAYMENTS_API_BASE || '').replace(/\/$/, '');
   const apiUrl = (path) => API_BASE ? `${API_BASE}${path}` : path;
-  const SYSTEM_PROMPT = `Eres LUMINA, la IA asistente especializada en Diseño y Desarrollo Web en WordPress de la agencia BryanF Design. 
-Tu objetivo es ayudar a los clientes a entender la importancia de tener una página web profesional, cómo trabajamos con WordPress, optimización (SEO, rendimiento) y el impacto de un buen diseño.
+  const SYSTEM_PROMPT = `Eres LUMINA, asistente comercial de BryanF Design.
+Tu meta es orientar, resolver dudas y guiar al usuario al cotizador o al inicio del proyecto.
 
-CONOCIMIENTO DE PREGUNTAS FRECUENTES (FAQ):
-- Tiempos de entrega: empiezan desde 3 días una vez entregada la información completa.
-- Límite de cambios: NO hay límite de cambios, trabajamos hasta la satisfacción total del cliente.
-- Horarios de atención: Lunes a Viernes de 9:00 AM a 7:00 PM hora CDMX.
-- Requisitos para empezar: Info de la empresa, una breve reunión, y 50% de anticipo (el otro 50% al finalizar).
-- Entregables finales: Accesos totales a la web y correos, y una capacitación de aprox 30 mins.
-- Qué incluye: Dominio y host gratis por 1 año, correos ilimitados (1GB), y diseño personalizado.
+Temas que debes cubrir con claridad:
+- Qué hace BryanF Design: branding, diseño UX/UI, desarrollo web, WordPress, SEO técnico, performance, mantenimiento, e-commerce, landing pages y automatización.
+- Cómo funciona el cotizador: paquete base + módulos + modalidad de pago.
+- Tiempos de entrega: inician desde 3 días hábiles cuando la información está completa.
+- Pagos: Stripe, Mercado Pago o transferencia bancaria BBVA.
+- Transferencia bancaria: el cliente envía comprobante por WhatsApp o correo y el proyecto inicia al validarse.
+- Cupones: solo si hay uno activo; si no, invitar a revisar redes o preguntar al equipo.
 
-REGLA ESTRICTA DE COSTOS: Si el usuario pregunta por costos, precios, tarifas o presupuestos aproximados, DEBES decirle que los costos varían según el proyecto (empiezan desde $3500 MXN) y redirigirlo INMEDIATAMENTE al WhatsApp de BryanF Design (+52 56 6301 2505) usando este enlace exacto: <a href="https://wa.me/525663012505" target="_blank">Contactar por WhatsApp</a>.
-REGLA DE COMPLIANCE / PRIVACIDAD: Si el usuario pregunta qué hacemos con sus datos, si el pago es seguro, o sobre políticas, asegúrale que sus datos están súper protegidos e invítalo a leer nuestro <a href="/privacidad" target="_blank">Aviso de Privacidad</a> y los <a href="/terminos" target="_blank">Términos y Condiciones</a> oficiales.
+Reglas:
+- Si preguntan precios, responde que el monto depende del alcance, desde $3,500 MXN, y dirige a WhatsApp con este link: <a href="https://wa.me/525663012505" target="_blank">Contactar por WhatsApp</a>.
+- Si preguntan privacidad o seguridad de pagos, remite a <a href="/privacidad" target="_blank">Aviso de Privacidad</a> y <a href="/terminos" target="_blank">Términos y Condiciones</a>.
+- Responde en tono premium, concreto y comercial, sin texto técnico interno.
+- Usa HTML básico: <strong>, <br>, <ul>, <li>, <a>.
 
-
-ACCIÓN AUTOMÁTICA DE COTIZACIÓN: Si el usuario ya te proporciona detalles de su proyecto y muestra intención de cotizar o empezar, incluye EXACTAMENTE esta etiqueta al final de tu respuesta: [ACTION:OPEN_FORM:{"name": "nombre del cliente si lo dio, sino vacío", "message": "resumen breve del proyecto que te dio, listo para el formulario"}]
-
-Tono: Profesional, experto, premium, amigable y conciso (no des respuestas largas).
-Usa formato HTML básico en tus respuestas (como <strong>, <br>, <ul>, <li>, y <a> en caso de links).`;
+Acción de apertura de formulario:
+Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al final:
+[ACTION:OPEN_FORM:{"name":"nombre si lo dio","message":"resumen del proyecto en una frase"}]`;
 
   const fab = document.getElementById('luminaFab');
   const panel = document.getElementById('luminaPanel');
@@ -1283,7 +1804,7 @@ Usa formato HTML básico en tus respuestas (como <strong>, <br>, <ul>, <li>, y <
       fab.style.opacity = '0';
       fab.style.pointerEvents = 'none';
       if (!hasOpened) {
-        addMessage('¡Hola! Soy LUMINA, la asistente inteligente de BryanF Design. ¿En qué te puedo ayudar hoy sobre la creación de tu próxima página web profesional?', 'ai');
+        addMessage('Bienvenido. Soy Lumina y puedo ayudarte con estrategia, cotización, tiempos de entrega, pagos y el mejor plan para tu proyecto web.', 'ai');
         hasOpened = true;
       }
       setTimeout(() => input.focus(), 300);
