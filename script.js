@@ -2321,6 +2321,7 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
   (function initA11y() {
     var fab = document.getElementById('a11yFab');
     var menu = document.getElementById('a11yMenu');
+    var appDock = document.getElementById('appActionsDock');
     if (!fab || !menu) return;
 
     function setMenuOpen(open) {
@@ -2345,7 +2346,12 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
     });
 
     document.addEventListener('click', function(e) {
-      if(!menu.contains(e.target) && e.target !== fab && !fab.contains(e.target)) {
+      if(
+        !menu.contains(e.target) &&
+        e.target !== fab &&
+        !fab.contains(e.target) &&
+        !(appDock && appDock.contains(e.target))
+      ) {
         setMenuOpen(false);
       }
     });
@@ -2377,7 +2383,9 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
     if (!dockLuminaBtn && !dockA11yBtn) return;
 
     if (dockLuminaBtn) {
-      dockLuminaBtn.addEventListener('click', function() {
+      dockLuminaBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         if (a11yMenu) {
           a11yMenu.setAttribute('hidden', '');
           document.body.classList.remove('a11y-open');
@@ -2387,7 +2395,9 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
     }
 
     if (dockA11yBtn) {
-      dockA11yBtn.addEventListener('click', function() {
+      dockA11yBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         if (document.body.classList.contains('lumina-open') && luminaFab) {
           luminaFab.click();
         }
