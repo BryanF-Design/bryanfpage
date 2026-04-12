@@ -3311,6 +3311,10 @@ body.a11y-reduced-motion .cta__canvas {
   padding: 1rem;
 }
 
+.lt-overlay[hidden] {
+  display: none !important;
+}
+
 .lt-modal {
   width: min(100%, 560px);
   border: 1px solid rgba(255, 255, 255, 0.14);
