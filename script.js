@@ -163,6 +163,12 @@
     function showTransferCard() {
       if (dom.transferCard) dom.transferCard.hidden = false;
       state.payment = { method: 'transferencia_bbva', amount: getTotals().payableNow };
+      trackEvent('payment_start', {
+        source: 'fast_track',
+        method: 'transferencia_bbva',
+        payment_mode: getPaymentMode(),
+        amount: state.payment.amount
+      });
       setStatus(window.currentLang === 'en' ? 'Bank transfer selected. Send your receipt to validate payment.' : 'Transferencia seleccionada. Envía tu comprobante para validar el pago.', true);
     }
 
@@ -172,6 +178,12 @@
 
     async function createPayment(endpoint, methodKey, successText) {
       hideTransferCard();
+      trackEvent('payment_start', {
+        source: 'fast_track',
+        method: methodKey,
+        payment_mode: getPaymentMode(),
+        amount: getTotals().payableNow
+      });
       try {
         var response = await fetch(apiUrl(endpoint), {
           method: 'POST',
@@ -183,6 +195,11 @@
         if (endpoint.indexOf('stripe') > -1 && data.checkoutUrl) window.open(data.checkoutUrl, '_blank', 'noopener,noreferrer');
         if (endpoint.indexOf('mercadopago') > -1 && data.initPoint) window.open(data.initPoint, '_blank', 'noopener,noreferrer');
         state.payment = { method: methodKey, amount: data.amount || getTotals().payableNow, reference: data.preferenceId || data.checkoutUrl || '' };
+        trackEvent('payment_checkout_opened', {
+          source: 'fast_track',
+          method: methodKey,
+          amount: state.payment.amount
+        });
         setStatus(successText, true);
       } catch (err) {
         setStatus((window.currentLang === 'en' ? 'Payment error: ' : 'Error de pago: ') + err.message, false);
@@ -282,6 +299,11 @@
         });
         var data = await response.json();
         if (!response.ok || data.error) throw new Error(data.error || 'No se pudo enviar');
+        trackEvent('onboarding_submitted', {
+          source: 'fast_track',
+          action: action,
+          payment_method: state.payment && state.payment.method ? state.payment.method : 'unknown'
+        });
         setFormAlert(t('ft_onboard_sent', 'Brief enviado correctamente. Te contactaremos para iniciar el proyecto.'), 'is-success');
         window.open('https://wa.me/' + WA_PHONE + '?text=' + encodeURIComponent(buildWhatsAppText(action, formData)), '_blank', 'noopener,noreferrer');
       } catch (_err) {
