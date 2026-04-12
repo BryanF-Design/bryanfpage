@@ -72,6 +72,12 @@
 
     var API_BASE = String(window.PAYMENTS_API_BASE || '').replace(/\/$/, '');
     var WA_PHONE = '525663012505';
+    var ORIGINAL_FASTTRACK_PRICES = {
+      ecommerce: 3500,
+      payments: 1500,
+      sections: 350,
+      maintenance: 1000
+    };
     var ACTIVE = (window.ACTIVE_COUPONS && typeof window.ACTIVE_COUPONS === 'object') ? window.ACTIVE_COUPONS : {};
     var state = { coupon: { code: '', discountType: null, discountValue: 0 }, payment: null };
 
@@ -118,6 +124,17 @@
       if (kind) dom.formAlert.classList.add(kind);
     }
 
+    function renderOriginalFastTrackPrices() {
+      var priceEcommerce = document.getElementById('ftPriceEcommerce');
+      var pricePayments = document.getElementById('ftPricePayments');
+      var priceSections = document.getElementById('ftPriceSections');
+      var priceMaintenance = document.getElementById('ftPriceMaintenance');
+      if (priceEcommerce) priceEcommerce.textContent = '+' + formatMXN(ORIGINAL_FASTTRACK_PRICES.ecommerce) + ' MXN';
+      if (pricePayments) pricePayments.textContent = '+' + formatMXN(ORIGINAL_FASTTRACK_PRICES.payments) + ' MXN';
+      if (priceSections) priceSections.textContent = '+' + formatMXN(ORIGINAL_FASTTRACK_PRICES.sections) + ' MXN c/u';
+      if (priceMaintenance) priceMaintenance.textContent = '+' + formatMXN(ORIGINAL_FASTTRACK_PRICES.maintenance) + ' MXN';
+    }
+
     function getSummaryItems() {
       var items = [];
       var activePlan = root.querySelector('.ft-plan--active') || root.querySelector('.ft-plan[data-ft-plan="full"]');
@@ -129,10 +146,11 @@
         var card = input.closest('.ft-module');
         var title = card && card.querySelector('.ft-module__title') ? card.querySelector('.ft-module__title').textContent.trim() : 'Módulo';
         var priceText = card && card.querySelector('.ft-module__meta') ? card.querySelector('.ft-module__meta').textContent : '';
-        var price = parseInt(String(priceText).replace(/[^\d]/g, ''), 10) || 0;
+        var detectedPrice = parseInt(String(priceText).replace(/[^\d]/g, ''), 10) || 0;
+        var price = ORIGINAL_FASTTRACK_PRICES[input.value] || detectedPrice;
         if (input.value === 'sections') {
           var extraCount = parseInt((document.getElementById('ftSectionsCount') || { textContent: '0' }).textContent || '0', 10) || 0;
-          if (extraCount > 0) items.push({ source: 'Secciones adicionales x' + extraCount, price: extraCount * 350 });
+          if (extraCount > 0) items.push({ source: 'Secciones adicionales x' + extraCount, price: extraCount * ORIGINAL_FASTTRACK_PRICES.sections });
         } else {
           items.push({ source: title, price: price });
         }
@@ -567,6 +585,7 @@
       });
     }
 
+    renderOriginalFastTrackPrices();
     bindEvents();
     handleReturnStatus();
     reorderSections();
@@ -1437,15 +1456,68 @@
     overlay.setAttribute('hidden', '');
   }
 
-  ['ctaCotizarBtn','navTalkBtn','heroTalkBtn','footerTalkBtn','footerStartBtn','mobileCotizarBtn'].forEach(function (id) {
+  ['ctaCotizarBtn','footerStartBtn'].forEach(function (id) {
     var el = document.getElementById(id);
     if (el) el.addEventListener('click', openCotizar);
   });
+
+  /* ── LET'S TALK MODAL ── */
+  var letsTalkOverlay = document.getElementById('letsTalkOverlay');
+  var letsTalkClose = document.getElementById('letsTalkClose');
+  var letsTalkForm = document.getElementById('letsTalkForm');
+
+  function openLetsTalk() {
+    if (!letsTalkOverlay) return;
+    letsTalkOverlay.removeAttribute('hidden');
+    document.body.style.overflow = 'hidden';
+    window.setTimeout(function () {
+      var first = document.getElementById('ltName');
+      if (first) first.focus();
+    }, 120);
+  }
+
+  function closeLetsTalk() {
+    if (!letsTalkOverlay) return;
+    letsTalkOverlay.setAttribute('hidden', '');
+    document.body.style.overflow = '';
+  }
+
+  ['navTalkBtn','heroTalkBtn','footerTalkBtn','mobileCotizarBtn'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('click', openLetsTalk);
+  });
+
+  if (letsTalkClose) letsTalkClose.addEventListener('click', closeLetsTalk);
+  if (letsTalkOverlay) {
+    letsTalkOverlay.addEventListener('click', function (e) {
+      if (e.target === letsTalkOverlay) closeLetsTalk();
+    });
+  }
+
+  if (letsTalkForm) {
+    letsTalkForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = String((document.getElementById('ltName') || {}).value || '').trim();
+      var contact = String((document.getElementById('ltContact') || {}).value || '').trim();
+      var message = String((document.getElementById('ltMessage') || {}).value || '').trim();
+      var text = [
+        "*Nuevo contacto desde Let's Talk*",
+        '*Nombre:* ' + (name || 'Sin nombre'),
+        '*WhatsApp o correo:* ' + (contact || 'Sin dato'),
+        '*Mensaje:* ' + (message || 'Sin mensaje')
+      ].join('\n');
+      window.open('https://wa.me/525663012505?text=' + encodeURIComponent(text), '_blank', 'noopener,noreferrer');
+    });
+  }
 
   var cqClose = document.getElementById('cqClose');
   if (cqClose) cqClose.addEventListener('click', closeCotizar);
   if (overlay) overlay.addEventListener('click', function (e) { if (e.target === overlay) closeCotizar(); });
   document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && letsTalkOverlay && !letsTalkOverlay.hasAttribute('hidden')) {
+      closeLetsTalk();
+      return;
+    }
     if (e.key === 'Escape' && overlay && !overlay.hasAttribute('hidden')) closeCotizar();
   });
 

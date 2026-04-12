@@ -873,14 +873,14 @@
                     <input type="checkbox" class="ft-module-cb" value="ecommerce" />
                     <span class="ft-module__content">
                       <span class="ft-module__title" data-i18n="ft_mod_ecommerce">Integración de E-commerce</span>
-                      <span class="ft-module__meta" id="ftPriceEcommerce">+$0 MXN</span>
+                      <span class="ft-module__meta" id="ftPriceEcommerce">+$3,500 MXN</span>
                     </span>
                   </label>
                   <label class="ft-module">
                     <input type="checkbox" class="ft-module-cb" value="payments" />
                     <span class="ft-module__content">
                       <span class="ft-module__title" data-i18n="ft_mod_payments">Pasarelas de Pago Directo</span>
-                      <span class="ft-module__meta" id="ftPricePayments">+$0 MXN</span>
+                      <span class="ft-module__meta" id="ftPricePayments">+$1,500 MXN</span>
                     </span>
                   </label>
                   <label class="ft-module">
@@ -902,7 +902,7 @@
                     <input type="checkbox" class="ft-module-cb" value="maintenance" />
                     <span class="ft-module__content">
                       <span class="ft-module__title" data-i18n="ft_mod_maintenance">Mantenimiento Especializado</span>
-                      <span class="ft-module__meta" id="ftPriceMaintenance">+$0 MXN</span>
+                      <span class="ft-module__meta" id="ftPriceMaintenance">+$1,000 MXN</span>
                     </span>
                   </label>
                 </div>
@@ -1247,6 +1247,39 @@
 
       <div class="modal__footer">
         <button class="btn btn-ghost" id="modalClose" data-i18n="about_close">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================
+       LET'S TALK MODAL
+       ============================================= -->
+  <div class="lt-overlay" id="letsTalkOverlay" role="dialog" aria-modal="true" aria-label="Let's Talk" hidden>
+    <div class="lt-modal">
+      <div class="lt-header">
+        <h3>Let's Talk</h3>
+        <button type="button" class="lt-close" id="letsTalkClose" aria-label="Cerrar modal">
+          <span></span><span></span>
+        </button>
+      </div>
+      <form id="letsTalkForm" class="lt-form" novalidate>
+        <label class="lt-field">
+          <span>Nombre</span>
+          <input id="ltName" type="text" required />
+        </label>
+        <label class="lt-field">
+          <span>WhatsApp o correo</span>
+          <input id="ltContact" type="text" required />
+        </label>
+        <label class="lt-field">
+          <span>Mensaje breve</span>
+          <textarea id="ltMessage" rows="3" required></textarea>
+        </label>
+        <button type="submit" class="btn btn-solid">Enviar por WhatsApp</button>
+      </form>
+      <div class="lt-contact">
+        <a href="https://wa.me/525663012505" target="_blank" rel="noopener noreferrer">WhatsApp: +52 56 6301 2505</a>
+        <a href="mailto:bryanf@bryanfdesign.com.mx">Correo: bryanf@bryanfdesign.com.mx</a>
       </div>
     </div>
   </div>

@@ -3299,3 +3299,100 @@ body.a11y-reduced-motion .cta__canvas {
 .project-capsule:hover .project-capsule__icon {
   transform: translateX(3px);
 }
+
+/* ── 26. LET'S TALK MODAL ── */
+.lt-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  background: rgba(0, 0, 0, 0.72);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.lt-modal {
+  width: min(100%, 560px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  background: linear-gradient(160deg, rgba(20, 22, 25, 0.98), rgba(13, 15, 17, 0.98));
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  padding: 1rem;
+}
+
+.lt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.9rem;
+}
+
+.lt-header h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.15rem;
+}
+
+.lt-close {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  position: relative;
+}
+
+.lt-close span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 16px;
+  height: 2px;
+  background: #fff;
+}
+
+.lt-close span:first-child { transform: translate(-50%, -50%) rotate(45deg); }
+.lt-close span:last-child { transform: translate(-50%, -50%) rotate(-45deg); }
+
+.lt-form {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.lt-field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.lt-field span {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.lt-field input,
+.lt-field textarea {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  font: inherit;
+  padding: 0.68rem 0.8rem;
+}
+
+.lt-field textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.lt-contact {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 0.9rem;
+}
+
+.lt-contact a {
+  color: var(--brand);
+  text-decoration: none;
+  font-size: 0.88rem;
+}
