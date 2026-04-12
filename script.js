@@ -85,6 +85,14 @@
       payStripeBtn: document.getElementById('ftPayStripeBtn'),
       payMPBtn: document.getElementById('ftPayMPBtn'),
       payTransferBtn: document.getElementById('ftPayTransferBtn'),
+      moduleInputs: root.querySelectorAll('.ft-module-cb'),
+      planButtons: root.querySelectorAll('.ft-plan[data-ft-plan]'),
+      sectionsMinus: document.getElementById('ftSectionsMinus'),
+      sectionsPlus: document.getElementById('ftSectionsPlus'),
+      sectionsCount: document.getElementById('ftSectionsCount'),
+      paymentModeRadios: root.querySelectorAll('input[name="ftPaymentMode"]'),
+      total: document.getElementById('ftTotal'),
+      summaryRows: document.getElementById('ftSummaryRows'),
       transferCard: document.getElementById('ftTransferCard'),
       transferDoneBtn: document.getElementById('ftTransferDoneBtn'),
       transferCopyButtons: root.querySelectorAll('.ft-copy-btn[data-copy-target]'),
@@ -178,16 +186,31 @@
     function getPayload() {
       var totals = getTotals();
       var items = getSummaryItems();
+      var moduleList = items.slice(1).map(function(item) { return item.source; }).join(', ');
       return {
         monto: totals.projectTotal,
         modalidad: getPaymentMode(),
         descripcion: 'Configura tu Proyecto Web - ' + (items[0] ? items[0].source : 'Servicio web'),
         metadata: {
           flow: 'fast-track',
-          modules: items.slice(1).map(function(item) { return item.source; }),
+          modules: moduleList || 'none',
           coupon: state.coupon.code || 'none'
         }
       };
+    }
+
+    function renderSummary() {
+      if (!dom.total || !dom.summaryRows) return;
+      var items = getSummaryItems();
+      var totals = getTotals();
+      dom.summaryRows.innerHTML = items.map(function(item) {
+        return '<div class="ft-summary-row"><div><span>Concepto</span><br><strong>' + item.source + '</strong></div><strong>' + formatMXN(item.price) + ' MXN</strong></div>';
+      }).join('');
+      dom.total.textContent = formatMXN(totals.payableNow) + ' MXN';
+      if (dom.sectionsCount) {
+        var sectionItem = items.find(function(item) { return item.source.indexOf('Secciones adicionales x') === 0; });
+        dom.sectionsCount.textContent = sectionItem ? String(parseInt(sectionItem.source.replace(/[^\d]/g, ''), 10) || 0) : '0';
+      }
     }
 
     function renderWizardSummary() {
@@ -421,8 +444,7 @@
         dom.couponMsg.textContent = window.currentLang === 'en' ? 'Invalid coupon.' : 'Cupón inválido.';
         dom.couponMsg.style.color = '#ff6b6b';
       }
-      var changeEvent = new Event('change', { bubbles: true });
-      if (dom.couponCode) dom.couponCode.dispatchEvent(changeEvent);
+      renderSummary();
     }
 
     function handleReturnStatus() {
@@ -522,6 +544,54 @@
       if (simBtn) simBtn.remove();
       setStatus(t('ft_pay_status_idle', 'Elige tu método de pago para continuar con tu proyecto.'), false);
 
+      Array.from(dom.planButtons || []).forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          Array.from(dom.planButtons).forEach(function(other) {
+            var active = other === btn;
+            other.classList.toggle('ft-plan--active', active);
+            other.setAttribute('aria-pressed', active ? 'true' : 'false');
+          });
+          renderSummary();
+        });
+      });
+
+      Array.from(dom.moduleInputs || []).forEach(function(input) {
+        input.addEventListener('change', function() {
+          if (input.value === 'sections' && !input.checked && dom.sectionsCount) {
+            dom.sectionsCount.textContent = '0';
+          }
+          renderSummary();
+        });
+      });
+
+      if (dom.sectionsMinus) {
+        dom.sectionsMinus.addEventListener('click', function() {
+          if (!dom.sectionsCount) return;
+          var current = parseInt(dom.sectionsCount.textContent || '0', 10) || 0;
+          var next = Math.max(0, current - 1);
+          dom.sectionsCount.textContent = String(next);
+          var sectionsCb = root.querySelector('.ft-module-cb[value="sections"]');
+          if (sectionsCb) sectionsCb.checked = next > 0;
+          renderSummary();
+        });
+      }
+
+      if (dom.sectionsPlus) {
+        dom.sectionsPlus.addEventListener('click', function() {
+          if (!dom.sectionsCount) return;
+          var current = parseInt(dom.sectionsCount.textContent || '0', 10) || 0;
+          var next = Math.min(30, current + 1);
+          dom.sectionsCount.textContent = String(next);
+          var sectionsCb = root.querySelector('.ft-module-cb[value="sections"]');
+          if (sectionsCb) sectionsCb.checked = true;
+          renderSummary();
+        });
+      }
+
+      Array.from(dom.paymentModeRadios || []).forEach(function(radio) {
+        radio.addEventListener('change', renderSummary);
+      });
+
       if (dom.applyCouponBtn) dom.applyCouponBtn.addEventListener('click', applyCouponOverride, true);
       if (dom.payStripeBtn) dom.payStripeBtn.addEventListener('click', function(e) {
         e.preventDefault();
@@ -586,6 +656,7 @@
     }
 
     renderOriginalFastTrackPrices();
+    renderSummary();
     bindEvents();
     handleReturnStatus();
     reorderSections();
