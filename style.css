@@ -1607,7 +1607,7 @@ body.cursor-hover .cursor-ring {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 90;
+  z-index: 1200;
   display: grid;
   place-items: center;
   padding: 1rem;
@@ -1630,18 +1630,29 @@ body.cursor-hover .cursor-ring {
   pointer-events: none;
 }
 
+body:has(#aboutOverlay:not([hidden])) .lumina-fab,
+body:has(#aboutOverlay:not([hidden])) .a11y-module,
+body:has(#aboutOverlay:not([hidden])) .app-actions-dock {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .modal {
   position: relative;
   width: 100%;
-  max-width: 760px;
+  max-width: 860px;
+  max-height: calc(100dvh - 2rem);
   border-radius: var(--radius-xl);
   border: 1px solid rgba(255,255,255,.10);
-  background: rgba(16,17,18,.94);
-  padding: 2rem;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(180,227,50,.10), transparent 30%),
+    linear-gradient(145deg, rgba(22,24,24,.97), rgba(9,10,11,.96));
+  padding: clamp(1.15rem, 3vw, 2.1rem);
   box-shadow: 0 32px 80px rgba(0,0,0,.6);
   transform: translateY(14px) scale(.98);
   transition: transform .3s cubic-bezier(.22,1,.36,1);
-  overflow: hidden;
+  overflow: auto;
+  scrollbar-width: thin;
 }
 
 .modal-overlay:not([hidden]) .modal {
@@ -1661,21 +1672,51 @@ body.cursor-hover .cursor-ring {
 }
 
 @media (min-width: 600px) {
-  .modal__grid { grid-template-columns: 1fr 1.6fr; gap: 2.5rem; }
+  .modal__grid {
+    grid-template-columns: minmax(220px, .9fr) minmax(0, 1.35fr);
+    gap: clamp(1.4rem, 4vw, 2.6rem);
+    align-items: center;
+  }
 }
 
 .modal__photo {
   position: relative;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 1px solid var(--border);
-  aspect-ratio: 3 / 4;
+  border: 1px solid rgba(255,255,255,.16);
+  aspect-ratio: 5 / 7;
   background: rgba(0,0,0,.3);
+  box-shadow: 0 24px 58px rgba(0,0,0,.44), 0 0 0 1px rgba(180,227,50,.08);
+  isolation: isolate;
+}
+
+.modal__photo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.16), transparent 28%),
+    radial-gradient(circle at 50% 34%, transparent 0 48%, rgba(0,0,0,.34) 100%);
+  mix-blend-mode: screen;
+  opacity: .5;
+}
+
+.modal__photo::after {
+  content: "";
+  position: absolute;
+  inset: auto 14% 0;
+  z-index: 2;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(180,227,50,.78), transparent);
 }
 
 .modal__photo img {
   width: 100%; height: 100%;
   object-fit: cover;
+  object-position: 50% 30%;
+  filter: contrast(1.08) brightness(1.04);
 }
 
 .modal__body {
@@ -1685,14 +1726,15 @@ body.cursor-hover .cursor-ring {
 }
 
 .modal__title {
-  font-size: 1.5rem;
+  font-size: clamp(1.65rem, 4vw, 2.15rem);
   font-weight: 800;
+  line-height: 1.05;
   color: var(--text);
   margin-bottom: .75rem;
 }
 
 .modal__text {
-  font-size: .92rem;
+  font-size: clamp(.95rem, 2vw, 1.02rem);
   color: var(--text-muted);
   line-height: 1.7;
   margin-bottom: .65rem;
@@ -1727,23 +1769,200 @@ body.cursor-hover .cursor-ring {
 
 /* ── 22. RESPONSIVE TWEAKS ── */
 @media (max-width: 640px) {
-  .hero { padding-block: 7rem 4rem; }
+  html { scroll-padding-top: 76px; }
+  .container,
+  .hero__inner,
+  .tools-rail__inner {
+    padding-inline: 1rem;
+  }
+  .section-label {
+    margin-bottom: 1rem;
+    font-size: .66rem;
+  }
+  .btn {
+    width: 100%;
+    min-height: 48px;
+    padding: .85em 1.05em;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.15;
+  }
+  .navbar {
+    top: max(.45rem, env(safe-area-inset-top));
+  }
+  .navbar__inner {
+    width: calc(100vw - 1rem);
+    height: 56px;
+    padding: 0 .7rem 0 .85rem;
+    border-radius: 14px;
+  }
+  .navbar__logo img {
+    max-width: 152px;
+  }
+  .burger {
+    width: 42px;
+    height: 42px;
+  }
+  .hero {
+    min-height: min(760px, 100svh);
+    padding-block: max(6.25rem, calc(env(safe-area-inset-top) + 5.8rem)) 3.5rem;
+    display: grid;
+    align-items: center;
+  }
+  .hero__badge {
+    max-width: 100%;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.35;
+    margin-bottom: 1.1rem;
+  }
   .hero__ctas {
     flex-direction: column;
     align-items: stretch;
     width: 100%;
+    gap: .7rem;
+    margin-bottom: 2.25rem;
   }
   .hero__ctas .btn { width: 100%; justify-content: center; }
   .projects__head { flex-direction: column; align-items: flex-start; gap: 1rem; }
-  .hero__title { letter-spacing: -.01em; font-size: clamp(2.4rem, 12vw, 3.5rem); }
+  .hero__title {
+    letter-spacing: 0;
+    font-size: clamp(2.35rem, 11.5vw, 3.45rem);
+    line-height: .98;
+    margin-bottom: 1rem;
+  }
+  .hero__sub {
+    font-size: .98rem;
+    line-height: 1.58;
+    margin-bottom: 1.7rem;
+  }
+  .scroll-cue {
+    width: 24px;
+    height: 38px;
+  }
+  .tools-rail {
+    padding-block: 1rem;
+  }
+  .tools-rail__fade {
+    width: 2rem;
+  }
+  .tool-chip {
+    padding: .55em .85em;
+    font-size: .78rem;
+  }
+  .project-card {
+    border-radius: 16px;
+  }
+  .project-card__body {
+    padding: 1rem;
+  }
+  .project-card__actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .project-card__actions .btn {
+    justify-content: center;
+  }
+  .clients__grid,
+  .clients__partners {
+    gap: .65rem;
+  }
+  .client-card {
+    min-height: 82px;
+    aspect-ratio: auto;
+    border-radius: 14px;
+  }
+  .experience-banner {
+    padding: 1.45rem 0;
+  }
+  .experience-banner__inner {
+    align-items: stretch;
+    gap: 1rem;
+  }
+  .experience-banner__text p {
+    font-size: .9rem;
+  }
   .cta__btns { flex-direction: column; align-items: stretch; width: 100%; }
   .cta__btns .btn { width: 100%; justify-content: center; }
+  .cta {
+    padding-block: 4rem 4.75rem;
+  }
+  .cta__title {
+    font-size: clamp(2rem, 10vw, 3rem);
+    letter-spacing: 0;
+  }
+  .cta__sub {
+    font-size: .98rem;
+    line-height: 1.6;
+    margin-bottom: 1.7rem;
+  }
+  .footer__grid {
+    gap: 2rem;
+    padding-block: 2.4rem;
+  }
+  .footer__social {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: .5rem;
+  }
+  .footer__social-item {
+    width: 100%;
+    min-height: 44px;
+  }
+  .footer__contact-link,
+  .footer__cta-box {
+    border-radius: 14px;
+  }
   .glow { width: min(95vw, 640px); filter: blur(75px); }
   .mobile-menu__link { font-size: 1.25rem; padding: 1em; }
   .cq-modal { padding: 1.5rem; margin-inline: 0; border-radius: 16px; }
   .faq { padding: 3rem 0; }
   .projects { padding: 3rem 0; }
   .experience-banner__badge { width: 100%; justify-content: center; }
+}
+
+@media (max-width: 600px) {
+  .modal-overlay {
+    align-items: center;
+    justify-items: center;
+    padding: max(.65rem, env(safe-area-inset-top)) .65rem max(.65rem, env(safe-area-inset-bottom));
+  }
+  .modal {
+    width: 100%;
+    max-height: calc(100dvh - 1.3rem);
+    border-radius: 20px;
+    padding: 1rem;
+  }
+  .modal__grid {
+    gap: 1rem;
+  }
+  .modal__photo {
+    aspect-ratio: 1 / .86;
+    max-height: 42dvh;
+    border-radius: 16px;
+  }
+  .modal__photo img {
+    object-position: 50% 23%;
+  }
+  .modal__body {
+    justify-content: flex-start;
+  }
+  .modal__title {
+    margin-bottom: .65rem;
+  }
+  .modal__text {
+    line-height: 1.62;
+    margin-bottom: .55rem;
+  }
+  .modal__social {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: .5rem;
+    margin-top: 1rem;
+  }
+  .modal__footer {
+    margin-top: 1rem;
+  }
 }
 
 @media (max-width: 768px) {
