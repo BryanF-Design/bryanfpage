@@ -1000,6 +1000,26 @@ body.cursor-hover .cursor-ring {
 
 .tool-chip:hover .tool-chip__dot { display: inline-block; }
 
+.tools-rail__motion-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.1rem;
+  padding: 1rem;
+  border: 1px solid rgba(180,227,50,.2);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(180,227,50,.08), rgba(110,214,255,.05));
+}
+
+.tools-rail__motion-cta p {
+  max-width: 720px;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: .94rem;
+  line-height: 1.5;
+}
+
 /* ── 16. PROJECTS ── */
 .projects {
   padding-block: clamp(4rem, 8vh, 7rem);
@@ -1866,6 +1886,15 @@ body:has(#aboutOverlay:not([hidden])) .app-actions-dock {
   }
   .tools-rail__fade {
     width: 2rem;
+  }
+  .tools-rail__motion-cta {
+    display: grid;
+    gap: .85rem;
+    padding: .9rem;
+  }
+  .tools-rail__motion-cta .btn {
+    width: 100%;
+    justify-content: center;
   }
   .tool-chip {
     padding: .55em .85em;

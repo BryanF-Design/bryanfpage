@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Motion & Animaciones | BryanF Design</title>
+  <meta name="description" content="Descubre como BryanF Design usa Motion, React, JavaScript, CSS animations y CSS Studio para crear experiencias web fluidas, rapidas y orientadas a conversion." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" /></noscript>
+  <link rel="stylesheet" href="motion.css?v=1.0" />
+  <script type="importmap">
+    {
+      "imports": {
+        "react": "https://cdn.jsdelivr.net/npm/react@19.2.6/+esm",
+        "react-dom/client": "https://cdn.jsdelivr.net/npm/react-dom@19.2.6/client/+esm"
+      }
+    }
+  </script>
+</head>
+<body class="motion-page">
+  <noscript>
+    <div class="motion-noscript">
+      Esta experiencia usa React y Motion. Activa JavaScript para ver las animaciones.
+    </div>
+  </noscript>
+  <div id="motion-root">
+    <div class="motion-loading" aria-live="polite">
+      <img src="img/logotipo-blanco-320.png" alt="BRYANF DESIGN" width="180" height="45" />
+      <span>Cargando experiencia Motion...</span>
+    </div>
+  </div>
+  <script type="module" src="motion-app.js?v=1.0"></script>
+</body>
+</html>

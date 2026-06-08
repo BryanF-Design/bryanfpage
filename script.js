@@ -1137,7 +1137,7 @@
     es: {
 
       // Navbar & Hero
-      nav_home: 'Inicio', nav_projects: 'Proyectos', nav_talk: "Let's talk", nav_fasttrack: 'Inicia tu Web Rápido',
+      nav_home: 'Inicio', nav_projects: 'Proyectos', nav_talk: "Let's talk", nav_fasttrack: 'Inicia tu Web Rápido', nav_motion: 'Motion',
       ft_chip: 'Pago rápido + Configurador',
       ft_title: 'Configura tu Proyecto Web',
       ft_subtitle: 'Selecciona tu base, activa módulos, genera cotización automática y continúa directo al onboarding.',
@@ -1200,6 +1200,8 @@
       hero_sub: 'Estrategia, performance y SEO real para que tu sitio se vea increíble <em>y</em> convierta.',
       hero_about: 'Acerca de BryanF', hero_projects: 'Ver proyectos', hero_talk: "Let's talk",
       stack_title: 'Stack & herramientas',
+      stack_motion_cta: 'Explora como usamos Motion, React, JavaScript y CSS Studio para crear experiencias fluidas sin sacrificar performance.',
+      stack_motion_link: 'Ver experiencia Motion',
       exp_title: 'Más de 5 años de experiencia', exp_sub: 'Hemos trabajado e impulsado más de 100 proyectos digitales con éxito.', exp_badge: 'Proyectos',
       projects_title: 'Trabajos destacados', project_visit: 'Visitar sitio', project_view: 'Ver proyecto',
       clients_title: 'Marcas que han confiado',
@@ -1271,7 +1273,7 @@
     en: {
 
       // Navbar & Hero
-      nav_home: 'Home', nav_projects: 'Projects', nav_talk: "Let's talk", nav_fasttrack: 'Start Your Web Fast',
+      nav_home: 'Home', nav_projects: 'Projects', nav_talk: "Let's talk", nav_fasttrack: 'Start Your Web Fast', nav_motion: 'Motion',
       ft_chip: 'Fast payment + Configurator',
       ft_title: 'Configure Your Web Project',
       ft_subtitle: 'Pick your base, add modules, generate an automatic quote, and continue directly to onboarding.',
@@ -1334,6 +1336,8 @@
       hero_sub: 'Strategy, performance, and real SEO so your site looks amazing <em>and</em> converts.',
       hero_about: 'About BryanF', hero_projects: 'View projects', hero_talk: "Let's talk",
       stack_title: 'Stack & tools',
+      stack_motion_cta: 'Explore how we use Motion, React, JavaScript, and CSS Studio to create fluid experiences without sacrificing performance.',
+      stack_motion_link: 'View Motion experience',
       exp_title: 'Over 5 years of experience', exp_sub: 'We have successfully driven and worked on more than 100 digital projects.', exp_badge: 'Projects',
       projects_title: 'Featured works', project_visit: 'Visit site', project_view: 'View project',
       clients_title: 'Brands that trust us',
