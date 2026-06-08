@@ -2313,8 +2313,6 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 
-    }
-  }
 
   async function handleSend() {
     const text = input.value.trim();
@@ -2683,4 +2681,5 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
       observer.observe(el);
     });
   })();
+
 
