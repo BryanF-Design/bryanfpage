@@ -15,7 +15,10 @@
 <body class="cw-page">
   <header class="cw-nav" aria-label="Navegacion de configurador">
     <a href="/" class="cw-nav__logo" aria-label="BryanF Design - Inicio">
-      <img src="img/logotipo-blanco.png" alt="BRYANF DESIGN" width="200" height="70" />
+      <picture>
+        <source media="(max-width: 767px)" srcset="img/logotipo-blanco-320.png" />
+        <img src="img/logotipo-blanco.png" alt="BRYANF DESIGN" width="200" height="70" />
+      </picture>
     </a>
     <div class="cw-nav__actions">
       <div class="cw-lang" role="group" aria-label="Idioma">
@@ -46,6 +49,20 @@
               <span class="cw-step__eyebrow" data-i18n="step1Eyebrow">Primero lo importante</span>
               <h2 data-i18n="step1Title">Que tipo de proyecto necesitas?</h2>
               <p class="cw-step__copy" data-i18n="step1Copy">Elige la base. Puedes ajustar extras y pago al final.</p>
+              <div class="cw-lumina__prompt">
+                <label for="cwLuminaPrompt" data-i18n="luminaPromptLabel">Dile a Lumina que necesitas</label>
+                <textarea id="cwLuminaPrompt" rows="3" data-i18n-ph="luminaPromptPh" placeholder="Ej. Quiero una tienda con pagos, catalogo y seccion de contacto"></textarea>
+                <div class="cw-lumina__tools">
+                  <button type="button" class="cw-mini-btn" id="cwLuminaMic">
+                    <i class="fa-solid fa-microphone" aria-hidden="true"></i>
+                    <span data-i18n="luminaMic">Dictar</span>
+                  </button>
+                  <button type="button" class="cw-mini-btn cw-mini-btn--primary" id="cwLuminaApply">
+                    <i class="fa-solid fa-sparkles" aria-hidden="true"></i>
+                    <span data-i18n="luminaApply">Configurar</span>
+                  </button>
+                </div>
+              </div>
               <div class="cw-choice-grid" role="radiogroup" aria-label="Paquete base">
                 <button type="button" class="cw-choice is-selected" data-choice-group="plan" data-value="full" aria-pressed="true">
                   <span data-i18n="planFullBadge">Web nueva</span>
