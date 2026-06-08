@@ -2057,6 +2057,7 @@ Reglas:
 - Si preguntan privacidad o seguridad de pagos, remite a <a href="/privacidad" target="_blank">Aviso de Privacidad</a> y <a href="/terminos" target="_blank">Términos y Condiciones</a>.
 - Responde en tono premium, concreto y comercial, sin texto técnico interno.
 - Usa HTML básico: <strong>, <br>, <ul>, <li>, <a>.
+- OBLIGATORIO: Responde con excelente ortografía, usando correctamente los acentos, signos de puntuación y la letra ñ. Utiliza saltos de línea (<br>) para separar los párrafos y hacer el texto muy legible y fácil de leer.
 
 Acción de apertura de formulario:
 Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al final:
@@ -2295,8 +2296,34 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
     setTimeout(() => input.focus({ preventScroll: true }), 10);
   }
 
+  function setLuminaState(state) {
+    const img = document.getElementById('luminaAvatarImg');
+    if (!img) return;
+    const path = 'img/lumina/';
+    switch(state) {
+      case 'typing': img.src = path + 'Enfocada.png'; break;
+      case 'error': img.src = path + 'Offline.png'; break;
+      case 'question': img.src = path + 'Duda.png'; break;
+      case 'surprised': img.src = path + 'Sorprendida.png'; break;
+      case 'normal': default: img.src = path + 'Normal.png'; break;
+    }
+  }
+
   function scrollToBottom() {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  function setLuminaState(state) {
+    const img = document.getElementById('luminaAvatarImg');
+    if (!img) return;
+    const path = 'img/lumina/';
+    switch(state) {
+      case 'typing': img.src = path + 'Enfocada.png'; break;
+      case 'error': img.src = path + 'Offline.png'; break;
+      case 'question': img.src = path + 'Duda.png'; break;
+      case 'surprised': img.src = path + 'Sorprendida.png'; break;
+      case 'normal': default: img.src = path + 'Normal.png'; break;
+    }
   }
 
   async function handleSend() {
@@ -2308,6 +2335,13 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
     input.style.height = 'auto';
     addMessage(text, 'user');
     showTyping();
+    
+    if (text.includes('?')) {
+      setLuminaState('question');
+      setTimeout(() => setLuminaState('typing'), 1500);
+    } else {
+      setLuminaState('typing');
+    }
 
     // API Call
     chatHistory.push({ role: 'user', content: text });
@@ -2330,7 +2364,8 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
 
       if (data.error) {
         console.error('OpenAI Error:', data.error);
-        addMessage('Lo siento, tuve un problema temporal al conectarme. Por favor, intenta de nuevo o escríbenos por <a href="https://wa.me/525663012505" target="_blank">WhatsApp</a>.', 'ai');
+        addMessage('Lo siento, tuve un problema temporal al conectarme. Por favor, intenta de nuevo o escr�benos por <a href="https://wa.me/525663012505" target="_blank">WhatsApp</a>.', 'ai');
+        setLuminaState('error');
         chatHistory.pop(); // Remove failed user msg
         return;
       }
@@ -2367,16 +2402,18 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
       // Convert simple markdown to HTML
       let formattedText = aiText
         .trim()
-        .replace(/\n\n/g, '<br><br>')
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>');
+        .replace(/\n/g, '<br>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong></strong>')
+        .replace(/\*(.*?)\*/g, '<em></em>');
         
       addMessage(formattedText, 'ai');
+      setLuminaState('normal');
 
     } catch (err) {
       hideTyping();
       console.error('Fetch Error:', err);
-      addMessage('Error de red. Por favor revisa tu conexión e inténtalo de nuevo.', 'ai');
+      addMessage('Error de red o de API (sin saldo). Por favor escr�benos por WhatsApp.', 'ai');
+      setLuminaState('error');
       chatHistory.pop();
     }
   }
@@ -2632,3 +2669,6 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
     
     observer.observe(footer);
   })();
+
+
+
