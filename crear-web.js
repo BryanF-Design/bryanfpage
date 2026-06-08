@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
   'use strict';
 
   var API_BASE = String(window.PAYMENTS_API_BASE || '').replace(/\/$/, '');
@@ -540,11 +540,13 @@
       });
       var data = await response.json();
       if (!response.ok || data.error) throw new Error(data.error || 'Error');
-      if (method === 'mercado_pago' && data.initPoint) window.open(data.initPoint, '_blank', 'noopener,noreferrer');
-      if (method === 'stripe' && data.checkoutUrl) window.open(data.checkoutUrl, '_blank', 'noopener,noreferrer');
+      if (method === 'mercado_pago' && data.initPoint) { window.open(data.initPoint, '_blank', 'noopener,noreferrer'); }
+      if (method === 'stripe' && data.checkoutUrl) { window.open(data.checkoutUrl, '_blank', 'noopener,noreferrer'); }
       state.payment = { method: method, amount: data.amount || getTotals().payableNow, reference: data.preferenceId || data.checkoutUrl || '' };
       dom.paymentStatus.textContent = method === 'mercado_pago' ? copy('mpReady') : copy('stripeReady');
       dom.paymentStatus.style.color = '#b4e332';
+      // Redirect to gracias page after short delay
+      setTimeout(function() { window.location.href = '/gracias?source=' + method; }, 2500);
     } catch (err) {
       dom.paymentStatus.textContent = copy('paymentError') + err.message;
       dom.paymentStatus.style.color = '#ff7b7b';
@@ -771,3 +773,5 @@
   initLuminaSpeech();
   setLanguage(state.lang);
 })();
+
+

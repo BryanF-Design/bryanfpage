@@ -1,4 +1,4 @@
-/**
+﻿/**
  * script.js – BryanF Design
  * Vanilla JS – No dependencies required
  * Production-ready for cPanel / static hosting
@@ -482,7 +482,7 @@
     }
 
     function setMobileConfiguratorMode() {
-      var observer = new IntersectionObserver(function(entries) {
+      var observer = window.__revealObserver = new IntersectionObserver(function(entries) {
         entries.forEach(function(entry) {
           document.body.classList.toggle('in-fast-track', entry.isIntersecting);
         });
@@ -2313,16 +2313,6 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 
-  function setLuminaState(state) {
-    const img = document.getElementById('luminaAvatarImg');
-    if (!img) return;
-    const path = 'img/lumina/';
-    switch(state) {
-      case 'typing': img.src = path + 'Enfocada.png'; break;
-      case 'error': img.src = path + 'Offline.png'; break;
-      case 'question': img.src = path + 'Duda.png'; break;
-      case 'surprised': img.src = path + 'Sorprendida.png'; break;
-      case 'normal': default: img.src = path + 'Normal.png'; break;
     }
   }
 
@@ -2364,7 +2354,7 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
 
       if (data.error) {
         console.error('OpenAI Error:', data.error);
-        addMessage('Lo siento, tuve un problema temporal al conectarme. Por favor, intenta de nuevo o escr�benos por <a href="https://wa.me/525663012505" target="_blank">WhatsApp</a>.', 'ai');
+        addMessage('Lo siento, tuve un problema temporal al conectarme. Por favor, intenta de nuevo o escr�benos por <a href="https://wa.me/525663012505" target="_blank">WhatsApp</a>.', 'ai');
         setLuminaState('error');
         chatHistory.pop(); // Remove failed user msg
         return;
@@ -2412,7 +2402,7 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
     } catch (err) {
       hideTyping();
       console.error('Fetch Error:', err);
-      addMessage('Error de red o de API (sin saldo). Por favor escr�benos por WhatsApp.', 'ai');
+      addMessage('Error de red o de API (sin saldo). Por favor escr�benos por WhatsApp.', 'ai');
       setLuminaState('error');
       chatHistory.pop();
     }
@@ -2653,7 +2643,7 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
     
     if(!footer || (!luminaFab && !a11yModule && !appDock)) return;
     
-    var observer = new IntersectionObserver(function(entries) {
+    var observer = window.__revealObserver = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
         if (entry.isIntersecting) {
           if(luminaFab) luminaFab.classList.add('hide-floating');
@@ -2670,6 +2660,27 @@ Si el usuario ya compartió intención clara de iniciar o cotizar, agrega al fin
     observer.observe(footer);
   })();
 
+  /* ============================================================
+     19. SCROLL REVEAL - Framer-Motion-like animations
+     ============================================================ */
+  (function initScrollReveal() {
+    var elements = document.querySelectorAll('[data-reveal]');
+    if (!elements.length) return;
 
+    var observer = window.__revealObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          // Don't unobserve so we can re-animate if needed
+        }
+      });
+    }, {
+      rootMargin: '0px 0px -60px 0px',
+      threshold: 0.08
+    });
 
+    elements.forEach(function(el) {
+      observer.observe(el);
+    });
+  })();
 

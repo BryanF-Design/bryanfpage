@@ -3,6 +3,7 @@
   "rewrites": [
     { "source": "/privacidad", "destination": "/privacidad.html" },
     { "source": "/terminos", "destination": "/terminos.html" },
-    { "source": "/motion", "destination": "/motion.html" }
+    { "source": "/crear-web", "destination": "/crear-web.html" },
+    { "source": "/gracias", "destination": "/gracias.html" }
   ]
 }
