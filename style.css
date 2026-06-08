@@ -367,10 +367,24 @@ body.cursor-hover .cursor-ring {
 .navbar.scrolled .navbar__inner { height: 58px; }
 
 /* Logo */
+.navbar__logo {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+.navbar__logo picture {
+  display: block;
+  width: clamp(158px, 20vw, 200px);
+  height: 42px;
+}
+
 .navbar__logo img {
-  height: 40px;
-  width: auto;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  object-position: left center;
   transition: transform .25s ease;
 }
 .navbar.scrolled .navbar__logo img { transform: scale(.92); }
@@ -1797,7 +1811,14 @@ body:has(#aboutOverlay:not([hidden])) .app-actions-dock {
     border-radius: 14px;
   }
   .navbar__logo img {
-    max-width: 152px;
+    max-width: none;
+  }
+  .navbar__logo {
+    max-width: calc(100% - 56px);
+  }
+  .navbar__logo picture {
+    width: min(150px, 42vw);
+    height: 38px;
   }
   .burger {
     width: 42px;

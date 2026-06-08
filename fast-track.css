@@ -40,6 +40,13 @@
   margin-bottom: 1rem;
 }
 
+#fast-track-section .ft-head__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
 #fast-track-section .ft-chip {
   display: inline-flex;
   align-items: center;
@@ -709,6 +716,11 @@
   }
 
   #fast-track-section .ft-lumina-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #fast-track-section .ft-head__actions {
+    display: grid;
     grid-template-columns: minmax(0, 1fr);
   }
 }
