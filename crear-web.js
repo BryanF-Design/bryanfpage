@@ -485,7 +485,14 @@
     dom.manualSectionsCount.textContent = String(state.manualSections);
     renderSummaryRows(dom.summaryRows);
     renderSummaryRows(dom.finalSummary);
-    dom.payNow.textContent = money(getTotals().payableNow);
+    var totals = getTotals();
+    dom.payNow.textContent = money(totals.payableNow);
+    
+    var payFullLabel = document.querySelector('input[value="liquidacion"] + span');
+    var payHalfLabel = document.querySelector('input[value="anticipo"] + span');
+    if (payFullLabel) payFullLabel.textContent = copy('payFull') + ' (' + money(totals.projectTotal) + ')';
+    if (payHalfLabel) payHalfLabel.textContent = copy('payHalf') + ' (' + money(Math.round(totals.projectTotal * 0.5)) + ')';
+
     dom.luminaMessage.textContent = copy('lumina' + state.step);
     dom.helpFloat.href = 'https://wa.me/' + WA_PHONE + '?text=' + encodeURIComponent(buildWhatsAppText('Ayuda personalizada'));
     dom.shots.forEach(function (shot, index) {

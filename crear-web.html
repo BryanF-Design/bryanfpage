@@ -198,10 +198,12 @@
               <p class="cw-step__copy" data-i18n="step6Copy">Revisa el resumen y elige como quieres continuar.</p>
               <div class="cw-final-summary" id="cwFinalSummary"></div>
               <div class="cw-pay-actions">
-                <button type="button" class="cw-btn cw-btn--primary" id="cwPayMP">
+                <button type="button" class="cw-btn cw-btn--primary" id="cwPayMP" style="background: #009EE3; color: white; border: none; display: flex; gap: 8px; align-items: center;">
+                  <i class="fa-solid fa-handshake" style="font-size: 1.2rem;"></i>
                   <span data-i18n="payMercado">Pagar con Mercado Pago</span>
                 </button>
-                <button type="button" class="cw-btn cw-btn--secondary" id="cwPayStripe">
+                <button type="button" class="cw-btn cw-btn--secondary" id="cwPayStripe" style="background: #635BFF; color: white; border: none; display: flex; gap: 8px; align-items: center;">
+                  <i class="fa-brands fa-stripe" style="font-size: 1.5rem; margin-top: 2px;"></i>
                   <span data-i18n="payStripe">Pagar con Stripe</span>
                 </button>
                 <button type="button" class="cw-btn cw-btn--ghost" id="cwPayTransfer">
@@ -272,3 +274,4 @@
   <script src="crear-web.js?v=1.0" defer></script>
 </body>
 </html>
+
