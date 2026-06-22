@@ -138,39 +138,66 @@ button { cursor: pointer; border: none; background: none; font-family: var(--fon
 .cursor-dot,
 .cursor-ring {
   position: fixed;
-  z-index: 9999;
+  top: 0;
+  left: 0;
+  z-index: 10000;
   pointer-events: none;
   border-radius: 9999px;
-  transform: translate(-50%, -50%);
+  opacity: 0;
   will-change: transform;
+  transform: translate(-50%, -50%);
 }
 
+/* Only show once JS confirms a real pointer is moving */
+body.cursor-active .cursor-dot,
+body.cursor-active .cursor-ring { opacity: 1; }
+
 .cursor-dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   background: var(--brand);
-  mix-blend-mode: normal;
-  transition: width .15s, height .15s, opacity .15s;
+  box-shadow: 0 0 10px 1px rgba(180,227,50,.65);
+  transition: width .18s ease, height .18s ease, background .18s ease;
 }
 
 .cursor-ring {
-  width: 30px;
-  height: 30px;
-  border: 2px solid rgba(180,227,50,.7);
-  backdrop-filter: blur(1px);
-  mix-blend-mode: screen;
-  transition: width .2s, height .2s, opacity .2s;
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid rgba(180,227,50,.65);
+  transition: width .22s ease, height .22s ease, border-color .22s ease, background .22s ease;
 }
 
+/* Hover state on interactive elements */
 body.cursor-hover .cursor-dot {
-  width: 10px;
-  height: 10px;
-  opacity: .7;
+  width: 0;
+  height: 0;
 }
 body.cursor-hover .cursor-ring {
-  width: 42px;
-  height: 42px;
-  opacity: .5;
+  width: 52px;
+  height: 52px;
+  border-color: rgba(180,227,50,.9);
+  background: rgba(180,227,50,.10);
+}
+
+/* Click feedback */
+body.cursor-down .cursor-ring {
+  width: 26px;
+  height: 26px;
+  border-color: #fff;
+}
+body.cursor-down .cursor-dot {
+  background: #fff;
+}
+
+/* Hide the native cursor across the whole site while custom cursor is active
+   (desktop pointers only). Keep the text caret inside editable fields. */
+@media (hover: hover) and (pointer: fine) {
+  body.has-cursor,
+  body.has-cursor * { cursor: none !important; }
+  body.has-cursor input,
+  body.has-cursor textarea,
+  body.has-cursor select,
+  body.has-cursor [contenteditable="true"] { cursor: text !important; }
 }
 
 @media (hover: none), (max-width: 768px) {
