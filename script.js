@@ -821,46 +821,64 @@
      7. CUSTOM CURSOR (desktop only)
      ============================================================ */
   (function initCursor() {
-    if (window.innerWidth < 769 || window.matchMedia('(hover: none)').matches) return;
+    // Only on true desktop pointers (fine + hover). This avoids tablets/touch laptops.
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    if (window.innerWidth < 769) return;
 
     var dot  = document.getElementById('cursorDot');
     var ring = document.getElementById('cursorRing');
     if (!dot || !ring) return;
 
-    var dx = 0, dy = 0;
-    var rx = 0, ry = 0;
-    var mx = 0, my = 0;
+    // Activating this class hides the native cursor site-wide (see CSS).
+    document.body.classList.add('has-cursor');
+
+    var rx = window.innerWidth / 2, ry = window.innerHeight / 2;
+    var mx = rx, my = ry;
+    var visible = false;
 
     document.addEventListener('mousemove', function (e) {
       mx = e.clientX;
       my = e.clientY;
+      if (!visible) {
+        visible = true;
+        document.body.classList.add('cursor-active');
+      }
     });
 
-    function loop() {
-      dx = mx; dy = my;
-      rx += (dx - rx) * 0.12;
-      ry += (dy - ry) * 0.12;
+    // Hide custom cursor when leaving the window so it doesn't get "stuck".
+    document.addEventListener('mouseleave', function () {
+      visible = false;
+      document.body.classList.remove('cursor-active');
+    });
+    document.addEventListener('mouseenter', function () {
+      visible = true;
+      document.body.classList.add('cursor-active');
+    });
 
-      dot.style.left  = dx + 'px';
-      dot.style.top   = dy + 'px';
-      ring.style.left = rx + 'px';
-      ring.style.top  = ry + 'px';
+    // Press / release feedback
+    document.addEventListener('mousedown', function () { document.body.classList.add('cursor-down'); });
+    document.addEventListener('mouseup',   function () { document.body.classList.remove('cursor-down'); });
+
+    function loop() {
+      // Dot tracks instantly, ring eases behind for a premium trailing feel.
+      rx += (mx - rx) * 0.18;
+      ry += (my - ry) * 0.18;
+
+      dot.style.transform  = 'translate3d(' + mx + 'px,' + my + 'px,0) translate(-50%,-50%)';
+      ring.style.transform = 'translate3d(' + rx + 'px,' + ry + 'px,0) translate(-50%,-50%)';
 
       requestAnimationFrame(loop);
     }
 
     loop();
 
-    // Scale on hoverable elements
+    // Scale on hoverable / interactive elements
+    var HOVER_SEL = 'a, button, input, textarea, select, [role="button"], .ft-plan, .ft-module, .project-card, .brand-logo, .faq__item summary';
     document.addEventListener('mouseover', function (e) {
-      if (e.target.closest('a, button')) {
-        document.body.classList.add('cursor-hover');
-      }
+      if (e.target.closest(HOVER_SEL)) document.body.classList.add('cursor-hover');
     });
     document.addEventListener('mouseout', function (e) {
-      if (e.target.closest('a, button')) {
-        document.body.classList.remove('cursor-hover');
-      }
+      if (e.target.closest(HOVER_SEL)) document.body.classList.remove('cursor-hover');
     });
   })();
 
@@ -1137,7 +1155,7 @@
     es: {
 
       // Navbar & Hero
-      nav_home: 'Inicio', nav_projects: 'Proyectos', nav_talk: "Let's talk", nav_fasttrack: 'Inicia tu Web Rápido', nav_motion: 'Motion',
+      nav_home: 'Inicio', nav_projects: 'Proyectos', nav_talk: "Let's talk", nav_fasttrack: 'Inicia tu Web Rápido', nav_motion: 'Motion', nav_services: 'Servicios',
       ft_chip: 'Pago rápido + Configurador',
       ft_title: 'Configura tu Proyecto Web',
       ft_subtitle: 'Selecciona tu base, activa módulos, genera cotización automática y continúa directo al onboarding.',
@@ -1200,11 +1218,15 @@
       hero_sub: 'Estrategia, performance y SEO real para que tu sitio se vea increíble <em>y</em> convierta.',
       hero_about: 'Acerca de BryanF', hero_projects: 'Ver proyectos', hero_talk: "Let's talk",
       stack_title: 'Stack & herramientas',
-      stack_motion_cta: 'Explora como usamos Motion, React, JavaScript y CSS Studio para crear experiencias fluidas sin sacrificar performance.',
-      stack_motion_link: 'Ver experiencia Motion',
+      stack_motion_cta: 'Combinamos GSAP, JavaScript y CSS para crear experiencias fluidas y animadas sin sacrificar el rendimiento.',
+      stack_motion_link: 'Ver proyectos en acción',
       exp_title: 'Más de 5 años de experiencia', exp_sub: 'Hemos trabajado e impulsado más de 100 proyectos digitales con éxito.', exp_badge: 'Proyectos',
       projects_title: 'Trabajos destacados', project_visit: 'Visitar sitio', project_view: 'Ver proyecto',
       clients_title: 'Marcas que han confiado',
+      wc_pill: 'Edición Mundial 2026 · México',
+      wc_title: 'El mundo mira a México. Tu marca también debería.',
+      wc_sub: 'Aprovecha el mayor escaparate del año: una web rápida y animada que convierte el tráfico del Mundial en clientes reales.',
+      wc_cta: 'Quiero mi web ahora',
       
       // FAQ
       faq_title: 'Preguntas Frecuentes', faq_search_ph: 'Buscar pregunta...',
@@ -1273,7 +1295,7 @@
     en: {
 
       // Navbar & Hero
-      nav_home: 'Home', nav_projects: 'Projects', nav_talk: "Let's talk", nav_fasttrack: 'Start Your Web Fast', nav_motion: 'Motion',
+      nav_home: 'Home', nav_projects: 'Projects', nav_talk: "Let's talk", nav_fasttrack: 'Start Your Web Fast', nav_motion: 'Motion', nav_services: 'Services',
       ft_chip: 'Fast payment + Configurator',
       ft_title: 'Configure Your Web Project',
       ft_subtitle: 'Pick your base, add modules, generate an automatic quote, and continue directly to onboarding.',
@@ -1336,11 +1358,15 @@
       hero_sub: 'Strategy, performance, and real SEO so your site looks amazing <em>and</em> converts.',
       hero_about: 'About BryanF', hero_projects: 'View projects', hero_talk: "Let's talk",
       stack_title: 'Stack & tools',
-      stack_motion_cta: 'Explore how we use Motion, React, JavaScript, and CSS Studio to create fluid experiences without sacrificing performance.',
-      stack_motion_link: 'View Motion experience',
+      stack_motion_cta: 'We combine GSAP, JavaScript and CSS to craft fluid, animated experiences without sacrificing performance.',
+      stack_motion_link: 'See projects in action',
       exp_title: 'Over 5 years of experience', exp_sub: 'We have successfully driven and worked on more than 100 digital projects.', exp_badge: 'Projects',
       projects_title: 'Featured works', project_visit: 'Visit site', project_view: 'View project',
       clients_title: 'Brands that trust us',
+      wc_pill: 'World Cup 2026 Edition · Mexico',
+      wc_title: 'The world is watching Mexico. Your brand should be too.',
+      wc_sub: 'Make the most of the biggest stage of the year: a fast, animated website that turns World Cup traffic into real customers.',
+      wc_cta: 'I want my website now',
       
       // FAQ
       faq_title: 'Frequently Asked Questions', faq_search_ph: 'Search questions...',

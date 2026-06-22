@@ -74,6 +74,25 @@
   <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css?v=2.1" />
   <link rel="stylesheet" href="fast-track.css?v=1.0" />
+  <link rel="stylesheet" href="enhance.css?v=1.0" />
+
+  <!-- GSAP (animaciones premium con scroll) -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script defer src="enhance.js?v=1.0"></script>
+  <script>
+    /* Oculta los elementos [data-gsap] desde el inicio para que GSAP los
+       anime sin parpadeo. Failsafe: si GSAP no inicializa, se revelan. */
+    document.documentElement.classList.add('gsap-ready');
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        if (!window.__gsapInit) document.documentElement.classList.remove('gsap-ready');
+      }, 1600);
+    });
+  </script>
+
+  <!-- Lottie (dotLottie web component) -->
+  <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.9.14/dist/dotlottie-wc.js" type="module"></script>
 </head>
 
 <body>
@@ -131,7 +150,7 @@
         <div class="navbar__pills">
           <a href="#" class="navbar__pill navbar__pill--active" aria-current="page" data-i18n="nav_home">Inicio</a>
           <a href="#projects" class="navbar__pill" data-i18n="nav_projects">Proyectos</a>
-          <a href="/motion" class="navbar__pill" data-i18n="nav_motion">Motion</a>
+          <a href="#servicios" class="navbar__pill smooth-scroll" data-i18n="nav_services">Servicios</a>
         </div>
         <a href="crear-web.html" class="navbar__pill" id="navFastTrackBtn"><i class="fa-solid fa-rocket"></i> <span data-i18n="nav_fasttrack">Inicia tu Web Rápido</span></a>
         <button class="navbar__cta" id="navTalkBtn">
@@ -196,7 +215,7 @@
         <li><a href="#" class="mobile-menu__link mobile-menu__link--active" data-close data-i18n="nav_home">Inicio</a>
         </li>
         <li><a href="#projects" class="mobile-menu__link" data-close data-i18n="nav_projects">Proyectos</a></li>
-        <li><a href="/motion" class="mobile-menu__link" data-close data-i18n="nav_motion">Motion</a></li>
+        <li><a href="#servicios" class="mobile-menu__link" data-close data-i18n="nav_services">Servicios</a></li>
         <li><a href="crear-web.html" class="mobile-menu__link" data-close><i class="fa-solid fa-rocket"></i> <span data-i18n="nav_fasttrack">Inicia tu Web Rápido</span></a></li>
         <li>
           <button class="mobile-menu__link mobile-menu__link--cta" id="mobileCotizarBtn" data-close
@@ -245,23 +264,23 @@
 
       <div class="hero__inner">
         <!-- Badge -->
-        <div class="hero__badge reveal">
+        <div class="hero__badge" data-gsap="up" data-gsap-now data-gsap-delay="0.05">
           <span class="hero__badge-dot" aria-hidden="true"></span>
           <span data-i18n="hero_badge">¡BIENVENIDOS!</span>
         </div>
 
         <!-- Headline -->
-        <h1 class="hero__title reveal" data-i18n-html="hero_title">
+        <h1 class="hero__title" data-gsap="up" data-gsap-now data-gsap-delay="0.18" data-i18n-html="hero_title">
           <span class="hero__title-accent">Web que vende</span>,<br />rendimiento real.
         </h1>
 
         <!-- Subtitle -->
-        <p class="hero__sub reveal" data-i18n-html="hero_sub">
+        <p class="hero__sub" data-gsap="up" data-gsap-now data-gsap-delay="0.34" data-i18n-html="hero_sub">
           Estrategia, performance y SEO real para que tu sitio se vea increíble <em>y</em> convierta.
         </p>
 
         <!-- CTAs -->
-        <div class="hero__ctas reveal">
+        <div class="hero__ctas" data-gsap="up" data-gsap-now data-gsap-delay="0.5">
           <button class="btn btn-ghost" id="aboutBtn" data-i18n="hero_about">Acerca de BryanF</button>
           <a href="#projects" class="btn btn-solid smooth-scroll" data-i18n="hero_projects">Ver proyectos</a>
           <a href="crear-web.html" class="btn btn-outline">Crear mi web</a>
@@ -287,6 +306,22 @@
             <span>+100</span>
             <small data-i18n="exp_badge">Proyectos</small>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── MUNDIAL 2026 BANNER (con Lottie) ── -->
+    <section class="wc-banner reveal" aria-label="Edición especial Mundial 2026">
+      <div class="container wc-banner__inner">
+        <div class="wc-banner__lottie" aria-hidden="true">
+          <span class="wc-banner__halo"></span>
+          <dotlottie-wc src="https://lottie.host/537cf529-096a-4885-b211-6bbf01494a1b/UuPGB0xk0P.lottie" autoplay loop speed="1"></dotlottie-wc>
+        </div>
+        <div class="wc-banner__text">
+          <span class="wc-banner__pill" data-gsap="up" data-gsap-delay="0"><span class="wc-banner__ball" aria-hidden="true">⚽</span> <span data-i18n="wc_pill">Edición Mundial 2026 · México</span></span>
+          <h3 data-gsap="up" data-gsap-delay="0.1" data-i18n="wc_title">El mundo mira a México. Tu marca también debería.</h3>
+          <p data-gsap="up" data-gsap-delay="0.2" data-i18n="wc_sub">Aprovecha el mayor escaparate del año: una web rápida y animada que convierte el tráfico del Mundial en clientes reales.</p>
+          <a href="crear-web.html" class="btn btn-solid btn-sm" data-gsap="up" data-gsap-delay="0.3" data-i18n="wc_cta">Quiero mi web ahora</a>
         </div>
       </div>
     </section>
@@ -384,8 +419,8 @@
           </div>
         </div>
         <div class="tools-rail__motion-cta">
-          <p data-i18n="stack_motion_cta">Explora como usamos Motion, React, JavaScript y CSS Studio para crear experiencias fluidas sin sacrificar performance.</p>
-          <a href="/motion" class="btn btn-ghost btn-sm" data-i18n="stack_motion_link">Ver experiencia Motion</a>
+          <p data-i18n="stack_motion_cta">Combinamos GSAP, JavaScript y CSS para crear experiencias fluidas y animadas sin sacrificar el rendimiento.</p>
+          <a href="#projects" class="btn btn-ghost btn-sm smooth-scroll" data-i18n="stack_motion_link">Ver proyectos en acción</a>
         </div>
       </div>
     </section>
@@ -780,57 +815,43 @@
       </div>
     </section>
 
-    <!-- ── CLIENTS GRID ── -->
+    <!-- ── CLIENTS / BRANDS MARQUEE ── -->
     <section class="clients" id="clients" aria-label="Marcas que han confiado">
       <div class="container">
         <p class="section-label reveal" data-i18n="clients_title">Marcas que han confiado</p>
-        <div class="clients__grid">
 
-          <a href="https://partumdesign.com.mx" target="_blank" rel="noopener noreferrer" class="client-card reveal"
-            title="Partum Design">
-            <img src="img/clients/partum-design.png" alt="Partum Design" loading="lazy"
-              class="client-raw client-color" />
-            <span class="client-card__glow" aria-hidden="true"></span>
-          </a>
+        <div class="brands" id="brandsMarquee">
+          <div class="brands__fade brands__fade--left" aria-hidden="true"></div>
+          <div class="brands__fade brands__fade--right" aria-hidden="true"></div>
 
-          <a href="https://indusecc.com.mx" target="_blank" rel="noopener noreferrer" class="client-card reveal"
-            title="Indusecc">
-            <img src="img/clients/logo-indusecc.png" alt="Indusecc" loading="lazy" class="client-raw client-color" />
-            <span class="client-card__glow" aria-hidden="true"></span>
-          </a>
-
-          <div class="client-card client-card--miller reveal" title="MillerKnoll">
-              <img src="img/clients/MillerKnoll_Logo_2021.svg" alt="MillerKnoll" loading="lazy" class="client-raw client-white" />
-              <span class="client-card__glow" aria-hidden="true"></span>
-          </div>
-
-          <div class="clients__partners-wrap reveal" aria-label="Marcas relacionadas con MillerKnoll">
-            <p class="clients__partners-title">Colaboraciones relacionadas con MillerKnoll</p>
-            <div class="clients__partners">
-              <div class="client-card client-partner-card" title="UFC">
-                <img src="img/clients/brand-ufc-svgrepo-com.svg" alt="UFC" loading="lazy" class="client-raw svg-icon-lg" />
-              </div>
-              <div class="client-card client-partner-card" title="Cartoon Network">
-                <img src="img/clients/Cartoon_Network_2010_logo.svg" alt="Cartoon Network" loading="lazy" class="client-raw" />
-              </div>
-              <div class="client-card client-partner-card" title="Citibanamex">
-                <img src="img/clients/Citibanamex_logo.svg" alt="Citibanamex" loading="lazy" class="client-raw" />
-              </div>
-              <div class="client-card client-partner-card" title="Herman Miller">
-                <img src="img/clients/herman-miller.svg" alt="Herman Miller" loading="lazy" class="client-raw client-invert" />
-              </div>
-              <div class="client-card client-partner-card" title="Hyundai">
-                <img src="img/clients/hyundai-svgrepo-com.svg" alt="Hyundai" loading="lazy" class="client-raw" />
-              </div>
-              <div class="client-card client-partner-card" title="Mercado Libre">
-                <img src="img/clients/mercado-libre-svgrepo-com.svg" alt="Mercado Libre" loading="lazy" class="client-raw" />
-              </div>
-              <div class="client-card client-partner-card" title="Warner Bros.">
-                <img src="img/clients/Warner_Bros_logo.svg" alt="Warner Bros." loading="lazy" class="client-raw" />
-              </div>
+          <div class="brands__track" id="brandsTrack">
+            <!-- Base set -->
+            <div class="brands__set" id="brandsBase">
+              <a class="brand-logo" href="https://partumdesign.com.mx" target="_blank" rel="noopener noreferrer" title="Partum Design"><img src="img/clients/partum-design.png" alt="Partum Design" loading="lazy" /></a>
+              <a class="brand-logo" href="https://indusecc.com.mx" target="_blank" rel="noopener noreferrer" title="Indusecc"><img src="img/clients/logo-indusecc.png" alt="Indusecc" loading="lazy" /></a>
+              <span class="brand-logo" title="MillerKnoll"><img src="img/clients/MillerKnoll_Logo_2021.svg" alt="MillerKnoll" loading="lazy" /></span>
+              <span class="brand-logo" title="Herman Miller"><img src="img/clients/herman-miller.svg" alt="Herman Miller" loading="lazy" /></span>
+              <span class="brand-logo" title="Citibanamex"><img src="img/clients/Citibanamex_logo.svg" alt="Citibanamex" loading="lazy" /></span>
+              <span class="brand-logo" title="Mercado Libre"><img src="img/clients/mercado-libre-svgrepo-com.svg" alt="Mercado Libre" loading="lazy" /></span>
+              <span class="brand-logo" title="Hyundai"><img src="img/clients/hyundai-svgrepo-com.svg" alt="Hyundai" loading="lazy" /></span>
+              <span class="brand-logo" title="Warner Bros."><img src="img/clients/Warner_Bros_logo.svg" alt="Warner Bros." loading="lazy" /></span>
+              <span class="brand-logo" title="Cartoon Network"><img src="img/clients/Cartoon_Network_2010_logo.svg" alt="Cartoon Network" loading="lazy" /></span>
+              <span class="brand-logo" title="UFC"><img src="img/clients/brand-ufc-svgrepo-com.svg" alt="UFC" loading="lazy" /></span>
+            </div>
+            <!-- Clone for seamless loop -->
+            <div class="brands__set" aria-hidden="true">
+              <span class="brand-logo"><img src="img/clients/partum-design.png" alt="" loading="lazy" /></span>
+              <span class="brand-logo"><img src="img/clients/logo-indusecc.png" alt="" loading="lazy" /></span>
+              <span class="brand-logo"><img src="img/clients/MillerKnoll_Logo_2021.svg" alt="" loading="lazy" /></span>
+              <span class="brand-logo"><img src="img/clients/herman-miller.svg" alt="" loading="lazy" /></span>
+              <span class="brand-logo"><img src="img/clients/Citibanamex_logo.svg" alt="" loading="lazy" /></span>
+              <span class="brand-logo"><img src="img/clients/mercado-libre-svgrepo-com.svg" alt="" loading="lazy" /></span>
+              <span class="brand-logo"><img src="img/clients/hyundai-svgrepo-com.svg" alt="" loading="lazy" /></span>
+              <span class="brand-logo"><img src="img/clients/Warner_Bros_logo.svg" alt="" loading="lazy" /></span>
+              <span class="brand-logo"><img src="img/clients/Cartoon_Network_2010_logo.svg" alt="" loading="lazy" /></span>
+              <span class="brand-logo"><img src="img/clients/brand-ufc-svgrepo-com.svg" alt="" loading="lazy" /></span>
             </div>
           </div>
-
         </div>
       </div>
     </section>
@@ -1139,7 +1160,7 @@
         <ul class="footer__nav">
           <li><a href="#" class="footer__nav-link" data-i18n="nav_home">Inicio</a></li>
           <li><a href="#projects" class="footer__nav-link smooth-scroll" data-i18n="nav_projects">Proyectos</a></li>
-          <li><a href="/motion" class="footer__nav-link" data-i18n="nav_motion">Motion</a></li>
+          <li><a href="#servicios" class="footer__nav-link smooth-scroll" data-i18n="nav_services">Servicios</a></li>
           <li>
             <button class="btn btn-ghost btn-sm footer__nav-cta" id="footerTalkBtn">
               <span data-i18n="nav_talk">Let's talk</span> <span class="btn-dot" aria-hidden="true"></span>
@@ -1536,14 +1557,11 @@
        ============================================= -->
 
   <!-- Floating trigger button -->
-  <button class="lumina-fab" id="luminaFab" aria-label="Hablar con LUMINA IA">
+  <button class="lumina-fab lumina-fab--avatar" id="luminaFab" aria-label="Hablar con LUMINA IA">
     <span class="lumina-fab__glow" aria-hidden="true"></span>
-    <svg class="lumina-fab__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-      aria-hidden="true">
-      <path stroke-linecap="round" stroke-linejoin="round"
-        d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.847a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.847.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
-    </svg>
+    <img class="lumina-fab__avatar" src="img/lumina/Normal.png" alt="" aria-hidden="true" loading="lazy" />
     <div class="lumina-fab__tooltip" aria-hidden="true"><i class="fa-solid fa-robot" aria-hidden="true"></i> Lumina, lista para ayudarte</div>
+    <span class="lumina-fab__status" aria-hidden="true"></span>
     <span class="lumina-fab__ping" aria-hidden="true"></span>
   </button>
 

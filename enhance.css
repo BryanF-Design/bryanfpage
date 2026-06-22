@@ -1,0 +1,269 @@
+/* =============================================================
+   enhance.css – BryanF Design
+   Mejoras: marquee de marcas, banner Mundial 2026 (Lottie),
+   helpers para animaciones GSAP. Aditivo, no rompe style.css.
+   ============================================================= */
+
+/* ---------------------------------------------------------------
+   1. BRANDS MARQUEE  ("Marcas que han confiado")
+   --------------------------------------------------------------- */
+.brands {
+  position: relative;
+  margin-top: 1.6rem;
+  width: 100%;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.brands__track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: brandsScroll 38s linear infinite;
+}
+
+.brands:hover .brands__track { animation-play-state: paused; }
+
+.brands__set {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.brand-logo {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(130px, 16vw, 190px);
+  height: clamp(70px, 9vw, 96px);
+  padding: 0 1.4rem;
+  text-decoration: none;
+}
+
+.brand-logo img {
+  max-width: 100%;
+  max-height: clamp(30px, 4.4vw, 46px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  /* Tratamiento monocromo uniforme por defecto */
+  filter: grayscale(1) brightness(0) invert(1);
+  opacity: .55;
+  transition: opacity .35s ease, filter .35s ease, transform .35s ease;
+}
+
+.brand-logo:hover img,
+.brand-logo:focus-visible img {
+  filter: none;
+  opacity: 1;
+  transform: scale(1.06);
+}
+
+@keyframes brandsScroll {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+.brands__fade { display: none; } /* el mask ya hace el degradado */
+
+@media (max-width: 767px) {
+  .brands__track { animation-duration: 26s; }
+  .brand-logo { width: clamp(110px, 38vw, 150px); height: 64px; padding: 0 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brands__track { animation: none; }
+  .brands {
+    -webkit-mask-image: none;
+    mask-image: none;
+    overflow-x: auto;
+  }
+}
+
+/* ---------------------------------------------------------------
+   2. MUNDIAL 2026 BANNER + LOTTIE
+   --------------------------------------------------------------- */
+.wc-banner {
+  position: relative;
+  padding: 2.5rem 0;
+  overflow: hidden;
+}
+
+.wc-banner__inner {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.2rem, 4vw, 3rem);
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: clamp(1.4rem, 3vw, 2.4rem);
+  border: 1px solid rgba(180, 227, 50, .18);
+  border-radius: 22px;
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(180, 227, 50, .10), transparent 55%),
+    linear-gradient(140deg, rgba(14, 18, 16, .92), rgba(20, 26, 22, .9));
+  box-shadow: 0 30px 70px -40px rgba(180, 227, 50, .35);
+}
+
+.wc-banner__lottie {
+  position: relative;
+  flex: 0 0 auto;
+  width: clamp(150px, 26vw, 230px);
+  height: clamp(150px, 26vw, 230px);
+  display: grid;
+  place-items: center;
+}
+
+.wc-banner__lottie dotlottie-wc {
+  width: 100% !important;
+  height: 100% !important;
+  position: relative;
+  z-index: 1;
+  /* Recolorea la animación hacia el verde lima de la marca */
+  filter: hue-rotate(55deg) saturate(1.45) brightness(1.08) contrast(1.05)
+          drop-shadow(0 0 18px rgba(180, 227, 50, .35));
+}
+
+.wc-banner__halo {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(180, 227, 50, .22), transparent 65%);
+  filter: blur(14px);
+  z-index: 0;
+  animation: wcHalo 4.5s ease-in-out infinite;
+}
+
+@keyframes wcHalo {
+  0%, 100% { transform: scale(.9); opacity: .6; }
+  50%      { transform: scale(1.08); opacity: 1; }
+}
+
+.wc-banner__text {
+  flex: 1 1 340px;
+  min-width: 280px;
+}
+
+.wc-banner__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .4rem .85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(180, 227, 50, .35);
+  background: rgba(180, 227, 50, .08);
+  color: var(--brand);
+  font-size: .76rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: .9rem;
+}
+
+.wc-banner__ball {
+  display: inline-block;
+  font-size: 1rem;
+  animation: wcBall 2.4s ease-in-out infinite;
+}
+
+@keyframes wcBall {
+  0%, 100% { transform: rotate(-12deg) translateY(0); }
+  50%      { transform: rotate(12deg) translateY(-3px); }
+}
+
+.wc-banner__text h3 {
+  font-size: clamp(1.3rem, 2.6vw, 2rem);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.15;
+  margin: 0 0 .7rem;
+  letter-spacing: -0.02em;
+}
+
+.wc-banner__text p {
+  color: var(--text-muted);
+  font-size: clamp(.92rem, 1.6vw, 1.05rem);
+  line-height: 1.6;
+  margin: 0 0 1.3rem;
+  max-width: 52ch;
+}
+
+@media (max-width: 640px) {
+  .wc-banner__inner { text-align: center; }
+  .wc-banner__text p { margin-inline: auto; }
+}
+
+/* ---------------------------------------------------------------
+   3. GSAP HELPERS
+   Estado inicial oculto SOLO cuando GSAP está disponible, para
+   evitar contenido invisible si la librería no carga.
+   --------------------------------------------------------------- */
+html.gsap-ready [data-gsap] { opacity: 0; will-change: transform, opacity; }
+html.gsap-ready [data-gsap="up"]    { transform: translateY(38px); }
+html.gsap-ready [data-gsap="left"]  { transform: translateX(-44px); }
+html.gsap-ready [data-gsap="right"] { transform: translateX(44px); }
+html.gsap-ready [data-gsap="scale"] { transform: scale(.92); }
+
+@media (prefers-reduced-motion: reduce) {
+  html.gsap-ready [data-gsap] { opacity: 1 !important; transform: none !important; }
+}
+
+/* ---------------------------------------------------------------
+   4. LUMINA FAB con personaje (más viva)
+   --------------------------------------------------------------- */
+.lumina-fab--avatar {
+  width: 70px;
+  height: 70px;
+  padding: 0;
+  overflow: visible;
+  background: radial-gradient(circle at 50% 30%, #1c241a, #0f130e);
+  border: 2px solid rgba(180, 227, 50, .55) !important;
+  animation: luminaIdle 4.5s ease-in-out infinite;
+}
+
+.lumina-fab--avatar:hover {
+  animation-play-state: paused;
+}
+
+.lumina-fab--avatar .lumina-fab__ping { display: none; }
+
+.lumina-fab__avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 18%;
+  border-radius: 50%;
+  transform: scale(1.45) translateY(8%);
+  pointer-events: none;
+}
+
+.lumina-fab__status {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #25d366;
+  border: 2.5px solid #0f130e;
+  box-shadow: 0 0 0 0 rgba(37, 211, 102, .6);
+  animation: luminaOnline 2.2s ease-out infinite;
+  z-index: 3;
+}
+
+@keyframes luminaIdle {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-5px) rotate(-1.5deg); }
+}
+
+@keyframes luminaOnline {
+  0%   { box-shadow: 0 0 0 0 rgba(37, 211, 102, .55); }
+  70%  { box-shadow: 0 0 0 7px rgba(37, 211, 102, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lumina-fab--avatar { animation: none; }
+  .lumina-fab__status { animation: none; }
+}
