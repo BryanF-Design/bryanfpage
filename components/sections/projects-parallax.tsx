@@ -2,14 +2,16 @@ import { ZoomParallax, type ParallaxImage } from "@/components/ui/zoom-parallax"
 import { SectionHeading } from "@/components/sections/section-heading";
 
 /**
- * Real portfolio screenshots (served from /public/img/portfolio).
+ * Curated portfolio screenshots (served from /public/img/portafolio/escritorio).
  * Center image (index 0) stays put while the rest fan out on scroll.
  */
 const proyectos: ParallaxImage[] = [
-  { src: "/img/portfolio/goldenrepublicsite.jpg", alt: "Golden Republic — sitio web" },
-  { src: "/img/portfolio/brasaprivesite.jpg", alt: "Brasa Privé — sitio web" },
-  { src: "/img/portfolio/ecemsite.jpg", alt: "ECEM — sitio web" },
-  { src: "/img/portfolio/trittonsite.jpg", alt: "Tritton — sitio web" },
+  { src: "/img/portafolio/escritorio/goldenrepublic-com-mx.png", alt: "Golden Republic" },
+  { src: "/img/portafolio/escritorio/element-experiences-com.png", alt: "Element Experiences" },
+  { src: "/img/portafolio/escritorio/koi-arquitectura-vercel-app.png", alt: "Koi Arquitectura" },
+  { src: "/img/portafolio/escritorio/epiko-vercel-app.png", alt: "Epiko" },
+  { src: "/img/portafolio/escritorio/grupocosma-com.png", alt: "Grupo Cosma" },
+  { src: "/img/portafolio/escritorio/nkmohcafe-com.png", alt: "NKMOH Café" },
 ];
 
 export function ProjectsParallax() {

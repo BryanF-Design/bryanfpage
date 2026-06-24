@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import { Hero } from "@/components/ui/hero";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,8 @@ import { SiteHeader } from "@/components/sections/site-header";
 import { ProcessOrbital } from "@/components/sections/process-orbital";
 import { StackOrbit } from "@/components/sections/stack-orbit";
 import { ProjectsParallax } from "@/components/sections/projects-parallax";
+import { ProjectsShowcase } from "@/components/sections/projects-showcase";
+import { WorldPresence } from "@/components/sections/world-presence";
 import { Faq } from "@/components/sections/faq";
 
 const WHATSAPP = "https://wa.me/525663012505";
@@ -69,6 +72,10 @@ export default function HomePage() {
 
       <ProjectsParallax />
 
+      <ProjectsShowcase />
+
+      <WorldPresence />
+
       <Faq />
 
       {/* Closing CTA */}
@@ -96,10 +103,13 @@ export default function HomePage() {
 
       <footer className="border-t border-border py-10">
         <div className="container flex flex-col items-center justify-between gap-4 text-sm text-muted-foreground sm:flex-row">
-          <span className="flex items-center gap-2 font-display text-base font-semibold text-foreground">
-            <span className="h-2 w-2 rounded-full bg-primary" />
-            BryanF Design
-          </span>
+          <Image
+            src="/img/logotipo-blanco-320.png"
+            alt="BryanF Design"
+            width={132}
+            height={33}
+            className="h-8 w-auto"
+          />
           <span>© {new Date().getFullYear()} BryanF Design · Hecho en México</span>
         </div>
       </footer>

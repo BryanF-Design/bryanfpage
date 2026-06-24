@@ -1,0 +1,35 @@
+import { WorldMap } from "@/components/ui/map";
+import { SectionHeading } from "@/components/sections/section-heading";
+
+const MEXICO = { lat: 19.4326, lng: -99.1332, label: "México" };
+const ESPANA = { lat: 40.4168, lng: -3.7038, label: "España" };
+const FRANCIA = { lat: 48.8566, lng: 2.3522, label: "Francia" };
+
+export function WorldPresence() {
+  return (
+    <section
+      id="presencia"
+      aria-label="Países en los que hemos trabajado"
+      className="border-t border-border py-20 md:py-28"
+    >
+      <div className="container">
+        <SectionHeading
+          eyebrow="Presencia"
+          title="Dónde hemos trabajado"
+          subtitle="Proyectos para clientes en México, España y Francia. Diseñamos sin fronteras."
+        />
+
+        <div className="mx-auto mt-14 max-w-5xl">
+          <WorldMap
+            lineColor="#B4E332"
+            dots={[
+              { start: MEXICO, end: ESPANA },
+              { start: MEXICO, end: FRANCIA },
+              { start: ESPANA, end: FRANCIA },
+            ]}
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
