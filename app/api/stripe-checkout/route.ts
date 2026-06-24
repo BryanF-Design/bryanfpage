@@ -1,0 +1,75 @@
+import { NextRequest, NextResponse } from "next/server";
+import Stripe from "stripe";
+
+export const runtime = "nodejs";
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 200 });
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    if (!process.env.STRIPE_SECRET) {
+      return NextResponse.json({ error: "STRIPE_SECRET missing" }, { status: 500 });
+    }
+
+    const body = await req.json().catch(() => ({}) as Record<string, unknown>);
+    const monto = Number((body as Record<string, unknown>).monto || 0);
+    const modalidad =
+      (body as Record<string, unknown>).modalidad === "anticipo"
+        ? "anticipo"
+        : "liquidacion";
+    const descripcion = String(
+      (body as Record<string, unknown>).descripcion || "Servicio web - BryanF Design"
+    );
+    const rawMeta = (body as Record<string, unknown>).metadata;
+    const metadata =
+      rawMeta && typeof rawMeta === "object"
+        ? (rawMeta as Record<string, string>)
+        : {};
+    const siteUrl = String(process.env.SITE_URL || "https://example.com").replace(
+      /\/$/,
+      ""
+    );
+
+    if (!Number.isFinite(monto) || monto <= 0) {
+      return NextResponse.json({ error: "Monto invalido" }, { status: 400 });
+    }
+
+    const payable = Math.max(
+      1,
+      Math.round(monto * (modalidad === "anticipo" ? 0.5 : 1))
+    );
+    const stripe = new Stripe(process.env.STRIPE_SECRET);
+
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: "mxn",
+            unit_amount: payable * 100,
+            product_data: { name: descripcion },
+          },
+        },
+      ],
+      metadata: {
+        modalidad,
+        montoOriginal: String(monto),
+        ...metadata,
+      },
+      success_url: `${siteUrl}/?status=success#fast-track-section`,
+      cancel_url: `${siteUrl}/?status=cancel#fast-track-section`,
+    });
+
+    return NextResponse.json({ checkoutUrl: session.url, amount: payable });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "unknown error";
+    return NextResponse.json(
+      { error: `Stripe checkout error: ${message}` },
+      { status: 500 }
+    );
+  }
+}
