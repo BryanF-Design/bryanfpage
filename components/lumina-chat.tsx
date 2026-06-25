@@ -1,0 +1,236 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { Sparkles, X, Send } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+
+const SYSTEM_PROMPT = `Eres LUMINA, asistente comercial de BryanF Design.
+Tu meta es orientar, resolver dudas y guiar al usuario a armar su web o contactar al equipo.
+
+Lo que hace BryanF Design: branding, diseño UX/UI, desarrollo web, WordPress, SEO técnico, performance, mantenimiento, e-commerce, landing pages y automatización.
+Cómo funciona: paquete base desde $3,500 MXN + módulos (e-commerce, pagos, secciones extra) + modalidad de pago.
+Tiempos de entrega: desde 3 días hábiles cuando la información está completa.
+Pagos: Stripe (tarjeta), Mercado Pago o transferencia bancaria BBVA.
+Para armar y pagar: invita a abrir el configurador en /crear-web.
+
+Reglas:
+- Si preguntan precios, responde que depende del alcance, desde $3,500 MXN, e invita a /crear-web o a WhatsApp: <a href="https://wa.me/525663012505" target="_blank">WhatsApp</a>.
+- Responde en tono premium, claro y breve (máx 3-4 líneas). Buena ortografía, acentos y ñ.
+- Usa HTML básico: <strong>, <br>, <ul>, <li>, <a>.`;
+
+interface Msg {
+  role: "user" | "assistant";
+  content: string;
+}
+
+// Allowlist-based sanitizer for assistant HTML (defense-in-depth vs XSS).
+// Runs client-side only (uses DOM); assistant messages are only added after a
+// client fetch, so this is always called in the browser.
+const ALLOWED = new Set([
+  "STRONG",
+  "B",
+  "EM",
+  "I",
+  "BR",
+  "UL",
+  "OL",
+  "LI",
+  "P",
+  "A",
+  "SPAN",
+]);
+function sanitizeHtml(html: string): string {
+  if (typeof document === "undefined") return "";
+  const tpl = document.createElement("template");
+  tpl.innerHTML = html;
+  tpl.content.querySelectorAll("*").forEach((el) => {
+    if (!ALLOWED.has(el.tagName)) {
+      el.replaceWith(...Array.from(el.childNodes));
+      return;
+    }
+    Array.from(el.attributes).forEach((attr) => {
+      const name = attr.name.toLowerCase();
+      const isSafeHref =
+        el.tagName === "A" &&
+        name === "href" &&
+        !/^\s*javascript:/i.test(attr.value);
+      if (!isSafeHref) el.removeAttribute(attr.name);
+    });
+    if (el.tagName === "A") {
+      el.setAttribute("target", "_blank");
+      el.setAttribute("rel", "noopener noreferrer");
+    }
+  });
+  return tpl.innerHTML;
+}
+
+const QUICK = [
+  "¿Cuánto cuesta una web?",
+  "¿En cuánto tiempo la entregan?",
+  "Quiero armar mi web",
+];
+
+const GREETING =
+  "¡Hola! Soy <strong>Lumina</strong>, tu asesora en BryanF Design.<br>¿Te ayudo con precios, tiempos o a armar tu web?";
+
+export function LuminaChat() {
+  const [open, setOpen] = useState(false);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [messages, setMessages] = useState<Msg[]>([
+    { role: "assistant", content: GREETING },
+  ]);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
+  }, [messages, open, loading]);
+
+  async function send(text: string) {
+    const content = text.trim();
+    if (!content || loading) return;
+    const userMsg: Msg = { role: "user", content };
+    const next = [...messages, userMsg];
+    setMessages(next);
+    setInput("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/openai-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            ...next.map((m) => ({ role: m.role, content: m.content })),
+          ],
+          temperature: 0.4,
+        }),
+      });
+      const data = await res.json();
+      const reply =
+        data?.choices?.[0]?.message?.content ||
+        (data?.error
+          ? "Ahorita no puedo responder, pero escríbenos por <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a> y te atendemos al instante."
+          : "Perdona, no te entendí. ¿Lo intentamos de nuevo?");
+      setMessages((m) => [
+        ...m,
+        { role: "assistant", content: sanitizeHtml(reply) },
+      ]);
+    } catch {
+      setMessages((m) => [
+        ...m,
+        {
+          role: "assistant",
+          content:
+            "Tuvimos un problema de conexión. Escríbenos por <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a>.",
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <>
+      {/* Panel */}
+      <div
+        className={cn(
+          "fixed bottom-24 right-4 z-[120] flex w-[min(92vw,22rem)] origin-bottom-right flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl transition-all duration-300 sm:right-6",
+          open
+            ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
+            : "pointer-events-none translate-y-3 scale-95 opacity-0"
+        )}
+        role="dialog"
+        aria-label="Chat con Lumina"
+      >
+        <div className="flex items-center justify-between border-b border-border bg-secondary/40 px-4 py-3">
+          <div className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-primary">
+              <Sparkles className="h-4 w-4" />
+            </span>
+            <div className="leading-tight">
+              <p className="text-sm font-semibold text-foreground">Lumina</p>
+              <p className="text-[11px] text-muted-foreground">
+                Asesora IA · en línea
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setOpen(false)}
+            aria-label="Cerrar"
+            className="text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div ref={scrollRef} className="flex max-h-[50vh] min-h-[16rem] flex-col gap-3 overflow-y-auto p-4">
+          {messages.map((m, i) => (
+            <div
+              key={i}
+              className={cn(
+                "max-w-[85%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed [&_a]:text-primary [&_a]:underline",
+                m.role === "user"
+                  ? "self-end bg-primary text-primary-foreground"
+                  : "self-start bg-secondary text-foreground"
+              )}
+              dangerouslySetInnerHTML={{ __html: m.content }}
+            />
+          ))}
+          {loading && (
+            <div className="self-start rounded-2xl bg-secondary px-3.5 py-2 text-sm text-muted-foreground">
+              Escribiendo…
+            </div>
+          )}
+          {messages.length <= 1 && (
+            <div className="mt-1 flex flex-wrap gap-2">
+              {QUICK.map((q) => (
+                <button
+                  key={q}
+                  onClick={() => send(q)}
+                  className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            send(input);
+          }}
+          className="flex items-center gap-2 border-t border-border p-3"
+        >
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Escribe tu mensaje…"
+            className="flex-1 rounded-full border border-input bg-background px-4 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          />
+          <button
+            type="submit"
+            disabled={loading || !input.trim()}
+            aria-label="Enviar"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity disabled:opacity-50"
+          >
+            <Send className="h-4 w-4" />
+          </button>
+        </form>
+      </div>
+
+      {/* FAB */}
+      <button
+        onClick={() => setOpen((o) => !o)}
+        aria-label="Abrir chat con Lumina"
+        className="fixed bottom-5 right-4 z-[120] flex items-center gap-2 rounded-full bg-primary px-4 py-3 font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-105 sm:right-6"
+      >
+        <Sparkles className="h-5 w-5" />
+        <span className="hidden sm:inline">Lumina</span>
+      </button>
+    </>
+  );
+}

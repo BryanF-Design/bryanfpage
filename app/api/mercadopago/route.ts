@@ -24,13 +24,14 @@ export async function POST(req: NextRequest) {
         : "liquidacion";
     const descripcion = String(
       (body as Record<string, unknown>).descripcion || "Servicio web - BryanF Design"
-    );
+    ).slice(0, 200);
     const siteUrl = String(process.env.SITE_URL || "https://example.com").replace(
       /\/$/,
       ""
     );
 
-    if (!Number.isFinite(monto) || monto <= 0) {
+    // Client-controlled amount: require a sane range to avoid bogus charges.
+    if (!Number.isFinite(monto) || monto <= 0 || monto > 2_000_000) {
       return NextResponse.json({ error: "Monto invalido" }, { status: 400 });
     }
 

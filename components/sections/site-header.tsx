@@ -1,14 +1,12 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
 const WHATSAPP = "https://wa.me/525663012505";
 
 const links = [
   { label: "Proceso", href: "#proceso" },
-  { label: "Stack", href: "#stack" },
   { label: "Proyectos", href: "#projects" },
-  { label: "Presencia", href: "#presencia" },
+  { label: "Precios", href: "#precios" },
   { label: "FAQ", href: "#faq" },
 ];
 
@@ -17,13 +15,14 @@ export function SiteHeader() {
     <header className="fixed inset-x-0 top-0 z-[100] flex justify-center px-4 pt-4">
       <div className="flex w-full max-w-6xl items-center justify-between rounded-full border border-border bg-background/70 px-5 py-2.5 backdrop-blur-xl">
         <Link href="#home" className="flex items-center" aria-label="BryanF Design — inicio">
-          <Image
-            src="/img/logotipo-blanco-320.png"
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/img/logotipo-blanco.png"
             alt="BryanF Design"
-            width={120}
-            height={30}
-            priority
-            className="h-7 w-auto"
+            width={2904}
+            height={1016}
+            style={{ height: 30, width: "auto" }}
+            className="object-contain"
           />
         </Link>
 
@@ -40,9 +39,7 @@ export function SiteHeader() {
         </nav>
 
         <Button asChild size="sm" className="rounded-full">
-          <Link href={WHATSAPP} target="_blank" rel="noopener noreferrer">
-            Cotizar
-          </Link>
+          <Link href="#precios">Arma tu web</Link>
         </Button>
       </div>
     </header>

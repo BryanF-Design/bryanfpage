@@ -33,12 +33,38 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "messages required" }, { status: 400 });
     }
 
+    // --- Abuse guards (this is a key-bearing proxy) ---
+    // Same-origin only when called from a browser: block other sites from
+    // burning the OpenAI key. Server-to-server (no Origin) still allowed.
+    const origin = req.headers.get("origin");
+    const host = req.headers.get("host");
+    if (origin) {
+      try {
+        if (new URL(origin).host !== host) {
+          return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
+      } catch {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+    }
+    if (messages.length > 30) {
+      return NextResponse.json({ error: "Too many messages" }, { status: 400 });
+    }
+    const totalChars = (messages as Array<{ content?: unknown }>).reduce(
+      (n, m) => n + String(m?.content ?? "").length,
+      0
+    );
+    if (totalChars > 16000) {
+      return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+    }
+
     const payload: Record<string, unknown> = {
       model: "gpt-4o-mini",
       messages,
-      temperature,
+      temperature: Math.min(Math.max(temperature, 0), 1),
+      // Always bound output to cap cost/abuse.
+      max_tokens: max_tokens ? Math.min(max_tokens, 800) : 600,
     };
-    if (max_tokens) payload.max_tokens = max_tokens;
     if (response_format) payload.response_format = response_format;
 
     const openaiRes = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -62,21 +88,19 @@ export async function POST(req: NextRequest) {
         };
 
     if (!openaiRes.ok || data.error) {
-      const msg =
-        data && data.error
-          ? data.error.message || JSON.stringify(data.error)
-          : "OpenAI request failed";
+      // Log details server-side; return a generic message to the client.
+      console.error("OpenAI error:", data?.error || openaiRes.status);
       return NextResponse.json(
-        { error: `OpenAI error: ${msg}` },
-        { status: 500 }
+        { error: "El asistente no está disponible por el momento." },
+        { status: 502 }
       );
     }
 
     return NextResponse.json(data);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "unknown error";
+    console.error("OpenAI proxy error:", error);
     return NextResponse.json(
-      { error: `OpenAI proxy error: ${message}` },
+      { error: "El asistente no está disponible por el momento." },
       { status: 500 }
     );
   }

@@ -1,0 +1,282 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="img/FAVICON.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crear tu web personalizada | BryanF Design</title>
+  <meta name="description" content="Configura tu web personalizada paso a paso con BryanF Design y Lumina." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="style.css?v=1.2" />
+  <link rel="stylesheet" href="crear-web.css?v=1.0" />
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" /></noscript>
+</head>
+<body class="cw-page">
+  <header class="cw-nav" aria-label="Navegacion de configurador">
+    <a href="/" class="cw-nav__logo" aria-label="BryanF Design - Inicio">
+      <picture>
+        <source media="(max-width: 767px)" srcset="img/logotipo-blanco-320.png" />
+        <img src="img/logotipo-blanco.png" alt="BRYANF DESIGN" width="200" height="70" />
+      </picture>
+    </a>
+    <div class="cw-nav__actions">
+      <div class="cw-lang" role="group" aria-label="Idioma">
+        <button type="button" class="cw-lang__btn is-active" data-cw-lang="es">ES</button>
+        <button type="button" class="cw-lang__btn" data-cw-lang="en">EN</button>
+      </div>
+      <a class="cw-nav__back" href="/" data-i18n="navBack">Volver</a>
+    </div>
+  </header>
+
+  <main class="cw-app" id="cwApp">
+    <section class="cw-builder" aria-labelledby="cwTitle">
+      <div class="cw-builder__intro">
+        <span class="cw-kicker" data-i18n="kicker">Experiencia guiada</span>
+        <h1 id="cwTitle" data-i18n="title">Crea tu web personalizada sin hacerlo tedioso.</h1>
+        <p data-i18n="subtitle">Responde paso por paso, Lumina te orienta y al final recibes una configuracion clara con pago seguro.</p>
+      </div>
+
+      <div class="cw-shell">
+        <section class="cw-panel" aria-label="Configurador paso a paso">
+          <div class="cw-progress" aria-label="Progreso">
+            <span class="cw-progress__text" id="cwProgressText">Paso 1 de 6</span>
+            <span class="cw-progress__track"><span class="cw-progress__bar" id="cwProgressBar"></span></span>
+          </div>
+
+          <form class="cw-form" id="cwWizardForm" novalidate>
+            <article class="cw-step is-active" data-step="0">
+              <span class="cw-step__eyebrow" data-i18n="step1Eyebrow">Primero lo importante</span>
+              <h2 data-i18n="step1Title">Que tipo de proyecto necesitas?</h2>
+              <p class="cw-step__copy" data-i18n="step1Copy">Elige la base. Puedes ajustar extras y pago al final.</p>
+              <div class="cw-lumina__prompt">
+                <label for="cwLuminaPrompt" data-i18n="luminaPromptLabel">Dile a Lumina que necesitas</label>
+                <textarea id="cwLuminaPrompt" rows="3" data-i18n-ph="luminaPromptPh" placeholder="Ej. Quiero una tienda con pagos, catalogo y seccion de contacto"></textarea>
+                <div class="cw-lumina__tools">
+                  <button type="button" class="cw-mini-btn" id="cwLuminaMic">
+                    <i class="fa-solid fa-microphone" aria-hidden="true"></i>
+                    <span data-i18n="luminaMic">Dictar</span>
+                  </button>
+                  <button type="button" class="cw-mini-btn cw-mini-btn--primary" id="cwLuminaApply">
+                    <i class="fa-solid fa-sparkles" aria-hidden="true"></i>
+                    <span data-i18n="luminaApply">Configurar</span>
+                  </button>
+                </div>
+              </div>
+              <div class="cw-choice-grid" role="radiogroup" aria-label="Paquete base">
+                <button type="button" class="cw-choice is-selected" data-choice-group="plan" data-value="full" aria-pressed="true">
+                  <span data-i18n="planFullBadge">Web nueva</span>
+                  <strong data-i18n="planFullTitle">Desarrollo Base Optimizado</strong>
+                  <small data-i18n="planFullCopy">Dominio, hosting, correos, diseno personalizado y 3 secciones.</small>
+                  <b>$3,500 MXN</b>
+                </button>
+                <button type="button" class="cw-choice" data-choice-group="plan" data-value="update" aria-pressed="false">
+                  <span data-i18n="planUpdateBadge">Actualizar</span>
+                  <strong data-i18n="planUpdateTitle">Mejorar mi sitio actual</strong>
+                  <small data-i18n="planUpdateCopy">Ajustes visuales, contenido y rendimiento sin rehacer todo.</small>
+                  <b>$1,800 MXN</b>
+                </button>
+                <button type="button" class="cw-choice" data-choice-group="plan" data-value="maintenance" aria-pressed="false">
+                  <span data-i18n="planMaintBadge">Soporte</span>
+                  <strong data-i18n="planMaintTitle">Mantenimiento mensual</strong>
+                  <small data-i18n="planMaintCopy">Respaldos, correcciones, monitoreo y soporte tecnico.</small>
+                  <b>$1,000 MXN</b>
+                </button>
+              </div>
+            </article>
+
+            <article class="cw-step" data-step="1">
+              <span class="cw-step__eyebrow" data-i18n="step2Eyebrow">Estructura</span>
+              <h2 data-i18n="step2Title">Que secciones quieres incluir?</h2>
+              <p class="cw-step__copy" data-i18n="step2Copy">El plan base incluye 3 secciones. Las adicionales se calculan automaticamente.</p>
+              <div class="cw-section-grid" id="cwSectionsGrid" aria-label="Secciones de la web"></div>
+              <div class="cw-stepper">
+                <div>
+                  <strong data-i18n="manualSectionsTitle">Secciones especiales extra</strong>
+                  <small data-i18n="manualSectionsCopy">Para areas como reservas, cursos, directorios o layouts muy especificos.</small>
+                </div>
+                <div class="cw-stepper__controls">
+                  <button type="button" class="cw-icon-btn" id="cwSectionsMinus" aria-label="Quitar seccion">-</button>
+                  <output id="cwManualSectionsCount">0</output>
+                  <button type="button" class="cw-icon-btn" id="cwSectionsPlus" aria-label="Agregar seccion">+</button>
+                </div>
+              </div>
+            </article>
+
+            <article class="cw-step" data-step="2">
+              <span class="cw-step__eyebrow" data-i18n="step3Eyebrow">Potenciadores</span>
+              <h2 data-i18n="step3Title">Que extras harian mas fuerte tu web?</h2>
+              <p class="cw-step__copy" data-i18n="step3Copy">Lumina te deja una recomendacion breve para que no elijas a ciegas.</p>
+              <div class="cw-extra-list">
+                <label class="cw-toggle">
+                  <input type="checkbox" value="ecommerce" />
+                  <span>
+                    <strong data-i18n="extraEcommerce">E-commerce / tienda online</strong>
+                    <small data-i18n="extraEcommerceCopy">Catalogo, carrito y flujo comercial.</small>
+                  </span>
+                  <b>+$3,500</b>
+                </label>
+                <label class="cw-toggle">
+                  <input type="checkbox" value="payments" />
+                  <span>
+                    <strong data-i18n="extraPayments">Pasarelas de pago directo</strong>
+                    <small data-i18n="extraPaymentsCopy">Stripe, Mercado Pago o pagos directos segun alcance.</small>
+                  </span>
+                  <b>+$1,500</b>
+                </label>
+                <label class="cw-toggle">
+                  <input type="checkbox" value="maintenance" />
+                  <span>
+                    <strong data-i18n="extraMaintenance">Mantenimiento especializado</strong>
+                    <small data-i18n="extraMaintenanceCopy">Soporte, estabilidad y mejoras continuas.</small>
+                  </span>
+                  <b>+$1,000</b>
+                </label>
+              </div>
+              <button type="button" class="cw-lumina-action" id="cwLuminaSuggest">
+                <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
+                <span data-i18n="luminaSuggest">Que recomienda Lumina?</span>
+              </button>
+            </article>
+
+            <article class="cw-step" data-step="3">
+              <span class="cw-step__eyebrow" data-i18n="step4Eyebrow">Tu idea</span>
+              <h2 data-i18n="step4Title">Cuentame lo minimo para aterrizarlo.</h2>
+              <p class="cw-step__copy" data-i18n="step4Copy">Solo pedimos lo necesario para que la confirmacion tenga contexto.</p>
+              <div class="cw-field-grid">
+                <label class="cw-field">
+                  <span data-i18n="fieldName">Nombre completo *</span>
+                  <input type="text" name="fullName" autocomplete="name" required />
+                </label>
+                <label class="cw-field">
+                  <span data-i18n="fieldBusiness">Nombre del negocio *</span>
+                  <input type="text" name="businessName" autocomplete="organization" required />
+                </label>
+                <label class="cw-field">
+                  <span data-i18n="fieldPhone">WhatsApp *</span>
+                  <input type="tel" name="contactPhone" autocomplete="tel" required />
+                </label>
+                <label class="cw-field">
+                  <span data-i18n="fieldEmail">Correo</span>
+                  <input type="email" name="contactEmail" autocomplete="email" />
+                </label>
+                <label class="cw-field cw-field--full">
+                  <span data-i18n="fieldServices">Productos o servicios principales</span>
+                  <textarea name="services" rows="3"></textarea>
+                </label>
+                <label class="cw-field cw-field--full">
+                  <span data-i18n="fieldBrief">Describe tu proyecto en una frase</span>
+                  <textarea name="projectBrief" rows="3"></textarea>
+                </label>
+              </div>
+            </article>
+
+            <article class="cw-step" data-step="4">
+              <span class="cw-step__eyebrow" data-i18n="step5Eyebrow">Pago</span>
+              <h2 data-i18n="step5Title">Como prefieres iniciar?</h2>
+              <p class="cw-step__copy" data-i18n="step5Copy">Puedes liquidar todo o arrancar con anticipo del 50%.</p>
+              <div class="cw-payment-mode" role="radiogroup" aria-label="Modalidad de pago">
+                <label>
+                  <input type="radio" name="paymentMode" value="liquidacion" checked />
+                  <span data-i18n="payFull">Pagar servicio completo</span>
+                </label>
+                <label>
+                  <input type="radio" name="paymentMode" value="anticipo" />
+                  <span data-i18n="payHalf">Pagar 50% de anticipo</span>
+                </label>
+              </div>
+              <label class="cw-field">
+                <span data-i18n="couponLabel">Cupon opcional</span>
+                <input type="text" id="cwCouponCode" placeholder="BRYANF10" />
+              </label>
+              <p class="cw-inline-status" id="cwCouponStatus" aria-live="polite"></p>
+            </article>
+
+            <article class="cw-step" data-step="5">
+              <span class="cw-step__eyebrow" data-i18n="step6Eyebrow">Confirmacion</span>
+              <h2 data-i18n="step6Title">Tu configuracion esta lista.</h2>
+              <p class="cw-step__copy" data-i18n="step6Copy">Revisa el resumen y elige como quieres continuar.</p>
+              <div class="cw-final-summary" id="cwFinalSummary"></div>
+              <div class="cw-pay-actions">
+                <button type="button" class="cw-btn cw-btn--primary" id="cwPayMP" style="background: #009EE3; color: white; border: none; display: flex; gap: 8px; align-items: center;">
+                  <i class="fa-solid fa-handshake" style="font-size: 1.2rem;"></i>
+                  <span data-i18n="payMercado">Pagar con Mercado Pago</span>
+                </button>
+                <button type="button" class="cw-btn cw-btn--secondary" id="cwPayStripe" style="background: #635BFF; color: white; border: none; display: flex; gap: 8px; align-items: center;">
+                  <i class="fa-brands fa-stripe" style="font-size: 1.5rem; margin-top: 2px;"></i>
+                  <span data-i18n="payStripe">Pagar con Stripe</span>
+                </button>
+                <button type="button" class="cw-btn cw-btn--ghost" id="cwPayTransfer">
+                  <span data-i18n="payTransfer">Pagar por transferencia</span>
+                </button>
+              </div>
+              <div class="cw-transfer" id="cwTransferBox" hidden>
+                <strong data-i18n="transferTitle">Transferencia BBVA</strong>
+                <p>Banco: BBVA Bancomer<br />Titular: Bryan Fernando Lopez Lopez<br />Cuenta: 1534366643<br />CLABE: 012180015343666431<br />SWIFT: BCMRMXMMPYM</p>
+                <button type="button" class="cw-btn cw-btn--ghost" id="cwCopyTransfer" data-i18n="copyTransfer">Copiar datos</button>
+              </div>
+              <button type="button" class="cw-btn cw-btn--dark" id="cwSubmitBrief">
+                <span data-i18n="submitBrief">Enviar briefing y abrir WhatsApp</span>
+              </button>
+              <p class="cw-inline-status" id="cwPaymentStatus" aria-live="polite"></p>
+            </article>
+          </form>
+
+          <div class="cw-controls">
+            <button type="button" class="cw-btn cw-btn--ghost" id="cwPrev" data-i18n="prev">Anterior</button>
+            <button type="button" class="cw-btn cw-btn--primary" id="cwNext" data-i18n="next">Siguiente</button>
+          </div>
+        </section>
+
+        <aside class="cw-aside" aria-label="Resumen y muestras">
+          <div class="cw-lumina">
+            <div class="cw-lumina__head">
+              <i class="fa-solid fa-robot" aria-hidden="true"></i>
+              <strong>Lumina</strong>
+            </div>
+            <p id="cwLuminaMessage">Empezamos con una web base potente. Despues ajustamos secciones, extras y forma de pago.</p>
+          </div>
+
+          <div class="cw-live-summary">
+            <span data-i18n="liveSummary">Resumen en vivo</span>
+            <div id="cwSummaryRows"></div>
+            <div class="cw-live-summary__total">
+              <small data-i18n="payNow">Pago ahora</small>
+              <strong id="cwPayNow">$3,500 MXN</strong>
+            </div>
+          </div>
+
+          <div class="cw-showcase">
+            <span data-i18n="showcaseLabel">Referencias reales</span>
+            <div class="cw-shot is-active">
+              <img src="img/portfolio/goldenrepublicsite.jpg" alt="Golden Republic - sitio web" loading="lazy" width="800" height="500" />
+            </div>
+            <div class="cw-shot">
+              <img src="img/portfolio/brasaprivesite.jpg" alt="Brasa Prive - sitio web" loading="lazy" width="800" height="500" />
+            </div>
+            <div class="cw-shot">
+              <img src="img/portfolio/ecemsite.jpg" alt="Servicio ECEM - sitio web" loading="lazy" width="800" height="500" />
+            </div>
+            <div class="cw-shot">
+              <img src="img/portfolio/trittonsite.jpg" alt="Industrias Tritton - sitio web" loading="lazy" width="800" height="500" />
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <a class="cw-help-float" id="cwHelpFloat" href="https://wa.me/525663012505" target="_blank" rel="noopener noreferrer">
+    <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+    <span data-i18n="helpFloat">Ayuda personalizada</span>
+  </a>
+
+  <script src="crear-web.js?v=1.0" defer></script>
+</body>
+</html>
+
+
+
+
+

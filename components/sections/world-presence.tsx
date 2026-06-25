@@ -1,5 +1,19 @@
-import { WorldMap } from "@/components/ui/map";
+"use client";
+
+import dynamic from "next/dynamic";
 import { SectionHeading } from "@/components/sections/section-heading";
+
+// Client-only + code-split: keeps the heavy dotted-map out of the initial
+// bundle and avoids server rendering the animated SVG.
+const WorldMap = dynamic(
+  () => import("@/components/ui/map").then((m) => m.WorldMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="aspect-[2/1] w-full animate-pulse rounded-lg bg-secondary/20" />
+    ),
+  }
+);
 
 const MEXICO = { lat: 19.4326, lng: -99.1332, label: "México" };
 const ESPANA = { lat: 40.4168, lng: -3.7038, label: "España" };

@@ -21,18 +21,26 @@ export async function POST(req: NextRequest) {
         : "liquidacion";
     const descripcion = String(
       (body as Record<string, unknown>).descripcion || "Servicio web - BryanF Design"
-    );
+    ).slice(0, 200);
     const rawMeta = (body as Record<string, unknown>).metadata;
     const metadata =
       rawMeta && typeof rawMeta === "object"
-        ? (rawMeta as Record<string, string>)
+        ? Object.fromEntries(
+            Object.entries(rawMeta as Record<string, unknown>)
+              .slice(0, 20)
+              .map(([k, v]) => [
+                String(k).slice(0, 40),
+                String(v ?? "").slice(0, 480),
+              ])
+          )
         : {};
     const siteUrl = String(process.env.SITE_URL || "https://example.com").replace(
       /\/$/,
       ""
     );
 
-    if (!Number.isFinite(monto) || monto <= 0) {
+    // Client-controlled amount: require a sane range to avoid bogus charges.
+    if (!Number.isFinite(monto) || monto <= 0 || monto > 2_000_000) {
       return NextResponse.json({ error: "Monto invalido" }, { status: 400 });
     }
 

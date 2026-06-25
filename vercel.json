@@ -1,9 +1,4 @@
 {
-  "cleanUrls": true,
-  "rewrites": [
-    { "source": "/privacidad", "destination": "/privacidad.html" },
-    { "source": "/terminos", "destination": "/terminos.html" },
-    { "source": "/crear-web", "destination": "/crear-web.html" },
-    { "source": "/gracias", "destination": "/gracias.html" }
-  ]
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs"
 }

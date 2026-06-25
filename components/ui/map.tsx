@@ -137,28 +137,6 @@ export function WorldMap({
                       }
                 }
               />
-
-              {loop && (
-                <motion.circle
-                  r="4"
-                  fill={lineColor}
-                  initial={{ offsetDistance: "0%", opacity: 0 }}
-                  animate={{
-                    offsetDistance: [null, "0%", "100%", "100%", "100%"],
-                    opacity: [0, 0, 1, 0, 0],
-                  }}
-                  transition={{
-                    duration: fullCycleDuration,
-                    times: [0, startTime, endTime, resetTime, 1],
-                    ease: "easeInOut",
-                    repeat: Infinity,
-                    repeatDelay: 0,
-                  }}
-                  style={{
-                    offsetPath: `path('${createCurvedPath(startPoint, endPoint)}')`,
-                  }}
-                />
-              )}
             </g>
           );
         })}
