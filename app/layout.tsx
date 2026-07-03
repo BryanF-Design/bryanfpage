@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { IntroSplash } from "@/components/intro-splash";
+import { AccessibilityPanel } from "@/components/accessibility-panel";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { MicrosoftClarity } from "@/components/analytics/microsoft-clarity";
 
@@ -104,6 +105,7 @@ export default function RootLayout({
         <SmoothScroll />
         <IntroSplash />
         {children}
+        <AccessibilityPanel />
       </body>
     </html>
   );

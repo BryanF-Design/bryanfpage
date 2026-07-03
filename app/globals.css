@@ -76,3 +76,39 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Accessibility panel overrides — toggled via classes on <html> */
+.a11y-contrast {
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --card: 0 0% 3%;
+  --secondary: 0 0% 15%;
+  --muted-foreground: 0 0% 88%;
+  --border: 0 0% 45%;
+}
+
+.a11y-reduce-motion *,
+.a11y-reduce-motion *::before,
+.a11y-reduce-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+.a11y-underline-links a {
+  text-decoration: underline !important;
+  text-underline-offset: 3px;
+}
+
+.a11y-readable,
+.a11y-readable * {
+  letter-spacing: 0.02em !important;
+  word-spacing: 0.05em !important;
+  line-height: 1.7 !important;
+}
+
+.a11y-visible-focus *:focus-visible {
+  outline: 3px solid hsl(var(--primary)) !important;
+  outline-offset: 3px !important;
+}

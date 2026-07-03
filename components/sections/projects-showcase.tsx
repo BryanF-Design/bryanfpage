@@ -1,8 +1,28 @@
-import { ArrowUpRight } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { ArrowUpRight, ChevronDown } from "lucide-react";
 
 import { projects, desktopShot, mobileShot } from "@/lib/projects";
 import { TextRotate } from "@/components/ui/text-rotate";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
+// Lead with these four, then fold the rest behind "Mostrar más" so the
+// section doesn't turn into an endless scroll of all live projects.
+const FEATURED_SLUGS = [
+  "koi-arquitectura-vercel-app",
+  "element-experiences-com",
+  "efficientplasticolors-com",
+  "nkmohcafe-com",
+];
+
+const orderedProjects = [
+  ...FEATURED_SLUGS.map((slug) => projects.find((p) => p.slug === slug)).filter(
+    (p): p is (typeof projects)[number] => Boolean(p)
+  ),
+  ...projects.filter((p) => !FEATURED_SLUGS.includes(p.slug)),
+];
 
 function host(url: string) {
   try {
@@ -13,6 +33,9 @@ function host(url: string) {
 }
 
 export function ProjectsShowcase() {
+  const [showAll, setShowAll] = useState(false);
+  const visibleProjects = showAll ? orderedProjects : orderedProjects.slice(0, 4);
+
   return (
     <section
       id="portafolio"
@@ -42,14 +65,14 @@ export function ProjectsShowcase() {
             />
           </h2>
           <p className="text-balance text-base text-muted-foreground md:text-lg">
-            22 sitios en vivo. Cada uno diseñado y construido a la medida. Toca
-            cualquiera para visitarlo.
+            {projects.length} sitios en vivo. Cada uno diseñado y construido a la
+            medida. Toca cualquiera para visitarlo.
           </p>
         </div>
 
         {/* Alternating rows */}
         <div className="mt-16 flex flex-col gap-16 md:gap-24">
-          {projects.map((p, idx) => {
+          {visibleProjects.map((p, idx) => {
             const flip = idx % 2 === 1;
             return (
               <a
@@ -113,6 +136,15 @@ export function ProjectsShowcase() {
             );
           })}
         </div>
+
+        {!showAll && orderedProjects.length > visibleProjects.length && (
+          <div className="mt-16 flex justify-center">
+            <Button variant="outline" size="lg" onClick={() => setShowAll(true)}>
+              Mostrar más proyectos
+              <ChevronDown className="ml-1.5 h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
     </section>
   );

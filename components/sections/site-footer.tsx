@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { MapPin } from "lucide-react";
 import {
   FaWhatsapp,
   FaInstagram,
@@ -8,12 +9,14 @@ import {
   FaGithub,
 } from "react-icons/fa";
 
+const GOOGLE_MAPS_REVIEW = "https://maps.app.goo.gl/CWNcgPfAZt31K3ey6";
+
 const social = [
-  { Icon: FaInstagram, href: "https://www.instagram.com/bryanf_design/", label: "Instagram" },
-  { Icon: FaFacebookF, href: "https://www.facebook.com/share/1R1rS2ToKf/", label: "Facebook" },
-  { Icon: FaWhatsapp, href: "https://wa.me/525663012505", label: "WhatsApp" },
-  { Icon: FaLinkedinIn, href: "https://www.linkedin.com/in/bryanfdesigner", label: "LinkedIn" },
-  { Icon: FaGithub, href: "https://github.com/BryanF-Design", label: "GitHub" },
+  { Icon: FaInstagram, href: "https://www.instagram.com/bryanf_design/", label: "Instagram", glow: "#E1306C" },
+  { Icon: FaFacebookF, href: "https://www.facebook.com/share/1R1rS2ToKf/", label: "Facebook", glow: "#1877F2" },
+  { Icon: FaWhatsapp, href: "https://wa.me/525663012505", label: "WhatsApp", glow: "#25D366" },
+  { Icon: FaLinkedinIn, href: "https://www.linkedin.com/in/bryanfdesigner", label: "LinkedIn", glow: "#0A66C2" },
+  { Icon: FaGithub, href: "https://github.com/BryanF-Design", label: "GitHub", glow: "#FFFFFF" },
 ];
 
 const nav = [
@@ -24,9 +27,11 @@ const nav = [
   { label: "FAQ", href: "#faq" },
 ];
 
+const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
+
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border bg-background" aria-label="Pie de página">
+    <footer id="site-footer" className="border-t border-border bg-background" aria-label="Pie de página">
       <div className="container grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
         {/* Brand */}
         <div className="flex flex-col gap-5">
@@ -35,7 +40,7 @@ export function SiteFooter() {
             alt="BryanF Design"
             width={2904}
             height={1016}
-            style={{ height: 38, width: "auto" }}
+            style={{ height: 46, width: "auto" }}
             className="object-contain"
           />
           <p className="max-w-xs text-sm text-muted-foreground">
@@ -43,14 +48,15 @@ export function SiteFooter() {
             , no sólo que luce. Webs rápidas, animadas y a la medida, desde México.
           </p>
           <div className="flex gap-3">
-            {social.map(({ Icon, href, label }) => (
+            {social.map(({ Icon, href, label, glow }) => (
               <Link
                 key={label}
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                style={{ ["--glow" as string]: glow }}
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-all duration-200 hover:border-[var(--glow)] hover:text-[var(--glow)] hover:shadow-[0_0_16px_var(--glow)]"
               >
                 <Icon className="h-4 w-4" />
               </Link>
@@ -74,6 +80,16 @@ export function SiteFooter() {
                 </Link>
               </li>
             ))}
+            <li>
+              <Link
+                href={CLIENT_PORTAL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-primary transition-colors hover:text-primary/80"
+              >
+                ¿Ya eres cliente?
+              </Link>
+            </li>
           </ul>
         </nav>
 
@@ -101,6 +117,17 @@ export function SiteFooter() {
             <li>
               <a href="https://wa.me/525663012505" target="_blank" rel="noopener noreferrer" className="text-foreground/80 transition-colors hover:text-primary">
                 WhatsApp directo
+              </a>
+            </li>
+            <li>
+              <a
+                href={GOOGLE_MAPS_REVIEW}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-foreground/80 transition-colors hover:text-primary"
+              >
+                <MapPin className="h-3.5 w-3.5" />
+                Déjanos tu reseña en Google Maps
               </a>
             </li>
           </ul>

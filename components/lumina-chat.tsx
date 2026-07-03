@@ -1,9 +1,22 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Sparkles, X, Send } from "lucide-react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, Send } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { useFooterInView } from "@/lib/use-footer-in-view";
+
+type Mood = "Normal" | "Enfocada" | "Duda" | "Sorprendida" | "Offline";
+
+const MOOD_IMG: Record<Mood, string> = {
+  Normal: "/img/lumina/Normal.png",
+  Enfocada: "/img/lumina/Enfocada.png",
+  Duda: "/img/lumina/Duda.png",
+  Sorprendida: "/img/lumina/Sorprendida.png",
+  Offline: "/img/lumina/Offline.png",
+};
 
 const SYSTEM_PROMPT = `Eres LUMINA, asistente comercial de BryanF Design.
 Tu meta es orientar, resolver dudas y guiar al usuario a armar su web o contactar al equipo.
@@ -78,14 +91,46 @@ export function LuminaChat() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [mood, setMood] = useState<Mood>("Normal");
+  const [teaser, setTeaser] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([
     { role: "assistant", content: GREETING },
   ]);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const footerInView = useFooterInView();
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages, open, loading]);
+
+  useEffect(() => {
+    if (footerInView) {
+      setOpen(false);
+      setTeaser(false);
+    }
+  }, [footerInView]);
+
+  // Proactive teaser bubble: pops up once, a bit after load, if the visitor
+  // hasn't opened the chat yet — makes Lumina feel present, not just clickable.
+  useEffect(() => {
+    if (open) {
+      setTeaser(false);
+      return;
+    }
+    const showAt = window.setTimeout(() => setTeaser(true), 9000);
+    const hideAt = window.setTimeout(() => setTeaser(false), 18000);
+    return () => {
+      window.clearTimeout(showAt);
+      window.clearTimeout(hideAt);
+    };
+  }, [open]);
+
+  function openChat() {
+    setOpen((o) => !o);
+    setTeaser(false);
+    setMood("Sorprendida");
+    window.setTimeout(() => setMood("Normal"), 1400);
+  }
 
   async function send(text: string) {
     const content = text.trim();
@@ -95,6 +140,7 @@ export function LuminaChat() {
     setMessages(next);
     setInput("");
     setLoading(true);
+    setMood("Enfocada");
     try {
       const res = await fetch("/api/openai-chat", {
         method: "POST",
@@ -108,6 +154,7 @@ export function LuminaChat() {
         }),
       });
       const data = await res.json();
+      const uncertain = !data?.choices?.[0]?.message?.content && !data?.error;
       const reply =
         data?.choices?.[0]?.message?.content ||
         (data?.error
@@ -117,6 +164,8 @@ export function LuminaChat() {
         ...m,
         { role: "assistant", content: sanitizeHtml(reply) },
       ]);
+      setMood(uncertain ? "Duda" : "Normal");
+      if (uncertain) window.setTimeout(() => setMood("Normal"), 4000);
     } catch {
       setMessages((m) => [
         ...m,
@@ -126,6 +175,7 @@ export function LuminaChat() {
             "Tuvimos un problema de conexión. Escríbenos por <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a>.",
         },
       ]);
+      setMood("Offline");
     } finally {
       setLoading(false);
     }
@@ -146,13 +196,37 @@ export function LuminaChat() {
       >
         <div className="flex items-center justify-between border-b border-border bg-secondary/40 px-4 py-3">
           <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-primary">
-              <Sparkles className="h-4 w-4" />
+            <span className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full ring-1 ring-primary/40">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={mood}
+                  initial={{ opacity: 0, scale: 0.85 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.85 }}
+                  transition={{ duration: 0.25 }}
+                  className="absolute inset-0"
+                >
+                  <Image
+                    src={MOOD_IMG[mood]}
+                    alt=""
+                    fill
+                    sizes="36px"
+                    className="object-cover"
+                  />
+                </motion.span>
+              </AnimatePresence>
+              {mood !== "Offline" && (
+                <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full border border-card bg-primary" />
+              )}
             </span>
             <div className="leading-tight">
               <p className="text-sm font-semibold text-foreground">Lumina</p>
               <p className="text-[11px] text-muted-foreground">
-                Asesora IA · en línea
+                {mood === "Offline"
+                  ? "Sin conexión"
+                  : loading
+                    ? "Pensando…"
+                    : "Asesora IA · en línea"}
               </p>
             </div>
           </div>
@@ -231,15 +305,50 @@ export function LuminaChat() {
         </form>
       </div>
 
+      {/* Proactive teaser bubble */}
+      <AnimatePresence>
+        {teaser && !open && !footerInView && (
+          <motion.div
+            initial={{ opacity: 0, y: 8, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.95 }}
+            transition={{ duration: 0.3 }}
+            className="fixed bottom-24 right-4 z-[120] max-w-[16rem] rounded-2xl rounded-br-sm border border-border bg-card px-4 py-3 text-sm text-foreground shadow-xl sm:right-6"
+          >
+            <button
+              onClick={() => setTeaser(false)}
+              aria-label="Cerrar mensaje"
+              className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-secondary text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-3 w-3" />
+            </button>
+            ¿Buscas crear tu web? Pregúntame precios, tiempos o cómo empezamos ✨
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* FAB */}
-      <button
-        onClick={() => setOpen((o) => !o)}
+      <motion.button
+        onClick={openChat}
         aria-label="Abrir chat con Lumina"
-        className="fixed bottom-5 right-4 z-[120] flex items-center gap-2 rounded-full bg-primary px-4 py-3 font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-105 sm:right-6"
+        aria-hidden={footerInView}
+        tabIndex={footerInView ? -1 : 0}
+        animate={{
+          y: open || footerInView ? 0 : [0, -6, 0],
+          opacity: footerInView ? 0 : 1,
+          scale: footerInView ? 0.85 : 1,
+        }}
+        transition={{ duration: 3.5, repeat: open || footerInView ? 0 : Infinity, ease: "easeInOut" }}
+        className={cn(
+          "fixed bottom-5 right-4 z-[120] flex items-center gap-2 rounded-full bg-primary py-2 pl-2 pr-4 font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-105 sm:right-6",
+          footerInView && "pointer-events-none"
+        )}
       >
-        <Sparkles className="h-5 w-5" />
+        <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-full ring-2 ring-primary-foreground/30">
+          <Image src={MOOD_IMG.Normal} alt="" fill sizes="36px" className="object-cover" />
+        </span>
         <span className="hidden sm:inline">Lumina</span>
-      </button>
+      </motion.button>
     </>
   );
 }
