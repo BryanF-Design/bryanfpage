@@ -166,18 +166,27 @@ export function LuminaChat() {
         </div>
 
         <div ref={scrollRef} className="flex max-h-[50vh] min-h-[16rem] flex-col gap-3 overflow-y-auto p-4">
-          {messages.map((m, i) => (
-            <div
-              key={i}
-              className={cn(
-                "max-w-[85%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed [&_a]:text-primary [&_a]:underline",
-                m.role === "user"
-                  ? "self-end bg-primary text-primary-foreground"
-                  : "self-start bg-secondary text-foreground"
-              )}
-              dangerouslySetInnerHTML={{ __html: m.content }}
-            />
-          ))}
+          {messages.map((m, i) => {
+            const className = cn(
+              "max-w-[85%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed [&_a]:text-primary [&_a]:underline",
+              m.role === "user"
+                ? "self-end bg-primary text-primary-foreground"
+                : "self-start bg-secondary text-foreground"
+            );
+            // User input is never trusted as HTML — only sanitized assistant
+            // replies (see sanitizeHtml) go through dangerouslySetInnerHTML.
+            return m.role === "user" ? (
+              <div key={i} className={className}>
+                {m.content}
+              </div>
+            ) : (
+              <div
+                key={i}
+                className={className}
+                dangerouslySetInnerHTML={{ __html: m.content }}
+              />
+            );
+          })}
           {loading && (
             <div className="self-start rounded-2xl bg-secondary px-3.5 py-2 text-sm text-muted-foreground">
               Escribiendo…

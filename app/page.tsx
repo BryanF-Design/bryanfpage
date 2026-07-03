@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Hero } from "@/components/ui/hero";
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/sections/site-header";
+import { HeroScrollVideo } from "@/components/sections/hero-scroll-video";
+import { AboutPhoto } from "@/components/sections/about-photo";
 import { ProcessOrbital } from "@/components/sections/process-orbital";
 import { StackOrbit } from "@/components/sections/stack-orbit";
 import { ProjectsParallax } from "@/components/sections/projects-parallax";
@@ -22,18 +24,20 @@ export default function HomePage() {
       <SiteHeader />
 
       <Hero
-        eyebrow="BryanF Design"
+        eyebrow="Diseño y desarrollo web en México"
         title={
           <>
             Haz que <span className="text-primary">pase.</span>
           </>
         }
-        subtitle="Webs rápidas, animadas y orientadas a conversión. Estrategia, performance y SEO real para que tu sitio se vea increíble y venda."
+        subtitle="Creamos tu página web a medida: rápida, animada y orientada a conversión. Estrategia, performance y SEO real para que tu sitio se vea increíble y venda."
         actions={[
           { label: "Arma tu web", href: "#precios", variant: "default" },
           { label: "Ver proyectos", href: "#projects", variant: "outline" },
         ]}
       />
+
+      <HeroScrollVideo />
 
       {/* Trust strip */}
       <section className="border-y border-border bg-secondary/30">
@@ -101,6 +105,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <AboutPhoto />
 
       <SiteFooter />
 

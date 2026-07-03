@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
 
 export const runtime = "nodejs";
 
@@ -12,6 +13,14 @@ export async function POST(req: NextRequest) {
     if (!process.env.STRIPE_SECRET) {
       return NextResponse.json({ error: "STRIPE_SECRET missing" }, { status: 500 });
     }
+
+    if (!isSameOrigin(req)) return forbidden();
+
+    const { ok } = rateLimit(`stripe-checkout:${getClientIp(req)}`, {
+      limit: 10,
+      windowMs: 5 * 60 * 1000,
+    });
+    if (!ok) return tooManyRequests();
 
     const body = await req.json().catch(() => ({}) as Record<string, unknown>);
     const monto = Number((body as Record<string, unknown>).monto || 0);
@@ -74,9 +83,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ checkoutUrl: session.url, amount: payable });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "unknown error";
+    console.error("Stripe checkout error:", error);
     return NextResponse.json(
-      { error: `Stripe checkout error: ${message}` },
+      { error: "No se pudo iniciar el pago con tarjeta. Intenta de nuevo." },
       { status: 500 }
     );
   }

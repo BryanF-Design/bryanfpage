@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
 
 export const runtime = "nodejs";
 
@@ -14,6 +15,17 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
+
+    // --- Abuse guards (this is a key-bearing proxy) ---
+    // Same-origin only when called from a browser: block other sites from
+    // burning the OpenAI key. Server-to-server (no Origin) still allowed.
+    if (!isSameOrigin(req)) return forbidden();
+
+    const { ok } = rateLimit(`openai-chat:${getClientIp(req)}`, {
+      limit: 20,
+      windowMs: 5 * 60 * 1000,
+    });
+    if (!ok) return tooManyRequests();
 
     const body = await req.json().catch(() => ({}) as Record<string, unknown>);
     const messages = Array.isArray((body as Record<string, unknown>).messages)
@@ -32,20 +44,16 @@ export async function POST(req: NextRequest) {
     if (!Array.isArray(messages) || !messages.length) {
       return NextResponse.json({ error: "messages required" }, { status: 400 });
     }
-
-    // --- Abuse guards (this is a key-bearing proxy) ---
-    // Same-origin only when called from a browser: block other sites from
-    // burning the OpenAI key. Server-to-server (no Origin) still allowed.
-    const origin = req.headers.get("origin");
-    const host = req.headers.get("host");
-    if (origin) {
-      try {
-        if (new URL(origin).host !== host) {
-          return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-        }
-      } catch {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-      }
+    if (
+      messages.some(
+        (m) =>
+          !m ||
+          typeof m !== "object" ||
+          typeof (m as { content?: unknown }).content !== "string" ||
+          typeof (m as { role?: unknown }).role !== "string"
+      )
+    ) {
+      return NextResponse.json({ error: "Invalid message format" }, { status: 400 });
     }
     if (messages.length > 30) {
       return NextResponse.json({ error: "Too many messages" }, { status: 400 });

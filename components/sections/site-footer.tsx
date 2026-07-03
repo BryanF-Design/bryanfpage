@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   FaWhatsapp,
   FaInstagram,
@@ -29,8 +30,7 @@ export function SiteFooter() {
       <div className="container grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
         {/* Brand */}
         <div className="flex flex-col gap-5">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src="/img/logotipo-blanco.png"
             alt="BryanF Design"
             width={2904}

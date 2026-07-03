@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MercadoPagoConfig, Preference } from "mercadopago";
+import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
 
 export const runtime = "nodejs";
 
@@ -15,6 +16,14 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
+
+    if (!isSameOrigin(req)) return forbidden();
+
+    const { ok } = rateLimit(`mercadopago:${getClientIp(req)}`, {
+      limit: 10,
+      windowMs: 5 * 60 * 1000,
+    });
+    if (!ok) return tooManyRequests();
 
     const body = await req.json().catch(() => ({}) as Record<string, unknown>);
     const monto = Number((body as Record<string, unknown>).monto || 0);
@@ -71,9 +80,9 @@ export async function POST(req: NextRequest) {
       amount: payable,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "unknown error";
+    console.error("Mercado Pago error:", error);
     return NextResponse.json(
-      { error: `Mercado Pago error: ${message}` },
+      { error: "No se pudo iniciar el pago con Mercado Pago. Intenta de nuevo." },
       { status: 500 }
     );
   }
