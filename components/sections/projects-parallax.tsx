@@ -1,17 +1,21 @@
 import { ZoomParallax, type ParallaxImage } from "@/components/ui/zoom-parallax";
 import { SectionHeading } from "@/components/sections/section-heading";
+import { desktopShot, mobileShot, tabletShot } from "@/lib/projects";
 
 /**
- * Curated portfolio screenshots (served from /public/img/portafolio/escritorio).
- * Center image (index 0) stays put while the rest fan out on scroll.
+ * Gallery images.
+ * - Mobile: always the vertical phone capture (desktop shots look bad at small slots).
+ * - Desktop: a MIX of horizontal (escritorio) and vertical (móvil/tablet) for variety.
+ * <picture> loads only the image that matches the breakpoint.
  */
 const proyectos: ParallaxImage[] = [
-  { src: "/img/portafolio/escritorio/goldenrepublic-com-mx.png", alt: "Golden Republic" },
-  { src: "/img/portafolio/escritorio/element-experiences-com.png", alt: "Element Experiences" },
-  { src: "/img/portafolio/escritorio/koi-arquitectura-vercel-app.png", alt: "Koi Arquitectura" },
-  { src: "/img/portafolio/escritorio/epiko-vercel-app.png", alt: "Epiko" },
-  { src: "/img/portafolio/escritorio/grupocosma-com.png", alt: "Grupo Cosma" },
-  { src: "/img/portafolio/escritorio/nkmohcafe-com.png", alt: "NKMOH Café" },
+  { src: desktopShot("goldenrepublic-com-mx"), mobileSrc: mobileShot("goldenrepublic-com-mx"), alt: "Golden Republic" },
+  { src: mobileShot("nkmohcafe-com"), mobileSrc: mobileShot("nkmohcafe-com"), alt: "NKMOH Café" },
+  { src: desktopShot("element-experiences-com"), mobileSrc: mobileShot("element-experiences-com"), alt: "Element Experiences" },
+  { src: tabletShot("koi-arquitectura-vercel-app"), mobileSrc: mobileShot("koi-arquitectura-vercel-app"), alt: "Koi Arquitectura" },
+  { src: desktopShot("grupocosma-com"), mobileSrc: mobileShot("grupocosma-com"), alt: "Grupo Cosma" },
+  { src: mobileShot("epiko-vercel-app"), mobileSrc: mobileShot("epiko-vercel-app"), alt: "Epiko" },
+  { src: desktopShot("serviciosecem-com-mx"), mobileSrc: mobileShot("serviciosecem-com-mx"), alt: "Servicios ECEM" },
 ];
 
 export function ProjectsParallax() {

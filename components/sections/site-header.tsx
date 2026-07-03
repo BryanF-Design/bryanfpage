@@ -6,9 +6,8 @@ const WHATSAPP = "https://wa.me/525663012505";
 
 const links = [
   { label: "Proceso", href: "#proceso" },
-  { label: "Stack", href: "#stack" },
   { label: "Proyectos", href: "#projects" },
-  { label: "Presencia", href: "#presencia" },
+  { label: "Precios", href: "#precios" },
   { label: "FAQ", href: "#faq" },
 ];
 
@@ -18,12 +17,13 @@ export function SiteHeader() {
       <div className="flex w-full max-w-6xl items-center justify-between rounded-full border border-border bg-background/70 px-5 py-2.5 backdrop-blur-xl">
         <Link href="#home" className="flex items-center" aria-label="BryanF Design — inicio">
           <Image
-            src="/img/logotipo-blanco-320.png"
+            src="/img/logotipo-blanco.png"
             alt="BryanF Design"
-            width={120}
-            height={30}
+            width={2904}
+            height={1016}
             priority
-            className="h-7 w-auto"
+            style={{ height: 30, width: "auto" }}
+            className="object-contain"
           />
         </Link>
 
@@ -40,9 +40,7 @@ export function SiteHeader() {
         </nav>
 
         <Button asChild size="sm" className="rounded-full">
-          <Link href={WHATSAPP} target="_blank" rel="noopener noreferrer">
-            Cotizar
-          </Link>
+          <Link href="#precios">Arma tu web</Link>
         </Button>
       </div>
     </header>
