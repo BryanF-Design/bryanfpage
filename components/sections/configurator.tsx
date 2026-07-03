@@ -4,12 +4,14 @@ import { useMemo, useState } from "react";
 import {
   Check,
   Copy,
-  CreditCard,
-  Wallet,
   Building2,
   Loader2,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
+import { SiStripe, SiMercadopago } from "react-icons/si";
+
+const STRIPE_BRAND = "#635BFF";
+const MERCADOPAGO_BRAND = "#00B1EA";
 
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/sections/section-heading";
@@ -374,7 +376,11 @@ export function Configurator() {
                   {loading === "Stripe" ? (
                     <Loader2 className="mr-1 h-4 w-4 animate-spin" />
                   ) : (
-                    <CreditCard className="mr-1 h-4 w-4" />
+                    <SiStripe
+                      className="mr-1 h-4 w-4"
+                      style={{ color: STRIPE_BRAND }}
+                      aria-hidden
+                    />
                   )}
                   Pagar con tarjeta (Stripe)
                 </Button>
@@ -387,7 +393,11 @@ export function Configurator() {
                   {loading === "Mercado Pago" ? (
                     <Loader2 className="mr-1 h-4 w-4 animate-spin" />
                   ) : (
-                    <Wallet className="mr-1 h-4 w-4" />
+                    <SiMercadopago
+                      className="mr-1 h-4 w-4"
+                      style={{ color: MERCADOPAGO_BRAND }}
+                      aria-hidden
+                    />
                   )}
                   Pagar con Mercado Pago
                 </Button>

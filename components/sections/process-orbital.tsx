@@ -1,72 +1,39 @@
-"use client";
+import { FileSpreadsheet, ClipboardList, Code2, Rocket, LifeBuoy } from "lucide-react";
 
-import { ClipboardList, PenTool, Code2, Sparkles, Rocket } from "lucide-react";
-
-import RadialOrbitalTimeline, {
-  type TimelineItem,
-} from "@/components/ui/radial-orbital-timeline";
 import { SectionHeading } from "@/components/sections/section-heading";
 
-const proceso: TimelineItem[] = [
+interface Step {
+  title: string;
+  content: string;
+  icon: React.ElementType;
+}
+
+const steps: Step[] = [
   {
-    id: 1,
+    title: "Cotización",
+    content: "Te compartimos una propuesta clara: alcance, tiempos y precio. Sin letras chiquitas.",
+    icon: FileSpreadsheet,
+  },
+  {
     title: "Brief",
-    date: "Día 1",
-    content:
-      "Entendemos tu negocio, tus objetivos y a quién le hablas. Definimos el alcance y la estrategia de conversión.",
-    category: "Estrategia",
+    content: "Entendemos tu negocio, tus objetivos y a quién le hablas. Definimos estrategia y contenido.",
     icon: ClipboardList,
-    relatedIds: [2],
-    status: "completed",
-    energy: 100,
   },
   {
-    id: 2,
-    title: "Diseño",
-    date: "Día 2–4",
-    content:
-      "UX/UI a medida: jerarquía, identidad y prototipo. Diseñamos para que se vea increíble y guíe a la acción.",
-    category: "Diseño",
-    icon: PenTool,
-    relatedIds: [1, 3],
-    status: "completed",
-    energy: 90,
-  },
-  {
-    id: 3,
     title: "Desarrollo",
-    date: "Día 4–8",
-    content:
-      "Código rápido y limpio, responsive y optimizado para Core Web Vitals. Integraciones y pagos cuando los necesitas.",
-    category: "Desarrollo",
+    content: "Diseño UX/UI y código rápido y limpio: responsive, animado y optimizado para Core Web Vitals.",
     icon: Code2,
-    relatedIds: [2, 4],
-    status: "in-progress",
-    energy: 65,
   },
   {
-    id: 4,
-    title: "Animación",
-    date: "Día 8–10",
-    content:
-      "Motion con GSAP y micro-interacciones que dan vida al sitio sin sacrificar el rendimiento en ningún dispositivo.",
-    category: "Motion",
-    icon: Sparkles,
-    relatedIds: [3, 5],
-    status: "pending",
-    energy: 35,
-  },
-  {
-    id: 5,
     title: "Lanzamiento",
-    date: "Día 10+",
-    content:
-      "SEO técnico, despliegue y medición. Te entregamos un sitio listo para vender y para crecer contigo.",
-    category: "Lanzamiento",
+    content: "SEO técnico, despliegue y medición. Tu sitio queda listo para vender desde el día uno.",
     icon: Rocket,
-    relatedIds: [4],
-    status: "pending",
-    energy: 15,
+  },
+  {
+    title: "Seguimiento",
+    content:
+      "1 mes de seguimiento post-entrega y acceso a Access BryanF, tu panel técnico, para asegurar el correcto funcionamiento del sitio.",
+    icon: LifeBuoy,
   },
 ];
 
@@ -81,10 +48,40 @@ export function ProcessOrbital() {
         <SectionHeading
           eyebrow="Cómo trabajamos"
           title="Un proceso claro, de la idea al lanzamiento"
-          subtitle="Toca cada paso para ver qué pasa en cada etapa. Sin humo: entregas que inician desde 3 días hábiles."
+          subtitle="Sin humo: entregas que inician desde 3 días hábiles, con acompañamiento después de lanzar."
         />
+
+        <ol className="relative mx-auto mt-16 grid max-w-5xl gap-10 md:mt-24 md:grid-cols-5 md:gap-6">
+          <div
+            aria-hidden="true"
+            className="absolute bottom-6 left-6 top-6 w-px bg-border md:bottom-auto md:left-[10%] md:right-[10%] md:top-6 md:h-px md:w-auto"
+          />
+          {steps.map((step, i) => {
+            const Icon = step.icon;
+            return (
+              <li
+                key={step.title}
+                className="relative flex gap-5 md:flex-col md:items-center md:gap-4 md:text-center"
+              >
+                <div className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-primary/50 bg-card text-primary">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div className="pb-2 md:px-2">
+                  <span className="font-mono text-xs text-primary">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="mt-1 font-display text-xl font-semibold text-foreground">
+                    {step.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    {step.content}
+                  </p>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
       </div>
-      <RadialOrbitalTimeline timelineData={proceso} />
     </section>
   );
 }

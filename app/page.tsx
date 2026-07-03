@@ -1,10 +1,9 @@
-import Link from "next/link";
-
 import { Hero } from "@/components/ui/hero";
-import { Button } from "@/components/ui/button";
+import { StatCounter } from "@/components/ui/stat-counter";
 import { SiteHeader } from "@/components/sections/site-header";
-import { HeroScrollVideo } from "@/components/sections/hero-scroll-video";
 import { AboutPhoto } from "@/components/sections/about-photo";
+import { ClosingCta } from "@/components/sections/closing-cta";
+import { SocialRail } from "@/components/social-rail";
 import { ProcessOrbital } from "@/components/sections/process-orbital";
 import { StackOrbit } from "@/components/sections/stack-orbit";
 import { ProjectsParallax } from "@/components/sections/projects-parallax";
@@ -16,12 +15,11 @@ import { Faq } from "@/components/sections/faq";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { LuminaChat } from "@/components/lumina-chat";
 
-const WHATSAPP = "https://wa.me/525663012505";
-
 export default function HomePage() {
   return (
     <main id="home" className="relative">
       <SiteHeader />
+      <SocialRail />
 
       <Hero
         eyebrow="Diseño y desarrollo web en México"
@@ -37,30 +35,28 @@ export default function HomePage() {
         ]}
       />
 
-      <HeroScrollVideo />
-
       {/* Trust strip */}
       <section className="border-y border-border bg-secondary/30">
         <div className="container flex flex-col items-center justify-between gap-6 py-10 text-center sm:flex-row sm:text-left">
-          <div>
+          <div className="transition-transform duration-300 hover:-translate-y-0.5">
             <p className="font-display text-3xl font-semibold text-foreground">
-              +5 años
+              <StatCounter value={5} prefix="+" />{" "}años
             </p>
             <p className="text-sm text-muted-foreground">de experiencia</p>
           </div>
           <div className="h-px w-16 bg-border sm:h-12 sm:w-px" />
-          <div>
+          <div className="transition-transform duration-300 hover:-translate-y-0.5">
             <p className="font-display text-3xl font-semibold text-foreground">
-              +100 proyectos
+              <StatCounter value={100} prefix="+" />{" "}proyectos
             </p>
             <p className="text-sm text-muted-foreground">
               digitales impulsados con éxito
             </p>
           </div>
           <div className="h-px w-16 bg-border sm:h-12 sm:w-px" />
-          <div>
+          <div className="transition-transform duration-300 hover:-translate-y-0.5">
             <p className="font-display text-3xl font-semibold text-foreground">
-              Desde 3 días
+              Desde <StatCounter value={3} /> días
             </p>
             <p className="text-sm text-muted-foreground">hábiles de entrega</p>
           </div>
@@ -83,28 +79,7 @@ export default function HomePage() {
 
       <Faq />
 
-      {/* Closing CTA */}
-      <section className="border-t border-border py-24 md:py-32">
-        <div className="container flex flex-col items-center gap-6 text-center">
-          <h2 className="max-w-2xl font-display text-4xl font-semibold tracking-tight md:text-5xl">
-            ¿Listo para que tu marca se vea como lo que vale?
-          </h2>
-          <p className="max-w-xl text-muted-foreground">
-            Arma tu web, elige cómo pagar (tarjeta, Mercado Pago o transferencia)
-            y arrancamos. Proyectos desde $3,500 MXN.
-          </p>
-          <div className="mt-2 flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg">
-              <Link href="#precios">Arma tu web</Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link href={WHATSAPP} target="_blank" rel="noopener noreferrer">
-                WhatsApp directo
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      <ClosingCta />
 
       <AboutPhoto />
 

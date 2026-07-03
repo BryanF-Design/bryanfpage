@@ -1,8 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
+import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const WHATSAPP = "https://wa.me/525663012505";
+const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
 
 const links = [
   { label: "Proceso", href: "#proceso" },
@@ -14,7 +16,7 @@ const links = [
 export function SiteHeader() {
   return (
     <header className="fixed inset-x-0 top-0 z-[100] flex justify-center px-4 pt-4">
-      <div className="flex w-full max-w-6xl items-center justify-between rounded-full border border-border bg-background/70 px-5 py-2.5 backdrop-blur-xl">
+      <div className="flex w-full max-w-6xl items-center justify-between rounded-full border border-border bg-background/70 px-5 py-3 backdrop-blur-xl">
         <Link href="#home" className="flex items-center" aria-label="BryanF Design — inicio">
           <Image
             src="/img/logotipo-blanco.png"
@@ -22,7 +24,7 @@ export function SiteHeader() {
             width={2904}
             height={1016}
             priority
-            style={{ height: 30, width: "auto" }}
+            style={{ height: 42, width: "auto" }}
             className="object-contain"
           />
         </Link>
@@ -39,9 +41,17 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <Button asChild size="sm" className="rounded-full">
-          <Link href="#precios">Arma tu web</Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button asChild size="sm" variant="ghost" className="hidden rounded-full sm:inline-flex">
+            <Link href={CLIENT_PORTAL} target="_blank" rel="noopener noreferrer">
+              <LogIn className="mr-1.5 h-3.5 w-3.5" />
+              ¿Ya eres cliente?
+            </Link>
+          </Button>
+          <Button asChild size="sm" className="rounded-full">
+            <Link href="#precios">Arma tu web</Link>
+          </Button>
+        </div>
       </div>
     </header>
   );
