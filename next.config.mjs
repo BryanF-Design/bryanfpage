@@ -19,6 +19,25 @@ const nextConfig = {
   },
   // Baseline security headers on every response.
   async headers() {
+    // 'unsafe-inline' on script/style is required by GA/Clarity's inline init
+    // snippets, the JSON-LD block, and a legacy inline onload= swap on
+    // crear-web.html — none of them are attacker-controlled, and the real
+    // protection here is the origin allowlist (blocks injected <script src>
+    // from a third-party domain) plus frame-ancestors/object-src/base-uri.
+    const csp = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' https://*.googletagmanager.com https://*.clarity.ms https://cdnjs.cloudflare.com",
+      "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com",
+      "img-src 'self' data: blob:",
+      "font-src 'self' https://cdnjs.cloudflare.com data:",
+      "connect-src 'self' https://*.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://*.clarity.ms",
+      "frame-ancestors 'self'",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "upgrade-insecure-requests",
+    ].join("; ");
+
     return [
       {
         source: "/:path*",
@@ -34,6 +53,7 @@ const nextConfig = {
             key: "Strict-Transport-Security",
             value: "max-age=63072000; includeSubDomains; preload",
           },
+          { key: "Content-Security-Policy", value: csp },
         ],
       },
     ];

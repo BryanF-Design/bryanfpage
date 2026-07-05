@@ -38,15 +38,33 @@ export function getClientIp(req: NextRequest): string {
   return req.headers.get("x-real-ip") || "unknown";
 }
 
-/** Blocks cross-site browser calls; allows server-to-server (no Origin header). */
+/**
+ * Blocks cross-site and headless/scripted calls to key-bearing or
+ * cost-bearing endpoints. Real browsers always send `Origin` on POST
+ * (same-origin included, per the Fetch spec), so requiring a host match
+ * here — falling back to `Referer` for privacy tools that strip Origin —
+ * closes the trivial "just omit the header" bypass a bare curl/script
+ * would otherwise use to hit these routes directly.
+ */
 export function isSameOrigin(req: NextRequest): boolean {
+  const host = req.headers.get("host");
   const origin = req.headers.get("origin");
-  if (!origin) return true;
-  try {
-    return new URL(origin).host === req.headers.get("host");
-  } catch {
-    return false;
+  if (origin) {
+    try {
+      return new URL(origin).host === host;
+    } catch {
+      return false;
+    }
   }
+  const referer = req.headers.get("referer");
+  if (referer) {
+    try {
+      return new URL(referer).host === host;
+    } catch {
+      return false;
+    }
+  }
+  return false;
 }
 
 export function tooManyRequests() {
