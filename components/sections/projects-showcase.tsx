@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { ArrowUpRight, ChevronDown } from "lucide-react";
 
 import { projects, desktopShot, mobileShot } from "@/lib/projects";
@@ -96,19 +97,22 @@ export function ProjectsShowcase() {
                       </span>
                     </div>
                     <div className="relative aspect-[9/16] overflow-hidden bg-background md:aspect-[16/10]">
-                      <picture>
-                        <source
-                          media="(min-width: 768px)"
-                          srcSet={desktopShot(p.slug)}
-                        />
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={mobileShot(p.slug)}
-                          alt={`${p.name} — captura del sitio`}
-                          loading="lazy"
-                          className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
-                        />
-                      </picture>
+                      <Image
+                        src={mobileShot(p.slug)}
+                        alt={`${p.name} — captura del sitio`}
+                        fill
+                        sizes="(min-width: 768px) 0px, 280px"
+                        loading="lazy"
+                        className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03] md:hidden"
+                      />
+                      <Image
+                        src={desktopShot(p.slug)}
+                        alt={`${p.name} — captura del sitio`}
+                        fill
+                        sizes="(min-width: 768px) 45vw, 0px"
+                        loading="lazy"
+                        className="hidden object-cover object-top transition-transform duration-500 group-hover:scale-[1.03] md:block"
+                      />
                     </div>
                   </div>
                 </div>

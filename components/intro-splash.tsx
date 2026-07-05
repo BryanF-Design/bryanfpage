@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 const SEEN_KEY = "bfd-intro-seen";
+const MIN_VISIBLE_MS = 900;
+const MAX_VISIBLE_MS = 2500;
 
 export function IntroSplash() {
   const [visible, setVisible] = useState(false);
   const [closing, setClosing] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const reduced = window.matchMedia(
@@ -21,58 +22,57 @@ export function IntroSplash() {
     setVisible(true);
     document.body.style.overflow = "hidden";
 
-    // Safety net in case the video stalls or fails to load.
-    const fallback = window.setTimeout(close, 6000);
+    const shownAt = Date.now();
 
     function close() {
-      window.clearTimeout(fallback);
-      sessionStorage.setItem(SEEN_KEY, "1");
-      setClosing(true);
-      document.body.style.overflow = "";
+      const elapsed = Date.now() - shownAt;
+      const wait = Math.max(0, MIN_VISIBLE_MS - elapsed);
+      window.setTimeout(() => {
+        sessionStorage.setItem(SEEN_KEY, "1");
+        setClosing(true);
+        document.body.style.overflow = "";
+      }, wait);
     }
 
-    const video = videoRef.current;
-    video?.addEventListener("ended", close);
+    const maxTimer = window.setTimeout(close, MAX_VISIBLE_MS);
+
+    if (document.readyState === "complete") {
+      close();
+    } else {
+      window.addEventListener("load", close, { once: true });
+    }
 
     return () => {
-      window.clearTimeout(fallback);
-      video?.removeEventListener("ended", close);
+      window.clearTimeout(maxTimer);
+      window.removeEventListener("load", close);
       document.body.style.overflow = "";
     };
   }, []);
 
-  function handleSkip() {
-    sessionStorage.setItem(SEEN_KEY, "1");
-    setClosing(true);
-    document.body.style.overflow = "";
-  }
-
   return (
-    <AnimatePresence
-      onExitComplete={() => setVisible(false)}
-    >
+    <AnimatePresence onExitComplete={() => setVisible(false)}>
       {visible && !closing && (
         <motion.div
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.6, ease: "easeInOut" }}
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-background"
+          transition={{ duration: 0.5, ease: "easeInOut" }}
+          className="fixed inset-0 z-[200] flex flex-col items-center justify-center gap-6 bg-background"
         >
-          <video
-            ref={videoRef}
-            className="h-full w-full object-cover"
-            src="/videos/intro-splash.mp4"
-            autoPlay
-            muted
-            playsInline
-            preload="auto"
-          />
-          <button
-            type="button"
-            onClick={handleSkip}
-            className="absolute bottom-6 right-6 rounded-full border border-foreground/20 bg-background/40 px-4 py-2 text-xs font-medium uppercase tracking-[0.2em] text-foreground/80 backdrop-blur transition-colors hover:border-primary hover:text-primary"
+          <motion.span
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
           >
-            Saltar
-          </button>
+            BryanF <span className="text-primary">Design</span>
+          </motion.span>
+          <div className="h-0.5 w-40 overflow-hidden rounded-full bg-border sm:w-48">
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: "0%" }}
+              transition={{ duration: 1.1, ease: "easeInOut", repeat: Infinity, repeatType: "loop" }}
+              className="h-full w-full bg-primary"
+            />
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
