@@ -338,7 +338,11 @@ export function LuminaChat() {
           opacity: footerInView ? 0 : 1,
           scale: footerInView ? 0.85 : 1,
         }}
-        transition={{ duration: 3.5, repeat: open || footerInView ? 0 : Infinity, ease: "easeInOut" }}
+        transition={{
+          y: { duration: 3.5, repeat: open || footerInView ? 0 : Infinity, ease: "easeInOut" },
+          opacity: { duration: 0.3, ease: "easeInOut" },
+          scale: { duration: 0.3, ease: "easeInOut" },
+        }}
         className={cn(
           "fixed bottom-5 right-4 z-[120] flex items-center gap-2 rounded-full bg-primary py-2 pl-2 pr-4 font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-105 sm:right-6",
           footerInView && "pointer-events-none"

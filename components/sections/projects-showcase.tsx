@@ -113,16 +113,20 @@ export function ProjectsShowcase() {
                   className="hidden object-cover object-top transition-transform duration-500 group-hover:scale-[1.05] md:block"
                 />
 
-                {/* Scrim so the text stays legible over any screenshot */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent transition-opacity duration-300 group-hover:from-black/95" />
+                {/* Scrim so the whole tile reads as "photo with a dark floor",
+                    regardless of how light the screenshot is. */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent transition-opacity duration-300 group-hover:from-black/95" />
 
                 {/* Index chip */}
                 <span className="glass absolute right-3 top-3 z-10 rounded-full px-2.5 py-1 font-mono text-[11px] text-primary">
                   {String(idx + 1).padStart(2, "0")}
                 </span>
 
-                {/* Text overlay */}
-                <div className="relative z-10 flex flex-col gap-1.5 p-5">
+                {/* Text overlay — its own solid+blurred backing plate, so the
+                    title/description stay legible even when the screenshot has
+                    its own bold text sitting right behind them (common on hero
+                    shots), not just when it's merely light-colored. */}
+                <div className="relative z-10 mx-2.5 mb-2.5 flex flex-col gap-1.5 rounded-xl bg-black/55 p-3.5 backdrop-blur-md">
                   <h3
                     className={cn(
                       "font-display font-semibold tracking-tight text-white",

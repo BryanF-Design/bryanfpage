@@ -12,12 +12,26 @@ export function useFooterInView() {
   useEffect(() => {
     const footer = document.getElementById("site-footer");
     if (!footer) return;
+
+    // Debounced so momentum/rubber-band scroll bouncing right at the footer's
+    // edge doesn't flip this state (and the fixed FAB it controls) back and
+    // forth several times in a row.
+    let timeout: number | undefined;
     const observer = new IntersectionObserver(
-      ([entry]) => setInView(entry.isIntersecting),
-      { rootMargin: "0px" }
+      ([entry]) => {
+        window.clearTimeout(timeout);
+        timeout = window.setTimeout(
+          () => setInView(entry.isIntersecting),
+          150
+        );
+      },
+      { rootMargin: "0px 0px -10% 0px" }
     );
     observer.observe(footer);
-    return () => observer.disconnect();
+    return () => {
+      window.clearTimeout(timeout);
+      observer.disconnect();
+    };
   }, []);
 
   return inView;

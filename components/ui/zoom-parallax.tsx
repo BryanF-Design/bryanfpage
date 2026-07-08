@@ -24,16 +24,16 @@ export function ZoomParallax({ images }: ZoomParallaxProps) {
     offset: ["start start", "end end"],
   });
 
-  const scale4 = useTransform(scrollYProgress, [0, 1], [1, 4]);
-  const scale5 = useTransform(scrollYProgress, [0, 1], [1, 5]);
-  const scale6 = useTransform(scrollYProgress, [0, 1], [1, 6]);
-  const scale8 = useTransform(scrollYProgress, [0, 1], [1, 8]);
-  const scale9 = useTransform(scrollYProgress, [0, 1], [1, 9]);
+  const scale4 = useTransform(scrollYProgress, [0, 1], [1.3, 4]);
+  const scale5 = useTransform(scrollYProgress, [0, 1], [1.3, 5]);
+  const scale6 = useTransform(scrollYProgress, [0, 1], [1.3, 6]);
+  const scale8 = useTransform(scrollYProgress, [0, 1], [1.3, 8]);
+  const scale9 = useTransform(scrollYProgress, [0, 1], [1.3, 9]);
 
   const scales = [scale4, scale5, scale6, scale5, scale6, scale8, scale9];
 
   return (
-    <div ref={container} className="relative h-[300vh]">
+    <div ref={container} className="relative h-[220vh]">
       <div className="sticky top-0 h-screen overflow-hidden">
         {images.map(({ src, mobileSrc, alt }, index) => {
           const scale = scales[index % scales.length];
@@ -42,9 +42,9 @@ export function ZoomParallax({ images }: ZoomParallaxProps) {
             <motion.div
               key={index}
               style={{ scale }}
-              className={`absolute top-0 flex h-full w-full items-center justify-center ${index === 1 ? "[&>div]:!-top-[30vh] [&>div]:!left-[5vw] [&>div]:!h-[30vh] [&>div]:!w-[35vw]" : ""} ${index === 2 ? "[&>div]:!-top-[10vh] [&>div]:!-left-[25vw] [&>div]:!h-[45vh] [&>div]:!w-[20vw]" : ""} ${index === 3 ? "[&>div]:!left-[27.5vw] [&>div]:!h-[25vh] [&>div]:!w-[25vw]" : ""} ${index === 4 ? "[&>div]:!top-[27.5vh] [&>div]:!left-[5vw] [&>div]:!h-[25vh] [&>div]:!w-[20vw]" : ""} ${index === 5 ? "[&>div]:!top-[27.5vh] [&>div]:!-left-[22.5vw] [&>div]:!h-[25vh] [&>div]:!w-[30vw]" : ""} ${index === 6 ? "[&>div]:!top-[22.5vh] [&>div]:!left-[25vw] [&>div]:!h-[15vh] [&>div]:!w-[15vw]" : ""} `}
+              className={`absolute top-0 flex h-full w-full items-center justify-center ${index === 1 ? "[&>div]:!-top-[28vh] [&>div]:!left-[5vw] [&>div]:!h-[34vh] [&>div]:!w-[38vw]" : ""} ${index === 2 ? "[&>div]:!-top-[8vh] [&>div]:!-left-[26vw] [&>div]:!h-[48vh] [&>div]:!w-[24vw]" : ""} ${index === 3 ? "[&>div]:!left-[28vw] [&>div]:!h-[30vh] [&>div]:!w-[28vw]" : ""} ${index === 4 ? "[&>div]:!top-[25vh] [&>div]:!left-[6vw] [&>div]:!h-[30vh] [&>div]:!w-[24vw]" : ""} ${index === 5 ? "[&>div]:!top-[25vh] [&>div]:!-left-[23vw] [&>div]:!h-[30vh] [&>div]:!w-[34vw]" : ""} ${index === 6 ? "[&>div]:!top-[20vh] [&>div]:!left-[26vw] [&>div]:!h-[22vh] [&>div]:!w-[20vw]" : ""} `}
             >
-              <div className="relative h-[28vh] w-[42vw] overflow-hidden rounded-2xl ring-1 ring-white/15 sm:h-[25vh] sm:w-[25vw]">
+              <div className="relative h-[34vh] w-[48vw] overflow-hidden rounded-2xl ring-1 ring-white/15 sm:h-[30vh] sm:w-[28vw]">
                 {mobileSrc && (
                   <Image
                     src={mobileSrc}
