@@ -21,6 +21,7 @@ import {
 import { Code2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/lib/i18n/context";
 
 const stack: { Icon: IconType; label: string }[] = [
   { Icon: SiNextdotjs, label: "Next.js" },
@@ -44,6 +45,8 @@ const ORBIT_GAP = 8; // rem between orbits
 const iconsPerOrbit = Math.ceil(stack.length / ORBIT_COUNT);
 
 export function StackOrbit() {
+  const { t } = useLanguage();
+
   return (
     <section
       id="stack"
@@ -57,19 +60,15 @@ export function StackOrbit() {
           <div className="z-10 max-w-lg text-center md:w-1/2 md:text-left">
             <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.25em] text-primary">
               <span className="h-px w-6 bg-primary" />
-              Stack
+              {t.stack.eyebrow}
             </span>
             <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
-              Los lenguajes que manejo
+              {t.stack.title}
             </h2>
-            <p className="mt-4 text-muted-foreground">
-              Frameworks y herramientas modernas con las que construyo: rápido,
-              escalable y a medida. La tecnología al servicio de la idea, no al
-              revés.
-            </p>
+            <p className="mt-4 text-muted-foreground">{t.stack.subtitle}</p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3 md:justify-start">
               <Button asChild>
-                <Link href="#projects">Ver proyectos</Link>
+                <Link href="#projects">{t.stack.ctaPrimary}</Link>
               </Button>
               <Button asChild variant="outline">
                 <Link
@@ -77,7 +76,7 @@ export function StackOrbit() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Trabajemos juntos
+                  {t.stack.ctaSecondary}
                 </Link>
               </Button>
             </div>

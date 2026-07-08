@@ -1,8 +1,11 @@
+"use client";
+
 import dynamic from "next/dynamic";
 import { Hero } from "@/components/ui/hero";
 import { StatCounter } from "@/components/ui/stat-counter";
 import { SiteHeader } from "@/components/sections/site-header";
 import { SocialRail } from "@/components/social-rail";
+import { useLanguage } from "@/lib/i18n/context";
 
 // Below-the-fold sections: code-split so the initial hydration bundle stays
 // small (main lever on mobile TBT). SSR stays on (default) for all of these
@@ -19,9 +22,6 @@ const ProcessOrbital = dynamic(() =>
 );
 const StackOrbit = dynamic(() =>
   import("@/components/sections/stack-orbit").then((m) => m.StackOrbit)
-);
-const ProjectsParallax = dynamic(() =>
-  import("@/components/sections/projects-parallax").then((m) => m.ProjectsParallax)
 );
 const ProjectsShowcase = dynamic(() =>
   import("@/components/sections/projects-showcase").then((m) => m.ProjectsShowcase)
@@ -46,22 +46,24 @@ const LuminaChat = dynamic(
 );
 
 export default function HomePage() {
+  const { t } = useLanguage();
+
   return (
     <main id="home" className="relative">
       <SiteHeader />
       <SocialRail />
 
       <Hero
-        eyebrow="Diseño y desarrollo web en México"
+        eyebrow={t.hero.eyebrow}
         title={
           <>
-            Haz que <span className="text-primary">pase.</span>
+            {t.hero.titlePrefix} <span className="text-primary">{t.hero.titleHighlight}</span>
           </>
         }
-        subtitle="Creamos tu página web a medida: rápida, animada y orientada a conversión. Estrategia, performance y SEO real para que tu sitio se vea increíble y venda."
+        subtitle={t.hero.subtitle}
         actions={[
-          { label: "Arma tu web", href: "#precios", variant: "default" },
-          { label: "Ver proyectos", href: "#projects", variant: "outline" },
+          { label: t.nav.armaTuWeb, href: "#precios", variant: "default" },
+          { label: t.nav.verProyectos, href: "#projects", variant: "outline" },
         ]}
       />
 
@@ -71,25 +73,25 @@ export default function HomePage() {
         <div className="glass relative container my-6 flex flex-col items-center justify-between gap-6 rounded-2xl px-6 py-10 text-center sm:flex-row sm:text-left">
           <div className="transition-transform duration-300 hover:-translate-y-0.5">
             <p className="font-display text-3xl font-semibold text-foreground">
-              <StatCounter value={5} prefix="+" />{" "}años
+              <StatCounter value={5} prefix="+" />{" "}{t.trust.years}
             </p>
-            <p className="text-sm text-muted-foreground">de experiencia</p>
+            <p className="text-sm text-muted-foreground">{t.trust.yearsCaption}</p>
           </div>
           <div className="h-px w-16 bg-border sm:h-12 sm:w-px" />
           <div className="transition-transform duration-300 hover:-translate-y-0.5">
             <p className="font-display text-3xl font-semibold text-foreground">
-              <StatCounter value={100} prefix="+" />{" "}proyectos
+              <StatCounter value={100} prefix="+" />{" "}{t.trust.projects}
             </p>
             <p className="text-sm text-muted-foreground">
-              digitales impulsados con éxito
+              {t.trust.projectsCaption}
             </p>
           </div>
           <div className="h-px w-16 bg-border sm:h-12 sm:w-px" />
           <div className="transition-transform duration-300 hover:-translate-y-0.5">
             <p className="font-display text-3xl font-semibold text-foreground">
-              Desde <StatCounter value={3} /> días
+              {t.trust.deliveryPrefix} <StatCounter value={3} /> {t.trust.days}
             </p>
-            <p className="text-sm text-muted-foreground">hábiles de entrega</p>
+            <p className="text-sm text-muted-foreground">{t.trust.deliveryCaption}</p>
           </div>
         </div>
       </section>
@@ -97,8 +99,6 @@ export default function HomePage() {
       <ProcessOrbital />
 
       <StackOrbit />
-
-      <ProjectsParallax />
 
       <ProjectsShowcase />
 

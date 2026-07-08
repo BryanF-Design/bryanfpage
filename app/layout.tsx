@@ -6,10 +6,15 @@ import { SmoothScroll } from "@/components/smooth-scroll";
 import { IntroSplash } from "@/components/intro-splash";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { MicrosoftClarity } from "@/components/analytics/microsoft-clarity";
+import { LanguageProvider } from "@/lib/i18n/context";
 
 // Client-only widget, no SEO content: skip SSR entirely to shave initial payload.
 const AccessibilityPanel = dynamic(
   () => import("@/components/accessibility-panel").then((m) => m.AccessibilityPanel),
+  { ssr: false }
+);
+const LanguageNotice = dynamic(
+  () => import("@/components/language-notice").then((m) => m.LanguageNotice),
   { ssr: false }
 );
 
@@ -117,7 +122,10 @@ export default function RootLayout({
         />
         <SmoothScroll />
         <IntroSplash />
-        {children}
+        <LanguageProvider>
+          {children}
+          <LanguageNotice />
+        </LanguageProvider>
         <AccessibilityPanel />
       </body>
     </html>

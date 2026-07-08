@@ -1,47 +1,50 @@
-import { cn } from "@/lib/utils";
+"use client";
 
-// `square` logos (badges/marks close to a 1:1 aspect ratio) read visually
-// smaller than wordmarks at the same height, so they get a taller box to
-// even out their presence in the strip — capped so they don't outsize the
-// wordmarks next to them.
+import { useLanguage } from "@/lib/i18n/context";
+
 const logos = [
   { src: "/img/clients/Cartoon_Network_2010_logo.svg", alt: "Cartoon Network" },
   { src: "/img/clients/Citibanamex_logo.svg", alt: "Citibanamex" },
-  { src: "/img/clients/Warner_Bros_logo.svg", alt: "Warner Bros", square: true },
+  { src: "/img/clients/Warner_Bros_logo.svg", alt: "Warner Bros" },
   { src: "/img/clients/MillerKnoll_Logo_2021.svg", alt: "MillerKnoll" },
-  { src: "/img/clients/herman-miller-1.svg", alt: "Herman Miller", square: true },
-  { src: "/img/clients/brand-ufc-svgrepo-com.svg", alt: "UFC", square: true },
-  { src: "/img/clients/hyundai-svgrepo-com.svg", alt: "Hyundai", square: true },
-  { src: "/img/clients/mercado-libre-svgrepo-com.svg", alt: "Mercado Libre", square: true },
+  { src: "/img/clients/herman-miller-1.svg", alt: "Herman Miller" },
+  { src: "/img/clients/brand-ufc-svgrepo-com.svg", alt: "UFC" },
+  { src: "/img/clients/hyundai-svgrepo-com.svg", alt: "Hyundai" },
+  { src: "/img/clients/mercado-libre-svgrepo-com.svg", alt: "Mercado Libre" },
   { src: "/img/clients/logo-indusecc.png", alt: "Indusecc" },
   { src: "/img/clients/partum-design.png", alt: "Partum Design" },
 ];
 
 export function ClientsMarquee() {
+  const { t } = useLanguage();
+
   return (
     <section
-      aria-label="Marcas que han confiado"
+      aria-label={t.clients.label}
       className="relative overflow-hidden border-t border-border py-16"
     >
-      <div className="container">
+      <div className="container relative">
         <p className="mb-10 text-center text-xs font-medium uppercase tracking-[0.25em] text-muted-foreground">
-          Marcas que han confiado
+          {t.clients.label}
         </p>
-      </div>
-      <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_8%,white_92%,transparent)]">
-        <div className="flex w-max animate-marquee items-center gap-16 pr-16">
-          {[...logos, ...logos].map((logo, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={i}
-              src={logo.src}
-              alt={logo.alt}
-              className={cn(
-                "w-auto shrink-0 opacity-60 transition-opacity duration-300 hover:opacity-100 [filter:brightness(0)_invert(1)]",
-                logo.square ? "h-11 md:h-14" : "h-9 md:h-11"
-              )}
-              loading="lazy"
-            />
+
+        {/* Even grid, not a marquee — every logo gets the same box and scales
+            to fit it (object-contain), so a square badge and a wide wordmark
+            read as the same visual size instead of fighting for height. */}
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
+          {logos.map((logo) => (
+            <div
+              key={logo.alt}
+              className="elevate glass flex aspect-[3/2] items-center justify-center rounded-xl p-4 md:p-5"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={logo.src}
+                alt={logo.alt}
+                className="h-full max-h-14 w-full max-w-full object-contain opacity-60 transition-opacity duration-300 hover:opacity-100 [filter:brightness(0)_invert(1)] md:max-h-16"
+                loading="lazy"
+              />
+            </div>
           ))}
         </div>
       </div>

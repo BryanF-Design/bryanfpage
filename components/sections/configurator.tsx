@@ -16,48 +16,47 @@ const MERCADOPAGO_BRAND = "#00B1EA";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/sections/section-heading";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n/context";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 const WA_PHONE = "525663012505";
 
-const PLANS = [
-  {
-    id: "full",
-    name: "Desarrollo Web",
-    price: 3500,
-    desc: "Tu sitio profesional a la medida, rápido y orientado a vender.",
-    featured: true,
-  },
-  {
-    id: "update",
-    name: "Actualización",
-    price: 1800,
-    desc: "Renueva tu web actual con diseño y performance reales.",
-    featured: false,
-  },
-  {
-    id: "maintenance",
-    name: "Mantenimiento",
-    price: 1000,
-    desc: "Tu sitio siempre al día, seguro y respaldado. Por mes.",
-    featured: false,
-  },
+const PLAN_META = [
+  { id: "full", price: 3500, featured: true },
+  { id: "update", price: 1800, featured: false },
+  { id: "maintenance", price: 1000, featured: false },
 ] as const;
 
-const MODULES = [
-  { id: "ecommerce", label: "E-commerce / tienda en línea", price: 3500 },
-  { id: "payments", label: "Pasarela de pagos", price: 1500 },
-  { id: "maintenance", label: "Mantenimiento especializado", price: 1000 },
+const MODULE_META = [
+  { id: "ecommerce", price: 3500 },
+  { id: "payments", price: 1500 },
+  { id: "maintenance", price: 1000 },
 ] as const;
 
 const SECTION_PRICE = 350;
 
-const BANK = [
-  { label: "Banco", value: "BBVA Bancomer" },
-  { label: "Titular", value: "Bryan Fernando López López" },
-  { label: "Cuenta", value: "1534366643" },
-  { label: "CLABE", value: "012180015343666431" },
-  { label: "SWIFT", value: "BCMRMXMMPYM" },
-];
+const BANK_VALUES = {
+  banco: "BBVA Bancomer",
+  titular: "Bryan Fernando López López",
+  cuenta: "1534366643",
+  clabe: "012180015343666431",
+  swift: "BCMRMXMMPYM",
+};
+
+function getPlans(t: Dictionary) {
+  return PLAN_META.map((m) => ({ ...m, ...t.configurator.plans[m.id] }));
+}
+
+function getModules(t: Dictionary) {
+  return MODULE_META.map((m) => ({ ...m, label: t.configurator.modules[m.id] }));
+}
+
+function getBank(t: Dictionary) {
+  return (Object.keys(BANK_VALUES) as (keyof typeof BANK_VALUES)[]).map((key) => ({
+    label: t.configurator.bank[key],
+    value: BANK_VALUES[key],
+  }));
+}
 
 function formatMXN(value: number) {
   return new Intl.NumberFormat("es-MX", {
@@ -68,6 +67,11 @@ function formatMXN(value: number) {
 }
 
 export function Configurator() {
+  const { t } = useLanguage();
+  const PLANS = getPlans(t);
+  const MODULES = getModules(t);
+  const BANK = getBank(t);
+
   const [planId, setPlanId] = useState<string>("full");
   const [mods, setMods] = useState<Record<string, boolean>>({});
   const [sections, setSections] = useState(0);
@@ -90,11 +94,12 @@ export function Configurator() {
     });
     if (sections > 0)
       list.push({
-        source: `Secciones adicionales x${sections}`,
+        source: t.configurator.additionalSectionsLabel(sections),
         price: sections * SECTION_PRICE,
       });
     return list;
-  }, [plan, mods, sections]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [plan, mods, sections, t]);
 
   const projectTotal = useMemo(
     () => Math.max(0, Math.round(items.reduce((a, b) => a + b.price, 0))),
@@ -107,7 +112,7 @@ export function Configurator() {
     items
       .slice(1)
       .map((i) => i.source)
-      .join(", ") || "ninguno";
+      .join(", ") || t.configurator.none;
 
   function applyCoupon() {
     // No hay cupones activos por defecto (igual que el sitio actual).
@@ -115,14 +120,12 @@ export function Configurator() {
       setCouponMsg("");
       return;
     }
-    setCouponMsg(
-      "No hay cupones activos por el momento. Revisa nuestras redes o pregunta a Lumina."
-    );
+    setCouponMsg(t.configurator.couponNoneActive);
   }
 
   async function pay(endpoint: string, label: string) {
     setLoading(label);
-    setStatus(`Abriendo ${label}…`);
+    setStatus(t.configurator.opening(label));
     try {
       const res = await fetch(endpoint, {
         method: "POST",
@@ -140,20 +143,18 @@ export function Configurator() {
       });
       const data = await res.json();
       if (!res.ok || data.error) {
-        setStatus(
-          `No se pudo abrir el pago (${data.error || res.status}). Intenta con transferencia o escríbenos por WhatsApp.`
-        );
+        setStatus(t.configurator.openFailed(String(data.error || res.status)));
         return;
       }
       const url = data.checkoutUrl || data.initPoint;
       if (url) {
         window.open(url, "_blank", "noopener,noreferrer");
-        setStatus(`${label} abierto en otra pestaña. Completa tu pago para continuar.`);
+        setStatus(t.configurator.openedInTab(label));
       } else {
-        setStatus("No se recibió la liga de pago. Intenta de nuevo.");
+        setStatus(t.configurator.noPaymentLink);
       }
     } catch {
-      setStatus("Error de conexión. Intenta de nuevo o usa WhatsApp.");
+      setStatus(t.configurator.connectionError);
     } finally {
       setLoading(null);
     }
@@ -170,23 +171,27 @@ export function Configurator() {
   }
 
   const transferMsg = encodeURIComponent(
-    `Hola, quiero pagar mi proyecto por transferencia.\n\nPlan: ${plan.name}\nMódulos: ${moduleList}\nModalidad: ${
-      mode === "anticipo" ? "50% anticipo" : "Pago completo"
-    }\nTotal proyecto: ${formatMXN(projectTotal)}\nPago ahora: ${formatMXN(payableNow)}`
+    t.configurator.whatsappTransferMsg({
+      plan: plan.name,
+      modules: moduleList,
+      mode: mode === "anticipo" ? t.configurator.modeAdvanceLabel : t.configurator.modeFullLabel,
+      total: formatMXN(projectTotal),
+      payNow: formatMXN(payableNow),
+    })
   );
 
   return (
     <section
       id="precios"
-      aria-label="Configura y paga tu proyecto"
+      aria-label={t.configurator.title}
       className="relative overflow-hidden border-t border-border py-20 md:py-28"
     >
       <div aria-hidden className="mesh-glow-a opacity-50" />
       <div className="container relative">
         <SectionHeading
-          eyebrow="Configurador"
-          title="Arma tu web y paga en línea"
-          subtitle="Elige tu paquete, suma los módulos que necesites y paga con tarjeta, Mercado Pago o transferencia. Sin sorpresas."
+          eyebrow={t.configurator.eyebrow}
+          title={t.configurator.title}
+          subtitle={t.configurator.subtitle}
         />
 
         <div className="mt-14 grid gap-8 lg:grid-cols-[1.3fr_1fr]">
@@ -195,7 +200,7 @@ export function Configurator() {
             {/* Plans */}
             <div>
               <p className="mb-3 text-sm font-medium text-foreground">
-                1. Elige tu paquete
+                {t.configurator.step1}
               </p>
               <div className="grid gap-3 sm:grid-cols-3">
                 {PLANS.map((p) => {
@@ -230,7 +235,7 @@ export function Configurator() {
             {/* Modules */}
             <div>
               <p className="mb-3 text-sm font-medium text-foreground">
-                2. Módulos extra
+                {t.configurator.step2}
               </p>
               <div className="flex flex-col gap-2">
                 {MODULES.map((m) => (
@@ -258,9 +263,9 @@ export function Configurator() {
                 {/* Sections counter */}
                 <div className="glass flex items-center justify-between rounded-xl px-4 py-3">
                   <span className="text-sm text-foreground">
-                    Secciones adicionales
+                    {t.configurator.extraSections}
                     <span className="ml-1 text-muted-foreground">
-                      (+{formatMXN(SECTION_PRICE)} c/u)
+                      (+{formatMXN(SECTION_PRICE)} {t.configurator.perUnit})
                     </span>
                   </span>
                   <span className="flex items-center gap-3">
@@ -268,7 +273,7 @@ export function Configurator() {
                       type="button"
                       onClick={() => setSections((n) => Math.max(0, n - 1))}
                       className="flex h-7 w-7 items-center justify-center rounded-md border border-border text-foreground hover:border-primary"
-                      aria-label="Quitar sección"
+                      aria-label={t.configurator.removeSection}
                     >
                       −
                     </button>
@@ -279,7 +284,7 @@ export function Configurator() {
                       type="button"
                       onClick={() => setSections((n) => n + 1)}
                       className="flex h-7 w-7 items-center justify-center rounded-md border border-border text-foreground hover:border-primary"
-                      aria-label="Agregar sección"
+                      aria-label={t.configurator.addSection}
                     >
                       +
                     </button>
@@ -292,12 +297,12 @@ export function Configurator() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <p className="mb-2 text-sm font-medium text-foreground">
-                  3. Modalidad de pago
+                  {t.configurator.step3}
                 </p>
                 <div className="flex flex-col gap-2">
                   {[
-                    { v: "liquidacion", label: "Pago completo (100%)" },
-                    { v: "anticipo", label: "Anticipo (50%)" },
+                    { v: "liquidacion", label: t.configurator.paymentFull },
+                    { v: "anticipo", label: t.configurator.paymentAdvance },
                   ].map((o) => (
                     <label
                       key={o.v}
@@ -316,16 +321,16 @@ export function Configurator() {
                 </div>
               </div>
               <div>
-                <p className="mb-2 text-sm font-medium text-foreground">Cupón</p>
+                <p className="mb-2 text-sm font-medium text-foreground">{t.configurator.couponLabel}</p>
                 <div className="flex gap-2">
                   <input
                     value={coupon}
                     onChange={(e) => setCoupon(e.target.value)}
-                    placeholder="Ej. BRYANF10"
+                    placeholder={t.configurator.couponPlaceholder}
                     className="min-w-0 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
                   <Button type="button" variant="outline" onClick={applyCoupon}>
-                    Aplicar
+                    {t.configurator.apply}
                   </Button>
                 </div>
                 {couponMsg && (
@@ -338,7 +343,7 @@ export function Configurator() {
           {/* RIGHT: summary + pay */}
           <div className="lg:sticky lg:top-24">
             <div className="glass-tint flex flex-col gap-4 rounded-2xl p-6 shadow-xl shadow-primary/5">
-              <p className="text-sm font-medium text-foreground">Tu resumen</p>
+              <p className="text-sm font-medium text-foreground">{t.configurator.summary}</p>
               <div className="flex flex-col gap-2">
                 {items.map((it, i) => (
                   <div
@@ -354,12 +359,12 @@ export function Configurator() {
               </div>
               <div className="border-t border-border pt-4">
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>Total proyecto</span>
+                  <span>{t.configurator.totalProject}</span>
                   <span>{formatMXN(projectTotal)}</span>
                 </div>
                 <div className="mt-1 flex items-baseline justify-between">
                   <span className="text-sm font-medium text-foreground">
-                    A pagar ahora
+                    {t.configurator.payNow}
                   </span>
                   <span className="font-display text-3xl font-semibold text-primary">
                     {formatMXN(payableNow)}
@@ -383,7 +388,7 @@ export function Configurator() {
                       aria-hidden
                     />
                   )}
-                  Pagar con tarjeta (Stripe)
+                  {t.configurator.payStripe}
                 </Button>
                 <Button
                   variant="secondary"
@@ -400,15 +405,15 @@ export function Configurator() {
                       aria-hidden
                     />
                   )}
-                  Pagar con Mercado Pago
+                  {t.configurator.payMercadoPago}
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => setTransfer((t) => !t)}
+                  onClick={() => setTransfer((prev) => !prev)}
                   className="w-full"
                 >
                   <Building2 className="mr-1 h-4 w-4" />
-                  Pagar por transferencia
+                  {t.configurator.payTransfer}
                 </Button>
               </div>
 
@@ -422,7 +427,7 @@ export function Configurator() {
               {transfer && (
                 <div className="glass mt-1 flex flex-col gap-2 rounded-xl p-4">
                   <p className="text-xs text-muted-foreground">
-                    Transfiere {formatMXN(payableNow)} y envía tu comprobante.
+                    {t.configurator.transferInstructions(formatMXN(payableNow))}
                   </p>
                   {BANK.map((b) => (
                     <div
@@ -438,7 +443,7 @@ export function Configurator() {
                           type="button"
                           onClick={() => copy(b.value, b.label)}
                           className="text-muted-foreground hover:text-primary"
-                          aria-label={`Copiar ${b.label}`}
+                          aria-label={t.configurator.copyLabel(b.label)}
                         >
                           {copied === b.label ? (
                             <Check className="h-3.5 w-3.5 text-primary" />
@@ -457,12 +462,12 @@ export function Configurator() {
                         rel="noopener noreferrer"
                       >
                         <FaWhatsapp className="mr-1 h-4 w-4" />
-                        Enviar comprobante por WhatsApp
+                        {t.configurator.sendWhatsapp}
                       </a>
                     </Button>
                     <Button asChild size="sm" variant="outline" className="w-full">
                       <a href="mailto:bryanf@bryanfdesign.com.mx?subject=Comprobante%20de%20transferencia%20-%20BryanF%20Design">
-                        Enviar comprobante por correo
+                        {t.configurator.sendEmail}
                       </a>
                     </Button>
                   </div>
@@ -470,13 +475,13 @@ export function Configurator() {
               )}
 
               <p className="pt-1 text-center text-[11px] text-muted-foreground">
-                Pago seguro. Al continuar aceptas nuestros{" "}
+                {t.configurator.securePaymentPrefix}{" "}
                 <a href="/terminos" className="underline hover:text-primary">
-                  Términos
+                  {t.configurator.terms}
                 </a>{" "}
-                y{" "}
+                {t.configurator.and}{" "}
                 <a href="/privacidad" className="underline hover:text-primary">
-                  Aviso de Privacidad
+                  {t.configurator.privacyNotice}
                 </a>
                 .
               </p>
