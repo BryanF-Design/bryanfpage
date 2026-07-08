@@ -186,7 +186,7 @@ export function LuminaChat() {
       {/* Panel */}
       <div
         className={cn(
-          "fixed bottom-24 right-4 z-[120] flex w-[min(92vw,22rem)] origin-bottom-right flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl transition-all duration-300 sm:right-6",
+          "glass fixed bottom-24 right-4 z-[120] flex w-[min(92vw,22rem)] origin-bottom-right flex-col overflow-hidden rounded-2xl shadow-2xl transition-all duration-300 sm:right-6",
           open
             ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
             : "pointer-events-none translate-y-3 scale-95 opacity-0"
@@ -194,7 +194,7 @@ export function LuminaChat() {
         role="dialog"
         aria-label="Chat con Lumina"
       >
-        <div className="flex items-center justify-between border-b border-border bg-secondary/40 px-4 py-3">
+        <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-4 py-3">
           <div className="flex items-center gap-2">
             <span className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full ring-1 ring-primary/40">
               <AnimatePresence mode="wait">
@@ -313,7 +313,7 @@ export function LuminaChat() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.3 }}
-            className="fixed bottom-24 right-4 z-[120] max-w-[16rem] rounded-2xl rounded-br-sm border border-border bg-card px-4 py-3 text-sm text-foreground shadow-xl sm:right-6"
+            className="glass fixed bottom-24 right-4 z-[120] max-w-[16rem] rounded-2xl rounded-br-sm px-4 py-3 text-sm text-foreground shadow-xl sm:right-6"
           >
             <button
               onClick={() => setTeaser(false)}

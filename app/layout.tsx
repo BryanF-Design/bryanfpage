@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
 import { Inter, Fraunces } from "next/font/google";
+import dynamic from "next/dynamic";
 import "./globals.css";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { IntroSplash } from "@/components/intro-splash";
-import { AccessibilityPanel } from "@/components/accessibility-panel";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { MicrosoftClarity } from "@/components/analytics/microsoft-clarity";
+
+// Client-only widget, no SEO content: skip SSR entirely to shave initial payload.
+const AccessibilityPanel = dynamic(
+  () => import("@/components/accessibility-panel").then((m) => m.AccessibilityPanel),
+  { ssr: false }
+);
 
 const inter = Inter({
   subsets: ["latin"],

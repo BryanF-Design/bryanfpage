@@ -51,7 +51,8 @@ export function StackOrbit() {
       className="py-20 md:py-28"
     >
       <div className="container">
-        <div className="relative flex h-[34rem] flex-col items-center justify-between overflow-hidden rounded-3xl border border-border bg-card/40 bg-grain p-8 md:h-[30rem] md:flex-row md:p-12">
+        <div className="glass relative flex h-[34rem] flex-col items-center justify-between overflow-hidden rounded-3xl bg-grain p-8 md:h-[30rem] md:flex-row md:p-12">
+          <div aria-hidden className="mesh-glow-a opacity-50" />
           {/* Left: copy */}
           <div className="z-10 max-w-lg text-center md:w-1/2 md:text-left">
             <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.25em] text-primary">
@@ -89,7 +90,7 @@ export function StackOrbit() {
           >
             <div className="relative flex h-[42rem] w-[42rem] -translate-y-24 items-center justify-center md:translate-x-[40%] md:translate-y-0">
               {/* Center */}
-              <div className="flex h-20 w-20 items-center justify-center rounded-full border border-primary/40 bg-primary/10 shadow-lg shadow-primary/10">
+              <div className="glass-tint flex h-20 w-20 items-center justify-center rounded-full shadow-lg shadow-primary/10">
                 <Code2 className="h-9 w-9 text-primary" />
               </div>
 

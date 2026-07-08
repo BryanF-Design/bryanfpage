@@ -179,9 +179,10 @@ export function Configurator() {
     <section
       id="precios"
       aria-label="Configura y paga tu proyecto"
-      className="border-t border-border py-20 md:py-28"
+      className="relative overflow-hidden border-t border-border py-20 md:py-28"
     >
-      <div className="container">
+      <div aria-hidden className="mesh-glow-a opacity-50" />
+      <div className="container relative">
         <SectionHeading
           eyebrow="Configurador"
           title="Arma tu web y paga en línea"
@@ -205,10 +206,10 @@ export function Configurator() {
                       type="button"
                       onClick={() => setPlanId(p.id)}
                       className={cn(
-                        "flex flex-col rounded-xl border p-4 text-left transition-all",
+                        "elevate flex flex-col rounded-xl p-4 text-left",
                         active
-                          ? "border-primary bg-primary/5 ring-1 ring-primary"
-                          : "border-border bg-card hover:border-primary/40"
+                          ? "glass-tint ring-1 ring-primary"
+                          : "glass hover:border-primary/40"
                       )}
                     >
                       <span className="text-sm font-semibold text-foreground">
@@ -235,7 +236,7 @@ export function Configurator() {
                 {MODULES.map((m) => (
                   <label
                     key={m.id}
-                    className="flex cursor-pointer items-center justify-between rounded-xl border border-border bg-card px-4 py-3 transition-colors hover:border-primary/40"
+                    className="glass elevate flex cursor-pointer items-center justify-between rounded-xl px-4 py-3 hover:border-primary/40"
                   >
                     <span className="flex items-center gap-3">
                       <input
@@ -255,7 +256,7 @@ export function Configurator() {
                 ))}
 
                 {/* Sections counter */}
-                <div className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3">
+                <div className="glass flex items-center justify-between rounded-xl px-4 py-3">
                   <span className="text-sm text-foreground">
                     Secciones adicionales
                     <span className="ml-1 text-muted-foreground">
@@ -336,7 +337,7 @@ export function Configurator() {
 
           {/* RIGHT: summary + pay */}
           <div className="lg:sticky lg:top-24">
-            <div className="flex flex-col gap-4 rounded-2xl border border-primary/30 bg-card p-6 shadow-xl shadow-primary/5">
+            <div className="glass-tint flex flex-col gap-4 rounded-2xl p-6 shadow-xl shadow-primary/5">
               <p className="text-sm font-medium text-foreground">Tu resumen</p>
               <div className="flex flex-col gap-2">
                 {items.map((it, i) => (
@@ -419,7 +420,7 @@ export function Configurator() {
 
               {/* Transfer details */}
               {transfer && (
-                <div className="mt-1 flex flex-col gap-2 rounded-xl border border-border bg-secondary/30 p-4">
+                <div className="glass mt-1 flex flex-col gap-2 rounded-xl p-4">
                   <p className="text-xs text-muted-foreground">
                     Transfiere {formatMXN(payableNow)} y envía tu comprobante.
                   </p>

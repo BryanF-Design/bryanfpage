@@ -15,7 +15,7 @@ export function ClientsMarquee() {
   return (
     <section
       aria-label="Marcas que han confiado"
-      className="border-t border-border py-16"
+      className="relative overflow-hidden border-t border-border py-16"
     >
       <div className="container">
         <p className="mb-10 text-center text-xs font-medium uppercase tracking-[0.25em] text-muted-foreground">

@@ -58,6 +58,8 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
         )}
         {...props}
       >
+        <div aria-hidden className="mesh-glow-a" />
+
         {gradient && (
           <div className="absolute top-0 isolate z-0 flex w-screen flex-1 items-start justify-center">
             {blur && (
@@ -124,7 +126,7 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
         >
           <div className="flex flex-col items-center space-y-5 text-center">
             {eyebrow && (
-              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/60 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground backdrop-blur">
+              <span className="glass inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
                 <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                 {eyebrow}
               </span>

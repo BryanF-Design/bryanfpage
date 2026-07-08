@@ -1,0 +1,25 @@
+[
+  {
+    "source": "footer",
+    "targets": [
+      "/desarrollo-web-mexico",
+      "/diseno-web-mexico",
+      "/diseno-ux-ui-mexico",
+      "/paginas-web-para-negocios",
+      "/software-a-medida-mexico",
+      "/mantenimiento-web-mexico"
+    ],
+    "status": "implemented"
+  },
+  {
+    "source": "/desarrollo-web-mexico",
+    "targets": [
+      "/diseno-web-mexico",
+      "/software-a-medida-mexico",
+      "/paginas-web-para-negocios",
+      "/#portafolio",
+      "/#precios"
+    ],
+    "status": "implemented"
+  }
+]
