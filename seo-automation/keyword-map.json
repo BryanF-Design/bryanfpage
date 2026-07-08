@@ -1,0 +1,38 @@
+[
+  {
+    "keyword": "desarrollo web en México",
+    "slug": "/desarrollo-web-mexico",
+    "intent": "contratar desarrollo web profesional",
+    "status": "implemented"
+  },
+  {
+    "keyword": "diseño web en México",
+    "slug": "/diseno-web-mexico",
+    "intent": "contratar diseño de páginas web",
+    "status": "implemented"
+  },
+  {
+    "keyword": "diseño UX/UI en México",
+    "slug": "/diseno-ux-ui-mexico",
+    "intent": "mejorar interfaces y experiencia digital",
+    "status": "implemented"
+  },
+  {
+    "keyword": "páginas web para negocios",
+    "slug": "/paginas-web-para-negocios",
+    "intent": "crear presencia digital comercial",
+    "status": "implemented"
+  },
+  {
+    "keyword": "software a medida México",
+    "slug": "/software-a-medida-mexico",
+    "intent": "crear sistema o plataforma personalizada",
+    "status": "implemented"
+  },
+  {
+    "keyword": "mantenimiento web México",
+    "slug": "/mantenimiento-web-mexico",
+    "intent": "contratar soporte y mejoras web",
+    "status": "implemented"
+  }
+]

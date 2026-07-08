@@ -25,13 +25,17 @@ const orderedProjects = [
   ...projects.filter((p) => !FEATURED_SLUGS.includes(p.slug)),
 ];
 
-function host(url: string) {
-  try {
-    return new URL(url).hostname.replace(/^www\./, "");
-  } catch {
-    return url;
-  }
-}
+// Bento span pattern, repeated over the grid. Index 0 is the hero tile.
+const BENTO_SPANS = [
+  "lg:col-span-2 lg:row-span-2",
+  "lg:col-span-2 lg:row-span-1",
+  "lg:col-span-1 lg:row-span-1",
+  "lg:col-span-1 lg:row-span-1",
+  "lg:col-span-1 lg:row-span-2",
+  "lg:col-span-1 lg:row-span-1",
+  "lg:col-span-2 lg:row-span-1",
+  "lg:col-span-1 lg:row-span-1",
+];
 
 export function ProjectsShowcase() {
   const [showAll, setShowAll] = useState(false);
@@ -41,9 +45,10 @@ export function ProjectsShowcase() {
     <section
       id="portafolio"
       aria-label="Portafolio de proyectos"
-      className="border-t border-border py-20 md:py-28"
+      className="relative overflow-hidden border-t border-border py-20 md:py-28"
     >
-      <div className="container">
+      <div aria-hidden className="mesh-glow-b opacity-60" />
+      <div className="container relative">
         {/* Animated heading */}
         <div className="mx-auto flex max-w-2xl flex-col items-center gap-4 text-center">
           <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.25em] text-primary">
@@ -71,67 +76,70 @@ export function ProjectsShowcase() {
           </p>
         </div>
 
-        {/* Alternating rows */}
-        <div className="mt-16 flex flex-col gap-16 md:gap-24">
+        {/* Bento grid */}
+        <div className="mt-16 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:auto-rows-[13rem] lg:grid-flow-dense lg:grid-cols-4">
           {visibleProjects.map((p, idx) => {
-            const flip = idx % 2 === 1;
+            const featured = idx < FEATURED_SLUGS.length;
+            const span = BENTO_SPANS[idx % BENTO_SPANS.length];
+
             return (
               <a
                 key={p.slug}
                 href={p.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group grid items-center gap-8 md:grid-cols-2 md:gap-14"
+                className={cn(
+                  "elevate glass group relative flex min-h-[16rem] flex-col justify-end overflow-hidden rounded-2xl lg:min-h-0",
+                  span
+                )}
               >
-                {/* Visual: a phone-tall card on mobile, a browser-framed card on desktop.
-                    <picture> loads ONLY the screenshot that matches the breakpoint. */}
-                <div className={cn("mx-auto w-full max-w-[280px] md:max-w-none", flip ? "md:order-2" : "md:order-1")}>
-                  <div className="overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 group-hover:-translate-y-1 group-hover:border-primary/50 group-hover:shadow-xl group-hover:shadow-primary/5 md:rounded-xl">
-                    {/* Browser chrome — desktop only, decorative */}
-                    <div className="hidden items-center gap-1.5 border-b border-border bg-secondary/50 px-3 py-2 md:flex">
-                      <span className="h-2.5 w-2.5 rounded-full bg-border" />
-                      <span className="h-2.5 w-2.5 rounded-full bg-border" />
-                      <span className="h-2.5 w-2.5 rounded-full bg-border" />
-                      <span className="ml-2 truncate font-mono text-[10px] text-muted-foreground">
-                        {host(p.url)}
-                      </span>
-                    </div>
-                    <div className="relative aspect-[9/16] overflow-hidden bg-background md:aspect-[16/10]">
-                      <Image
-                        src={mobileShot(p.slug)}
-                        alt={`${p.name} — captura del sitio`}
-                        fill
-                        sizes="(min-width: 768px) 0px, 280px"
-                        loading="lazy"
-                        className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03] md:hidden"
-                      />
-                      <Image
-                        src={desktopShot(p.slug)}
-                        alt={`${p.name} — captura del sitio`}
-                        fill
-                        sizes="(min-width: 768px) 45vw, 0px"
-                        loading="lazy"
-                        className="hidden object-cover object-top transition-transform duration-500 group-hover:scale-[1.03] md:block"
-                      />
-                    </div>
-                  </div>
-                </div>
+                {/* Screenshot fill. <picture>-style breakpoint swap keeps the
+                    same bandwidth optimization as before — only the matching
+                    shot downloads. */}
+                <Image
+                  src={mobileShot(p.slug)}
+                  alt={`${p.name} — captura del sitio`}
+                  fill
+                  sizes="100vw"
+                  loading="lazy"
+                  className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.05] md:hidden"
+                />
+                <Image
+                  src={desktopShot(p.slug)}
+                  alt={`${p.name} — captura del sitio`}
+                  fill
+                  sizes="(min-width: 1024px) 50vw, (min-width: 640px) 50vw, 100vw"
+                  loading="lazy"
+                  className="hidden object-cover object-top transition-transform duration-500 group-hover:scale-[1.05] md:block"
+                />
 
-                {/* Text */}
-                <div
-                  className={cn(
-                    "flex flex-col items-start gap-3",
-                    flip ? "md:order-1 md:items-end md:text-right" : "md:order-2"
-                  )}
-                >
-                  <span className="font-mono text-sm text-primary">
-                    {String(idx + 1).padStart(2, "0")}
-                  </span>
-                  <h3 className="font-display text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+                {/* Scrim so the text stays legible over any screenshot */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent transition-opacity duration-300 group-hover:from-black/95" />
+
+                {/* Index chip */}
+                <span className="glass absolute right-3 top-3 z-10 rounded-full px-2.5 py-1 font-mono text-[11px] text-primary">
+                  {String(idx + 1).padStart(2, "0")}
+                </span>
+
+                {/* Text overlay */}
+                <div className="relative z-10 flex flex-col gap-1.5 p-5">
+                  <h3
+                    className={cn(
+                      "font-display font-semibold tracking-tight text-white",
+                      featured ? "text-2xl md:text-3xl" : "text-lg"
+                    )}
+                  >
                     {p.name}
                   </h3>
-                  <p className="text-lg text-muted-foreground">{p.desc}</p>
-                  <span className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
+                  <p
+                    className={cn(
+                      "text-white/70",
+                      featured ? "text-sm md:text-base" : "text-xs"
+                    )}
+                  >
+                    {p.desc}
+                  </p>
+                  <span className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-white/90 transition-colors group-hover:text-primary">
                     Visitar sitio
                     <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </span>

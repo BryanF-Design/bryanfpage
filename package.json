@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seo:google-smoke": "node seo-automation/scripts/google-seo-smoke.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.14",

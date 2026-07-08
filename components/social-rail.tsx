@@ -39,7 +39,7 @@ export function SocialRail() {
           className="fixed left-5 top-1/2 z-[90] hidden flex-col items-center gap-1 lg:flex"
           aria-label="Redes sociales"
         >
-          <div className="flex flex-col items-center gap-3 rounded-full border border-border bg-background/70 px-2.5 py-4 backdrop-blur-xl">
+          <div className="glass-nav flex flex-col items-center gap-3 rounded-full border border-white/10 px-2.5 py-4 shadow-lg shadow-black/30">
             {social.map(({ Icon, href, label, glow }) => (
               <Link
                 key={label}

@@ -1,0 +1,12 @@
+[
+  { "url": "/", "type": "home", "priority": 1, "status": "existing" },
+  { "url": "/crear-web", "type": "conversion", "priority": 0.8, "status": "existing" },
+  { "url": "/desarrollo-web-mexico", "type": "service", "priority": 0.92, "status": "implemented" },
+  { "url": "/diseno-web-mexico", "type": "service", "priority": 0.9, "status": "implemented" },
+  { "url": "/diseno-ux-ui-mexico", "type": "service", "priority": 0.86, "status": "implemented" },
+  { "url": "/paginas-web-para-negocios", "type": "service", "priority": 0.88, "status": "implemented" },
+  { "url": "/software-a-medida-mexico", "type": "service", "priority": 0.84, "status": "implemented" },
+  { "url": "/mantenimiento-web-mexico", "type": "service", "priority": 0.82, "status": "implemented" },
+  { "url": "/privacidad", "type": "legal", "priority": 0.3, "status": "existing" },
+  { "url": "/terminos", "type": "legal", "priority": 0.3, "status": "existing" }
+]

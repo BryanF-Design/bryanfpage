@@ -20,19 +20,29 @@ const social = [
 ];
 
 const nav = [
-  { label: "Inicio", href: "#home" },
-  { label: "Proceso", href: "#proceso" },
-  { label: "Proyectos", href: "#projects" },
-  { label: "Precios", href: "#precios" },
-  { label: "FAQ", href: "#faq" },
+  { label: "Inicio", href: "/" },
+  { label: "Proceso", href: "/#proceso" },
+  { label: "Proyectos", href: "/#projects" },
+  { label: "Precios", href: "/#precios" },
+  { label: "FAQ", href: "/#faq" },
+];
+
+const services = [
+  { label: "Desarrollo web", href: "/desarrollo-web-mexico" },
+  { label: "Diseño web", href: "/diseno-web-mexico" },
+  { label: "UX/UI", href: "/diseno-ux-ui-mexico" },
+  { label: "Páginas para negocios", href: "/paginas-web-para-negocios" },
+  { label: "Software a medida", href: "/software-a-medida-mexico" },
+  { label: "Mantenimiento web", href: "/mantenimiento-web-mexico" },
 ];
 
 const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
 
 export function SiteFooter() {
   return (
-    <footer id="site-footer" className="border-t border-border bg-background" aria-label="Pie de página">
-      <div className="container grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
+    <footer id="site-footer" className="relative overflow-hidden border-t border-border bg-background" aria-label="Pie de página">
+      <div aria-hidden className="mesh-glow-b opacity-40" />
+      <div className="container relative grid gap-10 py-14 md:grid-cols-[1.3fr_0.85fr_1fr_1fr]">
         {/* Brand */}
         <div className="flex flex-col gap-5">
           <Image
@@ -56,7 +66,7 @@ export function SiteFooter() {
                 rel="noopener noreferrer"
                 aria-label={label}
                 style={{ ["--glow" as string]: glow }}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-all duration-200 hover:border-[var(--glow)] hover:text-[var(--glow)] hover:shadow-[0_0_16px_var(--glow)]"
+                className="glass elevate flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground hover:border-[var(--glow)] hover:text-[var(--glow)] hover:shadow-[0_0_16px_var(--glow)]"
               >
                 <Icon className="h-4 w-4" />
               </Link>
@@ -90,6 +100,24 @@ export function SiteFooter() {
                 ¿Ya eres cliente?
               </Link>
             </li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Servicios principales">
+          <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            Servicios
+          </p>
+          <ul className="flex flex-col gap-2.5 text-sm">
+            {services.map((l) => (
+              <li key={l.href}>
+                <Link
+                  href={l.href}
+                  className="text-foreground/80 transition-colors hover:text-primary"
+                >
+                  {l.label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
 

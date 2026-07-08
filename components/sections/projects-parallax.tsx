@@ -23,9 +23,10 @@ export function ProjectsParallax() {
     <section
       id="projects"
       aria-label="Trabajos destacados"
-      className="relative border-t border-border"
+      className="relative overflow-hidden border-t border-border"
     >
-      <div className="container flex h-[60vh] flex-col items-center justify-center">
+      <div aria-hidden className="mesh-glow-a opacity-50" />
+      <div className="container relative flex h-[60vh] flex-col items-center justify-center">
         <SectionHeading
           eyebrow="Portafolio"
           title="Trabajos que hablan por sí solos"

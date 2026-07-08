@@ -24,16 +24,17 @@ export function WorldPresence() {
     <section
       id="presencia"
       aria-label="Países en los que hemos trabajado"
-      className="border-t border-border py-20 md:py-28"
+      className="relative overflow-hidden border-t border-border py-20 md:py-28"
     >
-      <div className="container">
+      <div aria-hidden className="mesh-glow-c opacity-50" />
+      <div className="container relative">
         <SectionHeading
           eyebrow="Presencia"
           title="Dónde hemos trabajado"
           subtitle="Proyectos para clientes en México, España y Francia. Diseñamos sin fronteras."
         />
 
-        <div className="mx-auto mt-14 max-w-5xl">
+        <div className="glass mx-auto mt-14 max-w-5xl rounded-3xl p-4 md:p-8">
           <WorldMap
             lineColor="#B4E332"
             dots={[

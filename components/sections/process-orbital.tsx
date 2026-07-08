@@ -42,9 +42,10 @@ export function ProcessOrbital() {
     <section
       id="proceso"
       aria-label="Nuestro proceso"
-      className="relative border-t border-border py-20 md:py-28"
+      className="relative overflow-hidden border-t border-border py-20 md:py-28"
     >
-      <div className="container">
+      <div aria-hidden className="mesh-glow-c opacity-70" />
+      <div className="container relative">
         <SectionHeading
           eyebrow="Cómo trabajamos"
           title="Un proceso claro, de la idea al lanzamiento"
@@ -63,7 +64,7 @@ export function ProcessOrbital() {
                 key={step.title}
                 className="relative flex gap-5 md:flex-col md:items-center md:gap-4 md:text-center"
               >
-                <div className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-primary/50 bg-card text-primary">
+                <div className="glass elevate relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full !border-2 border-primary/50 text-primary">
                   <Icon className="h-5 w-5" />
                 </div>
                 <div className="pb-2 md:px-2">

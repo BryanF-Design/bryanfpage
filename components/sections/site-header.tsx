@@ -7,17 +7,18 @@ const WHATSAPP = "https://wa.me/525663012505";
 const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
 
 const links = [
-  { label: "Proceso", href: "#proceso" },
-  { label: "Proyectos", href: "#projects" },
-  { label: "Precios", href: "#precios" },
-  { label: "FAQ", href: "#faq" },
+  { label: "Proceso", href: "/#proceso" },
+  { label: "Proyectos", href: "/#projects" },
+  { label: "Precios", href: "/#precios" },
+  { label: "FAQ", href: "/#faq" },
 ];
 
 export function SiteHeader() {
   return (
     <header className="fixed inset-x-0 top-0 z-[100] flex justify-center px-4 pt-4">
-      <div className="flex w-full max-w-6xl items-center justify-between rounded-full border border-border bg-background/70 px-5 py-3 backdrop-blur-xl">
-        <Link href="#home" className="flex items-center" aria-label="BryanF Design — inicio">
+      <div className="glass-nav relative flex w-full max-w-6xl items-center justify-between rounded-full border border-white/10 px-5 py-3 shadow-lg shadow-black/30">
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-primary/[0.04]" />
+        <Link href="/" className="flex items-center" aria-label="BryanF Design — inicio">
           <Image
             src="/img/logotipo-blanco.png"
             alt="BryanF Design"
@@ -49,7 +50,7 @@ export function SiteHeader() {
             </Link>
           </Button>
           <Button asChild size="sm" className="rounded-full">
-            <Link href="#precios">Arma tu web</Link>
+            <Link href="/#precios">Arma tu web</Link>
           </Button>
         </div>
       </div>

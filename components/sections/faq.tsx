@@ -63,16 +63,17 @@ export function Faq() {
     <section
       id="faq"
       aria-label="Preguntas frecuentes"
-      className="border-t border-border py-20 md:py-28"
+      className="relative overflow-hidden border-t border-border py-20 md:py-28"
     >
-      <div className="container">
+      <div aria-hidden className="mesh-glow-a opacity-40" />
+      <div className="container relative">
         <SectionHeading
           eyebrow="Preguntas frecuentes"
           title="Lo que necesitas saber"
           subtitle="Toca una pregunta para ver la respuesta."
         />
 
-        <div className="mx-auto mt-14 w-full max-w-3xl">
+        <div className="glass mx-auto mt-14 w-full max-w-3xl rounded-3xl px-4 md:px-8">
           <Accordion type="single" defaultValue="1" collapsible className="w-full">
             {items.map((item) => (
               <AccordionItem

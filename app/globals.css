@@ -34,10 +34,16 @@
     --input: 0 0% 15%;
     --ring: 76 76% 54%;
 
-    --radius: 0.6rem;
+    --radius: 1rem;
 
     --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
     --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+
+    /* Glassmorphism + Material accents. Derived from the brand lime, never a
+       generic "glass UI kit" blue/purple. */
+    --glass-teal: 160 70% 30%;
+    --glass-amber: 70 60% 40%;
+    --ease-material: cubic-bezier(0.2, 0, 0, 1);
   }
 }
 
@@ -64,6 +70,88 @@
     );
     background-size: 3px 3px;
   }
+
+  /* Glassmorphism surfaces. Neutral by default; use .glass-tint for the one
+     "most important thing" per section (featured plan, summary, hero CTA). */
+  .glass {
+    background-color: hsl(0 0% 100% / 0.05);
+    border: 1px solid hsl(0 0% 100% / 0.1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow:
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.06),
+      0 8px 30px -12px hsl(0 0% 0% / 0.6);
+  }
+  .glass-tint {
+    background-color: hsl(var(--primary) / 0.06);
+    border: 1px solid hsl(var(--primary) / 0.3);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow:
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.06),
+      0 8px 30px -12px hsl(var(--primary) / 0.25);
+  }
+  /* Header/nav: stronger blur, no tint, needs to stay legible over any content. */
+  .glass-nav {
+    background-color: hsl(var(--background) / 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  /* Material-style elevation: shared easing + lift on hover/focus. Combine with
+     shadow-* / hover:shadow-* utilities; this only supplies the motion curve. */
+  .elevate {
+    transition-property: transform, box-shadow, border-color, background-color;
+    transition-duration: 240ms;
+    transition-timing-function: var(--ease-material);
+  }
+  .elevate:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Mesh gradient glows — decorative, absolutely positioned, aria-hidden divs.
+     Static CSS gradients (cheap), never animated, so the "glass" cost stays in
+     the backdrop-blur of foreground cards only. Three placements so stacked
+     sections don't all glow identically. */
+  .mesh-glow-a,
+  .mesh-glow-b,
+  .mesh-glow-c {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .mesh-glow-a {
+    background-image:
+      radial-gradient(ellipse 800px 600px at 15% -10%, hsl(var(--primary) / 0.16), transparent 60%),
+      radial-gradient(ellipse 700px 700px at 90% 10%, hsl(var(--glass-teal) / 0.16), transparent 60%);
+  }
+  .mesh-glow-b {
+    background-image:
+      radial-gradient(ellipse 700px 600px at 85% 0%, hsl(var(--glass-teal) / 0.14), transparent 60%),
+      radial-gradient(ellipse 900px 700px at 20% 100%, hsl(var(--glass-amber) / 0.1), transparent 60%);
+  }
+  .mesh-glow-c {
+    background-image:
+      radial-gradient(ellipse 900px 700px at 50% 100%, hsl(var(--primary) / 0.12), transparent 60%),
+      radial-gradient(ellipse 600px 600px at 10% 0%, hsl(var(--glass-teal) / 0.12), transparent 60%);
+  }
+
+  /* Material ripple (Button component). Purely visual, spawned on pointerdown,
+     separate from onClick — never intercepts the click handler. */
+  .ripple-span {
+    position: absolute;
+    border-radius: 9999px;
+    background: hsl(0 0% 100% / 0.5);
+    transform: scale(0);
+    animation: ripple 600ms var(--ease-material);
+    pointer-events: none;
+  }
+  @keyframes ripple {
+    to {
+      transform: scale(3);
+      opacity: 0;
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -74,6 +162,15 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+  .glass,
+  .glass-tint,
+  .glass-nav {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .elevate:hover {
+    transform: none !important;
   }
 }
 
@@ -94,6 +191,13 @@
   animation-iteration-count: 1 !important;
   transition-duration: 0.001ms !important;
   scroll-behavior: auto !important;
+}
+
+.a11y-reduce-motion .glass,
+.a11y-reduce-motion .glass-tint,
+.a11y-reduce-motion .glass-nav {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 .a11y-underline-links a {

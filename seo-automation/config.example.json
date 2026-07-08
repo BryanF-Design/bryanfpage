@@ -1,0 +1,29 @@
+{
+  "siteUrl": "https://www.bryanfdesign.com.mx",
+  "canonicalHost": "www.bryanfdesign.com.mx",
+  "locale": "es-MX",
+  "market": "Mexico",
+  "gscSiteUrl": "sc-domain:bryanfdesign.com.mx",
+  "ga4PropertyId": "504755650",
+  "ga4MeasurementId": "G-4GLGP6X573",
+  "googleCloudProjectId": "bryanf-seo-automation",
+  "googleAuthMode": "oauth",
+  "reportEmail": "bryanf@bryanfdesign.com.mx",
+  "allowedActions": [
+    "audit_metadata",
+    "audit_sitemap",
+    "query_gsc_readonly",
+    "query_ga4_readonly",
+    "suggest_internal_links",
+    "suggest_meta_refresh",
+    "generate_weekly_report"
+  ],
+  "requiresHumanReview": [
+    "publish_new_page",
+    "edit_pricing",
+    "claim_results",
+    "mention_case_metrics",
+    "add_credentials",
+    "change_google_org_policy"
+  ]
+}
