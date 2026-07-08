@@ -1,19 +1,23 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { useLanguage } from "@/lib/i18n/context";
 
-const WHATSAPP = "https://wa.me/525663012505";
 const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
 
-const links = [
-  { label: "Proceso", href: "/#proceso" },
-  { label: "Proyectos", href: "/#projects" },
-  { label: "Precios", href: "/#precios" },
-  { label: "FAQ", href: "/#faq" },
-];
-
 export function SiteHeader() {
+  const { t } = useLanguage();
+  const links = [
+    { label: t.nav.proceso, href: "/#proceso" },
+    { label: t.nav.proyectos, href: "/#projects" },
+    { label: t.nav.precios, href: "/#precios" },
+    { label: t.nav.faq, href: "/#faq" },
+  ];
+
   return (
     <header className="fixed inset-x-0 top-0 z-[100] flex justify-center px-4 pt-4">
       <div className="glass-nav relative flex w-full max-w-6xl items-center justify-between rounded-full border border-white/10 px-5 py-3 shadow-lg shadow-black/30">
@@ -42,15 +46,16 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
+          <LanguageSwitcher />
           <Button asChild size="sm" variant="ghost" className="hidden rounded-full sm:inline-flex">
             <Link href={CLIENT_PORTAL} target="_blank" rel="noopener noreferrer">
               <LogIn className="mr-1.5 h-3.5 w-3.5" />
-              ¿Ya eres cliente?
+              {t.nav.cliente}
             </Link>
           </Button>
           <Button asChild size="sm" className="rounded-full">
-            <Link href="/#precios">Arma tu web</Link>
+            <Link href="/#precios">{t.nav.armaTuWeb}</Link>
           </Button>
         </div>
       </div>

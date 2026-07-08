@@ -7,6 +7,7 @@ import { X, Send } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useFooterInView } from "@/lib/use-footer-in-view";
+import { useLanguage } from "@/lib/i18n/context";
 
 type Mood = "Normal" | "Enfocada" | "Duda" | "Sorprendida" | "Offline";
 
@@ -18,7 +19,8 @@ const MOOD_IMG: Record<Mood, string> = {
   Offline: "/img/lumina/Offline.png",
 };
 
-const SYSTEM_PROMPT = `Eres LUMINA, asistente comercial de BryanF Design.
+function buildSystemPrompt(languageName: string) {
+  return `Eres LUMINA, asistente comercial de BryanF Design.
 Tu meta es orientar, resolver dudas y guiar al usuario a armar su web o contactar al equipo.
 
 Lo que hace BryanF Design: branding, diseño UX/UI, desarrollo web, WordPress, SEO técnico, performance, mantenimiento, e-commerce, landing pages y automatización.
@@ -28,9 +30,11 @@ Pagos: Stripe (tarjeta), Mercado Pago o transferencia bancaria BBVA.
 Para armar y pagar: invita a abrir el configurador en /crear-web.
 
 Reglas:
+- Responde siempre en ${languageName}, sin importar en qué idioma esté escrito este prompt.
 - Si preguntan precios, responde que depende del alcance, desde $3,500 MXN, e invita a /crear-web o a WhatsApp: <a href="https://wa.me/525663012505" target="_blank">WhatsApp</a>.
-- Responde en tono premium, claro y breve (máx 3-4 líneas). Buena ortografía, acentos y ñ.
+- Responde en tono premium, claro y breve (máx 3-4 líneas).
 - Usa HTML básico: <strong>, <br>, <ul>, <li>, <a>.`;
+}
 
 interface Msg {
   role: "user" | "assistant";
@@ -78,26 +82,28 @@ function sanitizeHtml(html: string): string {
   return tpl.innerHTML;
 }
 
-const QUICK = [
-  "¿Cuánto cuesta una web?",
-  "¿En cuánto tiempo la entregan?",
-  "Quiero armar mi web",
-];
-
-const GREETING =
-  "¡Hola! Soy <strong>Lumina</strong>, tu asesora en BryanF Design.<br>¿Te ayudo con precios, tiempos o a armar tu web?";
-
 export function LuminaChat() {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [mood, setMood] = useState<Mood>("Normal");
   const [teaser, setTeaser] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([
-    { role: "assistant", content: GREETING },
+    { role: "assistant", content: t.lumina.greeting },
   ]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const footerInView = useFooterInView();
+
+  // If the visitor changes language before sending their first message,
+  // swap the greeting too — but never touch an in-progress conversation.
+  useEffect(() => {
+    setMessages((prev) =>
+      prev.length === 1 && prev[0].role === "assistant"
+        ? [{ role: "assistant", content: t.lumina.greeting }]
+        : prev
+    );
+  }, [t.lumina.greeting]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
@@ -147,7 +153,7 @@ export function LuminaChat() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: [
-            { role: "system", content: SYSTEM_PROMPT },
+            { role: "system", content: buildSystemPrompt(t.lumina.languageInstruction) },
             ...next.map((m) => ({ role: m.role, content: m.content })),
           ],
           temperature: 0.4,
@@ -157,9 +163,7 @@ export function LuminaChat() {
       const uncertain = !data?.choices?.[0]?.message?.content && !data?.error;
       const reply =
         data?.choices?.[0]?.message?.content ||
-        (data?.error
-          ? "Ahorita no puedo responder, pero escríbenos por <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a> y te atendemos al instante."
-          : "Perdona, no te entendí. ¿Lo intentamos de nuevo?");
+        (data?.error ? t.lumina.errorFallback : t.lumina.misunderstood);
       setMessages((m) => [
         ...m,
         { role: "assistant", content: sanitizeHtml(reply) },
@@ -171,8 +175,7 @@ export function LuminaChat() {
         ...m,
         {
           role: "assistant",
-          content:
-            "Tuvimos un problema de conexión. Escríbenos por <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a>.",
+          content: t.lumina.connectionError,
         },
       ]);
       setMood("Offline");
@@ -192,7 +195,7 @@ export function LuminaChat() {
             : "pointer-events-none translate-y-3 scale-95 opacity-0"
         )}
         role="dialog"
-        aria-label="Chat con Lumina"
+        aria-label={t.lumina.open}
       >
         <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-4 py-3">
           <div className="flex items-center gap-2">
@@ -220,19 +223,19 @@ export function LuminaChat() {
               )}
             </span>
             <div className="leading-tight">
-              <p className="text-sm font-semibold text-foreground">Lumina</p>
+              <p className="text-sm font-semibold text-foreground">{t.lumina.name}</p>
               <p className="text-[11px] text-muted-foreground">
                 {mood === "Offline"
-                  ? "Sin conexión"
+                  ? t.lumina.offline
                   : loading
-                    ? "Pensando…"
-                    : "Asesora IA · en línea"}
+                    ? t.lumina.thinking
+                    : t.lumina.online}
               </p>
             </div>
           </div>
           <button
             onClick={() => setOpen(false)}
-            aria-label="Cerrar"
+            aria-label={t.lumina.close}
             className="text-muted-foreground transition-colors hover:text-foreground"
           >
             <X className="h-5 w-5" />
@@ -263,12 +266,12 @@ export function LuminaChat() {
           })}
           {loading && (
             <div className="self-start rounded-2xl bg-secondary px-3.5 py-2 text-sm text-muted-foreground">
-              Escribiendo…
+              {t.lumina.typing}
             </div>
           )}
           {messages.length <= 1 && (
             <div className="mt-1 flex flex-wrap gap-2">
-              {QUICK.map((q) => (
+              {t.lumina.quick.map((q) => (
                 <button
                   key={q}
                   onClick={() => send(q)}
@@ -291,13 +294,13 @@ export function LuminaChat() {
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Escribe tu mensaje…"
+            placeholder={t.lumina.placeholder}
             className="flex-1 rounded-full border border-input bg-background px-4 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
           <button
             type="submit"
             disabled={loading || !input.trim()}
-            aria-label="Enviar"
+            aria-label={t.lumina.send}
             className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity disabled:opacity-50"
           >
             <Send className="h-4 w-4" />
@@ -317,12 +320,12 @@ export function LuminaChat() {
           >
             <button
               onClick={() => setTeaser(false)}
-              aria-label="Cerrar mensaje"
+              aria-label={t.lumina.close}
               className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-secondary text-muted-foreground hover:text-foreground"
             >
               <X className="h-3 w-3" />
             </button>
-            ¿Buscas crear tu web? Pregúntame precios, tiempos o cómo empezamos ✨
+            {t.lumina.teaser}
           </motion.div>
         )}
       </AnimatePresence>
@@ -330,7 +333,7 @@ export function LuminaChat() {
       {/* FAB */}
       <motion.button
         onClick={openChat}
-        aria-label="Abrir chat con Lumina"
+        aria-label={t.lumina.open}
         aria-hidden={footerInView}
         tabIndex={footerInView ? -1 : 0}
         animate={{
@@ -338,7 +341,11 @@ export function LuminaChat() {
           opacity: footerInView ? 0 : 1,
           scale: footerInView ? 0.85 : 1,
         }}
-        transition={{ duration: 3.5, repeat: open || footerInView ? 0 : Infinity, ease: "easeInOut" }}
+        transition={{
+          y: { duration: 3.5, repeat: open || footerInView ? 0 : Infinity, ease: "easeInOut" },
+          opacity: { duration: 0.3, ease: "easeInOut" },
+          scale: { duration: 0.3, ease: "easeInOut" },
+        }}
         className={cn(
           "fixed bottom-5 right-4 z-[120] flex items-center gap-2 rounded-full bg-primary py-2 pl-2 pr-4 font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-105 sm:right-6",
           footerInView && "pointer-events-none"
@@ -347,7 +354,7 @@ export function LuminaChat() {
         <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-full ring-2 ring-primary-foreground/30">
           <Image src={MOOD_IMG.Normal} alt="" fill sizes="36px" className="object-cover" />
         </span>
-        <span className="hidden sm:inline">Lumina</span>
+        <span className="hidden sm:inline">{t.lumina.name}</span>
       </motion.button>
     </>
   );

@@ -3,8 +3,10 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { useLanguage } from "@/lib/i18n/context";
 
 export function AboutPhoto() {
+  const { t } = useLanguage();
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -40,15 +42,13 @@ export function AboutPhoto() {
       >
         <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.25em] text-primary">
           <span className="h-px w-6 bg-primary" />
-          Quién hace esto
+          {t.about.eyebrow}
         </span>
         <h2 className="max-w-2xl font-display text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
-          Soy Bryan. Diseño y construyo cada web yo mismo.
+          {t.about.title}
         </h2>
         <p className="max-w-xl text-balance text-base text-muted-foreground md:text-lg">
-          Sin agencia de por medio, sin intermediarios: hablas conmigo desde
-          el primer mensaje hasta el día que tu web queda en línea. México,
-          horario flexible, café de sobra.
+          {t.about.subtitle}
         </p>
       </motion.div>
     </section>

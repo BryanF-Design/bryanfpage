@@ -1,43 +1,16 @@
+"use client";
+
 import { FileSpreadsheet, ClipboardList, Code2, Rocket, LifeBuoy } from "lucide-react";
 
 import { SectionHeading } from "@/components/sections/section-heading";
+import { useLanguage } from "@/lib/i18n/context";
 
-interface Step {
-  title: string;
-  content: string;
-  icon: React.ElementType;
-}
-
-const steps: Step[] = [
-  {
-    title: "Cotización",
-    content: "Te compartimos una propuesta clara: alcance, tiempos y precio. Sin letras chiquitas.",
-    icon: FileSpreadsheet,
-  },
-  {
-    title: "Brief",
-    content: "Entendemos tu negocio, tus objetivos y a quién le hablas. Definimos estrategia y contenido.",
-    icon: ClipboardList,
-  },
-  {
-    title: "Desarrollo",
-    content: "Diseño UX/UI y código rápido y limpio: responsive, animado y optimizado para Core Web Vitals.",
-    icon: Code2,
-  },
-  {
-    title: "Lanzamiento",
-    content: "SEO técnico, despliegue y medición. Tu sitio queda listo para vender desde el día uno.",
-    icon: Rocket,
-  },
-  {
-    title: "Seguimiento",
-    content:
-      "1 mes de seguimiento post-entrega y acceso a Access BryanF, tu panel técnico, para asegurar el correcto funcionamiento del sitio.",
-    icon: LifeBuoy,
-  },
-];
+const ICONS = [FileSpreadsheet, ClipboardList, Code2, Rocket, LifeBuoy];
 
 export function ProcessOrbital() {
+  const { t } = useLanguage();
+  const steps = t.process.steps.map((step, i) => ({ ...step, icon: ICONS[i] }));
+
   return (
     <section
       id="proceso"
@@ -47,9 +20,9 @@ export function ProcessOrbital() {
       <div aria-hidden className="mesh-glow-c opacity-70" />
       <div className="container relative">
         <SectionHeading
-          eyebrow="Cómo trabajamos"
-          title="Un proceso claro, de la idea al lanzamiento"
-          subtitle="Sin humo: entregas que inician desde 3 días hábiles, con acompañamiento después de lanzar."
+          eyebrow={t.process.eyebrow}
+          title={t.process.title}
+          subtitle={t.process.subtitle}
         />
 
         <ol className="relative mx-auto mt-16 grid max-w-5xl gap-10 md:mt-24 md:grid-cols-5 md:gap-6">

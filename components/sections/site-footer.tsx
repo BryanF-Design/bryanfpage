@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { MapPin } from "lucide-react";
@@ -8,6 +10,7 @@ import {
   FaLinkedinIn,
   FaGithub,
 } from "react-icons/fa";
+import { useLanguage } from "@/lib/i18n/context";
 
 const GOOGLE_MAPS_REVIEW = "https://maps.app.goo.gl/CWNcgPfAZt31K3ey6";
 
@@ -19,28 +22,30 @@ const social = [
   { Icon: FaGithub, href: "https://github.com/BryanF-Design", label: "GitHub", glow: "#FFFFFF" },
 ];
 
-const nav = [
-  { label: "Inicio", href: "/" },
-  { label: "Proceso", href: "/#proceso" },
-  { label: "Proyectos", href: "/#projects" },
-  { label: "Precios", href: "/#precios" },
-  { label: "FAQ", href: "/#faq" },
-];
-
-const services = [
-  { label: "Desarrollo web", href: "/desarrollo-web-mexico" },
-  { label: "Diseño web", href: "/diseno-web-mexico" },
-  { label: "UX/UI", href: "/diseno-ux-ui-mexico" },
-  { label: "Páginas para negocios", href: "/paginas-web-para-negocios" },
-  { label: "Software a medida", href: "/software-a-medida-mexico" },
-  { label: "Mantenimiento web", href: "/mantenimiento-web-mexico" },
-];
-
 const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
 
 export function SiteFooter() {
+  const { t } = useLanguage();
+
+  const nav = [
+    { label: t.nav.inicio, href: "/" },
+    { label: t.nav.proceso, href: "/#proceso" },
+    { label: t.nav.proyectos, href: "/#projects" },
+    { label: t.nav.precios, href: "/#precios" },
+    { label: t.nav.faq, href: "/#faq" },
+  ];
+
+  const services = [
+    { label: t.footer.services.desarrolloWeb, href: "/desarrollo-web-mexico" },
+    { label: t.footer.services.disenoWeb, href: "/diseno-web-mexico" },
+    { label: t.footer.services.uxUi, href: "/diseno-ux-ui-mexico" },
+    { label: t.footer.services.paginasNegocios, href: "/paginas-web-para-negocios" },
+    { label: t.footer.services.softwareMedida, href: "/software-a-medida-mexico" },
+    { label: t.footer.services.mantenimientoWeb, href: "/mantenimiento-web-mexico" },
+  ];
+
   return (
-    <footer id="site-footer" className="relative overflow-hidden border-t border-border bg-background" aria-label="Pie de página">
+    <footer id="site-footer" className="relative overflow-hidden border-t border-border bg-background" aria-label={t.footer.legalLabel}>
       <div aria-hidden className="mesh-glow-b opacity-40" />
       <div className="container relative grid gap-10 py-14 md:grid-cols-[1.3fr_0.85fr_1fr_1fr]">
         {/* Brand */}
@@ -54,8 +59,8 @@ export function SiteFooter() {
             className="object-contain"
           />
           <p className="max-w-xs text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">Diseño que vende</span>
-            , no sólo que luce. Webs rápidas, animadas y a la medida, desde México.
+            <span className="font-medium text-foreground">{t.footer.tagline}</span>
+            {t.footer.taglineRest}
           </p>
           <div className="flex gap-3">
             {social.map(({ Icon, href, label, glow }) => (
@@ -75,9 +80,9 @@ export function SiteFooter() {
         </div>
 
         {/* Nav */}
-        <nav aria-label="Navegación del pie">
+        <nav aria-label={t.footer.navLabel}>
           <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-            Navegación
+            {t.footer.navLabel}
           </p>
           <ul className="flex flex-col gap-2.5 text-sm">
             {nav.map((l) => (
@@ -97,15 +102,15 @@ export function SiteFooter() {
                 rel="noopener noreferrer"
                 className="font-medium text-primary transition-colors hover:text-primary/80"
               >
-                ¿Ya eres cliente?
+                {t.footer.clientQuestion}
               </Link>
             </li>
           </ul>
         </nav>
 
-        <nav aria-label="Servicios principales">
+        <nav aria-label={t.footer.servicesLabel}>
           <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-            Servicios
+            {t.footer.servicesLabel}
           </p>
           <ul className="flex flex-col gap-2.5 text-sm">
             {services.map((l) => (
@@ -124,17 +129,17 @@ export function SiteFooter() {
         {/* Legal + contacto */}
         <div>
           <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-            Legal y contacto
+            {t.footer.legalLabel}
           </p>
           <ul className="flex flex-col gap-2.5 text-sm">
             <li>
               <Link href="/privacidad" className="text-foreground/80 transition-colors hover:text-primary">
-                Aviso de Privacidad
+                {t.footer.privacy}
               </Link>
             </li>
             <li>
               <Link href="/terminos" className="text-foreground/80 transition-colors hover:text-primary">
-                Términos y Condiciones
+                {t.footer.terms}
               </Link>
             </li>
             <li>
@@ -144,7 +149,7 @@ export function SiteFooter() {
             </li>
             <li>
               <a href="https://wa.me/525663012505" target="_blank" rel="noopener noreferrer" className="text-foreground/80 transition-colors hover:text-primary">
-                WhatsApp directo
+                {t.closingCta.ctaSecondary}
               </a>
             </li>
             <li>
@@ -155,7 +160,7 @@ export function SiteFooter() {
                 className="inline-flex items-center gap-1.5 text-foreground/80 transition-colors hover:text-primary"
               >
                 <MapPin className="h-3.5 w-3.5" />
-                Déjanos tu reseña en Google Maps
+                {t.footer.reviewGoogle}
               </a>
             </li>
           </ul>
@@ -164,15 +169,15 @@ export function SiteFooter() {
 
       <div className="border-t border-border">
         <div className="container flex flex-col items-center justify-between gap-2 py-6 text-xs text-muted-foreground sm:flex-row">
-          <span>© {new Date().getFullYear()} BryanF Design · Hecho en México</span>
+          <span>{t.footer.copyright(new Date().getFullYear())}</span>
           <span>
-            Al contactarnos aceptas nuestro{" "}
+            {t.footer.acceptPrefix}{" "}
             <Link href="/privacidad" className="underline underline-offset-2 hover:text-primary">
-              Aviso de Privacidad
+              {t.footer.privacy}
             </Link>{" "}
-            y{" "}
+            {t.footer.and}{" "}
             <Link href="/terminos" className="underline underline-offset-2 hover:text-primary">
-              Términos
+              {t.footer.terms}
             </Link>
             .
           </span>

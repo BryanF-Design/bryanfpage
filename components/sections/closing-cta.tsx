@@ -4,10 +4,13 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/lib/i18n/context";
 
 const WHATSAPP = "https://wa.me/525663012505";
 
 export function ClosingCta() {
+  const { t } = useLanguage();
+
   return (
     <section className="relative overflow-hidden border-t border-border py-24 md:py-32">
       {/* Animated glow field */}
@@ -32,7 +35,7 @@ export function ClosingCta() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="max-w-2xl font-display text-4xl font-semibold tracking-tight md:text-5xl"
         >
-          ¿Listo para que tu marca se vea como lo que vale?
+          {t.closingCta.title}
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 16 }}
@@ -41,8 +44,7 @@ export function ClosingCta() {
           transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
           className="max-w-xl text-muted-foreground"
         >
-          Arma tu web, elige cómo pagar (tarjeta, Mercado Pago o transferencia)
-          y arrancamos. Proyectos desde $3,500 MXN.
+          {t.closingCta.subtitle}
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -54,12 +56,12 @@ export function ClosingCta() {
           <span className="relative inline-flex">
             <span className="absolute inset-0 -z-10 animate-ping rounded-md bg-primary/40 [animation-duration:2.5s]" />
             <Button asChild size="lg">
-              <Link href="#precios">Arma tu web</Link>
+              <Link href="#precios">{t.closingCta.ctaPrimary}</Link>
             </Button>
           </span>
           <Button asChild size="lg" variant="outline">
             <Link href={WHATSAPP} target="_blank" rel="noopener noreferrer">
-              WhatsApp directo
+              {t.closingCta.ctaSecondary}
             </Link>
           </Button>
         </motion.div>
