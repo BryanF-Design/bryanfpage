@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
+import { Floating3d } from "@/components/three/floating-3d";
 import { useLanguage } from "@/lib/i18n/context";
 
 const WHATSAPP = "https://wa.me/525663012505";
@@ -13,17 +14,17 @@ export function ClosingCta() {
 
   return (
     <section className="relative overflow-hidden border-t border-border py-24 md:py-32">
-      {/* Animated glow field */}
-      <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
+      {/* Nudo toroidal 3D de fondo — puro ambiente, no intercepta clics. */}
+      <Floating3d
+        variant="torusKnot"
+        opacity={0.22}
+        className="pointer-events-none absolute inset-0 -z-10"
+      />
+      <div className="pointer-events-none absolute inset-0 -z-20 flex items-center justify-center">
         <motion.div
-          className="h-[36rem] w-[36rem] rounded-full bg-primary/25 blur-[120px]"
-          animate={{ scale: [1, 1.15, 1], opacity: [0.35, 0.55, 0.35] }}
+          className="h-[36rem] w-[36rem] rounded-full bg-primary/20 blur-[120px]"
+          animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute h-72 w-72 rounded-full bg-primary/20 blur-[100px]"
-          animate={{ x: [-80, 80, -80], y: [40, -40, 40] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
         />
       </div>
 
