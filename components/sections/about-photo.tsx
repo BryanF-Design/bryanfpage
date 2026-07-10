@@ -40,8 +40,8 @@ export function AboutPhoto() {
         transition={{ duration: 0.7, ease: "easeOut" }}
         className="container relative z-10 flex flex-col gap-4 pb-20 md:pb-28"
       >
-        <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.25em] text-primary">
-          <span className="h-px w-6 bg-primary" />
+        <span className="tech-label inline-flex items-center gap-3 text-primary">
+          <span className="h-1.5 w-1.5 bg-primary" />
           {t.about.eyebrow}
         </span>
         <h2 className="max-w-2xl font-display text-4xl font-semibold tracking-tight text-foreground md:text-5xl">

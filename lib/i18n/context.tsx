@@ -7,16 +7,33 @@ import { DICTIONARIES, type Dictionary } from "./dictionaries";
 
 const COOKIE_NAME = "bryanf_lang";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
+const STORAGE_KEY = "bryanf_lang";
 
-function readCookieLocale(): Locale | null {
+// La elección de idioma vive en dos lugares: cookie (la lee el middleware y
+// sobrevive entre páginas/sesiones) y localStorage (respaldo cuando el
+// navegador bloquea cookies). Con cualquiera de los dos, el idioma se
+// mantiene sin importar a qué página navegue el visitante.
+function readStoredLocale(): Locale | null {
   if (typeof document === "undefined") return null;
   const match = document.cookie.match(/(?:^|; )bryanf_lang=([^;]+)/);
-  const value = match ? decodeURIComponent(match[1]) : null;
-  return isLocale(value) ? value : null;
+  const fromCookie = match ? decodeURIComponent(match[1]) : null;
+  if (isLocale(fromCookie)) return fromCookie;
+  try {
+    const fromStorage = window.localStorage.getItem(STORAGE_KEY);
+    if (isLocale(fromStorage)) return fromStorage;
+  } catch {
+    /* storage bloqueado */
+  }
+  return null;
 }
 
-function writeCookieLocale(locale: Locale) {
+function writeStoredLocale(locale: Locale) {
   document.cookie = `${COOKIE_NAME}=${locale}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`;
+  try {
+    window.localStorage.setItem(STORAGE_KEY, locale);
+  } catch {
+    /* storage bloqueado */
+  }
 }
 
 interface LanguageContextValue {
@@ -35,9 +52,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
 
   useEffect(() => {
-    const fromCookie = readCookieLocale();
-    if (fromCookie && fromCookie !== DEFAULT_LOCALE) {
-      setLocaleState(fromCookie);
+    const stored = readStoredLocale();
+    if (stored && stored !== DEFAULT_LOCALE) {
+      setLocaleState(stored);
     }
   }, []);
 
@@ -47,7 +64,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   function setLocale(next: Locale) {
     setLocaleState(next);
-    writeCookieLocale(next);
+    writeStoredLocale(next);
   }
 
   return (

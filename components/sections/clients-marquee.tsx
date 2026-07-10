@@ -24,7 +24,7 @@ export function ClientsMarquee() {
       className="relative overflow-hidden border-t border-border py-16"
     >
       <div className="container relative">
-        <p className="mb-10 text-center text-xs font-medium uppercase tracking-[0.25em] text-muted-foreground">
+        <p className="tech-label mb-10 text-center text-muted-foreground">
           {t.clients.label}
         </p>
 
@@ -35,7 +35,7 @@ export function ClientsMarquee() {
           {logos.map((logo) => (
             <div
               key={logo.alt}
-              className="elevate glass flex aspect-[3/2] items-center justify-center rounded-xl p-4 md:p-5"
+              className="elevate glass flex aspect-[3/2] items-center justify-center rounded-lg p-4 md:p-5"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img

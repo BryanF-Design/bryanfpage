@@ -18,6 +18,7 @@ const es = {
     titleHighlight: "pase.",
     subtitle:
       "Creamos tu página web a medida: rápida, animada y orientada a conversión. Estrategia, performance y SEO real para que tu sitio se vea increíble y venda.",
+    scrollHint: "Desliza para abrir la laptop",
   },
   trust: {
     years: "años",
@@ -106,6 +107,7 @@ const es = {
     eyebrow: "Presencia",
     title: "Dónde hemos trabajado",
     subtitle: "Proyectos para clientes en México, España y Francia. Diseñamos sin fronteras.",
+    dragHint: "Arrastra el globo para girarlo",
   },
   clients: {
     label: "Marcas que han confiado",
@@ -143,6 +145,9 @@ const es = {
     step3: "3. Modalidad de pago",
     paymentFull: "Pago completo (100%)",
     paymentAdvance: "Anticipo (50%)",
+    currencyLabel: "Moneda",
+    currencyNote: (rate: string) =>
+      `Conversión redondeada aprox. a ${rate} MXN por USD. Si Mercado Pago no admite USD, se cobra el equivalente en MXN.`,
     couponLabel: "Cupón",
     couponPlaceholder: "Ej. BRYANF10",
     apply: "Aplicar",

@@ -8,32 +8,37 @@ interface SectionHeadingProps {
   className?: string;
 }
 
+/**
+ * Cabecera de sección estilo plano de obra: hairline superior, eyebrow en
+ * mono con tick lima y titular expandido. Alineada a la izquierda por
+ * defecto — el sitio ya no centra todo.
+ */
 export function SectionHeading({
   eyebrow,
   title,
   subtitle,
-  align = "center",
+  align = "left",
   className,
 }: SectionHeadingProps) {
   return (
     <div
       className={cn(
-        "flex max-w-2xl flex-col gap-4",
-        align === "center" ? "mx-auto items-center text-center" : "items-start",
+        "flex flex-col gap-5 border-t border-border pt-6",
+        align === "center" ? "mx-auto max-w-2xl items-center text-center" : "items-start",
         className
       )}
     >
       {eyebrow && (
-        <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.25em] text-primary">
-          <span className="h-px w-6 bg-primary" />
+        <span className="tech-label inline-flex items-center gap-3 text-primary">
+          <span className="h-1.5 w-1.5 bg-primary" />
           {eyebrow}
         </span>
       )}
-      <h2 className="font-display text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
+      <h2 className="max-w-3xl font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
         {title}
       </h2>
       {subtitle && (
-        <p className="text-balance text-base text-muted-foreground md:text-lg">
+        <p className="max-w-2xl text-pretty text-base text-muted-foreground md:text-lg">
           {subtitle}
         </p>
       )}

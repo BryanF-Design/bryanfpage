@@ -45,8 +45,8 @@ export function ProjectsShowcase() {
       <div className="container relative">
         {/* Animated heading */}
         <div className="mx-auto flex max-w-2xl flex-col items-center gap-4 text-center">
-          <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.25em] text-primary">
-            <span className="h-px w-6 bg-primary" />
+          <span className="tech-label inline-flex items-center gap-3 text-primary">
+            <span className="h-1.5 w-1.5 bg-primary" />
             {t.projects.eyebrow}
           </span>
           <h2 className="flex flex-wrap items-baseline justify-center gap-x-3 font-display text-4xl font-semibold tracking-tight md:text-5xl">
@@ -86,7 +86,7 @@ export function ProjectsShowcase() {
               target="_blank"
               rel="noopener noreferrer"
               className={cn(
-                "elevate group flex flex-col overflow-hidden rounded-2xl border border-border bg-card hover:border-primary/40",
+                "elevate group flex flex-col overflow-hidden rounded-lg border border-border bg-card hover:border-primary/40",
                 idx === 0 && "sm:col-span-2 lg:col-span-2"
               )}
             >

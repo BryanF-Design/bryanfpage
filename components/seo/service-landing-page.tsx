@@ -110,7 +110,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                 <span className="text-foreground">{page.serviceType}</span>
               </nav>
 
-              <p className="mb-4 text-sm font-medium uppercase text-primary">
+              <p className="tech-label mb-4 text-primary">
                 {page.eyebrow}
               </p>
               <h1 className="font-display text-4xl font-semibold text-foreground md:text-6xl">
@@ -151,7 +151,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
         <section className="border-b border-border py-20 md:py-24">
           <div className="container grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
             <div>
-              <p className="text-sm font-medium uppercase text-primary">
+              <p className="tech-label text-primary">
                 Problemas reales
               </p>
               <h2 className="mt-3 font-display text-3xl font-semibold text-foreground md:text-4xl">
@@ -174,7 +174,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
         <section className="border-b border-border py-20 md:py-24">
           <div className="container grid gap-10 lg:grid-cols-2">
             <div>
-              <p className="text-sm font-medium uppercase text-primary">
+              <p className="tech-label text-primary">
                 Solución
               </p>
               <h2 className="mt-3 font-display text-3xl font-semibold text-foreground md:text-4xl">
@@ -197,7 +197,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
         <section className="border-b border-border py-20 md:py-24">
           <div className="container grid gap-10 lg:grid-cols-[1fr_1fr]">
             <div>
-              <p className="text-sm font-medium uppercase text-primary">
+              <p className="tech-label text-primary">
                 Proceso
               </p>
               <h2 className="mt-3 font-display text-3xl font-semibold text-foreground md:text-4xl">
@@ -222,7 +222,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
         <section className="border-b border-border py-20 md:py-24">
           <div className="container">
             <div className="max-w-2xl">
-              <p className="text-sm font-medium uppercase text-primary">
+              <p className="tech-label text-primary">
                 Diferenciadores
               </p>
               <h2 className="mt-3 font-display text-3xl font-semibold text-foreground md:text-4xl">
@@ -244,7 +244,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
         <section className="border-b border-border py-20 md:py-24">
           <div className="container grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
             <div>
-              <p className="text-sm font-medium uppercase text-primary">
+              <p className="tech-label text-primary">
                 Preguntas frecuentes
               </p>
               <h2 className="mt-3 font-display text-3xl font-semibold text-foreground md:text-4xl">
@@ -267,7 +267,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
         <section className="border-b border-border py-20 md:py-24">
           <div className="container grid gap-10 lg:grid-cols-2">
             <div>
-              <p className="text-sm font-medium uppercase text-primary">
+              <p className="tech-label text-primary">
                 Enlaces relacionados
               </p>
               <h2 className="mt-3 font-display text-3xl font-semibold text-foreground md:text-4xl">
@@ -288,7 +288,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
             </div>
 
             <div>
-              <p className="text-sm font-medium uppercase text-primary">
+              <p className="tech-label text-primary">
                 Casos como referencia
               </p>
               <h2 className="mt-3 font-display text-3xl font-semibold text-foreground md:text-4xl">
@@ -313,7 +313,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
         <section className="py-20 md:py-24">
           <div className="container flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
             <div className="max-w-2xl">
-              <p className="text-sm font-medium uppercase text-primary">
+              <p className="tech-label text-primary">
                 Siguiente paso
               </p>
               <h2 className="mt-3 font-display text-3xl font-semibold text-foreground md:text-4xl">

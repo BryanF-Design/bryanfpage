@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Fraunces } from "next/font/google";
+import { Archivo, Instrument_Sans, IBM_Plex_Mono } from "next/font/google";
 import dynamic from "next/dynamic";
 import "./globals.css";
 import { SmoothScroll } from "@/components/smooth-scroll";
@@ -18,17 +18,27 @@ const LanguageNotice = dynamic(
   { ssr: false }
 );
 
-const inter = Inter({
+// Cuerpo: Instrument Sans (variable, un solo archivo).
+const instrumentSans = Instrument_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
   variable: "--font-sans",
   display: "swap",
 });
 
-const fraunces = Fraunces({
+// Display: Archivo variable con eje de anchura — los titulares se componen
+// expandidos (font-stretch en globals.css), la voz visual del rediseño.
+const archivo = Archivo({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  axes: ["wdth"],
   variable: "--font-display",
+  display: "swap",
+});
+
+// Voz técnica: etiquetas, precios, coordenadas.
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-mono",
   display: "swap",
 });
 
@@ -110,7 +120,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`dark ${inter.variable} ${fraunces.variable}`}
+      className={`dark ${instrumentSans.variable} ${archivo.variable} ${plexMono.variable}`}
       suppressHydrationWarning
     >
       <body className="font-sans">

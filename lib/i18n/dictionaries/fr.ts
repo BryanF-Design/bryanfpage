@@ -17,6 +17,7 @@ const fr: Dictionary = {
     titleHighlight: "vraiment.",
     subtitle:
       "Nous créons votre site sur mesure : rapide, animé et pensé pour convertir. Stratégie, performance et SEO réels pour un site qui a de l'allure et qui vend.",
+    scrollHint: "Faites défiler pour ouvrir le laptop",
   },
   trust: {
     years: "ans",
@@ -99,6 +100,7 @@ const fr: Dictionary = {
     eyebrow: "Présence",
     title: "Où nous avons travaillé",
     subtitle: "Des projets pour des clients au Mexique, en Espagne et en France. On conçoit sans frontières.",
+    dragHint: "Faites glisser le globe pour le faire tourner",
   },
   clients: {
     label: "Des marques qui nous ont fait confiance",
@@ -135,6 +137,9 @@ const fr: Dictionary = {
     step3: "3. Mode de paiement",
     paymentFull: "Paiement complet (100 %)",
     paymentAdvance: "Acompte (50 %)",
+    currencyLabel: "Devise",
+    currencyNote: (rate: string) =>
+      `Conversion arrondie à env. ${rate} MXN par USD. Si Mercado Pago n'accepte pas l'USD, l'équivalent en MXN est facturé.`,
     couponLabel: "Code promo",
     couponPlaceholder: "Ex. BRYANF10",
     apply: "Appliquer",
