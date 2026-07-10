@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "framer-motion";
+
 import { useLanguage } from "@/lib/i18n/context";
 
 const logos = [
@@ -31,10 +33,14 @@ export function ClientsMarquee() {
         {/* Even grid, not a marquee — every logo gets the same box and scales
             to fit it (object-contain), so a square badge and a wide wordmark
             read as the same visual size instead of fighting for height. */}
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
-          {logos.map((logo) => (
-            <div
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5 md:gap-4">
+          {logos.map((logo, i) => (
+            <motion.div
               key={logo.alt}
+              initial={{ opacity: 0, y: 20, scale: 0.96 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.5, delay: (i % 5) * 0.06, ease: [0.2, 0, 0, 1] }}
               className="elevate glass flex aspect-[3/2] items-center justify-center rounded-lg p-4 md:p-5"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -44,7 +50,7 @@ export function ClientsMarquee() {
                 className="h-full max-h-14 w-full max-w-full object-contain opacity-60 transition-opacity duration-300 hover:opacity-100 [filter:brightness(0)_invert(1)] md:max-h-16"
                 loading="lazy"
               />
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

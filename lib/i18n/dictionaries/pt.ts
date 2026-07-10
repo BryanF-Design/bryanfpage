@@ -10,6 +10,11 @@ const pt: Dictionary = {
     cliente: "Já é cliente?",
     armaTuWeb: "Monte seu site",
     verProyectos: "Ver projetos",
+    menu: "Abrir menu",
+    closeMenu: "Fechar menu",
+  },
+  marquee: {
+    words: ["Design", "Código", "SEO", "Performance", "E-commerce", "Branding"],
   },
   hero: {
     eyebrow: "Design e desenvolvimento web no México",
@@ -230,6 +235,32 @@ const pt: Dictionary = {
     title: "Eu sou o Bryan. Eu mesmo projeto e construo cada site.",
     subtitle:
       "Sem agência no meio, sem intermediários: você fala comigo desde a primeira mensagem até o dia em que seu site vai ao ar. México, horário flexível, café à vontade.",
+    role: "Designer & desenvolvedor",
+    chips: ["Design + código", "Contato direto, sem agência", "Entrega a partir de 3 dias"],
+    ctaPrimary: "Vamos trabalhar juntos",
+    ctaSecondary: "Veja meu processo",
+    quote: "Cada site que você vê aqui saiu desta mesa.",
+  },
+  luminaSection: {
+    eyebrow: "Sua consultora IA",
+    titlePrefix: "Ela é a",
+    subtitle:
+      "A Lumina mora neste site e conhece tudo o que fazemos: preços, prazos, módulos e processo. Pergunte o que quiser — ela responde na hora, a qualquer momento, e ajuda a montar seu site.",
+    cta: "Converse com a Lumina",
+    status: "Online 24/7",
+    hint: "Toque nela para mudar o humor · arraste para girá-la",
+    moods: {
+      normal: "Modo normal",
+      enfocada: "Modo focada",
+      duda: "Modo curiosa",
+      sorprendida: "Modo surpresa",
+    },
+    phrases: [
+      "Quer um orçamento em 2 minutos?",
+      "Pergunte sobre preços e prazos…",
+      "Posso montar seu pacote ideal.",
+      "Loja virtual? Também entendo disso.",
+    ],
   },
   footer: {
     tagline: "Design que vende",

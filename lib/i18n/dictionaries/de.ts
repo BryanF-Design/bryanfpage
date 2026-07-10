@@ -10,6 +10,11 @@ const de: Dictionary = {
     cliente: "Bereits Kunde?",
     armaTuWeb: "Website gestalten",
     verProyectos: "Projekte ansehen",
+    menu: "Menü öffnen",
+    closeMenu: "Menü schließen",
+  },
+  marquee: {
+    words: ["Design", "Code", "SEO", "Performance", "E-Commerce", "Branding"],
   },
   hero: {
     eyebrow: "Webdesign und -entwicklung in Mexiko",
@@ -230,6 +235,32 @@ const de: Dictionary = {
     title: "Ich bin Bryan. Ich entwerfe und baue jede Website selbst.",
     subtitle:
       "Keine Agentur dazwischen, keine Mittelsmänner: Du sprichst mit mir, von der ersten Nachricht bis zum Tag, an dem deine Website live geht. Mexiko, flexible Zeiten, reichlich Kaffee.",
+    role: "Designer & Entwickler",
+    chips: ["Design + Code", "Direkter Kontakt, keine Agentur", "Lieferung ab 3 Tagen"],
+    ctaPrimary: "Lass uns zusammenarbeiten",
+    ctaSecondary: "Mein Ablauf",
+    quote: "Jede Website, die du hier siehst, ist an diesem Schreibtisch entstanden.",
+  },
+  luminaSection: {
+    eyebrow: "Deine KI-Beraterin",
+    titlePrefix: "Das ist",
+    subtitle:
+      "Lumina lebt auf dieser Website und kennt alles, was wir tun: Preise, Zeiten, Module und Ablauf. Frag sie, was du willst — sie antwortet sofort, rund um die Uhr, und hilft dir, deine Website zusammenzustellen.",
+    cta: "Mit Lumina chatten",
+    status: "Online 24/7",
+    hint: "Tippe sie an, um ihre Stimmung zu ändern · ziehe, um sie zu drehen",
+    moods: {
+      normal: "Normal-Modus",
+      enfocada: "Fokus-Modus",
+      duda: "Neugier-Modus",
+      sorprendida: "Staun-Modus",
+    },
+    phrases: [
+      "Soll ich dir in 2 Minuten ein Angebot machen?",
+      "Frag mich nach Preisen und Zeiten…",
+      "Ich stelle dir dein ideales Paket zusammen.",
+      "Onlineshop? Kenne ich mich auch aus.",
+    ],
   },
   footer: {
     tagline: "Design, das verkauft",

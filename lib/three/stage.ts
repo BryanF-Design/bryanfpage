@@ -13,9 +13,12 @@ export interface ThreeStage {
 /** Per-frame tick. Return false to skip rendering that frame (nothing changed). */
 export type StageTick = (dt: number, elapsed: number) => void | boolean;
 
+/** Scenes that hang listeners outside the container return a dispose too. */
+export type StageBuildResult = StageTick | { tick: StageTick; dispose: () => void };
+
 interface StageOptions {
-  /** Build the scene once; return the per-frame tick. */
-  build: (stage: ThreeStage) => StageTick;
+  /** Build the scene once; return the per-frame tick (or tick + dispose). */
+  build: (stage: ThreeStage) => StageBuildResult;
   fov?: number;
   cameraZ?: number;
   /** Cap for devicePixelRatio. 3D here is ambience, not the LCP. */
@@ -64,7 +67,9 @@ export function useThreeStage({ build, fov = 40, cameraZ = 5, maxDpr = 1.75 }: S
     );
     camera.position.z = cameraZ;
 
-    const tick = buildRef.current({ scene, camera, renderer, container });
+    const built = buildRef.current({ scene, camera, renderer, container });
+    const tick = typeof built === "function" ? built : built.tick;
+    const disposeScene = typeof built === "function" ? undefined : built.dispose;
 
     let raf = 0;
     let running = false;
@@ -136,6 +141,7 @@ export function useThreeStage({ build, fov = 40, cameraZ = 5, maxDpr = 1.75 }: S
 
     return () => {
       setRunning(false);
+      disposeScene?.();
       io.disconnect();
       ro.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);

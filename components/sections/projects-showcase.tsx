@@ -79,10 +79,12 @@ export function ProjectsShowcase() {
             mobile capture just gets more letterbox padding than a wide
             desktop one. Title and description live in their own solid
             footer below the image, never on top of it. */}
-        <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 md:mt-16 lg:grid-cols-3">
           {visibleProjects.map((p, idx) => (
             <Tilt
               key={p.slug}
+              reveal
+              revealDelay={(idx % 3) * 0.08}
               className={cn(idx === 0 && "sm:col-span-2 lg:col-span-2")}
             >
             <a

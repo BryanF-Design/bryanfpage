@@ -10,6 +10,11 @@ const zh: Dictionary = {
     cliente: "已经是客户？",
     armaTuWeb: "定制网站",
     verProyectos: "查看作品",
+    menu: "打开菜单",
+    closeMenu: "关闭菜单",
+  },
+  marquee: {
+    words: ["设计", "代码", "SEO", "性能", "电商", "品牌"],
   },
   hero: {
     eyebrow: "墨西哥网页设计与开发",
@@ -201,6 +206,32 @@ const zh: Dictionary = {
     eyebrow: "关于制作者",
     title: "我是Bryan，每一个网站都由我亲自设计和开发。",
     subtitle: "没有中间代理商，从第一条消息到网站上线的每一天，您都直接与我沟通。来自墨西哥，时间灵活，咖啡管够。",
+    role: "设计师 & 开发者",
+    chips: ["设计 + 代码", "直接沟通，无代理", "最快3天交付"],
+    ctaPrimary: "一起合作",
+    ctaSecondary: "了解流程",
+    quote: "这里的每一个网站，都诞生于这张书桌。",
+  },
+  luminaSection: {
+    eyebrow: "您的AI顾问",
+    titlePrefix: "她是",
+    subtitle:
+      "Lumina住在这个网站里，了解我们的一切：价格、工期、模块和流程。随时问她任何问题 — 她会立即回答，并帮您搭建理想的网站。",
+    cta: "与Lumina聊天",
+    status: "在线 24/7",
+    hint: "点击换表情 · 拖动可旋转",
+    moods: {
+      normal: "正常模式",
+      enfocada: "专注模式",
+      duda: "好奇模式",
+      sorprendida: "惊喜模式",
+    },
+    phrases: [
+      "2分钟给您报个价？",
+      "问我价格和工期吧…",
+      "我可以帮您搭配理想方案。",
+      "网上商店？我也很在行。",
+    ],
   },
   footer: {
     tagline: "让设计带来销量",
