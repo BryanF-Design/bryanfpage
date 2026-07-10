@@ -16,6 +16,7 @@ const zh: Dictionary = {
     titlePrefix: "让梦想",
     titleHighlight: "成真。",
     subtitle: "我们为您定制专属网站：速度快、有动效、以转化为导向。真正的策略、性能与SEO，让您的网站既好看又能带来销量。",
+    scrollHint: "滚动以打开笔记本",
   },
   trust: {
     years: "年",
@@ -84,6 +85,7 @@ const zh: Dictionary = {
     eyebrow: "服务足迹",
     title: "我们曾服务的地区",
     subtitle: "为墨西哥、西班牙和法国的客户完成过项目，设计不受国界限制。",
+    dragHint: "拖动地球仪旋转",
   },
   clients: {
     label: "值得信赖的合作品牌",
@@ -111,6 +113,9 @@ const zh: Dictionary = {
     step3: "3. 支付方式",
     paymentFull: "全款支付（100%）",
     paymentAdvance: "预付定金（50%）",
+    currencyLabel: "货币",
+    currencyNote: (rate: string) =>
+      `按约 ${rate} MXN 兑 1 USD 取整换算。如 Mercado Pago 不支持美元，将按等值 MXN 收取。`,
     couponLabel: "优惠码",
     couponPlaceholder: "例如：BRYANF10",
     apply: "使用",

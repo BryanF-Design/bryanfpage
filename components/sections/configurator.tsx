@@ -18,8 +18,15 @@ import { SectionHeading } from "@/components/sections/section-heading";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
+import {
+  formatMoney,
+  getUsdMxnRate,
+  mxnToUsd,
+  type Currency,
+} from "@/lib/currency";
 
 const WA_PHONE = "525663012505";
+const USD_MXN_RATE = getUsdMxnRate(process.env.NEXT_PUBLIC_USD_MXN_RATE);
 
 const PLAN_META = [
   { id: "full", price: 3500, featured: true },
@@ -59,11 +66,7 @@ function getBank(t: Dictionary) {
 }
 
 function formatMXN(value: number) {
-  return new Intl.NumberFormat("es-MX", {
-    style: "currency",
-    currency: "MXN",
-    maximumFractionDigits: 0,
-  }).format(value || 0);
+  return formatMoney(value, "MXN");
 }
 
 export function Configurator() {
@@ -76,6 +79,7 @@ export function Configurator() {
   const [mods, setMods] = useState<Record<string, boolean>>({});
   const [sections, setSections] = useState(0);
   const [mode, setMode] = useState<"liquidacion" | "anticipo">("liquidacion");
+  const [currency, setCurrency] = useState<Currency>("MXN");
   const [coupon, setCoupon] = useState("");
   const [couponMsg, setCouponMsg] = useState("");
   const [loading, setLoading] = useState<string | null>(null);
@@ -85,6 +89,9 @@ export function Configurator() {
 
   const plan = PLANS.find((p) => p.id === planId)!;
 
+  // Cada partida vive en MXN (precio fuente); la vista y el cobro se derivan
+  // según la moneda elegida, con redondeo hacia arriba por partida en USD
+  // para que la suma mostrada siempre cuadre con el total mostrado.
   const items = useMemo(() => {
     const list: { source: string; price: number }[] = [
       { source: plan.name, price: plan.price },
@@ -101,12 +108,23 @@ export function Configurator() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plan, mods, sections, t]);
 
+  const inCurrency = (mxn: number) =>
+    currency === "MXN" ? mxn : mxnToUsd(mxn, USD_MXN_RATE);
+  const display = (mxn: number) => formatMoney(inCurrency(mxn), currency);
+
   const projectTotal = useMemo(
+    () => Math.max(0, Math.round(items.reduce((a, b) => a + inCurrency(b.price), 0))),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [items, currency]
+  );
+  const projectTotalMxn = useMemo(
     () => Math.max(0, Math.round(items.reduce((a, b) => a + b.price, 0))),
     [items]
   );
   const payableNow =
-    mode === "anticipo" ? Math.round(projectTotal * 0.5) : projectTotal;
+    mode === "anticipo" ? Math.ceil(projectTotal * 0.5) : projectTotal;
+  const payableNowMxn =
+    mode === "anticipo" ? Math.ceil(projectTotalMxn * 0.5) : projectTotalMxn;
 
   const moduleList =
     items
@@ -132,12 +150,14 @@ export function Configurator() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           monto: projectTotal,
+          currency,
           modalidad: mode,
           descripcion: `Configura tu Proyecto Web - ${plan.name}`,
           metadata: {
             flow: "fast-track",
             modules: moduleList,
             coupon: coupon.trim() || "none",
+            currency,
           },
         }),
       });
@@ -170,13 +190,14 @@ export function Configurator() {
     }
   }
 
+  // La transferencia siempre es a cuenta mexicana: montos en MXN.
   const transferMsg = encodeURIComponent(
     t.configurator.whatsappTransferMsg({
       plan: plan.name,
       modules: moduleList,
       mode: mode === "anticipo" ? t.configurator.modeAdvanceLabel : t.configurator.modeFullLabel,
-      total: formatMXN(projectTotal),
-      payNow: formatMXN(payableNow),
+      total: formatMXN(projectTotalMxn),
+      payNow: formatMXN(payableNowMxn),
     })
   );
 
@@ -184,7 +205,7 @@ export function Configurator() {
     <section
       id="precios"
       aria-label={t.configurator.title}
-      className="relative overflow-hidden border-t border-border py-20 md:py-28"
+      className="relative overflow-hidden py-20 md:py-28"
     >
       <div aria-hidden className="mesh-glow-a opacity-50" />
       <div className="container relative">
@@ -199,7 +220,7 @@ export function Configurator() {
           <div className="flex flex-col gap-8">
             {/* Plans */}
             <div>
-              <p className="mb-3 text-sm font-medium text-foreground">
+              <p className="tech-label mb-3 text-muted-foreground">
                 {t.configurator.step1}
               </p>
               <div className="grid gap-3 sm:grid-cols-3">
@@ -211,17 +232,17 @@ export function Configurator() {
                       type="button"
                       onClick={() => setPlanId(p.id)}
                       className={cn(
-                        "elevate flex flex-col rounded-xl p-4 text-left",
+                        "elevate flex flex-col rounded-lg p-4 text-left",
                         active
-                          ? "glass-tint ring-1 ring-primary"
+                          ? "glass-tint corner-ticks"
                           : "glass hover:border-primary/40"
                       )}
                     >
                       <span className="text-sm font-semibold text-foreground">
                         {p.name}
                       </span>
-                      <span className="mt-1 font-display text-2xl font-semibold text-foreground">
-                        {formatMXN(p.price)}
+                      <span className="mt-1 font-mono text-xl font-medium text-foreground">
+                        {display(p.price)}
                       </span>
                       <span className="mt-1 text-xs text-muted-foreground">
                         {p.desc}
@@ -234,14 +255,14 @@ export function Configurator() {
 
             {/* Modules */}
             <div>
-              <p className="mb-3 text-sm font-medium text-foreground">
+              <p className="tech-label mb-3 text-muted-foreground">
                 {t.configurator.step2}
               </p>
               <div className="flex flex-col gap-2">
                 {MODULES.map((m) => (
                   <label
                     key={m.id}
-                    className="glass elevate flex cursor-pointer items-center justify-between rounded-xl px-4 py-3 hover:border-primary/40"
+                    className="glass elevate flex cursor-pointer items-center justify-between rounded-lg px-4 py-3 hover:border-primary/40"
                   >
                     <span className="flex items-center gap-3">
                       <input
@@ -254,18 +275,18 @@ export function Configurator() {
                       />
                       <span className="text-sm text-foreground">{m.label}</span>
                     </span>
-                    <span className="text-sm text-muted-foreground">
-                      +{formatMXN(m.price)}
+                    <span className="font-mono text-sm text-muted-foreground">
+                      +{display(m.price)}
                     </span>
                   </label>
                 ))}
 
                 {/* Sections counter */}
-                <div className="glass flex items-center justify-between rounded-xl px-4 py-3">
+                <div className="glass flex items-center justify-between rounded-lg px-4 py-3">
                   <span className="text-sm text-foreground">
                     {t.configurator.extraSections}
-                    <span className="ml-1 text-muted-foreground">
-                      (+{formatMXN(SECTION_PRICE)} {t.configurator.perUnit})
+                    <span className="ml-1 font-mono text-xs text-muted-foreground">
+                      (+{display(SECTION_PRICE)} {t.configurator.perUnit})
                     </span>
                   </span>
                   <span className="flex items-center gap-3">
@@ -293,10 +314,10 @@ export function Configurator() {
               </div>
             </div>
 
-            {/* Payment mode + coupon */}
-            <div className="grid gap-4 sm:grid-cols-2">
+            {/* Payment mode + currency + coupon */}
+            <div className="grid gap-4 sm:grid-cols-3">
               <div>
-                <p className="mb-2 text-sm font-medium text-foreground">
+                <p className="tech-label mb-2 text-muted-foreground">
                   {t.configurator.step3}
                 </p>
                 <div className="flex flex-col gap-2">
@@ -321,7 +342,39 @@ export function Configurator() {
                 </div>
               </div>
               <div>
-                <p className="mb-2 text-sm font-medium text-foreground">{t.configurator.couponLabel}</p>
+                <p className="tech-label mb-2 text-muted-foreground">
+                  {t.configurator.currencyLabel}
+                </p>
+                <div
+                  role="group"
+                  aria-label={t.configurator.currencyLabel}
+                  className="inline-flex overflow-hidden rounded-md border border-border"
+                >
+                  {(["MXN", "USD"] as Currency[]).map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      aria-pressed={currency === c}
+                      onClick={() => setCurrency(c)}
+                      className={cn(
+                        "px-4 py-2 font-mono text-xs font-medium tracking-[0.12em] transition-colors",
+                        currency === c
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-transparent text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+                {currency === "USD" && (
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    {t.configurator.currencyNote(String(USD_MXN_RATE))}
+                  </p>
+                )}
+              </div>
+              <div>
+                <p className="tech-label mb-2 text-muted-foreground">{t.configurator.couponLabel}</p>
                 <div className="flex gap-2">
                   <input
                     value={coupon}
@@ -342,8 +395,8 @@ export function Configurator() {
 
           {/* RIGHT: summary + pay */}
           <div className="lg:sticky lg:top-24">
-            <div className="glass-tint flex flex-col gap-4 rounded-2xl p-6 shadow-xl shadow-primary/5">
-              <p className="text-sm font-medium text-foreground">{t.configurator.summary}</p>
+            <div className="glass-tint corner-ticks flex flex-col gap-4 rounded-lg p-6">
+              <p className="tech-label text-muted-foreground">{t.configurator.summary}</p>
               <div className="flex flex-col gap-2">
                 {items.map((it, i) => (
                   <div
@@ -351,8 +404,8 @@ export function Configurator() {
                     className="flex items-center justify-between text-sm"
                   >
                     <span className="text-muted-foreground">{it.source}</span>
-                    <span className="text-foreground">
-                      {formatMXN(it.price)}
+                    <span className="font-mono text-foreground">
+                      {display(it.price)}
                     </span>
                   </div>
                 ))}
@@ -360,16 +413,21 @@ export function Configurator() {
               <div className="border-t border-border pt-4">
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
                   <span>{t.configurator.totalProject}</span>
-                  <span>{formatMXN(projectTotal)}</span>
+                  <span className="font-mono">{formatMoney(projectTotal, currency)}</span>
                 </div>
                 <div className="mt-1 flex items-baseline justify-between">
                   <span className="text-sm font-medium text-foreground">
                     {t.configurator.payNow}
                   </span>
-                  <span className="font-display text-3xl font-semibold text-primary">
-                    {formatMXN(payableNow)}
+                  <span className="font-mono text-3xl font-medium text-primary">
+                    {formatMoney(payableNow, currency)}
                   </span>
                 </div>
+                {currency === "USD" && (
+                  <p className="mt-1 text-right font-mono text-xs text-muted-foreground">
+                    ≈ {formatMXN(payableNowMxn)}
+                  </p>
+                )}
               </div>
 
               {/* Pay buttons */}
@@ -425,9 +483,9 @@ export function Configurator() {
 
               {/* Transfer details */}
               {transfer && (
-                <div className="glass mt-1 flex flex-col gap-2 rounded-xl p-4">
+                <div className="glass mt-1 flex flex-col gap-2 rounded-lg p-4">
                   <p className="text-xs text-muted-foreground">
-                    {t.configurator.transferInstructions(formatMXN(payableNow))}
+                    {t.configurator.transferInstructions(formatMXN(payableNowMxn))}
                   </p>
                   {BANK.map((b) => (
                     <div

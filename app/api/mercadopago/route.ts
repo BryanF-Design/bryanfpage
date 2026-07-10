@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MercadoPagoConfig, Preference } from "mercadopago";
 import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
+import { getUsdMxnRate, isCurrency, usdToMxn } from "@/lib/currency";
 
 export const runtime = "nodejs";
 
@@ -27,6 +28,9 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json().catch(() => ({}) as Record<string, unknown>);
     const monto = Number((body as Record<string, unknown>).monto || 0);
+    // Moneda elegida en el configurador; MXN por defecto (comportamiento previo).
+    const rawCurrency = (body as Record<string, unknown>).currency;
+    const currency = isCurrency(rawCurrency) ? rawCurrency : "MXN";
     const modalidad =
       (body as Record<string, unknown>).modalidad === "anticipo"
         ? "anticipo"
@@ -54,30 +58,50 @@ export async function POST(req: NextRequest) {
     });
     const preference = new Preference(client);
 
-    const result = await preference.create({
-      body: {
-        items: [
-          {
-            id: "bryanf-servicio",
-            title: descripcion,
-            quantity: 1,
-            unit_price: payable,
-            currency_id: "MXN",
+    const createPreference = (unitPrice: number, currencyId: "MXN" | "USD") =>
+      preference.create({
+        body: {
+          items: [
+            {
+              id: "bryanf-servicio",
+              title: descripcion,
+              quantity: 1,
+              unit_price: unitPrice,
+              currency_id: currencyId,
+            },
+          ],
+          back_urls: {
+            success: `${siteUrl}/?status=success#fast-track-section`,
+            failure: `${siteUrl}/?status=failure#fast-track-section`,
+            pending: `${siteUrl}/?status=pending#fast-track-section`,
           },
-        ],
-        back_urls: {
-          success: `${siteUrl}/?status=success#fast-track-section`,
-          failure: `${siteUrl}/?status=failure#fast-track-section`,
-          pending: `${siteUrl}/?status=pending#fast-track-section`,
+          auto_return: "approved",
         },
-        auto_return: "approved",
-      },
-    });
+      });
+
+    // USD solo funciona en cuentas de países que lo permiten; si Mercado Pago
+    // lo rechaza, se cobra el equivalente redondeado en MXN — el flujo de
+    // pago nunca se rompe por la moneda elegida.
+    let chargedCurrency: "MXN" | "USD" = currency;
+    let chargedAmount = payable;
+    let result;
+    if (currency === "USD") {
+      try {
+        result = await createPreference(payable, "USD");
+      } catch {
+        chargedCurrency = "MXN";
+        chargedAmount = usdToMxn(payable, getUsdMxnRate(process.env.USD_MXN_RATE));
+        result = await createPreference(chargedAmount, "MXN");
+      }
+    } else {
+      result = await createPreference(payable, "MXN");
+    }
 
     return NextResponse.json({
       preferenceId: result.id,
       initPoint: result.init_point || result.sandbox_init_point || "",
-      amount: payable,
+      amount: chargedAmount,
+      currency: chargedCurrency,
     });
   } catch (error) {
     console.error("Mercado Pago error:", error);

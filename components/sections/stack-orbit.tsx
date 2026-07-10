@@ -54,12 +54,12 @@ export function StackOrbit() {
       className="py-20 md:py-28"
     >
       <div className="container">
-        <div className="glass relative flex h-[34rem] flex-col items-center justify-between overflow-hidden rounded-3xl bg-grain p-8 md:h-[30rem] md:flex-row md:p-12">
+        <div className="glass corner-ticks relative flex h-[34rem] flex-col items-center justify-between overflow-hidden rounded-lg bg-grain p-8 md:h-[30rem] md:flex-row md:p-12">
           <div aria-hidden className="mesh-glow-a opacity-50" />
           {/* Left: copy */}
           <div className="z-10 max-w-lg text-center md:w-1/2 md:text-left">
-            <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.25em] text-primary">
-              <span className="h-px w-6 bg-primary" />
+            <span className="tech-label inline-flex items-center gap-3 text-primary">
+              <span className="h-1.5 w-1.5 bg-primary" />
               {t.stack.eyebrow}
             </span>
             <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">

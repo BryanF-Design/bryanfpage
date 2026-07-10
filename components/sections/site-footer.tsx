@@ -71,7 +71,7 @@ export function SiteFooter() {
                 rel="noopener noreferrer"
                 aria-label={label}
                 style={{ ["--glow" as string]: glow }}
-                className="glass elevate flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground hover:border-[var(--glow)] hover:text-[var(--glow)] hover:shadow-[0_0_16px_var(--glow)]"
+                className="glass elevate flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:border-[var(--glow)] hover:text-[var(--glow)] hover:shadow-[0_0_16px_var(--glow)]"
               >
                 <Icon className="h-4 w-4" />
               </Link>
@@ -81,7 +81,7 @@ export function SiteFooter() {
 
         {/* Nav */}
         <nav aria-label={t.footer.navLabel}>
-          <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+          <p className="tech-label mb-4 text-muted-foreground">
             {t.footer.navLabel}
           </p>
           <ul className="flex flex-col gap-2.5 text-sm">
@@ -109,7 +109,7 @@ export function SiteFooter() {
         </nav>
 
         <nav aria-label={t.footer.servicesLabel}>
-          <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+          <p className="tech-label mb-4 text-muted-foreground">
             {t.footer.servicesLabel}
           </p>
           <ul className="flex flex-col gap-2.5 text-sm">
@@ -128,7 +128,7 @@ export function SiteFooter() {
 
         {/* Legal + contacto */}
         <div>
-          <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+          <p className="tech-label mb-4 text-muted-foreground">
             {t.footer.legalLabel}
           </p>
           <ul className="flex flex-col gap-2.5 text-sm">

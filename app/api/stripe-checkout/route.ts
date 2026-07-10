@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
+import { isCurrency } from "@/lib/currency";
 
 export const runtime = "nodejs";
 
@@ -24,6 +25,9 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json().catch(() => ({}) as Record<string, unknown>);
     const monto = Number((body as Record<string, unknown>).monto || 0);
+    // Moneda elegida en el configurador; MXN por defecto (comportamiento previo).
+    const rawCurrency = (body as Record<string, unknown>).currency;
+    const currency = isCurrency(rawCurrency) ? rawCurrency : "MXN";
     const modalidad =
       (body as Record<string, unknown>).modalidad === "anticipo"
         ? "anticipo"
@@ -66,7 +70,7 @@ export async function POST(req: NextRequest) {
         {
           quantity: 1,
           price_data: {
-            currency: "mxn",
+            currency: currency.toLowerCase(),
             unit_amount: payable * 100,
             product_data: { name: descripcion },
           },
@@ -75,13 +79,14 @@ export async function POST(req: NextRequest) {
       metadata: {
         modalidad,
         montoOriginal: String(monto),
+        moneda: currency,
         ...metadata,
       },
       success_url: `${siteUrl}/?status=success#fast-track-section`,
       cancel_url: `${siteUrl}/?status=cancel#fast-track-section`,
     });
 
-    return NextResponse.json({ checkoutUrl: session.url, amount: payable });
+    return NextResponse.json({ checkoutUrl: session.url, amount: payable, currency });
   } catch (error) {
     console.error("Stripe checkout error:", error);
     return NextResponse.json(

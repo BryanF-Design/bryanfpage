@@ -17,6 +17,7 @@ const pt: Dictionary = {
     titleHighlight: "acontecer.",
     subtitle:
       "Criamos seu site sob medida: rápido, animado e orientado à conversão. Estratégia, performance e SEO de verdade para o seu site ficar incrível e vender.",
+    scrollHint: "Role para abrir o laptop",
   },
   trust: {
     years: "anos",
@@ -99,6 +100,7 @@ const pt: Dictionary = {
     eyebrow: "Presença",
     title: "Onde já trabalhamos",
     subtitle: "Projetos para clientes no México, Espanha e França. Projetamos sem fronteiras.",
+    dragHint: "Arraste o globo para girá-lo",
   },
   clients: {
     label: "Marcas que confiaram",
@@ -135,6 +137,9 @@ const pt: Dictionary = {
     step3: "3. Modalidade de pagamento",
     paymentFull: "Pagamento completo (100%)",
     paymentAdvance: "Entrada (50%)",
+    currencyLabel: "Moeda",
+    currencyNote: (rate: string) =>
+      `Conversão arredondada a aprox. ${rate} MXN por USD. Se o Mercado Pago não aceitar USD, é cobrado o equivalente em MXN.`,
     couponLabel: "Cupom",
     couponPlaceholder: "Ex. BRYANF10",
     apply: "Aplicar",

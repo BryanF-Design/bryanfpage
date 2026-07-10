@@ -17,6 +17,7 @@ const ja: Dictionary = {
     titleHighlight: "しよう。",
     subtitle:
       "コンバージョンを意識した、速くてアニメーション豊かなオーダーメイドのウェブサイトを制作します。戦略・パフォーマンス・SEOで、見た目も成果も妥協しません。",
+    scrollHint: "スクロールしてラップトップを開く",
   },
   trust: {
     years: "年",
@@ -97,6 +98,7 @@ const ja: Dictionary = {
     eyebrow: "拠点",
     title: "これまでの実績エリア",
     subtitle: "メキシコ、スペイン、フランスのお客様のプロジェクトを手がけてきました。国境を越えてデザインします。",
+    dragHint: "ドラッグして地球儀を回す",
   },
   clients: {
     label: "信頼していただいたブランド",
@@ -133,6 +135,9 @@ const ja: Dictionary = {
     step3: "3. 支払い方法",
     paymentFull: "全額支払い（100%）",
     paymentAdvance: "前払い（50%）",
+    currencyLabel: "通貨",
+    currencyNote: (rate: string) =>
+      `1 USD ≈ ${rate} MXN で概算・切り上げ換算です。Mercado PagoがUSD非対応の場合はMXN換算で請求されます。`,
     couponLabel: "クーポン",
     couponPlaceholder: "例：BRYANF10",
     apply: "適用する",

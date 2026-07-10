@@ -17,6 +17,7 @@ const en: Dictionary = {
     titleHighlight: "happen.",
     subtitle:
       "We build your website from scratch: fast, animated, and built to convert. Real strategy, performance, and SEO so your site looks incredible and sells.",
+    scrollHint: "Scroll to open the laptop",
   },
   trust: {
     years: "years",
@@ -99,6 +100,7 @@ const en: Dictionary = {
     eyebrow: "Reach",
     title: "Where we've worked",
     subtitle: "Projects for clients in Mexico, Spain, and France. We design without borders.",
+    dragHint: "Drag the globe to spin it",
   },
   clients: {
     label: "Brands that have trusted us",
@@ -135,6 +137,9 @@ const en: Dictionary = {
     step3: "3. Payment mode",
     paymentFull: "Full payment (100%)",
     paymentAdvance: "Deposit (50%)",
+    currencyLabel: "Currency",
+    currencyNote: (rate: string) =>
+      `Rounded conversion at approx. ${rate} MXN per USD. If Mercado Pago doesn't support USD, the MXN equivalent is charged.`,
     couponLabel: "Coupon",
     couponPlaceholder: "E.g. BRYANF10",
     apply: "Apply",

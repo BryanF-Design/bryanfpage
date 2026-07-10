@@ -37,14 +37,14 @@ export function ProcessOrbital() {
                 key={step.title}
                 className="relative flex gap-5 md:flex-col md:items-center md:gap-4 md:text-center"
               >
-                <div className="glass elevate relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full !border-2 border-primary/50 text-primary">
+                <div className="glass elevate corner-ticks relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-md text-primary">
                   <Icon className="h-5 w-5" />
                 </div>
                 <div className="pb-2 md:px-2">
-                  <span className="font-mono text-xs text-primary">
+                  <span className="font-mono text-xs tracking-[0.18em] text-primary">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <h3 className="mt-1 font-display text-xl font-semibold text-foreground">
+                  <h3 className="mt-1 font-display text-xl font-bold text-foreground">
                     {step.title}
                   </h3>
                   <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
