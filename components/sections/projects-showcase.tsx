@@ -6,6 +6,7 @@ import { ArrowUpRight, ChevronDown } from "lucide-react";
 
 import { projects, desktopShot, mobileShot } from "@/lib/projects";
 import { TextRotate } from "@/components/ui/text-rotate";
+import { Tilt } from "@/components/ui/tilt";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
@@ -80,15 +81,15 @@ export function ProjectsShowcase() {
             footer below the image, never on top of it. */}
         <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {visibleProjects.map((p, idx) => (
-            <a
+            <Tilt
               key={p.slug}
+              className={cn(idx === 0 && "sm:col-span-2 lg:col-span-2")}
+            >
+            <a
               href={p.url}
               target="_blank"
               rel="noopener noreferrer"
-              className={cn(
-                "elevate group flex flex-col overflow-hidden rounded-lg border border-border bg-card hover:border-primary/40",
-                idx === 0 && "sm:col-span-2 lg:col-span-2"
-              )}
+              className="elevate group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card hover:border-primary/40"
             >
               {/* Browser chrome */}
               <div className="flex items-center gap-3 border-b border-border bg-secondary/50 px-3.5 py-2.5">
@@ -102,11 +103,12 @@ export function ProjectsShowcase() {
                 </span>
               </div>
 
-              {/* Screenshot, shown in full (object-contain) so nothing is
-                  cropped — the browser chrome above already tells you which
-                  format you're looking at. <picture>-style breakpoint swap
-                  keeps the same bandwidth optimization — only the matching
-                  shot downloads. */}
+              {/* Screenshot: object-cover desde arriba, así el marco 4:3
+                  siempre se llena con la parte superior del sitio (nada de
+                  tiras letterboxeadas en móvil — la captura de teléfono es
+                  muy alta y solo interesa su inicio). El swap tipo <picture>
+                  mantiene la optimización: solo se descarga la captura que
+                  corresponde al breakpoint. */}
               <div className="relative aspect-[4/3] overflow-hidden bg-secondary/20">
                 <Image
                   src={mobileShot(p.slug)}
@@ -114,7 +116,7 @@ export function ProjectsShowcase() {
                   fill
                   sizes="100vw"
                   loading="lazy"
-                  className="object-contain object-top p-2 transition-transform duration-500 group-hover:scale-[1.03] md:hidden"
+                  className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03] md:hidden"
                 />
                 <Image
                   src={desktopShot(p.slug)}
@@ -122,7 +124,7 @@ export function ProjectsShowcase() {
                   fill
                   sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                   loading="lazy"
-                  className="hidden object-contain object-top p-2 transition-transform duration-500 group-hover:scale-[1.03] md:block"
+                  className="hidden object-cover object-top transition-transform duration-500 group-hover:scale-[1.03] md:block"
                 />
               </div>
 
@@ -138,6 +140,7 @@ export function ProjectsShowcase() {
                 </span>
               </div>
             </a>
+            </Tilt>
           ))}
         </div>
 

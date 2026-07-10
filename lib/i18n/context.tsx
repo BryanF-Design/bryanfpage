@@ -56,6 +56,26 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     if (stored && stored !== DEFAULT_LOCALE) {
       setLocaleState(stored);
     }
+
+    // Sincronía entre pestañas: si el visitante cambia el idioma en otra
+    // pestaña (evento storage) o regresa a esta (visibilitychange), se
+    // adopta la elección guardada — el idioma elegido "los sigue" siempre.
+    function onStorage(e: StorageEvent) {
+      if (e.key === STORAGE_KEY && isLocale(e.newValue)) {
+        setLocaleState(e.newValue);
+      }
+    }
+    function onVisibilityChange() {
+      if (document.hidden) return;
+      const current = readStoredLocale();
+      if (current) setLocaleState(current);
+    }
+    window.addEventListener("storage", onStorage);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
   }, []);
 
   useEffect(() => {

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2, MessageCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Floating3d } from "@/components/three/floating-3d";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { SiteHeader } from "@/components/sections/site-header";
 import {
@@ -135,8 +136,12 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
               </div>
             </div>
 
-            <aside className="glass rounded-lg p-6">
-              <p className="text-sm font-medium text-primary">Keyword principal</p>
+            <aside className="glass corner-ticks rounded-lg p-6">
+              <Floating3d
+                variant="icosahedron"
+                className="relative mx-auto -mt-2 h-44 w-44"
+              />
+              <p className="tech-label text-primary">Keyword principal</p>
               <p className="mt-2 font-display text-2xl font-semibold text-foreground">
                 {page.keyword}
               </p>
