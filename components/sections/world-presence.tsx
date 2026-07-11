@@ -1,6 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { motion } from "framer-motion";
+
 import { SectionHeading } from "@/components/sections/section-heading";
 import { LazyMount } from "@/components/three/lazy-mount";
 import { useLanguage } from "@/lib/i18n/context";
@@ -45,8 +47,15 @@ export function WorldPresence() {
         <div className="mt-12 grid items-center gap-10 lg:grid-cols-[0.85fr_1.15fr]">
           {/* Bitácora de ubicaciones */}
           <ol className="order-2 flex flex-col divide-y divide-border border-y border-border lg:order-1">
-            {LOCATIONS.map((l) => (
-              <li key={l.label} className="flex items-baseline justify-between gap-4 py-5">
+            {LOCATIONS.map((l, i) => (
+              <motion.li
+                key={l.label}
+                initial={{ opacity: 0, x: -24 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.55, delay: i * 0.1, ease: [0.2, 0, 0, 1] }}
+                className="flex items-baseline justify-between gap-4 py-5"
+              >
                 <span className="flex items-center gap-3">
                   <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
                   <span className="font-display text-xl font-bold text-foreground md:text-2xl">
@@ -56,7 +65,7 @@ export function WorldPresence() {
                 <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
                   {l.coords}
                 </span>
-              </li>
+              </motion.li>
             ))}
           </ol>
 

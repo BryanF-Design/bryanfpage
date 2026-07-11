@@ -56,6 +56,29 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    /* Las bandas marquee y los nombres gigantes sobresalen a propósito:
+       nada de scroll horizontal fantasma en móvil. */
+    overflow-x: clip;
+  }
+
+  /* Scrollbar de taller: delgada, tinta y lima. */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--primary) / 0.55) hsl(var(--background));
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary) / 0.45);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.7);
   }
   ::selection {
     background: hsl(var(--primary) / 0.85);
@@ -153,6 +176,35 @@
   }
   .elevate:hover {
     transform: translateY(-2px);
+  }
+  /* En touch no hay hover: la retroalimentación es el apretón al tocar. */
+  @media (hover: none) {
+    .elevate:hover {
+      transform: none;
+    }
+    .elevate:active {
+      transform: scale(0.985);
+    }
+  }
+
+  /* Tipografía fantasma: nombres gigantes delineados para capas de fondo. */
+  .text-stroke-lime {
+    color: transparent;
+    -webkit-text-stroke: 1.5px hsl(var(--primary) / 0.85);
+    paint-order: stroke;
+  }
+  .text-stroke-bone {
+    color: transparent;
+    -webkit-text-stroke: 1.5px hsl(var(--foreground) / 0.8);
+    paint-order: stroke;
+  }
+  @supports not (-webkit-text-stroke: 1px black) {
+    .text-stroke-lime {
+      color: hsl(var(--primary) / 0.25);
+    }
+    .text-stroke-bone {
+      color: hsl(var(--foreground) / 0.2);
+    }
   }
 
   /* Atmósfera: resplandores estáticos (CSS puro, nunca animados). */

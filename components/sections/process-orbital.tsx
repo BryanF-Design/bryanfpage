@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { FileSpreadsheet, ClipboardList, Code2, Rocket, LifeBuoy } from "lucide-react";
 
 import { SectionHeading } from "@/components/sections/section-heading";
@@ -33,8 +34,12 @@ export function ProcessOrbital() {
           {steps.map((step, i) => {
             const Icon = step.icon;
             return (
-              <li
+              <motion.li
                 key={step.title}
+                initial={{ opacity: 0, y: 28 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.55, delay: i * 0.09, ease: [0.2, 0, 0, 1] }}
                 className="relative flex gap-5 md:flex-col md:items-center md:gap-4 md:text-center"
               >
                 <div className="glass elevate corner-ticks relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-md text-primary">
@@ -51,7 +56,7 @@ export function ProcessOrbital() {
                     {step.content}
                   </p>
                 </div>
-              </li>
+              </motion.li>
             );
           })}
         </ol>

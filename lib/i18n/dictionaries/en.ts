@@ -10,6 +10,11 @@ const en: Dictionary = {
     cliente: "Already a client?",
     armaTuWeb: "Build your site",
     verProyectos: "See projects",
+    menu: "Open menu",
+    closeMenu: "Close menu",
+  },
+  marquee: {
+    words: ["Design", "Code", "SEO", "Performance", "E-commerce", "Branding"],
   },
   hero: {
     eyebrow: "Web design and development in Mexico",
@@ -230,6 +235,32 @@ const en: Dictionary = {
     title: "I'm Bryan. I design and build every site myself.",
     subtitle:
       "No agency in between, no middlemen: you talk to me from the first message to the day your site goes live. Mexico, flexible hours, plenty of coffee.",
+    role: "Designer & developer",
+    chips: ["Design + code", "Direct contact, no agency", "Delivery from 3 days"],
+    ctaPrimary: "Let's work together",
+    ctaSecondary: "See my process",
+    quote: "Every site you see here came out of this desk.",
+  },
+  luminaSection: {
+    eyebrow: "Your AI advisor",
+    titlePrefix: "Meet",
+    subtitle:
+      "Lumina lives on this site and knows everything we do: pricing, timelines, modules, and process. Ask her anything — she answers instantly, any time, and helps you spec out your site.",
+    cta: "Chat with Lumina",
+    status: "Online 24/7",
+    hint: "Tap her to change her mood · drag to spin her around",
+    moods: {
+      normal: "Normal mode",
+      enfocada: "Focused mode",
+      duda: "Curious mode",
+      sorprendida: "Surprised mode",
+    },
+    phrases: [
+      "Want a quote in 2 minutes?",
+      "Ask me about pricing and timelines…",
+      "I can build your ideal package.",
+      "Online store? I know about that too.",
+    ],
   },
   footer: {
     tagline: "Design that sells",

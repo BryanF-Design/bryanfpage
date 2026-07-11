@@ -11,6 +11,11 @@ const es = {
     cliente: "¿Ya eres cliente?",
     armaTuWeb: "Arma tu web",
     verProyectos: "Ver proyectos",
+    menu: "Abrir menú",
+    closeMenu: "Cerrar menú",
+  },
+  marquee: {
+    words: ["Diseño", "Código", "SEO", "Performance", "E-commerce", "Branding"],
   },
   hero: {
     eyebrow: "Diseño y desarrollo web en México",
@@ -250,6 +255,32 @@ const es = {
     title: "Soy Bryan. Diseño y construyo cada web yo mismo.",
     subtitle:
       "Sin agencia de por medio, sin intermediarios: hablas conmigo desde el primer mensaje hasta el día que tu web queda en línea. México, horario flexible, café de sobra.",
+    role: "Diseñador & desarrollador",
+    chips: ["Diseño + código", "Trato directo, sin agencia", "Entregas desde 3 días"],
+    ctaPrimary: "Trabajemos juntos",
+    ctaSecondary: "Mira mi proceso",
+    quote: "Cada web que ves aquí salió de este escritorio.",
+  },
+  luminaSection: {
+    eyebrow: "Tu asesora IA",
+    titlePrefix: "Ella es",
+    subtitle:
+      "Lumina vive en este sitio y conoce todo lo que hacemos: precios, tiempos, módulos y proceso. Pregúntale lo que sea — responde al instante, a cualquier hora, y te deja tu web armada.",
+    cta: "Chatea con Lumina",
+    status: "En línea 24/7",
+    hint: "Tócala para cambiar su ánimo · arrástrala para girarla",
+    moods: {
+      normal: "Modo normal",
+      enfocada: "Modo enfocada",
+      duda: "Modo curiosa",
+      sorprendida: "Modo sorprendida",
+    },
+    phrases: [
+      "¿Te cotizo tu web en 2 minutos?",
+      "Pregúntame precios y tiempos…",
+      "Puedo armar tu paquete ideal.",
+      "¿Tienda en línea? También sé de eso.",
+    ],
   },
   footer: {
     tagline: "Diseño que vende",

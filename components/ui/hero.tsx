@@ -14,6 +14,11 @@ const LaptopScene = dynamic(
   () => import("@/components/three/laptop-scene").then((m) => m.LaptopScene),
   { ssr: false }
 );
+// Terreno de partículas al fondo del hero: mismo chunk diferido, cero SSR.
+const ParticleField = dynamic(
+  () => import("@/components/three/particle-field").then((m) => m.ParticleField),
+  { ssr: false }
+);
 
 interface HeroAction {
   label: string;
@@ -93,10 +98,16 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
         className={cn("relative z-0 w-full", className)}
         {...props}
       >
-        <div ref={wrapperRef} className="relative h-[185svh]">
+        <div ref={wrapperRef} className="relative h-[165svh] md:h-[185svh]">
           <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden bg-background">
             <div aria-hidden className="bg-blueprint absolute inset-0" />
             <div aria-hidden className="mesh-glow-a absolute inset-0" />
+            {/* Terreno de partículas vivo: ondula solo, se levanta bajo el
+                puntero y se hunde hacia el horizonte conforme bajas. */}
+            <ParticleField
+              progressRef={progressRef}
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-[62svh] md:h-[70svh] [mask-image:linear-gradient(to_bottom,transparent,black_42%)]"
+            />
 
             <div className="container relative z-10 flex flex-1 flex-col justify-center gap-10 pb-10 pt-28 lg:grid lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-6">
               {/* Copy */}
@@ -131,9 +142,20 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                   </p>
                 )}
                 {actions && actions.length > 0 && (
-                  <div className={cn("mt-2 flex flex-wrap items-center gap-3", actionsClassName)}>
+                  <div
+                    className={cn(
+                      "mt-2 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center",
+                      actionsClassName
+                    )}
+                  >
                     {actions.map((action, index) => (
-                      <Button key={index} size="lg" variant={action.variant || "default"} asChild>
+                      <Button
+                        key={index}
+                        size="lg"
+                        variant={action.variant || "default"}
+                        asChild
+                        className="w-full sm:w-auto"
+                      >
                         <Link href={action.href}>{action.label}</Link>
                       </Button>
                     ))}

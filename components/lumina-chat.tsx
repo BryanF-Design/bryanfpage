@@ -138,6 +138,23 @@ export function LuminaChat() {
     window.setTimeout(() => setMood("Normal"), 1400);
   }
 
+  // Cualquier parte del sitio puede abrir el chat (la sección de Lumina lo
+  // usa): `lumina:open` con un mensaje opcional que se envía al instante.
+  // send() vive en un ref para que el listener nunca vea estado viejo.
+  const sendRef = useRef<(text: string) => void>(() => {});
+  useEffect(() => {
+    function onOpenEvent(e: Event) {
+      setOpen(true);
+      setTeaser(false);
+      setMood("Sorprendida");
+      window.setTimeout(() => setMood("Normal"), 1400);
+      const message = (e as CustomEvent<{ message?: string }>).detail?.message;
+      if (message) window.setTimeout(() => sendRef.current(message), 350);
+    }
+    window.addEventListener("lumina:open", onOpenEvent);
+    return () => window.removeEventListener("lumina:open", onOpenEvent);
+  }, []);
+
   async function send(text: string) {
     const content = text.trim();
     if (!content || loading) return;
@@ -183,13 +200,14 @@ export function LuminaChat() {
       setLoading(false);
     }
   }
+  sendRef.current = send;
 
   return (
     <>
       {/* Panel */}
       <div
         className={cn(
-          "glass fixed bottom-24 right-4 z-[120] flex w-[min(92vw,22rem)] origin-bottom-right flex-col overflow-hidden rounded-2xl shadow-2xl transition-all duration-300 sm:right-6",
+          "glass fixed bottom-[calc(6rem+env(safe-area-inset-bottom))] right-4 z-[120] flex w-[min(92vw,22rem)] origin-bottom-right flex-col overflow-hidden rounded-2xl shadow-2xl transition-all duration-300 sm:right-6",
           open
             ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
             : "pointer-events-none translate-y-3 scale-95 opacity-0"
@@ -316,7 +334,7 @@ export function LuminaChat() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.3 }}
-            className="glass fixed bottom-24 right-4 z-[120] max-w-[16rem] rounded-2xl rounded-br-sm px-4 py-3 text-sm text-foreground shadow-xl sm:right-6"
+            className="glass fixed bottom-[calc(6rem+env(safe-area-inset-bottom))] right-4 z-[120] max-w-[16rem] rounded-2xl rounded-br-sm px-4 py-3 text-sm text-foreground shadow-xl sm:right-6"
           >
             <button
               onClick={() => setTeaser(false)}
@@ -347,7 +365,7 @@ export function LuminaChat() {
           scale: { duration: 0.3, ease: "easeInOut" },
         }}
         className={cn(
-          "fixed bottom-5 right-4 z-[120] flex items-center gap-2 rounded-full bg-primary py-2 pl-2 pr-4 font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-105 sm:right-6",
+          "fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-4 z-[120] flex items-center gap-2 rounded-full bg-primary py-2 pl-2 pr-4 font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-105 active:scale-95 sm:right-6",
           footerInView && "pointer-events-none"
         )}
       >
