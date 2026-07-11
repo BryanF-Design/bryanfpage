@@ -63,8 +63,8 @@ export function SiteHeader() {
   return (
     <>
     <header className="glass-nav fixed inset-x-0 top-0 z-[100] border-b border-border">
-      <div className="container flex items-center justify-between gap-3 py-3">
-        <Link href="/" className="flex shrink-0 items-center" aria-label="BryanF Design — inicio">
+      <div className="container grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3 md:grid-cols-[1fr_auto_1fr]">
+        <Link href="/" className="flex min-w-0 items-center justify-self-start" aria-label="BryanF Design — inicio">
           <Image
             src="/img/logotipo-blanco.png"
             alt="BryanF Design"
@@ -76,7 +76,7 @@ export function SiteHeader() {
           />
         </Link>
 
-        <nav className="hidden items-center gap-7 md:flex">
+        <nav className="hidden items-center justify-center gap-5 md:flex xl:gap-8">
           {links.map((l) => (
             <Link
               key={l.href}
@@ -88,7 +88,7 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-1 sm:gap-2">
+        <div className="flex items-center justify-self-end gap-1 sm:gap-2">
           <LanguageSwitcher />
           <Button asChild size="sm" variant="ghost" className="hidden lg:inline-flex">
             <Link href={CLIENT_PORTAL} target="_blank" rel="noopener noreferrer">

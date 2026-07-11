@@ -26,11 +26,10 @@ const ParallaxShards = dynamic(
 const WHATSAPP = "https://wa.me/525663012505";
 
 /**
- * Portada editorial de Bryan: su retrato a página completa con el nombre
+ * Portada editorial de Bryan: su foto de trabajo a página completa con el nombre
  * gigante cruzando detrás en su propia capa de parallax, la bio al lado y
  * escombros 3D flotando al fondo. La foto entra en blanco y negro y toma
- * color conforme la descubres. Cierra con la foto nocturna del escritorio
- * como banda cinematográfica.
+ * color conforme la descubres.
  */
 export function MeetBryan() {
   const { t } = useLanguage();
@@ -82,7 +81,7 @@ export function MeetBryan() {
       </motion.div>
 
       <div className="container relative z-10 grid gap-10 pb-10 pt-24 md:pt-32 lg:grid-cols-[1.02fr_0.98fr] lg:items-end lg:gap-14 lg:pb-0">
-        {/* Retrato ENORME */}
+        {/* Única foto de Bryan: la toma final del escritorio */}
         <motion.div
           style={reduced ? undefined : { y: photoY }}
           className="relative order-1 lg:order-1"
@@ -93,11 +92,11 @@ export function MeetBryan() {
               className="absolute inset-0"
             >
               <Image
-                src="/img/me/ME.png"
-                alt="Bryan F., diseñador y desarrollador de BryanF Design"
+                src="/img/me/about-photo.png"
+                alt="Bryan trabajando de noche en su escritorio"
                 fill
                 sizes="(min-width: 1024px) 48vw, 100vw"
-                className="object-cover object-top"
+                className="object-cover object-[58%_center] sm:object-center"
               />
             </motion.div>
             {/* Degradado para fundir la foto con la tinta del sitio */}
@@ -218,51 +217,6 @@ export function MeetBryan() {
           </motion.div>
         </div>
       </div>
-
-      {/* Banda cinematográfica: el taller de noche */}
-      <DeskFilmStrip quote={t.about.quote} />
     </section>
-  );
-}
-
-function DeskFilmStrip({ quote }: { quote: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  // La imagen viaja dentro de su marco (object cover más alto que el marco).
-  const y = useTransform(scrollYProgress, [0, 1], ["-12%", "12%"]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1.12, 1.02]);
-
-  return (
-    <div ref={ref} className="relative mt-10 h-[52svh] overflow-hidden border-t border-border md:h-[64svh]">
-      <motion.div style={reduced ? undefined : { y, scale }} className="absolute inset-0">
-        <Image
-          src="/img/me/about-photo.png"
-          alt="Bryan trabajando de noche en su escritorio, rodeado de plantas y luz cálida"
-          fill
-          sizes="100vw"
-          className="object-cover object-center"
-        />
-      </motion.div>
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/35 to-background/20" />
-
-      <div className="container relative z-10 flex h-full items-end pb-10 md:pb-14">
-        <motion.blockquote
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.7, ease: [0.2, 0, 0, 1] }}
-          className="flex max-w-2xl flex-col gap-3"
-        >
-          <span aria-hidden className="h-1.5 w-10 bg-primary" />
-          <p className="font-display text-2xl font-semibold tracking-tight text-foreground md:text-4xl">
-            {quote}
-          </p>
-        </motion.blockquote>
-      </div>
-    </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Send } from "lucide-react";
+import { MessageCircle, Send, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useFooterInView } from "@/lib/use-footer-in-view";
@@ -355,24 +355,40 @@ export function LuminaChat() {
         aria-hidden={footerInView}
         tabIndex={footerInView ? -1 : 0}
         animate={{
-          y: open || footerInView ? 0 : [0, -6, 0],
           opacity: footerInView ? 0 : 1,
           scale: footerInView ? 0.85 : 1,
         }}
         transition={{
-          y: { duration: 3.5, repeat: open || footerInView ? 0 : Infinity, ease: "easeInOut" },
           opacity: { duration: 0.3, ease: "easeInOut" },
           scale: { duration: 0.3, ease: "easeInOut" },
         }}
         className={cn(
-          "fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-4 z-[120] flex items-center gap-2 rounded-full bg-primary py-2 pl-2 pr-4 font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-105 active:scale-95 sm:right-6",
+          "glass-nav fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-3 z-[120] flex items-center gap-2.5 rounded-2xl border border-primary/35 p-2 pr-3 text-left text-foreground shadow-[0_12px_40px_-14px_hsl(var(--primary)/0.45)] transition-colors hover:border-primary/70 sm:bottom-[calc(1.25rem+env(safe-area-inset-bottom))] sm:right-6 sm:gap-3 sm:pr-4",
           footerInView && "pointer-events-none"
         )}
       >
-        <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-full ring-2 ring-primary-foreground/30">
-          <Image src={MOOD_IMG.Normal} alt="" fill sizes="36px" className="object-cover" />
+        <span className="relative flex h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-primary/10 ring-1 ring-primary/45 sm:h-12 sm:w-12">
+          <Image src={MOOD_IMG.Normal} alt="" fill sizes="48px" className="object-cover" />
+          <span
+            className={cn(
+              "absolute bottom-1 right-1 h-2.5 w-2.5 rounded-full border-2 border-background",
+              mood === "Offline" ? "bg-muted-foreground" : "bg-primary"
+            )}
+          />
         </span>
-        <span className="hidden sm:inline">{t.lumina.name}</span>
+        <span className="min-w-0 leading-tight">
+          <span className="flex items-center gap-1.5 font-semibold">
+            {t.lumina.name}
+            <MessageCircle className="h-3.5 w-3.5 text-primary" />
+          </span>
+          <span className="mt-0.5 hidden whitespace-nowrap text-[11px] font-medium text-muted-foreground sm:block">
+            {mood === "Offline"
+              ? t.lumina.offline
+              : loading
+                ? t.lumina.thinking
+                : t.lumina.online}
+          </span>
+        </span>
       </motion.button>
     </>
   );
