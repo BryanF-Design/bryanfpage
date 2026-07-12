@@ -1,5 +1,27 @@
 # SEO Audit - BryanF Design
 
+## Revisión de implementación — 2026-07-12
+
+Se aplicó la primera fase correctiva de la auditoría de producción:
+
+- SSR de cifras de confianza corregido; se eliminó el estado inicial `0` del HTML.
+- Eliminada la anotación editorial de SEO visible en las seis landings.
+- Titles comerciales sin sufijo de marca duplicado.
+- Sitemap con fechas `lastmod` solo para páginas realmente modificadas.
+- Redirect permanente 308 del host apex a `www` en middleware.
+- Entidad `ProfessionalService` con `@id` estable; cada `Service` referencia esa entidad.
+- Número telefónico visible con enlace `tel:`.
+- Eventos `generate_lead` y `begin_checkout` preparados para GA4.
+
+Validaciones del 2026-07-12:
+
+- `npx tsc --noEmit`: correcto.
+- `npm run build`: correcto; 18 rutas generadas.
+- `npm run seo:google-smoke`: correcto; GSC y GA4 HTTP 200, propiedad encontrada y OAuth local operativo.
+- Servidor local: home HTTP 200, titles comerciales únicos, sin texto editorial visible, sitemap con 10 URLs.
+
+Pendientes externos: desplegar, enviar `https://www.bryanfdesign.com.mx/sitemap.xml` en GSC y solicitar indexación de las seis landings.
+
 Fecha: 2026-07-07
 Sitio: https://www.bryanfdesign.com.mx
 Stack detectado: Next.js 14 App Router, React 18, Tailwind CSS, TypeScript.

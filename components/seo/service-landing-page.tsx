@@ -8,6 +8,7 @@ import { Floating3d } from "@/components/three/floating-3d";
 import { MarqueeBand } from "@/components/sections/marquee-band";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { SiteHeader } from "@/components/sections/site-header";
+import { TrackedWhatsAppLink } from "@/components/analytics/tracked-whatsapp-link";
 import {
   BRAND_NAME,
   SITE_URL,
@@ -39,6 +40,7 @@ function buildServiceSchema(page: ServicePage) {
   return {
     "@context": "https://schema.org",
     "@type": "Service",
+    "@id": `${url}#service`,
     name: page.serviceType,
     serviceType: page.serviceType,
     description: page.metaDescription,
@@ -48,6 +50,7 @@ function buildServiceSchema(page: ServicePage) {
     },
     provider: {
       "@type": "ProfessionalService",
+      "@id": `${SITE_URL}/#organization`,
       name: BRAND_NAME,
       url: SITE_URL,
       image: `${SITE_URL}/img/logotipo-blanco.png`,
@@ -169,10 +172,13 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
               <Reveal delay={0.22}>
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                   <Button asChild size="lg" className="w-full sm:w-auto">
-                    <Link href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+                    <TrackedWhatsAppLink
+                      href={WHATSAPP_URL}
+                      service={page.slug}
+                    >
                       <MessageCircle className="mr-2 h-4 w-4" />
                       Cotizar por WhatsApp
-                    </Link>
+                    </TrackedWhatsAppLink>
                   </Button>
                   <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
                     <Link href="/#projects">
@@ -190,13 +196,12 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                   variant="icosahedron"
                   className="relative mx-auto -mt-2 h-44 w-44"
                 />
-                <p className="tech-label text-primary">Keyword principal</p>
+                <p className="tech-label text-primary">Enfoque del servicio</p>
                 <p className="mt-2 font-display text-2xl font-semibold text-foreground">
-                  {page.keyword}
+                  {page.serviceType}
                 </p>
                 <p className="mt-4 text-sm leading-6 text-muted-foreground">
-                  Página comercial creada para resolver una intención de contratación,
-                  no para generar contenido masivo.
+                  {page.solution}
                 </p>
               </aside>
             </Reveal>

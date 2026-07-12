@@ -12,6 +12,15 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
 // browser's Accept-Language header for local dev / non-Vercel hosting. The
 // visitor can always override it from the language switcher afterwards.
 export function middleware(request: NextRequest) {
+  // The canonical public host is www. This makes the apex redirect
+  // permanent at the application edge instead of returning a temporary 307.
+  const host = request.headers.get("host")?.split(":")[0].toLowerCase();
+  if (host === "bryanfdesign.com.mx") {
+    const url = request.nextUrl.clone();
+    url.hostname = "www.bryanfdesign.com.mx";
+    return NextResponse.redirect(url, 308);
+  }
+
   const existing = request.cookies.get(COOKIE_NAME)?.value;
   if (isLocale(existing)) return NextResponse.next();
 

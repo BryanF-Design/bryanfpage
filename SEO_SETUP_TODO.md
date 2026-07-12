@@ -1,5 +1,17 @@
 # SEO Setup TODO
 
+## Actualización de implementación — 2026-07-12
+
+- Completado: valores de confianza renderizados en SSR (`+5 años`, `+100 proyectos`, `desde 3 días`) para que crawlers y usuarios sin JavaScript no reciban ceros.
+- Completado: eliminado el texto editorial `Keyword principal` de las landings; el bloque ahora explica el enfoque del servicio.
+- Completado: corregida la plantilla de titles para evitar `BryanF Design` duplicado.
+- Completado: sitemap con `lastmod` fijo y verificable para las páginas modificadas; se omitió `lastmod` en páginas no modificadas.
+- Completado: canonicalización del host apex hacia `www` con redirect permanente 308 en middleware.
+- Completado: schema de organización con `@id` estable y schema de servicio enlazado a esa entidad.
+- Completado: eventos GA4 para leads de WhatsApp y comienzo de checkout, sin exponer datos personales.
+- Pendiente externo: desplegar estos cambios y enviar el sitemap desde Search Console; solicitar indexación de las seis landings después del despliegue.
+- Pendiente editorial: sustituir referencias de portafolio por casos enlazables únicamente cuando exista evidencia y autorización.
+
 ## Estado de credenciales
 
 - Completado: `SITE_URL=https://www.bryanfdesign.com.mx`.

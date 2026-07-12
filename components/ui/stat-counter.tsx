@@ -13,12 +13,16 @@ interface StatCounterProps {
 export function StatCounter({ value, prefix = "", suffix = "", className }: StatCounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
-  const [display, setDisplay] = useState(0);
+  // Keep the verified value in the initial HTML. Starting at zero makes
+  // crawlers and no-JavaScript users see false proof points.
+  const [display, setDisplay] = useState(value);
 
   useEffect(() => {
     if (!inView) return;
     const duration = 1200;
     const start = performance.now();
+
+    setDisplay(0);
 
     function tick(now: number) {
       const progress = Math.min((now - start) / duration, 1);

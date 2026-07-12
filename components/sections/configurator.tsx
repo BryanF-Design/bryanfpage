@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/sections/section-heading";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
+import { trackEvent } from "@/lib/analytics";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import {
   formatMoney,
@@ -168,6 +169,11 @@ export function Configurator() {
       }
       const url = data.checkoutUrl || data.initPoint;
       if (url) {
+        trackEvent("begin_checkout", {
+          payment_provider: label,
+          value: payableNowMxn,
+          currency,
+        });
         window.open(url, "_blank", "noopener,noreferrer");
         setStatus(t.configurator.openedInTab(label));
       } else {
@@ -518,6 +524,13 @@ export function Configurator() {
                         href={`https://wa.me/${WA_PHONE}?text=${transferMsg}`}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={() =>
+                          trackEvent("begin_checkout", {
+                            payment_provider: "bank_transfer",
+                            value: payableNowMxn,
+                            currency,
+                          })
+                        }
                       >
                         <FaWhatsapp className="mr-1 h-4 w-4" />
                         {t.configurator.sendWhatsapp}

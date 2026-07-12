@@ -11,6 +11,7 @@ import {
   FaGithub,
 } from "react-icons/fa";
 import { useLanguage } from "@/lib/i18n/context";
+import { trackEvent } from "@/lib/analytics";
 
 const GOOGLE_MAPS_REVIEW = "https://maps.app.goo.gl/CWNcgPfAZt31K3ey6";
 
@@ -143,12 +144,23 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <a href="tel:+525663012505" className="text-foreground/80 transition-colors hover:text-primary">
+                +52 56 6301 2505
+              </a>
+            </li>
+            <li>
               <a href="mailto:bryanf@bryanfdesign.com.mx" className="text-foreground/80 transition-colors hover:text-primary">
                 bryanf@bryanfdesign.com.mx
               </a>
             </li>
             <li>
-              <a href="https://wa.me/525663012505" target="_blank" rel="noopener noreferrer" className="text-foreground/80 transition-colors hover:text-primary">
+              <a
+                href="https://wa.me/525663012505"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent("generate_lead", { method: "whatsapp", location: "footer" })}
+                className="text-foreground/80 transition-colors hover:text-primary"
+              >
                 {t.closingCta.ctaSecondary}
               </a>
             </li>

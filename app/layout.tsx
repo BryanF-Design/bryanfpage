@@ -46,7 +46,9 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.bryanfdesign.com.mx"),
   title: {
     default: "Crea tu Página Web en México | BryanF Design",
-    template: "%s · BryanF Design",
+    // Service metadata already owns its complete title. A global suffix
+    // duplicated the brand and pushed several titles past the useful SERP width.
+    template: "%s",
   },
   description:
     "¿Buscas crear una página web para tu negocio? Diseño y desarrollo web a medida en México: sitios rápidos, animados y pensados para vender. Entrega desde 3 días. Haz que pase.",
@@ -94,6 +96,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
+  "@id": "https://www.bryanfdesign.com.mx/#organization",
   name: "BryanF Design",
   description:
     "Estudio de diseño y desarrollo web en México. Creamos páginas web rápidas, animadas y orientadas a conversión para negocios que quieren vender más en línea.",
