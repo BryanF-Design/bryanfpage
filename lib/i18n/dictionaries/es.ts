@@ -281,6 +281,32 @@ const es = {
       "Puedo armar tu paquete ideal.",
       "¿Tienda en línea? También sé de eso.",
     ],
+    designation: {
+      eyebrow: "Designación de hoy",
+      live: "En vivo",
+      // Índice = Date.getDay() (0 domingo … 6 sábado): la denominación de
+      // Lumina cambia sola cada día, sin recargar ni desplegar nada.
+      days: [
+        "Modo Fin de Semana",
+        "Modo Arranque",
+        "Modo Estrategia",
+        "Modo Creativo",
+        "Modo Impulso",
+        "Modo Cierre",
+        "Modo Exploración",
+      ],
+    },
+    devices: {
+      eyebrow: "Diseño responsivo",
+      title: "Una sola web. Cualquier pantalla.",
+      subtitle:
+        "Cada proyecto que construimos se adapta en tiempo real — y Lumina te acompaña en cualquiera de ellas.",
+      badge: "100% adaptativo",
+      mobile: "Móvil",
+      tablet: "Tablet",
+      desktop: "Escritorio",
+      hint: "Toca cada pantalla",
+    },
   },
   footer: {
     tagline: "Diseño que vende",
@@ -336,6 +362,25 @@ const es = {
   },
   languageSwitcher: {
     label: "Idioma",
+  },
+  notFound: {
+    liveLabel: "Señal perdida",
+    errorLabel: "Error 404",
+    title: "¿Te",
+    titleHighlight: "perdiste?",
+    subtitle:
+      "Esta página no existe o cambió de lugar. Tranquilo, nos pasa hasta a nosotros — mientras tanto, explora el sitio o vuelve al inicio.",
+    dragHint: "Arrastra la figura para explorarla",
+    ctaHome: "Volver al inicio",
+    ctaWhatsapp: "Hablar por WhatsApp",
+    quickLinksLabel: "O ve directo a",
+    linkHome: "Inicio",
+    linkProjects: "Proyectos",
+    linkPricing: "Precios",
+    linkFaq: "FAQ",
+    redirecting: (s: number) => `Volviendo al inicio en ${s}s`,
+    stay: "Quedarme aquí",
+    cancelled: "Sin prisa. Explora cuando quieras.",
   },
 } as const;
 

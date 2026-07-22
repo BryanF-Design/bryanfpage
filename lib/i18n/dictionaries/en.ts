@@ -261,6 +261,30 @@ const en: Dictionary = {
       "I can build your ideal package.",
       "Online store? I know about that too.",
     ],
+    designation: {
+      eyebrow: "Today's designation",
+      live: "Live",
+      days: [
+        "Weekend Mode",
+        "Kickoff Mode",
+        "Strategy Mode",
+        "Creative Mode",
+        "Momentum Mode",
+        "Wrap-up Mode",
+        "Exploration Mode",
+      ],
+    },
+    devices: {
+      eyebrow: "Responsive design",
+      title: "One website. Any screen.",
+      subtitle:
+        "Every project we build adapts in real time — and Lumina rides along on every one of them.",
+      badge: "100% adaptive",
+      mobile: "Mobile",
+      tablet: "Tablet",
+      desktop: "Desktop",
+      hint: "Tap each screen",
+    },
   },
   footer: {
     tagline: "Design that sells",
@@ -311,6 +335,25 @@ const en: Dictionary = {
   },
   languageSwitcher: {
     label: "Language",
+  },
+  notFound: {
+    liveLabel: "Signal lost",
+    errorLabel: "Error 404",
+    title: "Lost",
+    titleHighlight: "the signal?",
+    subtitle:
+      "This page doesn't exist or moved. It happens to us too — meanwhile, explore the site or head back home.",
+    dragHint: "Drag the shape to explore it",
+    ctaHome: "Back to home",
+    ctaWhatsapp: "Talk on WhatsApp",
+    quickLinksLabel: "Or go straight to",
+    linkHome: "Home",
+    linkProjects: "Projects",
+    linkPricing: "Pricing",
+    linkFaq: "FAQ",
+    redirecting: (s) => `Heading home in ${s}s`,
+    stay: "Stay here",
+    cancelled: "No rush. Explore whenever you like.",
   },
 };
 

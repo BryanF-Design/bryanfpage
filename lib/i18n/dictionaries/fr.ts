@@ -261,6 +261,30 @@ const fr: Dictionary = {
       "Je peux composer votre pack idéal.",
       "Boutique en ligne ? Je connais aussi.",
     ],
+    designation: {
+      eyebrow: "Désignation du jour",
+      live: "En direct",
+      days: [
+        "Mode Week-end",
+        "Mode Élan",
+        "Mode Stratégie",
+        "Mode Créatif",
+        "Mode Impulsion",
+        "Mode Clôture",
+        "Mode Exploration",
+      ],
+    },
+    devices: {
+      eyebrow: "Design responsive",
+      title: "Un seul site. Tous les écrans.",
+      subtitle:
+        "Chaque projet que nous construisons s'adapte en temps réel — et Lumina vous accompagne sur chacun d'eux.",
+      badge: "100 % adaptatif",
+      mobile: "Mobile",
+      tablet: "Tablette",
+      desktop: "Ordinateur",
+      hint: "Touchez chaque écran",
+    },
   },
   footer: {
     tagline: "Un design qui vend",
@@ -311,6 +335,25 @@ const fr: Dictionary = {
   },
   languageSwitcher: {
     label: "Langue",
+  },
+  notFound: {
+    liveLabel: "Signal perdu",
+    errorLabel: "Erreur 404",
+    title: "Vous vous êtes",
+    titleHighlight: "perdu ?",
+    subtitle:
+      "Cette page n'existe pas ou a changé d'adresse. Ça nous arrive aussi — en attendant, explorez le site ou retournez à l'accueil.",
+    dragHint: "Faites glisser la figure pour l'explorer",
+    ctaHome: "Retour à l'accueil",
+    ctaWhatsapp: "Parler sur WhatsApp",
+    quickLinksLabel: "Ou allez directement à",
+    linkHome: "Accueil",
+    linkProjects: "Projets",
+    linkPricing: "Tarifs",
+    linkFaq: "FAQ",
+    redirecting: (s) => `Retour à l'accueil dans ${s}s`,
+    stay: "Rester ici",
+    cancelled: "Pas de panique. Explorez à votre rythme.",
   },
 };
 

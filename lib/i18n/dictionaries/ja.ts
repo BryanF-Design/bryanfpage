@@ -254,6 +254,29 @@ const ja: Dictionary = {
       "最適なプランをご提案できます。",
       "ネットショップもお任せください。",
     ],
+    designation: {
+      eyebrow: "今日の呼称",
+      live: "ライブ",
+      days: [
+        "週末モード",
+        "スタートモード",
+        "戦略モード",
+        "クリエイティブモード",
+        "推進モード",
+        "仕上げモード",
+        "探求モード",
+      ],
+    },
+    devices: {
+      eyebrow: "レスポンシブデザイン",
+      title: "1つのサイト。どんな画面でも。",
+      subtitle: "私たちが作るすべてのプロジェクトはリアルタイムで画面に適応します — Luminaもどの画面にも一緒についていきます。",
+      badge: "100%アダプティブ",
+      mobile: "スマートフォン",
+      tablet: "タブレット",
+      desktop: "デスクトップ",
+      hint: "各画面をタップ",
+    },
   },
   footer: {
     tagline: "売れるデザイン",
@@ -303,6 +326,25 @@ const ja: Dictionary = {
   },
   languageSwitcher: {
     label: "言語",
+  },
+  notFound: {
+    liveLabel: "信号消失",
+    errorLabel: "エラー 404",
+    title: "道に",
+    titleHighlight: "迷いましたか？",
+    subtitle:
+      "このページは存在しないか、移動しました。こういうことは私たちにもあります — その間、サイトを探索するかホームに戻ってください。",
+    dragHint: "図形をドラッグして動かしてみてください",
+    ctaHome: "ホームに戻る",
+    ctaWhatsapp: "WhatsAppで話す",
+    quickLinksLabel: "またはこちらへ",
+    linkHome: "ホーム",
+    linkProjects: "実績",
+    linkPricing: "料金",
+    linkFaq: "よくある質問",
+    redirecting: (s) => `${s}秒後にホームへ戻ります`,
+    stay: "ここに留まる",
+    cancelled: "急がなくて大丈夫です。ゆっくり見てください。",
   },
 };
 

@@ -261,6 +261,30 @@ const de: Dictionary = {
       "Ich stelle dir dein ideales Paket zusammen.",
       "Onlineshop? Kenne ich mich auch aus.",
     ],
+    designation: {
+      eyebrow: "Heutige Bezeichnung",
+      live: "Live",
+      days: [
+        "Wochenend-Modus",
+        "Start-Modus",
+        "Strategie-Modus",
+        "Kreativ-Modus",
+        "Schwung-Modus",
+        "Abschluss-Modus",
+        "Erkundungs-Modus",
+      ],
+    },
+    devices: {
+      eyebrow: "Responsives Design",
+      title: "Eine Website. Jeder Bildschirm.",
+      subtitle:
+        "Jedes Projekt, das wir bauen, passt sich in Echtzeit an — und Lumina ist auf jedem davon mit dabei.",
+      badge: "100 % adaptiv",
+      mobile: "Smartphone",
+      tablet: "Tablet",
+      desktop: "Desktop",
+      hint: "Tippe auf jeden Bildschirm",
+    },
   },
   footer: {
     tagline: "Design, das verkauft",
@@ -311,6 +335,25 @@ const de: Dictionary = {
   },
   languageSwitcher: {
     label: "Sprache",
+  },
+  notFound: {
+    liveLabel: "Signal verloren",
+    errorLabel: "Fehler 404",
+    title: "Hast du dich",
+    titleHighlight: "verirrt?",
+    subtitle:
+      "Diese Seite gibt es nicht mehr oder sie ist umgezogen. Das passiert auch uns — schau dich in der Zwischenzeit um oder geh zurück zur Startseite.",
+    dragHint: "Ziehe die Form, um sie zu erkunden",
+    ctaHome: "Zurück zur Startseite",
+    ctaWhatsapp: "Auf WhatsApp schreiben",
+    quickLinksLabel: "Oder direkt zu",
+    linkHome: "Start",
+    linkProjects: "Projekte",
+    linkPricing: "Preise",
+    linkFaq: "FAQ",
+    redirecting: (s) => `Rückkehr zur Startseite in ${s}s`,
+    stay: "Hierbleiben",
+    cancelled: "Keine Eile. Schau dich um, wann immer du willst.",
   },
 };
 

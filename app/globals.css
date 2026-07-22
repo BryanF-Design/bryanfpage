@@ -248,6 +248,31 @@
       opacity: 0;
     }
   }
+
+  /* Reloj en vivo de la sección Lumina: los dos puntos parpadean cada
+     segundo, como cualquier reloj digital. */
+  .clock-colon {
+    animation: clock-blink 1s steps(1) infinite;
+  }
+  @keyframes clock-blink {
+    50% {
+      opacity: 0.25;
+    }
+  }
+
+  /* Puntos de señal entre los dispositivos adaptativos: laten en secuencia
+     para sugerir sincronía, no un simple parpadeo simultáneo. */
+  @keyframes signal-pulse {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.45;
+    }
+    50% {
+      transform: scale(1.6);
+      opacity: 1;
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
