@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
 import { getUsdMxnRate, isCurrency } from "@/lib/currency";
 import { normalizeSelection, quotePayableNow, quoteProjectTotal } from "@/lib/quote";
+import { getSiteUrl } from "@/lib/site-url";
 
 export const runtime = "nodejs";
 
@@ -48,10 +49,7 @@ export async function POST(req: NextRequest) {
               ])
           )
         : {};
-    const siteUrl = String(process.env.SITE_URL || "https://example.com").replace(
-      /\/$/,
-      ""
-    );
+    const siteUrl = getSiteUrl();
 
     // Precio autoritativo del lado del servidor: si el cliente manda la
     // selección estructurada (plan + módulos + secciones), el total se

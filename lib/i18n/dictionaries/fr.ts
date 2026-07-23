@@ -335,6 +335,7 @@ const fr: Dictionary = {
       { title: "Prépare ton devis", desc: "Pré-remplit ton devis et t'amène au paiement." },
     ],
     privacy: "Aucune donnée sensible dans le chat. Ta conversation reste sur cet appareil.",
+    quotePresets: ["Devis site sur mesure", "Devis boutique en ligne", "Devis maintenance"],
     moods: {
       normal: "Mode normal",
       enfocada: "Mode concentrée",

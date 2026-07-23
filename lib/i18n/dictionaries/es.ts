@@ -355,6 +355,7 @@ const es = {
       { title: "Te deja tu web armada", desc: "Preselecciona tu cotización y te lleva al pago." },
     ],
     privacy: "No pedimos datos sensibles en el chat. Tu conversación vive sólo en este dispositivo.",
+    quotePresets: ["Cotiza tu sitio a medida", "Cotiza tu tienda en línea", "Cotiza tu mantenimiento"],
     moods: {
       normal: "Modo normal",
       enfocada: "Modo enfocada",

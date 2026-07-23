@@ -3,6 +3,7 @@ import { MercadoPagoConfig, Preference } from "mercadopago";
 import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
 import { getUsdMxnRate, isCurrency, usdToMxn } from "@/lib/currency";
 import { normalizeSelection, quotePayableNow, quoteProjectTotal } from "@/lib/quote";
+import { getSiteUrl } from "@/lib/site-url";
 
 export const runtime = "nodejs";
 
@@ -39,10 +40,7 @@ export async function POST(req: NextRequest) {
     const descripcion = String(
       (body as Record<string, unknown>).descripcion || "Servicio web - BryanF Design"
     ).slice(0, 200);
-    const siteUrl = String(process.env.SITE_URL || "https://example.com").replace(
-      /\/$/,
-      ""
-    );
+    const siteUrl = getSiteUrl();
 
     // Precio autoritativo del lado del servidor (ver stripe-checkout): con la
     // selección estructurada, el total se recompone desde el catálogo; sin
@@ -71,6 +69,10 @@ export async function POST(req: NextRequest) {
     });
     const preference = new Preference(client);
 
+    const externalReference = `bf-${Date.now().toString(36)}-${Math.random()
+      .toString(36)
+      .slice(2, 8)}`;
+
     const createPreference = (unitPrice: number, currencyId: "MXN" | "USD") =>
       preference.create({
         body: {
@@ -89,6 +91,11 @@ export async function POST(req: NextRequest) {
             pending: `${siteUrl}/gracias?status=pending&provider=mercadopago`,
           },
           auto_return: "approved",
+          // El webhook confirma el pago del lado del servidor (idempotencia +
+          // correo). external_reference correlaciona la preferencia con el pago.
+          notification_url: `${siteUrl}/api/mercadopago-webhook`,
+          external_reference: externalReference,
+          metadata: { modalidad, moneda: currency },
         },
       });
 

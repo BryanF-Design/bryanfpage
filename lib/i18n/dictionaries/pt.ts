@@ -335,6 +335,7 @@ const pt: Dictionary = {
       { title: "Monta o teu orçamento", desc: "Preenche o teu orçamento e leva-te ao pagamento." },
     ],
     privacy: "Não pedimos dados sensíveis no chat. A tua conversa fica só neste dispositivo.",
+    quotePresets: ["Orçar site sob medida", "Orçar loja online", "Orçar manutenção"],
     moods: {
       normal: "Modo normal",
       enfocada: "Modo focada",

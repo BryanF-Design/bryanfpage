@@ -91,9 +91,42 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
 
   const plan = PLANS.find((p) => p.id === planId)!;
 
-  // Retomar después: guarda la configuración en este dispositivo y la restaura
-  // al volver. Sólo cliente (localStorage no existe en SSR).
+  // Preselección por enlace: Lumina (o cualquier CTA) puede mandar a
+  // /crear-web?plan=full&modules=ecommerce,payments&sections=2 y el cotizador
+  // arranca con esa configuración. El deep-link gana sobre lo guardado.
+  // Retomar después: si no hay deep-link, restaura lo guardado en el dispositivo.
+  // Sólo cliente (localStorage/URL no existen en SSR).
   useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const hasDeepLink =
+        params.has("plan") || params.has("modules") || params.has("sections");
+      if (hasDeepLink) {
+        const p = params.get("plan");
+        if (p && PLAN_META.some((x) => x.id === p)) setPlanId(p);
+        const wanted = (params.get("modules") || "")
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+        if (wanted.length) {
+          setMods(
+            Object.fromEntries(
+              MODULE_META.filter((m) => wanted.includes(m.id)).map((m) => [m.id, true])
+            )
+          );
+        }
+        const sec = Number(params.get("sections"));
+        if (Number.isFinite(sec)) setSections(Math.max(0, Math.min(50, Math.floor(sec))));
+        const dlMode = params.get("mode");
+        if (dlMode === "anticipo" || dlMode === "liquidacion") setMode(dlMode);
+        const dlCur = params.get("currency");
+        if (dlCur === "MXN" || dlCur === "USD") setCurrency(dlCur);
+        setRestored(true);
+        return;
+      }
+    } catch {
+      /* URL no disponible */
+    }
     try {
       const raw = window.localStorage.getItem(QUOTE_KEY);
       if (raw) {

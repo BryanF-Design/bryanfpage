@@ -280,6 +280,7 @@ const zh: Dictionary = {
       { title: "帮你备好报价", desc: "预填报价并带你去付款。" },
     ],
     privacy: "聊天中不会索取敏感信息。对话仅保存在本设备。",
+    quotePresets: ["定制网站报价", "在线商店报价", "维护报价"],
     moods: {
       normal: "正常模式",
       enfocada: "专注模式",

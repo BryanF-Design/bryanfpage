@@ -129,9 +129,39 @@ estáticas). SEO intacto: mismas rutas, anclas, metadatos y componentes SSR.
 - `components/sections/lumina-feature` — tira de capacidades + privacidad.
 - `next.config.mjs` — se retira el rewrite de `/crear-web` (ahora es ruta real).
 
-**Pendientes reales (no bloquean producción):** webhooks + idempotencia de pago;
-migrar `/gracias` y páginas legales de estático a React; narrativa de Lumina por
-pasos; confirmar y activar los tiers propuestos (§6); auditoría formal Lighthouse/WCAG.
+### Cambios de la sesión 3
+
+- **Webhooks de pago (confirmación server-side):**
+  - `app/api/stripe-webhook` — verifica la firma (`STRIPE_WEBHOOK_SECRET`),
+    idempotente, y en `checkout.session.completed` manda comprobante al cliente
+    y aviso interno con folio (`lib/notify.ts`, vía Resend).
+  - `app/api/mercadopago-webhook` — re-consulta el pago con el token (nunca
+    confía en el cuerpo), confirma sólo `approved`, firma opcional
+    (`MP_WEBHOOK_SECRET`). La preferencia MP ahora manda `notification_url`.
+- `lib/site-url.ts` — URL pública robusta (ya no cae a `example.com`).
+- **Lumina → cotizador (§17):** el Configurador acepta preselección por enlace
+  (`/crear-web?plan=full&modules=ecommerce,payments&sections=2`); Lumina conoce
+  estos enlaces en su prompt y la sección muestra "casos de uso" que abren el
+  cotizador ya armado. 7 idiomas.
+
+### ⚙️ Configuración pendiente en dashboards (para cerrar pagos end-to-end)
+
+Estas variables van en **Vercel → Project → Settings → Environment Variables**:
+
+1. `STRIPE_WEBHOOK_SECRET` — crear endpoint en Stripe Dashboard → Developers →
+   Webhooks → `https://www.bryanfdesign.com.mx/api/stripe-webhook`, evento
+   `checkout.session.completed`; copiar el `whsec_…`.
+2. `MP_WEBHOOK_SECRET` — opcional; MP → Tus integraciones → Webhooks (la
+   `notification_url` ya se manda desde el código).
+3. Verificar que `RESEND_API_KEY`, `MAIL_FROM` y `SITE_URL` estén puestas en prod.
+
+Sin `STRIPE_WEBHOOK_SECRET`, el checkout sigue funcionando (el cliente paga y ve
+`/gracias`), pero el correo de confirmación automático no se dispara.
+
+**Pendientes reales (no bloquean producción):** idempotencia durable (hoy es
+best-effort en memoria — conviene Vercel KV/DB); migrar `/gracias` y páginas
+legales de estático a React; narrativa de Lumina por pasos; confirmar y activar
+los tiers propuestos (§6); auditoría formal Lighthouse/WCAG.
 
 ---
 

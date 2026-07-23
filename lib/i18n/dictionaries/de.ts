@@ -335,6 +335,7 @@ const de: Dictionary = {
       { title: "Stellt dein Angebot zusammen", desc: "Füllt dein Angebot vor und führt dich zur Kasse." },
     ],
     privacy: "Keine sensiblen Daten im Chat. Dein Gespräch bleibt nur auf diesem Gerät.",
+    quotePresets: ["Website anfragen", "Onlineshop anfragen", "Wartung anfragen"],
     moods: {
       normal: "Normal-Modus",
       enfocada: "Fokus-Modus",

@@ -17,6 +17,14 @@ const LuminaHologram = dynamic(
 
 const MOOD_CYCLE: LuminaMood[] = ["Normal", "Sorprendida", "Enfocada", "Duda"];
 
+// Enlaces preconfigurados del cotizador, en el mismo orden que
+// `luminaSection.quotePresets` (sitio a medida · tienda · mantenimiento).
+const QUOTE_PRESET_HREFS = [
+  "/crear-web?plan=full",
+  "/crear-web?plan=full&modules=ecommerce,payments",
+  "/crear-web?plan=maintenance",
+] as const;
+
 /** Abre el chat de Lumina desde cualquier parte (lo escucha LuminaChat). */
 export function openLuminaChat(message?: string) {
   window.dispatchEvent(new CustomEvent("lumina:open", { detail: { message } }));
@@ -130,6 +138,26 @@ export function LuminaFeature() {
               >
                 {q}
               </button>
+            ))}
+          </motion.div>
+
+          {/* Casos de uso: cada uno abre el cotizador YA preconfigurado. */}
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, delay: 0.21, ease: [0.2, 0, 0, 1] }}
+            className="flex flex-wrap gap-2"
+          >
+            {t.luminaSection.quotePresets.map((label, i) => (
+              <a
+                key={label}
+                href={QUOTE_PRESET_HREFS[i]}
+                className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-4 py-2 text-xs font-medium text-primary ring-1 ring-primary/30 transition-all duration-200 hover:bg-primary/20 active:scale-95 md:text-sm"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                {label}
+              </a>
             ))}
           </motion.div>
 

@@ -335,6 +335,7 @@ const en: Dictionary = {
       { title: "Builds your quote", desc: "Pre-fills your quote and takes you to checkout." },
     ],
     privacy: "No sensitive data in the chat. Your conversation stays on this device only.",
+    quotePresets: ["Quote a custom site", "Quote an online store", "Quote maintenance"],
     moods: {
       normal: "Normal mode",
       enfocada: "Focused mode",
