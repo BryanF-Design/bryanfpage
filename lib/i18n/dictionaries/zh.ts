@@ -266,6 +266,20 @@ const zh: Dictionary = {
     ctaSecondary: "了解流程",
     quote: "这里的每一个网站，都诞生于这张书桌。",
   },
+  luminaJourney: {
+    eyebrow: "如何运作",
+    title: "从想法到项目，每一步都陪着你",
+    subtitle:
+      "Lumina 不是答完就走的聊天机器人。几分钟内带你走完全程。",
+    steps: [
+      { title: "了解你", desc: "你说需求，她就理解你的业务、目标和受众。" },
+      { title: "给建议", desc: "推荐最适合你的套餐和模块，并说明原因。" },
+      { title: "做报价", desc: "当场生成预算，价格透明，没有小字条款。" },
+      { title: "带你付款", desc: "支持刷卡、Mercado Pago 或转账。定金或全款，由你决定。" },
+      { title: "陪伴你", desc: "收到凭证和单号，填写需求表，我们就开工。" },
+    ],
+    cta: "从 Lumina 开始",
+  },
   luminaSection: {
     eyebrow: "您的AI顾问",
     titlePrefix: "她是",

@@ -40,6 +40,9 @@ const ClientsMarquee = dynamic(() =>
 const LuminaFeature = dynamic(() =>
   import("@/components/sections/lumina-feature").then((m) => m.LuminaFeature)
 );
+const LuminaJourney = dynamic(() =>
+  import("@/components/sections/lumina-journey").then((m) => m.LuminaJourney)
+);
 const EntryServices = dynamic(() =>
   import("@/components/sections/entry-services").then((m) => m.EntryServices)
 );
@@ -141,6 +144,9 @@ export default function HomePage() {
 
       {/* Guía: Lumina se presenta antes que nada y acompaña el resto del viaje. */}
       <LuminaFeature />
+
+      {/* Narrativa por pasos: cómo Lumina te lleva de la idea al proyecto. */}
+      <LuminaJourney />
 
       {/* Cómo trabajamos y con qué (confianza + capacidad). */}
       <ProcessOrbital />

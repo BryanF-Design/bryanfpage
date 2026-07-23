@@ -314,6 +314,20 @@ const ja: Dictionary = {
     ctaSecondary: "進め方を見る",
     quote: "ここに並ぶサイトは、すべてこの机から生まれました。",
   },
+  luminaJourney: {
+    eyebrow: "使い方",
+    title: "アイデアからプロジェクトまで、各ステップで伴走",
+    subtitle:
+      "Luminaは答えて終わりのチャットではありません。数分で最後まで案内します。",
+    steps: [
+      { title: "あなたを知る", desc: "必要なことを伝えると、事業・目的・ターゲットを理解します。" },
+      { title: "提案する", desc: "最適なプランとモジュールを提案し、その理由も説明します。" },
+      { title: "見積もる", desc: "透明な価格で、その場で予算を作成。細かい注釈はありません。" },
+      { title: "決済へ案内", desc: "カード・Mercado Pago・振込で支払い。前金でも全額でも、あなた次第。" },
+      { title: "伴走する", desc: "受領書と受付番号を受け取り、ブリーフを記入したらプロジェクト開始。" },
+    ],
+    cta: "Luminaで始める",
+  },
   luminaSection: {
     eyebrow: "あなたのAIアドバイザー",
     titlePrefix: "彼女は",

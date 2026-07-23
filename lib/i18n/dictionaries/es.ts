@@ -341,6 +341,20 @@ const es = {
     ctaSecondary: "Mira mi proceso",
     quote: "Cada web que ves aquí salió de este escritorio.",
   },
+  luminaJourney: {
+    eyebrow: "Cómo funciona",
+    title: "De la idea al proyecto, contigo en cada paso",
+    subtitle:
+      "Lumina no es un chat que responde y ya. Te lleva por todo el camino, en minutos.",
+    steps: [
+      { title: "Te conoce", desc: "Le cuentas qué necesitas y entiende tu negocio, tu objetivo y a quién le hablas." },
+      { title: "Te recomienda", desc: "Sugiere el paquete y los módulos que mejor te quedan, y te explica por qué." },
+      { title: "Te cotiza", desc: "Arma tu presupuesto al instante, con precios claros y sin letras chiquitas." },
+      { title: "Te lleva al pago", desc: "Pagas con tarjeta, Mercado Pago o transferencia. Anticipo o pago completo, tú eliges." },
+      { title: "Te acompaña", desc: "Recibes tu folio y tu comprobante, llenas tu briefing y arrancamos tu proyecto." },
+    ],
+    cta: "Empieza con Lumina",
+  },
   luminaSection: {
     eyebrow: "Tu asesora IA",
     titlePrefix: "Ella es",
