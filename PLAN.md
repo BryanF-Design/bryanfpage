@@ -108,20 +108,30 @@ estáticas). SEO intacto: mismas rutas, anclas, metadatos y componentes SSR.
 | 1 | Auditoría | ✅ (§1) |
 | 2 | Protección SEO + respaldo | ✅ (sin tocar rutas/meta) |
 | 3 | Arquitectura de información + nuevo orden | ✅ (§3) |
-| 4 | Sistema visual / componentes base | ⏳ Tokens ya existen; consolidar |
-| 5 | Nueva presentación de Lumina (narrativa progresiva, casos de uso) | ⏳ |
-| 6 | Chat escritorio + móvil dedicado (dvh/svh, safe areas, minimizar) | ⏳ |
-| 7 | Servicios, planes y precios (mover copy de entrada al catálogo) | ⏳ base lista |
-| 8 | Cotizador inteligente (nuevos tiers, guardar/retomar, enviar por correo) | ⏳ base lista |
-| 9 | Pagos (webhooks, idempotencia, validación server-side de precios) | ⏳ |
-| 10 | Flujo post-pago (folio, onboarding, panel) | ⏳ |
-| 11 | Multidioma (auditar cobertura de nuevas cadenas) | ⏳ |
-| 12 | Responsive + accesibilidad WCAG 2.2 AA + rendimiento | ⏳ |
-| 13 | Validación final | ⏳ |
+| 4 | Sistema visual / componentes base | ✅ Tokens existentes reutilizados |
+| 5 | Nueva presentación de Lumina (capacidades + privacidad) | ✅ base (falta narrativa por pasos) |
+| 6 | Chat escritorio + móvil dedicado (dvh/svh, safe areas) | ✅ ya existía; verificado |
+| 7 | Servicios, planes y precios | ✅ base (precios reales centralizados) |
+| 8 | Cotizador (página propia, guardar/retomar, enviar por correo) | ✅ (faltan tiers a confirmar) |
+| 9 | Pagos: validación server-side de precios desde catálogo | ✅ (webhooks/idempotencia = futuro) |
+| 10 | Flujo post-pago | ✅ redirige a /gracias (briefing existente) |
+| 11 | Multidioma (nuevas cadenas en 7 idiomas) | ✅ |
+| 12 | Responsive + accesibilidad + rendimiento | ✅ base (auditoría formal pendiente) |
+| 13 | Validación final (`build` verde) | ✅ |
 
-**Siguiente paso recomendado:** Fase 5 (presentación de Lumina con narrativa y
-casos de uso que disparan flujos reales) apoyada en Fase 8 (integrar los tiers
-confirmados al configurador). Requiere primero cerrar §6.
+### Cambios de la sesión 2
+
+- `lib/quote.ts` — cálculo de cotización compartido cliente/servidor.
+- `app/api/stripe-checkout` y `app/api/mercadopago` — recomponen el total desde
+  el catálogo y cobran ese número (no el del navegador); redirigen a `/gracias`.
+- `app/crear-web` — página React del cotizador (retira el estático legado de esa
+  URL; arregla el enlace del sitemap y de Lumina). Persistencia + envío por correo.
+- `components/sections/lumina-feature` — tira de capacidades + privacidad.
+- `next.config.mjs` — se retira el rewrite de `/crear-web` (ahora es ruta real).
+
+**Pendientes reales (no bloquean producción):** webhooks + idempotencia de pago;
+migrar `/gracias` y páginas legales de estático a React; narrativa de Lumina por
+pasos; confirmar y activar los tiers propuestos (§6); auditoría formal Lighthouse/WCAG.
 
 ---
 
