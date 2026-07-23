@@ -25,23 +25,14 @@ import {
   mxnToUsd,
   type Currency,
 } from "@/lib/currency";
+import {
+  CONFIGURATOR_MODULES as MODULE_META,
+  CONFIGURATOR_PLANS as PLAN_META,
+  SECTION_PRICE,
+} from "@/lib/catalog";
 
 const WA_PHONE = "525663012505";
 const USD_MXN_RATE = getUsdMxnRate(process.env.NEXT_PUBLIC_USD_MXN_RATE);
-
-const PLAN_META = [
-  { id: "full", price: 3500, featured: true },
-  { id: "update", price: 1800, featured: false },
-  { id: "maintenance", price: 1000, featured: false },
-] as const;
-
-const MODULE_META = [
-  { id: "ecommerce", price: 3500 },
-  { id: "payments", price: 1500 },
-  { id: "maintenance", price: 1000 },
-] as const;
-
-const SECTION_PRICE = 350;
 
 const BANK_VALUES = {
   banco: "BBVA Bancomer",
@@ -52,11 +43,17 @@ const BANK_VALUES = {
 };
 
 function getPlans(t: Dictionary) {
-  return PLAN_META.map((m) => ({ ...m, ...t.configurator.plans[m.id] }));
+  return PLAN_META.map((m) => ({
+    ...m,
+    ...t.configurator.plans[m.id as keyof typeof t.configurator.plans],
+  }));
 }
 
 function getModules(t: Dictionary) {
-  return MODULE_META.map((m) => ({ ...m, label: t.configurator.modules[m.id] }));
+  return MODULE_META.map((m) => ({
+    ...m,
+    label: t.configurator.modules[m.id as keyof typeof t.configurator.modules],
+  }));
 }
 
 function getBank(t: Dictionary) {

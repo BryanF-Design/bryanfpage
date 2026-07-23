@@ -14,6 +14,8 @@ const es = {
     menu: "Abrir menú",
     closeMenu: "Cerrar menú",
     serviciosEntrada: "Servicios de entrada",
+    lumina: "Lumina",
+    servicios: "Servicios",
   },
   marquee: {
     words: ["Diseño", "Código", "SEO", "Performance", "E-commerce", "Branding"],

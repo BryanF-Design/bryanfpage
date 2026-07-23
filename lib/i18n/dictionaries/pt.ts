@@ -13,6 +13,8 @@ const pt: Dictionary = {
     menu: "Abrir menu",
     closeMenu: "Fechar menu",
     serviciosEntrada: "Serviços de entrada",
+    lumina: "Lumina",
+    servicios: "Serviços",
   },
   marquee: {
     words: ["Design", "Código", "SEO", "Performance", "E-commerce", "Branding"],

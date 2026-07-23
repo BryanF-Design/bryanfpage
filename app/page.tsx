@@ -134,10 +134,26 @@ export default function HomePage() {
       {/* Créditos de taller cruzando la pantalla, ligados al scroll. */}
       <MarqueeBand words={t.marquee.words} />
 
+      {/* Nuevo orden por embudo de conversión (ver PLAN.md §Orden de secciones):
+          Descubrimiento → Guía IA → Cómo trabajamos → Servicios → Cotización →
+          Prueba (portafolio + presencia) → Dudas → Contacto.
+          Lumina sube justo tras el hero para volverse el hilo conductor. */}
+
+      {/* Guía: Lumina se presenta antes que nada y acompaña el resto del viaje. */}
+      <LuminaFeature />
+
+      {/* Cómo trabajamos y con qué (confianza + capacidad). */}
       <ProcessOrbital />
 
       <StackOrbit />
 
+      {/* Qué ofrecemos → cotiza y paga. Servicios y cotizador quedan juntos
+          para que descubrir la oferta y armar el proyecto sea un solo tramo. */}
+      <EntryServices />
+
+      <Configurator />
+
+      {/* Prueba: trabajo real y presencia, después de haber visto la oferta. */}
       <ProjectsShowcase />
 
       <MarqueeBand words={t.marquee.words} reverse outline />
@@ -146,12 +162,7 @@ export default function HomePage() {
 
       <ClientsMarquee />
 
-      <LuminaFeature />
-
-      <EntryServices />
-
-      <Configurator />
-
+      {/* Dudas y cierre. */}
       <Faq />
 
       <ClosingCta />

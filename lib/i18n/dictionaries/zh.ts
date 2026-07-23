@@ -13,6 +13,8 @@ const zh: Dictionary = {
     menu: "打开菜单",
     closeMenu: "关闭菜单",
     serviciosEntrada: "入门服务",
+    lumina: "Lumina",
+    servicios: "服务",
   },
   marquee: {
     words: ["设计", "代码", "SEO", "性能", "电商", "品牌"],

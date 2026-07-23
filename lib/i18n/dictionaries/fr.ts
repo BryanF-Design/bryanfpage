@@ -13,6 +13,8 @@ const fr: Dictionary = {
     menu: "Ouvrir le menu",
     closeMenu: "Fermer le menu",
     serviciosEntrada: "Services d'entrée",
+    lumina: "Lumina",
+    servicios: "Services",
   },
   marquee: {
     words: ["Design", "Code", "SEO", "Performance", "E-commerce", "Branding"],

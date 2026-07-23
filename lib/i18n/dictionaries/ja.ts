@@ -13,6 +13,8 @@ const ja: Dictionary = {
     menu: "メニューを開く",
     closeMenu: "メニューを閉じる",
     serviciosEntrada: "エントリーサービス",
+    lumina: "Lumina",
+    servicios: "サービス",
   },
   marquee: {
     words: ["デザイン", "コード", "SEO", "パフォーマンス", "EC", "ブランディング"],
