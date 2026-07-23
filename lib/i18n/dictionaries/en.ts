@@ -321,6 +321,20 @@ const en: Dictionary = {
     ctaSecondary: "See my process",
     quote: "Every site you see here came out of this desk.",
   },
+  luminaJourney: {
+    eyebrow: "How it works",
+    title: "From idea to project, with you at every step",
+    subtitle:
+      "Lumina isn't a chatbot that just answers. She walks you through the whole path, in minutes.",
+    steps: [
+      { title: "Gets to know you", desc: "Tell her what you need; she understands your business, your goal and your audience." },
+      { title: "Recommends", desc: "Suggests the package and modules that fit you best, and explains why." },
+      { title: "Quotes you", desc: "Builds your budget instantly, with clear prices and no fine print." },
+      { title: "Takes you to checkout", desc: "Pay by card, Mercado Pago or transfer. Deposit or full payment, your call." },
+      { title: "Stays with you", desc: "You get your folio and receipt, fill your brief, and we kick off your project." },
+    ],
+    cta: "Start with Lumina",
+  },
   luminaSection: {
     eyebrow: "Your AI advisor",
     titlePrefix: "Meet",

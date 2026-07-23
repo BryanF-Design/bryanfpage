@@ -109,7 +109,7 @@ estáticas). SEO intacto: mismas rutas, anclas, metadatos y componentes SSR.
 | 2 | Protección SEO + respaldo | ✅ (sin tocar rutas/meta) |
 | 3 | Arquitectura de información + nuevo orden | ✅ (§3) |
 | 4 | Sistema visual / componentes base | ✅ Tokens existentes reutilizados |
-| 5 | Nueva presentación de Lumina (capacidades + privacidad) | ✅ base (falta narrativa por pasos) |
+| 5 | Nueva presentación de Lumina (capacidades + privacidad + narrativa por pasos) | ✅ |
 | 6 | Chat escritorio + móvil dedicado (dvh/svh, safe areas) | ✅ ya existía; verificado |
 | 7 | Servicios, planes y precios | ✅ base (precios reales centralizados) |
 | 8 | Cotizador (página propia, guardar/retomar, enviar por correo) | ✅ (faltan tiers a confirmar) |

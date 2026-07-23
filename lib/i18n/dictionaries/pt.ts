@@ -321,6 +321,20 @@ const pt: Dictionary = {
     ctaSecondary: "Veja meu processo",
     quote: "Cada site que você vê aqui saiu desta mesa.",
   },
+  luminaJourney: {
+    eyebrow: "Como funciona",
+    title: "Da ideia ao projeto, contigo em cada passo",
+    subtitle:
+      "A Lumina não é um chatbot que só responde. Ela leva-te por todo o caminho, em minutos.",
+    steps: [
+      { title: "Conhece-te", desc: "Dizes o que precisas; ela entende o teu negócio, o teu objetivo e o teu público." },
+      { title: "Recomenda", desc: "Sugere o pacote e os módulos que melhor te servem, e explica porquê." },
+      { title: "Orça", desc: "Monta o teu orçamento na hora, com preços claros e sem letras miúdas." },
+      { title: "Leva-te ao pagamento", desc: "Pagas com cartão, Mercado Pago ou transferência. Sinal ou pagamento total, tu escolhes." },
+      { title: "Acompanha-te", desc: "Recebes o teu comprovativo e folio, preenches o briefing, e arrancamos o projeto." },
+    ],
+    cta: "Começar com a Lumina",
+  },
   luminaSection: {
     eyebrow: "Sua consultora IA",
     titlePrefix: "Ela é a",
