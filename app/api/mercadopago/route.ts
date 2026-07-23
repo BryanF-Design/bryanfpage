@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { MercadoPagoConfig, Preference } from "mercadopago";
 import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
 import { getUsdMxnRate, isCurrency, usdToMxn } from "@/lib/currency";
+import { normalizeSelection, quotePayableNow, quoteProjectTotal } from "@/lib/quote";
 
 export const runtime = "nodejs";
 
@@ -43,15 +44,27 @@ export async function POST(req: NextRequest) {
       ""
     );
 
-    // Client-controlled amount: require a sane range to avoid bogus charges.
-    if (!Number.isFinite(monto) || monto <= 0 || monto > 2_000_000) {
+    // Precio autoritativo del lado del servidor (ver stripe-checkout): con la
+    // selección estructurada, el total se recompone desde el catálogo; sin
+    // ella, se valida el monto en rango sano (compatibilidad hacia atrás).
+    const rawSelection = (body as Record<string, unknown>).selection;
+    let projectTotal: number;
+    if (rawSelection && typeof rawSelection === "object") {
+      const selection = normalizeSelection(rawSelection);
+      projectTotal = quoteProjectTotal(
+        selection,
+        currency,
+        getUsdMxnRate(process.env.NEXT_PUBLIC_USD_MXN_RATE)
+      );
+    } else {
+      projectTotal = monto;
+    }
+
+    if (!Number.isFinite(projectTotal) || projectTotal <= 0 || projectTotal > 2_000_000) {
       return NextResponse.json({ error: "Monto invalido" }, { status: 400 });
     }
 
-    const payable = Math.max(
-      1,
-      Math.round(monto * (modalidad === "anticipo" ? 0.5 : 1))
-    );
+    const payable = quotePayableNow(projectTotal, modalidad);
 
     const client = new MercadoPagoConfig({
       accessToken: process.env.MP_ACCESS_TOKEN,
@@ -71,9 +84,9 @@ export async function POST(req: NextRequest) {
             },
           ],
           back_urls: {
-            success: `${siteUrl}/?status=success#fast-track-section`,
-            failure: `${siteUrl}/?status=failure#fast-track-section`,
-            pending: `${siteUrl}/?status=pending#fast-track-section`,
+            success: `${siteUrl}/gracias?status=success&provider=mercadopago`,
+            failure: `${siteUrl}/gracias?status=failure&provider=mercadopago`,
+            pending: `${siteUrl}/gracias?status=pending&provider=mercadopago`,
           },
           auto_return: "approved",
         },

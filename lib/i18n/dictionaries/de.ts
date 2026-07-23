@@ -251,6 +251,8 @@ const de: Dictionary = {
     copyLabel: (label) => `${label} kopieren`,
     sendWhatsapp: "Beleg per WhatsApp senden",
     sendEmail: "Beleg per E-Mail senden",
+    emailQuote: "Angebot per E-Mail senden",
+    emailQuoteSubject: "Mein Angebot — BryanF Design",
     securePaymentPrefix: "Sichere Zahlung. Mit dem Fortfahren akzeptierst du unsere",
     terms: "AGB",
     and: "und",
@@ -327,6 +329,12 @@ const de: Dictionary = {
     cta: "Mit Lumina chatten",
     status: "Online 24/7",
     hint: "Tippe sie an, um ihre Stimmung zu ändern · ziehe, um sie zu drehen",
+    badges: [
+      { title: "Sofortige Antworten", desc: "Jederzeit, ohne Warten." },
+      { title: "Kennt den ganzen Katalog", desc: "Preise, Zeiten, Module und Ablauf." },
+      { title: "Stellt dein Angebot zusammen", desc: "Füllt dein Angebot vor und führt dich zur Kasse." },
+    ],
+    privacy: "Keine sensiblen Daten im Chat. Dein Gespräch bleibt nur auf diesem Gerät.",
     moods: {
       normal: "Normal-Modus",
       enfocada: "Fokus-Modus",

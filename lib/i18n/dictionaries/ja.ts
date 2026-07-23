@@ -249,6 +249,8 @@ const ja: Dictionary = {
     copyLabel: (label) => `${label}をコピー`,
     sendWhatsapp: "WhatsAppで領収書を送る",
     sendEmail: "メールで領収書を送る",
+    emailQuote: "見積もりをメールで送る",
+    emailQuoteSubject: "私の見積もり — BryanF Design",
     securePaymentPrefix: "安全な決済です。続行すると、以下に同意したことになります：",
     terms: "利用規約",
     and: "・",
@@ -320,6 +322,12 @@ const ja: Dictionary = {
     cta: "Luminaとチャット",
     status: "オンライン 24/7",
     hint: "タップで表情が変わる · ドラッグで回転",
+    badges: [
+      { title: "即時に回答", desc: "いつでも、待ち時間なし。" },
+      { title: "全カタログを把握", desc: "価格・納期・モジュール・工程。" },
+      { title: "見積もりを用意", desc: "見積もりを事前入力し、決済へ案内します。" },
+    ],
+    privacy: "チャットで機微な情報は尋ねません。会話はこの端末にのみ残ります。",
     moods: {
       normal: "ノーマルモード",
       enfocada: "集中モード",

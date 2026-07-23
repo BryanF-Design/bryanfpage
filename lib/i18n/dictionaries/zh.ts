@@ -201,6 +201,8 @@ const zh: Dictionary = {
     copyLabel: (label) => `复制${label}`,
     sendWhatsapp: "通过WhatsApp发送凭证",
     sendEmail: "通过邮件发送凭证",
+    emailQuote: "把报价发到我的邮箱",
+    emailQuoteSubject: "我的报价 — BryanF Design",
     securePaymentPrefix: "安全支付。继续操作即表示您同意我们的",
     terms: "服务条款",
     and: "和",
@@ -272,6 +274,12 @@ const zh: Dictionary = {
     cta: "与Lumina聊天",
     status: "在线 24/7",
     hint: "点击换表情 · 拖动可旋转",
+    badges: [
+      { title: "即时回答", desc: "随时回复，无需等待。" },
+      { title: "熟悉全部服务", desc: "价格、周期、模块与流程。" },
+      { title: "帮你备好报价", desc: "预填报价并带你去付款。" },
+    ],
+    privacy: "聊天中不会索取敏感信息。对话仅保存在本设备。",
     moods: {
       normal: "正常模式",
       enfocada: "专注模式",

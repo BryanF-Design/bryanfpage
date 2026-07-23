@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Check,
   Copy,
   Building2,
   Loader2,
+  Mail,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { SiStripe, SiMercadopago } from "react-icons/si";
@@ -67,7 +68,9 @@ function formatMXN(value: number) {
   return formatMoney(value, "MXN");
 }
 
-export function Configurator() {
+const QUOTE_KEY = "bryanf_quote_v1";
+
+export function Configurator({ hideHeading = false }: { hideHeading?: boolean } = {}) {
   const { t } = useLanguage();
   const PLANS = getPlans(t);
   const MODULES = getModules(t);
@@ -78,6 +81,7 @@ export function Configurator() {
   const [sections, setSections] = useState(0);
   const [mode, setMode] = useState<"liquidacion" | "anticipo">("liquidacion");
   const [currency, setCurrency] = useState<Currency>("MXN");
+  const [restored, setRestored] = useState(false);
   const [coupon, setCoupon] = useState("");
   const [couponMsg, setCouponMsg] = useState("");
   const [loading, setLoading] = useState<string | null>(null);
@@ -86,6 +90,48 @@ export function Configurator() {
   const [copied, setCopied] = useState("");
 
   const plan = PLANS.find((p) => p.id === planId)!;
+
+  // Retomar después: guarda la configuración en este dispositivo y la restaura
+  // al volver. Sólo cliente (localStorage no existe en SSR).
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(QUOTE_KEY);
+      if (raw) {
+        const s = JSON.parse(raw) as Record<string, unknown>;
+        if (s && typeof s === "object") {
+          if (typeof s.planId === "string" && PLAN_META.some((p) => p.id === s.planId))
+            setPlanId(s.planId);
+          if (s.mods && typeof s.mods === "object")
+            setMods(
+              Object.fromEntries(
+                Object.entries(s.mods as Record<string, unknown>).filter(
+                  ([k, v]) => MODULE_META.some((m) => m.id === k) && typeof v === "boolean"
+                )
+              ) as Record<string, boolean>
+            );
+          const sec = Number(s.sections);
+          if (Number.isFinite(sec)) setSections(Math.max(0, Math.min(50, Math.floor(sec))));
+          if (s.mode === "anticipo" || s.mode === "liquidacion") setMode(s.mode);
+          if (s.currency === "MXN" || s.currency === "USD") setCurrency(s.currency);
+        }
+      }
+    } catch {
+      /* storage bloqueado o corrupto */
+    }
+    setRestored(true);
+  }, []);
+
+  useEffect(() => {
+    if (!restored) return;
+    try {
+      window.localStorage.setItem(
+        QUOTE_KEY,
+        JSON.stringify({ planId, mods, sections, mode, currency })
+      );
+    } catch {
+      /* storage bloqueado */
+    }
+  }, [restored, planId, mods, sections, mode, currency]);
 
   // Cada partida vive en MXN (precio fuente); la vista y el cobro se derivan
   // según la moneda elegida, con redondeo hacia arriba por partida en USD
@@ -150,6 +196,13 @@ export function Configurator() {
           monto: projectTotal,
           currency,
           modalidad: mode,
+          // Selección estructurada: el servidor recompone el precio desde el
+          // catálogo con esto y cobra su propio total (no el del navegador).
+          selection: {
+            planId,
+            moduleIds: MODULES.filter((m) => mods[m.id]).map((m) => m.id),
+            sections,
+          },
           descripcion: `Configura tu Proyecto Web - ${plan.name}`,
           metadata: {
             flow: "fast-track",
@@ -193,6 +246,19 @@ export function Configurator() {
     }
   }
 
+  // Enviar cotización por correo: abre el cliente de correo del usuario con el
+  // resumen ya redactado (sin backend, funciona siempre).
+  function emailQuote() {
+    const lines = items.map((it) => `• ${it.source}: ${display(it.price)}`).join("\n");
+    const body = `${t.configurator.summary}:\n${lines}\n\n${t.configurator.totalProject}: ${formatMoney(
+      projectTotal,
+      currency
+    )}\n${t.configurator.payNow}: ${formatMoney(payableNow, currency)}`;
+    window.location.href = `mailto:bryanf@bryanfdesign.com.mx?subject=${encodeURIComponent(
+      t.configurator.emailQuoteSubject
+    )}&body=${encodeURIComponent(body)}`;
+  }
+
   // La transferencia siempre es a cuenta mexicana: montos en MXN.
   const transferMsg = encodeURIComponent(
     t.configurator.whatsappTransferMsg({
@@ -212,11 +278,13 @@ export function Configurator() {
     >
       <div aria-hidden className="mesh-glow-a opacity-50" />
       <div className="container relative">
-        <SectionHeading
-          eyebrow={t.configurator.eyebrow}
-          title={t.configurator.title}
-          subtitle={t.configurator.subtitle}
-        />
+        {!hideHeading && (
+          <SectionHeading
+            eyebrow={t.configurator.eyebrow}
+            title={t.configurator.title}
+            subtitle={t.configurator.subtitle}
+          />
+        )}
 
         <div className="mt-14 grid gap-8 lg:grid-cols-[1.3fr_1fr]">
           {/* LEFT: configuration */}
@@ -475,6 +543,15 @@ export function Configurator() {
                 >
                   <Building2 className="mr-1 h-4 w-4" />
                   {t.configurator.payTransfer}
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={emailQuote}
+                  disabled={projectTotal <= 0}
+                  className="w-full"
+                >
+                  <Mail className="mr-1 h-4 w-4" />
+                  {t.configurator.emailQuote}
                 </Button>
               </div>
 

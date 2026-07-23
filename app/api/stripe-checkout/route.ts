@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
-import { isCurrency } from "@/lib/currency";
+import { getUsdMxnRate, isCurrency } from "@/lib/currency";
+import { normalizeSelection, quotePayableNow, quoteProjectTotal } from "@/lib/quote";
 
 export const runtime = "nodejs";
 
@@ -52,15 +53,29 @@ export async function POST(req: NextRequest) {
       ""
     );
 
-    // Client-controlled amount: require a sane range to avoid bogus charges.
-    if (!Number.isFinite(monto) || monto <= 0 || monto > 2_000_000) {
+    // Precio autoritativo del lado del servidor: si el cliente manda la
+    // selección estructurada (plan + módulos + secciones), el total se
+    // recompone desde el catálogo y se cobra ESE número — nunca el que venga
+    // calculado en el navegador. Sin selección, se conserva el flujo previo
+    // validando el monto en un rango sano (compatibilidad hacia atrás).
+    const rawSelection = (body as Record<string, unknown>).selection;
+    let projectTotal: number;
+    if (rawSelection && typeof rawSelection === "object") {
+      const selection = normalizeSelection(rawSelection);
+      projectTotal = quoteProjectTotal(
+        selection,
+        currency,
+        getUsdMxnRate(process.env.NEXT_PUBLIC_USD_MXN_RATE)
+      );
+    } else {
+      projectTotal = monto;
+    }
+
+    if (!Number.isFinite(projectTotal) || projectTotal <= 0 || projectTotal > 2_000_000) {
       return NextResponse.json({ error: "Monto invalido" }, { status: 400 });
     }
 
-    const payable = Math.max(
-      1,
-      Math.round(monto * (modalidad === "anticipo" ? 0.5 : 1))
-    );
+    const payable = quotePayableNow(projectTotal, modalidad);
     const stripe = new Stripe(process.env.STRIPE_SECRET);
 
     const session = await stripe.checkout.sessions.create({
@@ -78,12 +93,13 @@ export async function POST(req: NextRequest) {
       ],
       metadata: {
         modalidad,
-        montoOriginal: String(monto),
+        montoProyecto: String(projectTotal),
+        montoCliente: String(monto),
         moneda: currency,
         ...metadata,
       },
-      success_url: `${siteUrl}/?status=success#fast-track-section`,
-      cancel_url: `${siteUrl}/?status=cancel#fast-track-section`,
+      success_url: `${siteUrl}/gracias?status=success&provider=stripe`,
+      cancel_url: `${siteUrl}/gracias?status=cancel&provider=stripe`,
     });
 
     return NextResponse.json({ checkoutUrl: session.url, amount: payable, currency });

@@ -251,6 +251,8 @@ const en: Dictionary = {
     copyLabel: (label) => `Copy ${label}`,
     sendWhatsapp: "Send receipt via WhatsApp",
     sendEmail: "Send receipt via email",
+    emailQuote: "Email me this quote",
+    emailQuoteSubject: "My quote — BryanF Design",
     securePaymentPrefix: "Secure payment. By continuing you accept our",
     terms: "Terms",
     and: "and",
@@ -327,6 +329,12 @@ const en: Dictionary = {
     cta: "Chat with Lumina",
     status: "Online 24/7",
     hint: "Tap her to change her mood · drag to spin her around",
+    badges: [
+      { title: "Instant answers", desc: "Any time, no waiting." },
+      { title: "Knows the whole catalog", desc: "Prices, timelines, modules and process." },
+      { title: "Builds your quote", desc: "Pre-fills your quote and takes you to checkout." },
+    ],
+    privacy: "No sensitive data in the chat. Your conversation stays on this device only.",
     moods: {
       normal: "Normal mode",
       enfocada: "Focused mode",

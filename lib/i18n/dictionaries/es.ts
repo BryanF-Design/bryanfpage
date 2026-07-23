@@ -261,6 +261,8 @@ const es = {
     copyLabel: (label: string) => `Copiar ${label}`,
     sendWhatsapp: "Enviar comprobante por WhatsApp",
     sendEmail: "Enviar comprobante por correo",
+    emailQuote: "Enviar cotización por correo",
+    emailQuoteSubject: "Mi cotización — BryanF Design",
     securePaymentPrefix: "Pago seguro. Al continuar aceptas nuestros",
     terms: "Términos",
     and: "y",
@@ -347,6 +349,12 @@ const es = {
     cta: "Chatea con Lumina",
     status: "En línea 24/7",
     hint: "Tócala para cambiar su ánimo · arrástrala para girarla",
+    badges: [
+      { title: "Responde al instante", desc: "A cualquier hora, sin esperas." },
+      { title: "Conoce todo el catálogo", desc: "Precios, tiempos, módulos y proceso." },
+      { title: "Te deja tu web armada", desc: "Preselecciona tu cotización y te lleva al pago." },
+    ],
+    privacy: "No pedimos datos sensibles en el chat. Tu conversación vive sólo en este dispositivo.",
     moods: {
       normal: "Modo normal",
       enfocada: "Modo enfocada",

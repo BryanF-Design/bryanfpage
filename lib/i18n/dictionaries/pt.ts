@@ -251,6 +251,8 @@ const pt: Dictionary = {
     copyLabel: (label) => `Copiar ${label}`,
     sendWhatsapp: "Enviar comprovante pelo WhatsApp",
     sendEmail: "Enviar comprovante por e-mail",
+    emailQuote: "Enviar orçamento por e-mail",
+    emailQuoteSubject: "Meu orçamento — BryanF Design",
     securePaymentPrefix: "Pagamento seguro. Ao continuar você aceita nossos",
     terms: "Termos",
     and: "e",
@@ -327,6 +329,12 @@ const pt: Dictionary = {
     cta: "Converse com a Lumina",
     status: "Online 24/7",
     hint: "Toque nela para mudar o humor · arraste para girá-la",
+    badges: [
+      { title: "Respostas na hora", desc: "A qualquer hora, sem espera." },
+      { title: "Conhece todo o catálogo", desc: "Preços, prazos, módulos e processo." },
+      { title: "Monta o teu orçamento", desc: "Preenche o teu orçamento e leva-te ao pagamento." },
+    ],
+    privacy: "Não pedimos dados sensíveis no chat. A tua conversa fica só neste dispositivo.",
     moods: {
       normal: "Modo normal",
       enfocada: "Modo focada",

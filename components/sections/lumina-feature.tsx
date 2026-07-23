@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { MessageCircle, Sparkles } from "lucide-react";
+import { MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { LazyMount } from "@/components/three/lazy-mount";
@@ -152,6 +152,34 @@ export function LuminaFeature() {
               {t.luminaSection.status}
             </span>
           </motion.div>
+
+          {/* Qué es capaz de hacer — tres capacidades reales, sin relleno. */}
+          <motion.ul
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, delay: 0.3, ease: [0.2, 0, 0, 1] }}
+            className="grid w-full gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-3"
+          >
+            {t.luminaSection.badges.map((b) => (
+              <li key={b.title} className="flex flex-col gap-1 bg-background p-4">
+                <span className="text-sm font-semibold text-foreground">{b.title}</span>
+                <span className="text-xs text-muted-foreground">{b.desc}</span>
+              </li>
+            ))}
+          </motion.ul>
+
+          {/* Privacidad / límites: claridad, no letras chiquitas. */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, delay: 0.36 }}
+            className="inline-flex items-start gap-2 text-xs text-muted-foreground"
+          >
+            <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+            {t.luminaSection.privacy}
+          </motion.p>
         </div>
 
         {/* Holograma */}
