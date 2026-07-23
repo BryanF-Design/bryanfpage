@@ -12,6 +12,7 @@ const zh: Dictionary = {
     verProyectos: "查看作品",
     menu: "打开菜单",
     closeMenu: "关闭菜单",
+    serviciosEntrada: "入门服务",
   },
   marquee: {
     words: ["设计", "代码", "SEO", "性能", "电商", "品牌"],
@@ -94,6 +95,55 @@ const zh: Dictionary = {
   },
   clients: {
     label: "值得信赖的合作品牌",
+  },
+  entryServices: {
+    eyebrow: "入门服务",
+    title: "无需完整网站也能建立专业形象",
+    subtitle: "如果你还不需要完整的网站，从这里开始：几天内就能拥有同样高品质设计的联系身份。",
+    cta: "咨询这项服务",
+    note: "价格以墨西哥比索（MXN）计价。项目更大？我们可以把它和完整网站结合起来——问问 Lumina。",
+    items: [
+      {
+        id: "tarjetaDigital",
+        name: "数字名片",
+        price: "$900 MXN",
+        desc: "在专属页面展示你的联系资料，带保存联系人按钮和二维码。",
+        features: ["公开的个人资料页面", "保存联系人按钮（vCard）", "定制二维码", "与你的品牌风格一致的设计"],
+        question: "我想了解数字名片的信息",
+      },
+      {
+        id: "tarjetaImprimible",
+        name: "印刷名片",
+        price: "$650 MXN",
+        desc: "可直接印刷的实体设计，二维码连接到你的数字身份。",
+        features: ["正反面设计", "联系二维码", "印刷用文件", "2轮修改"],
+        question: "我想了解印刷名片的信息",
+      },
+      {
+        id: "firmaCorreo",
+        name: "专业邮件签名",
+        price: "$350 MXN",
+        desc: "让你发出的每一封邮件都和你的品牌一样专业。",
+        features: ["兼容 Gmail、Outlook 和 Apple Mail", "联系方式和社交媒体信息", "全程指导安装", "支持团队版本"],
+        question: "我想了解专业邮件签名的信息",
+      },
+      {
+        id: "kitPresencia",
+        name: "数字形象套装",
+        price: "$1,500 MXN",
+        desc: "数字名片、邮件签名和二维码打包在一起，比单独购买更划算。",
+        features: ["数字名片 + 邮件签名", "含二维码", "社交媒体封面图", "头像照片处理"],
+        question: "我想了解数字形象套装的信息",
+      },
+      {
+        id: "landingEsencial",
+        name: "基础落地页",
+        price: "$2,400 MXN 起",
+        desc: "一个真正可用于销售或自我介绍的页面，规模小于完整网站。",
+        features: ["适合自由职业者、活动和本地商户", "包含基础技术 SEO", "最快3个工作日交付", "结构围绕单一目标设计"],
+        question: "我想了解基础落地页的信息",
+      },
+    ],
   },
   configurator: {
     eyebrow: "配置器",
@@ -268,6 +318,7 @@ const zh: Dictionary = {
     open: "打开与Lumina的对话",
     teaser: "想要打造您的网站吗？问我价格、交付时间，或从哪里开始 ✨",
     typing: "正在输入…",
+    retry: "重试",
     languageInstruction: "中文",
     errorFallback:
       "现在暂时无法回复，请通过<a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a>联系我们，我们会立即为您处理。",

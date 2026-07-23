@@ -40,6 +40,9 @@ const ClientsMarquee = dynamic(() =>
 const LuminaFeature = dynamic(() =>
   import("@/components/sections/lumina-feature").then((m) => m.LuminaFeature)
 );
+const EntryServices = dynamic(() =>
+  import("@/components/sections/entry-services").then((m) => m.EntryServices)
+);
 const Configurator = dynamic(() =>
   import("@/components/sections/configurator").then((m) => m.Configurator)
 );
@@ -144,6 +147,8 @@ export default function HomePage() {
       <ClientsMarquee />
 
       <LuminaFeature />
+
+      <EntryServices />
 
       <Configurator />
 

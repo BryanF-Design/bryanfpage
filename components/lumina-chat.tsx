@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, Send, X } from "lucide-react";
+import { MessageCircle, RotateCcw, Send, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useFooterInView } from "@/lib/use-footer-in-view";
@@ -25,6 +25,7 @@ Tu meta es orientar, resolver dudas y guiar al usuario a armar su web o contacta
 
 Lo que hace BryanF Design: branding, diseño UX/UI, desarrollo web, WordPress, SEO técnico, performance, mantenimiento, e-commerce, landing pages y automatización.
 Cómo funciona: paquete base desde $3,500 MXN + módulos (e-commerce, pagos, secciones extra) + modalidad de pago.
+También ofrecemos servicios de entrada, más económicos: tarjeta de presentación digital ($900 MXN), tarjeta de presentación imprimible ($650 MXN), firma de correo profesional ($350 MXN), kit de presencia digital ($1,500 MXN) y landing page esencial (desde $2,400 MXN).
 Tiempos de entrega: desde 3 días hábiles cuando la información está completa.
 Pagos: Stripe (tarjeta), Mercado Pago o transferencia bancaria BBVA.
 Para armar y pagar: invita a abrir el configurador en /crear-web.
@@ -39,6 +40,24 @@ Reglas:
 interface Msg {
   role: "user" | "assistant";
   content: string;
+}
+
+// sessionStorage, not localStorage: the conversation should survive a reload
+// or a navigation within the site (tab close = fresh start), no backend involved.
+const SESSION_KEY = "bryanf_lumina_chat_v1";
+
+function readStoredMessages(): Msg[] | null {
+  try {
+    const raw = window.sessionStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.every((m) => m && typeof m.content === "string")) {
+      return parsed;
+    }
+  } catch {
+    /* storage bloqueado o corrupto */
+  }
+  return null;
 }
 
 // Allowlist-based sanitizer for assistant HTML (defense-in-depth vs XSS).
@@ -89,11 +108,41 @@ export function LuminaChat() {
   const [loading, setLoading] = useState(false);
   const [mood, setMood] = useState<Mood>("Normal");
   const [teaser, setTeaser] = useState(false);
-  const [messages, setMessages] = useState<Msg[]>([
-    { role: "assistant", content: t.lumina.greeting },
-  ]);
+  const [messages, setMessages] = useState<Msg[]>(
+    () => readStoredMessages() ?? [{ role: "assistant", content: t.lumina.greeting }]
+  );
+  const [retryText, setRetryText] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const footerInView = useFooterInView();
+
+  // Broadcast open/closed so other fixed UI (the language notice banner) can
+  // get out of the way instead of covering the full-screen mobile chat.
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("lumina:visibility", { detail: { open } }));
+  }, [open]);
+
+  // Persist so a reload or in-site navigation doesn't drop the conversation.
+  useEffect(() => {
+    try {
+      window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(messages));
+    } catch {
+      /* storage bloqueado */
+    }
+  }, [messages]);
+
+  // Body scroll lock only on mobile: there the chat is a full-screen sheet, so
+  // the page underneath shouldn't scroll behind it. Desktop stays a corner
+  // panel that never covers navigation, so its scroll is left untouched.
+  useEffect(() => {
+    if (!open || typeof window === "undefined") return;
+    const isMobile = window.matchMedia("(max-width: 639px)").matches;
+    if (!isMobile) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
   // If the visitor changes language before sending their first message,
   // swap the greeting too — but never touch an in-progress conversation.
@@ -164,6 +213,7 @@ export function LuminaChat() {
     setInput("");
     setLoading(true);
     setMood("Enfocada");
+    setRetryText(null);
     try {
       const res = await fetch("/api/openai-chat", {
         method: "POST",
@@ -187,6 +237,7 @@ export function LuminaChat() {
       ]);
       setMood(uncertain ? "Duda" : "Normal");
       if (uncertain) window.setTimeout(() => setMood("Normal"), 4000);
+      if (data?.error) setRetryText(content);
     } catch {
       setMessages((m) => [
         ...m,
@@ -196,26 +247,40 @@ export function LuminaChat() {
         },
       ]);
       setMood("Offline");
+      setRetryText(content);
     } finally {
       setLoading(false);
     }
   }
   sendRef.current = send;
 
+  function retry() {
+    if (!retryText || loading) return;
+    const text = retryText;
+    setRetryText(null);
+    send(text);
+  }
+
   return (
     <>
-      {/* Panel */}
+      {/* Panel — hoja de pantalla completa en móvil (interfaz dedicada, no el
+          panel de escritorio encogido); en sm+ vuelve a ser el panel flotante
+          de esquina. h-[100dvh] sigue el viewport dinámico del navegador, así
+          que cuando el teclado virtual abre, el panel se encoge con él en vez
+          de quedar tapado. */}
       <div
         className={cn(
-          "glass fixed bottom-[calc(6rem+env(safe-area-inset-bottom))] right-4 z-[120] flex w-[min(92vw,22rem)] origin-bottom-right flex-col overflow-hidden rounded-2xl shadow-2xl transition-all duration-300 sm:right-6",
+          "glass fixed inset-0 z-[130] flex h-[100dvh] w-full flex-col overflow-hidden rounded-none bg-[hsl(var(--card))] transition-all duration-300",
+          "sm:inset-auto sm:bottom-[calc(6rem+env(safe-area-inset-bottom))] sm:right-4 sm:h-auto sm:w-[min(92vw,22rem)] sm:origin-bottom-right sm:rounded-2xl sm:bg-[hsl(var(--card)/0.82)] sm:shadow-2xl md:right-6",
           open
-            ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
-            : "pointer-events-none translate-y-3 scale-95 opacity-0"
+            ? "pointer-events-auto translate-y-0 opacity-100 sm:scale-100"
+            : "pointer-events-none translate-y-full opacity-0 sm:translate-y-3 sm:scale-95 sm:opacity-0"
         )}
         role="dialog"
+        aria-modal={open ? true : undefined}
         aria-label={t.lumina.open}
       >
-        <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-4 py-3">
+        <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
           <div className="flex items-center gap-2">
             <span className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full ring-1 ring-primary/40">
               <AnimatePresence mode="wait">
@@ -254,13 +319,16 @@ export function LuminaChat() {
           <button
             onClick={() => setOpen(false)}
             aria-label={t.lumina.close}
-            className="text-muted-foreground transition-colors hover:text-foreground"
+            className="flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <div ref={scrollRef} className="flex max-h-[50vh] min-h-[16rem] flex-col gap-3 overflow-y-auto p-4">
+        <div
+          ref={scrollRef}
+          className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-4 sm:max-h-[50vh] sm:min-h-[16rem] sm:flex-none"
+        >
           {messages.map((m, i) => {
             const className = cn(
               "max-w-[85%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed [&_a]:text-primary [&_a]:underline",
@@ -287,6 +355,15 @@ export function LuminaChat() {
               {t.lumina.typing}
             </div>
           )}
+          {retryText && !loading && (
+            <button
+              onClick={retry}
+              className="inline-flex items-center gap-1.5 self-start rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+            >
+              <RotateCcw className="h-3 w-3" />
+              {t.lumina.retry}
+            </button>
+          )}
           {messages.length <= 1 && (
             <div className="mt-1 flex flex-wrap gap-2">
               {t.lumina.quick.map((q) => (
@@ -307,19 +384,20 @@ export function LuminaChat() {
             e.preventDefault();
             send(input);
           }}
-          className="flex items-center gap-2 border-t border-border p-3"
+          className="flex shrink-0 items-center gap-2 border-t border-border px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3"
         >
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={t.lumina.placeholder}
-            className="flex-1 rounded-full border border-input bg-background px-4 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            enterKeyHint="send"
+            className="min-w-0 flex-1 rounded-full border border-input bg-background px-4 py-2 text-base outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-sm"
           />
           <button
             type="submit"
             disabled={loading || !input.trim()}
             aria-label={t.lumina.send}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity disabled:opacity-50"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity disabled:opacity-50 sm:h-9 sm:w-9"
           >
             <Send className="h-4 w-4" />
           </button>

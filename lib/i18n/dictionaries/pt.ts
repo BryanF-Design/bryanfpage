@@ -12,6 +12,7 @@ const pt: Dictionary = {
     verProyectos: "Ver projetos",
     menu: "Abrir menu",
     closeMenu: "Fechar menu",
+    serviciosEntrada: "Serviços de entrada",
   },
   marquee: {
     words: ["Design", "Código", "SEO", "Performance", "E-commerce", "Branding"],
@@ -109,6 +110,81 @@ const pt: Dictionary = {
   },
   clients: {
     label: "Marcas que confiaram",
+  },
+  entryServices: {
+    eyebrow: "Serviços de entrada",
+    title: "Presença profissional sem construir um site completo",
+    subtitle:
+      "Se você ainda não precisa de um site completo, comece por aqui: identidade de contato pronta em dias, com a mesma qualidade de design.",
+    cta: "Perguntar sobre este serviço",
+    note: "Preços em pesos mexicanos (MXN). Projeto maior em mente? Podemos combinar com um site completo — pergunte à Lumina.",
+    items: [
+      {
+        id: "tarjetaDigital",
+        name: "Cartão de visita digital",
+        price: "$900 MXN",
+        desc: "Seu perfil de contato em uma página própria, com botão para salvar seus dados e código QR.",
+        features: [
+          "Página pública com seus dados",
+          "Botão para salvar contato (vCard)",
+          "Código QR personalizado",
+          "Design alinhado à sua marca",
+        ],
+        question: "Quero informações sobre o cartão de visita digital",
+      },
+      {
+        id: "tarjetaImprimible",
+        name: "Cartão de visita impresso",
+        price: "$650 MXN",
+        desc: "Design físico pronto para impressão, com código QR que conecta à sua presença digital.",
+        features: [
+          "Design de frente e verso",
+          "Código QR de contato",
+          "Arquivos prontos para gráfica",
+          "2 rodadas de ajustes",
+        ],
+        question: "Quero informações sobre o cartão de visita impresso",
+      },
+      {
+        id: "firmaCorreo",
+        name: "Assinatura de e-mail profissional",
+        price: "$350 MXN",
+        desc: "Faça cada e-mail que você envia parecer tão profissional quanto sua marca.",
+        features: [
+          "Compatível com Gmail, Outlook e Apple Mail",
+          "Dados de contato e redes sociais",
+          "Instalação guiada",
+          "Variante para equipe",
+        ],
+        question: "Quero informações sobre a assinatura de e-mail profissional",
+      },
+      {
+        id: "kitPresencia",
+        name: "Kit de presença digital",
+        price: "$1.500 MXN",
+        desc: "Cartão digital, assinatura de e-mail e QR em um único pacote, com desconto em relação à compra separada.",
+        features: [
+          "Cartão digital + assinatura de e-mail",
+          "Código QR incluído",
+          "Capa para redes sociais",
+          "Tratamento de foto de perfil",
+        ],
+        question: "Quero informações sobre o kit de presença digital",
+      },
+      {
+        id: "landingEsencial",
+        name: "Landing page essencial",
+        price: "A partir de $2.400 MXN",
+        desc: "Uma página real, pronta para vender ou te apresentar, sem o alcance de um site completo.",
+        features: [
+          "Ideal para profissionais, eventos e negócios locais",
+          "SEO técnico básico incluído",
+          "Entrega a partir de 3 dias úteis",
+          "Estrutura focada em um único objetivo",
+        ],
+        question: "Quero informações sobre a landing page essencial",
+      },
+    ],
   },
   configurator: {
     eyebrow: "Configurador",
@@ -298,6 +374,7 @@ const pt: Dictionary = {
     open: "Abrir chat com a Lumina",
     teaser: "Quer criar seu site? Pergunte sobre preços, prazos ou como começar ✨",
     typing: "Digitando…",
+    retry: "Tentar novamente",
     languageInstruction: "português",
     errorFallback:
       "Agora não consigo responder, mas fale conosco pelo <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a> que te atendemos na hora.",
