@@ -12,6 +12,7 @@ const de: Dictionary = {
     verProyectos: "Projekte ansehen",
     menu: "Menü öffnen",
     closeMenu: "Menü schließen",
+    serviciosEntrada: "Einstiegsleistungen",
   },
   marquee: {
     words: ["Design", "Code", "SEO", "Performance", "E-Commerce", "Branding"],
@@ -109,6 +110,81 @@ const de: Dictionary = {
   },
   clients: {
     label: "Marken, die uns vertraut haben",
+  },
+  entryServices: {
+    eyebrow: "Einstiegsleistungen",
+    title: "Professioneller Auftritt ohne komplette Website",
+    subtitle:
+      "Wenn Sie noch keine komplette Website brauchen, fangen Sie hier an: eine fertige Kontaktidentität in wenigen Tagen, mit derselben Designqualität.",
+    cta: "Nach diesem Service fragen",
+    note: "Preise in mexikanischen Pesos (MXN). Größeres Projekt geplant? Wir können es mit einer kompletten Website kombinieren — fragen Sie Lumina.",
+    items: [
+      {
+        id: "tarjetaDigital",
+        name: "Digitale Visitenkarte",
+        price: "$900 MXN",
+        desc: "Ihr Kontaktprofil auf einer eigenen Seite, mit Speichern-Button und QR-Code.",
+        features: [
+          "Öffentliche Seite mit Ihren Angaben",
+          "Kontakt-speichern-Button (vCard)",
+          "Individueller QR-Code",
+          "Design passend zu Ihrer Marke",
+        ],
+        question: "Ich möchte Infos zur digitalen Visitenkarte",
+      },
+      {
+        id: "tarjetaImprimible",
+        name: "Druckbare Visitenkarte",
+        price: "$650 MXN",
+        desc: "Druckfertiges physisches Design mit QR-Code, der zu Ihrer digitalen Präsenz führt.",
+        features: [
+          "Vorder- und Rückseitendesign",
+          "Kontakt-QR-Code",
+          "Druckfertige Dateien",
+          "2 Korrekturrunden",
+        ],
+        question: "Ich möchte Infos zur druckbaren Visitenkarte",
+      },
+      {
+        id: "firmaCorreo",
+        name: "Professionelle E-Mail-Signatur",
+        price: "$350 MXN",
+        desc: "Jede E-Mail, die Sie versenden, wirkt so professionell wie Ihre Marke.",
+        features: [
+          "Kompatibel mit Gmail, Outlook und Apple Mail",
+          "Kontaktdaten und soziale Netzwerke",
+          "Begleitete Installation",
+          "Team-Variante verfügbar",
+        ],
+        question: "Ich möchte Infos zur professionellen E-Mail-Signatur",
+      },
+      {
+        id: "kitPresencia",
+        name: "Digitales Präsenz-Kit",
+        price: "$1.500 MXN",
+        desc: "Digitale Karte, E-Mail-Signatur und QR-Code im Bundle, günstiger als einzeln gekauft.",
+        features: [
+          "Digitale Karte + E-Mail-Signatur",
+          "QR-Code inklusive",
+          "Cover für soziale Netzwerke",
+          "Profilfoto-Bearbeitung",
+        ],
+        question: "Ich möchte Infos zum digitalen Präsenz-Kit",
+      },
+      {
+        id: "landingEsencial",
+        name: "Essenzielle Landingpage",
+        price: "Ab $2.400 MXN",
+        desc: "Eine echte Seite, bereit zu verkaufen oder Sie vorzustellen, ohne den Umfang einer kompletten Website.",
+        features: [
+          "Ideal für Freiberufler, Events und lokale Unternehmen",
+          "Grundlegendes technisches SEO inklusive",
+          "Lieferung ab 3 Werktagen",
+          "Struktur mit klarem Einzelziel",
+        ],
+        question: "Ich möchte Infos zur essenziellen Landingpage",
+      },
+    ],
   },
   configurator: {
     eyebrow: "Konfigurator",
@@ -298,6 +374,7 @@ const de: Dictionary = {
     open: "Chat mit Lumina öffnen",
     teaser: "Willst du eine Website erstellen? Frag mich nach Preisen, Zeitplänen oder wie wir starten ✨",
     typing: "Tippt …",
+    retry: "Erneut versuchen",
     languageInstruction: "Deutsch",
     errorFallback:
       "Ich kann gerade nicht antworten, aber schreib uns auf <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a> — wir helfen dir sofort weiter.",

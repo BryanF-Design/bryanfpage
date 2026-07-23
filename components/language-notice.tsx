@@ -18,6 +18,17 @@ function isDismissed() {
 export function LanguageNotice() {
   const { t } = useLanguage();
   const [visible, setVisible] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+
+  // The mobile Lumina chat is a full-screen sheet at the same bottom edge —
+  // step aside while it's open instead of covering its input on top of it.
+  useEffect(() => {
+    function onChatVisibility(e: Event) {
+      setChatOpen(!!(e as CustomEvent<{ open?: boolean }>).detail?.open);
+    }
+    window.addEventListener("lumina:visibility", onChatVisibility);
+    return () => window.removeEventListener("lumina:visibility", onChatVisibility);
+  }, []);
 
   useEffect(() => {
     const showTimer = window.setTimeout(() => {
@@ -44,7 +55,7 @@ export function LanguageNotice() {
     markDismissed();
   }
 
-  if (!visible) return null;
+  if (!visible || chatOpen) return null;
 
   return (
     // Móvil: hoja inferior de borde a borde (encima de los botones flotantes,
