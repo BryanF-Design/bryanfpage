@@ -319,7 +319,7 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                       hinomaru sin gastar el presupuesto de rojo. */}
                   <div
                     aria-hidden
-                    className="hinomaru left-1/2 top-[46%] aspect-square w-[min(78%,30rem)] -translate-x-1/2 -translate-y-1/2"
+                    className="hinomaru left-1/2 top-[46%] aspect-square w-[min(94%,37rem)] -translate-x-1/2 -translate-y-1/2"
                   />
 
                   {/* El horizonte. Una línea, y carga peso: marca el suelo
@@ -347,12 +347,14 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                       className="absolute inset-0"
                       // El canvas dejaba un borde recto visible donde terminaba
                       // el viewport WebGL. La máscara lo funde con la tinta del
-                      // fondo para que el auto no viva dentro de una caja.
+                      // fondo para que el auto no viva dentro de una caja. Se
+                      // abrió al crecer el Civic: con la elipse anterior el
+                      // morro y el alerón entraban en la zona de desvanecido.
                       style={{
                         maskImage:
-                          "radial-gradient(ellipse 78% 82% at 50% 52%, black 58%, transparent 100%)",
+                          "radial-gradient(ellipse 94% 90% at 50% 52%, black 68%, transparent 100%)",
                         WebkitMaskImage:
-                          "radial-gradient(ellipse 78% 82% at 50% 52%, black 58%, transparent 100%)",
+                          "radial-gradient(ellipse 94% 90% at 50% 52%, black 68%, transparent 100%)",
                       }}
                     >
                       <CivicScene

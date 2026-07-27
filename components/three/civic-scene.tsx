@@ -83,11 +83,21 @@ export function CivicScene({
   const { containerRef } = useThreeStage({
     fov: 30,
     cameraZ: 5.8,
-    maxDpr: 1.5,
+    // El Civic es la pieza del hero, no un adorno de fondo: en escritorio se
+    // dibuja a resolución de pantalla completa. El tope de 1.5 dejaba los
+    // cantos del capó y las letras del paragolpes con escalera.
+    maxDpr: desktopViewport() ? 2 : 1.5,
     build: ({ scene, camera, renderer, container }) => {
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 0.94;
+      renderer.toneMappingExposure = 1;
+
+      // Reflejos. Sin entorno, el blanco perla quedaba plano y los cromados
+      // grises: un PBR sin nada que reflejar. Este estudio de barras —el mismo
+      // recurso que usa cualquier foto de auto— es lo que hace rodar los
+      // brillos por el flanco cuando el modelo gira.
+      const environment = makeStudioEnvironment(renderer);
+      scene.environment = environment;
 
       // Cámara más baja y algo más lejos: encuadre de póster, no de inspector
       // de assets mirando desde arriba.
@@ -107,11 +117,19 @@ export function CivicScene({
       road.rotation.y = Math.PI * 0.5;
       stage.add(road);
 
-      scene.add(new THREE.HemisphereLight(0xf2f3ec, 0x06100c, 1.05));
+      // Con el entorno puesto, el hemisférico bajó: antes hacía de relleno él
+      // solo y aplanaba la carrocería.
+      scene.add(new THREE.HemisphereLight(0xf2f3ec, 0x06100c, 0.6));
 
-      const key = new THREE.DirectionalLight(0xffffff, 2.4);
+      const key = new THREE.DirectionalLight(0xffffff, 2.5);
       key.position.set(4.5, 6, 5);
       scene.add(key);
+
+      // Contraluz frío por el lado opuesto al key: separa el techo y el hombro
+      // del auto del fondo, que es casi del mismo valor.
+      const fill = new THREE.DirectionalLight(0xdfe8ff, 0.85);
+      fill.position.set(-5, 3.4, -3.5);
+      scene.add(fill);
 
       // El rim lima estaba en intensidad 22 y teñía de verde toda la
       // carrocería: el auto se leía como asset iluminado, no como fotografía.
@@ -163,6 +181,7 @@ export function CivicScene({
       let brakeBar: THREE.Mesh | null = null;
       let lamps: THREE.MeshStandardMaterial[] = [];
       let wheelBlur: THREE.Mesh[] = [];
+      let groundScale = 1;
       let disposed = false;
       let loaded = false;
 
@@ -181,7 +200,14 @@ export function CivicScene({
           const center = box.getCenter(new THREE.Vector3());
           const longest = Math.max(size.x, size.y, size.z);
           const compact = container.clientWidth < 700;
-          const scale = (compact ? 2.55 : 3) / Math.max(longest, 0.001);
+          // El auto llenaba media caja y el resto era fondo. Ocupa el encuadre
+          // que le corresponde a la pieza principal del hero.
+          const carLength = compact ? 2.9 : 3.75;
+          const scale = carLength / Math.max(longest, 0.001);
+          // Piso y rayas crecen con el auto: si no, un Civic más grande corre
+          // sobre una banda de velocidad que se lee estrecha y lenta.
+          groundScale = carLength / 3;
+          streaks.lines.scale.setScalar(groundScale);
 
           // El rig se arma con el modelo todavía sin transformar: así el
           // espacio local del glTF y el mundo coinciden y los centros de rueda
@@ -207,7 +233,7 @@ export function CivicScene({
               : [mesh.material];
             materials.forEach((material) => {
               const standard = material as THREE.MeshStandardMaterial;
-              if ("envMapIntensity" in standard) standard.envMapIntensity = 0.8;
+              if ("envMapIntensity" in standard) standard.envMapIntensity = 1.15;
               const maps = [
                 standard.map,
                 standard.normalMap,
@@ -217,10 +243,10 @@ export function CivicScene({
               ];
               maps.forEach((texture) => {
                 if (texture) {
-                  texture.anisotropy = Math.min(
-                    4,
-                    renderer.capabilities.getMaxAnisotropy()
-                  );
+                  // Antes iba topado a 4. En un auto visto de tres cuartos casi
+                  // todo son planos rasantes —flancos, capó, parabrisas— que es
+                  // justo donde el filtrado anisotrópico se nota.
+                  texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
                 }
               });
             });
@@ -455,7 +481,7 @@ export function CivicScene({
         stage.position.y = reduced ? 0 : Math.sin(elapsed * 0.7) * 0.018;
 
         // Piso y luces reaccionan a la velocidad.
-        contact.scale.set(1, 1 + speed * 0.2, 1);
+        contact.scale.set(groundScale, groundScale * (1 + speed * 0.2), groundScale);
         (contact.material as THREE.MeshBasicMaterial).opacity = 0.72 - speed * 0.12;
 
         updateStreaks(streaks, speed, dt);
@@ -503,6 +529,10 @@ export function CivicScene({
         tick,
         dispose: () => {
           disposed = true;
+          // El entorno cuelga de la escena, no de una malla: el barrido de
+          // limpieza del stage no lo alcanza.
+          scene.environment = null;
+          environment.dispose();
           (contact.material as THREE.MeshBasicMaterial).map?.dispose();
           container.removeEventListener("pointerdown", onPointerDown);
           container.removeEventListener("pointermove", onPointerMove);
@@ -782,6 +812,83 @@ function updateStreaks(streaks: Streaks, speed: number, dt: number) {
 
   lines.geometry.attributes.position.needsUpdate = true;
   lines.geometry.attributes.color.needsUpdate = true;
+}
+
+/** Escritorio real, no «pantalla grande»: decide la resolución de dibujo. */
+function desktopViewport() {
+  return typeof window !== "undefined" && window.innerWidth >= 1024;
+}
+
+/**
+ * Estudio en equirectangular, pintado en canvas y pasado por PMREM. Son tres
+ * barras de luz sobre fondo oscuro: lo que un fotógrafo cuelga encima del auto
+ * para que el reflejo dibuje la línea del hombro y el filo del capó. Sale más
+ * barato que cargar un HDRI y mantiene la escena en la paleta del sitio.
+ */
+function makeStudioEnvironment(renderer: THREE.WebGLRenderer) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 256;
+  const ctx = canvas.getContext("2d");
+
+  if (ctx) {
+    const sky = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    sky.addColorStop(0, "#1b241d");
+    sky.addColorStop(0.5, "#0a120e");
+    sky.addColorStop(1, "#040806");
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Barras: la ancha da el reflejo principal del flanco, las finas los
+    // filos. Se pintan con degradado vertical para que no dejen borde duro.
+    const bars: [number, number, number][] = [
+      [0.1, 0.2, 0.95],
+      [0.3, 0.075, 0.55],
+      [0.43, 0.04, 0.32],
+    ];
+    bars.forEach(([top, height, alpha]) => {
+      const y = top * canvas.height;
+      const h = height * canvas.height;
+      const bar = ctx.createLinearGradient(0, y, 0, y + h);
+      bar.addColorStop(0, `rgba(255,255,255,0)`);
+      bar.addColorStop(0.5, `rgba(255,255,255,${alpha})`);
+      bar.addColorStop(1, `rgba(255,255,255,0)`);
+      ctx.fillStyle = bar;
+      ctx.fillRect(0, y, canvas.width, h);
+    });
+
+    // Los dos acentos de la marca, muy bajos: tiñen los reflejos rasantes sin
+    // volver a pintar de verde toda la carrocería.
+    const accents: [number, number, string][] = [
+      [0.24, 0.34, "rgba(180,227,50,0.5)"],
+      [0.72, 0.28, "rgba(232,52,42,0.42)"],
+    ];
+    accents.forEach(([u, v, color]) => {
+      const glow = ctx.createRadialGradient(
+        u * canvas.width,
+        v * canvas.height,
+        0,
+        u * canvas.width,
+        v * canvas.height,
+        canvas.height * 0.42
+      );
+      glow.addColorStop(0, color);
+      glow.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    });
+  }
+
+  const source = new THREE.CanvasTexture(canvas);
+  source.mapping = THREE.EquirectangularReflectionMapping;
+  source.colorSpace = THREE.SRGBColorSpace;
+
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const environment = pmrem.fromEquirectangular(source).texture;
+  pmrem.dispose();
+  source.dispose();
+
+  return environment;
 }
 
 /**
