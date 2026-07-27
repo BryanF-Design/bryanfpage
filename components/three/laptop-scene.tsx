@@ -3,6 +3,7 @@
 import { useRef, type MutableRefObject } from "react";
 import * as THREE from "three";
 
+import { isReducedMotionRequested } from "@/lib/motion-preference";
 import { requestStageFrame, useThreeStage } from "@/lib/three/stage";
 
 interface LaptopSceneProps {
@@ -27,7 +28,6 @@ export function LaptopScene({ progressRef, className }: LaptopSceneProps) {
     fov: 33,
     cameraZ: 5.4,
     build: ({ scene, camera, container }) => {
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       camera.position.set(0, 1.55, 5.4);
       camera.lookAt(0, 0.32, 0);
 
@@ -149,15 +149,18 @@ export function LaptopScene({ progressRef, className }: LaptopSceneProps) {
       el.addEventListener("pointerup", onUp);
       el.addEventListener("pointercancel", onUp);
 
-      let lidAngle = reduced ? OPEN_ANGLE : 0;
+      let lidAngle = isReducedMotionRequested() ? OPEN_ANGLE : 0;
       let lastScreenDraw = -1;
 
       return (dt, elapsed) => {
+        const reduced = isReducedMotionRequested();
         const progress = reduced ? 1 : THREE.MathUtils.clamp(progressRef.current, 0, 1);
 
         // La tapa persigue el scroll con un pequeño suavizado.
         const target = progress * OPEN_ANGLE;
-        lidAngle += (target - lidAngle) * Math.min(1, dt * 7);
+        lidAngle = reduced
+          ? OPEN_ANGLE
+          : lidAngle + (target - lidAngle) * Math.min(1, dt * 7);
         lid.rotation.x = -lidAngle;
 
         const openness = lidAngle / OPEN_ANGLE;

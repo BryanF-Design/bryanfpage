@@ -1,62 +1,37 @@
-"use client";
-
-import { useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-
 import { cn } from "@/lib/utils";
 
 interface HankoSealProps {
-  /** Tamaño del sello en px. */
+  /** Tamaño de la firma en px. */
   size?: number;
   className?: string;
-  /** Etiqueta accesible: el sello es una firma, no decoración muda. */
+  /** Etiqueta accesible: la firma comunica autoría. */
   label?: string;
 }
 
 /**
- * 判子 — el sello del artesano.
+ * Firma estática inspirada en los sellos de autor japoneses.
  *
- * En Japón un trabajo se firma estampando el sello personal en bermellón. Aquí
- * cierra el sitio: el nombre en katakana, en dos columnas de derecha a
- * izquierda como manda el tategaki, dentro del cuadro rojo.
- *
- * Se estampa al aparecer, con el golpe seco de un sello de verdad — entra
- * grande y torcido y se asienta. Al tocarlo se vuelve a estampar.
+ * No se presenta como botón ni como easter egg: cierra el trabajo con un
+ * detalle cultural propio sin inventar una acción para quien navega.
  */
-export function HankoSeal({ size = 58, className, label = "Bryan F." }: HankoSealProps) {
-  const reduced = useReducedMotion();
-  const [stamps, setStamps] = useState(0);
-
-  const stamp = reduced
-    ? {}
-    : {
-        initial: { scale: 1.6, opacity: 0, rotate: -16 },
-        whileInView: { scale: 1, opacity: 1, rotate: -4 },
-        viewport: { once: true, margin: "-30px" },
-        transition: { type: "spring" as const, stiffness: 520, damping: 17 },
-      };
-
+export function HankoSeal({
+  size = 56,
+  className,
+  label = "Firma de Bryan F.",
+}: HankoSealProps) {
   return (
-    <motion.button
-      type="button"
-      // La clave cambia en cada toque: React remonta y la animación de
-      // estampado se vuelve a reproducir desde cero.
-      key={stamps}
-      onClick={() => setStamps((n) => n + 1)}
+    <span
+      role="img"
       aria-label={label}
       title={label}
-      {...stamp}
-      whileTap={reduced ? undefined : { scale: 0.88, rotate: -9 }}
-      // El cuerpo se deriva del tamaño del sello: tres katakana tienen que
-      // llenar la columna de arriba abajo, como en un sello tallado de verdad.
-      style={{ width: size, height: size, fontSize: size * 0.26 }}
+      style={{ width: size, height: size, fontSize: size * 0.25 }}
       className={cn(
-        "hanko shrink-0 cursor-pointer flex-row-reverse items-start gap-[1px] p-[3px]",
+        "maker-mark shrink-0 flex-row-reverse items-start gap-px p-1",
         className
       )}
     >
       <span className="vertical-jp !tracking-normal leading-none">ブライ</span>
       <span className="vertical-jp !tracking-normal leading-none">アン</span>
-    </motion.button>
+    </span>
   );
 }

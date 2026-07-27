@@ -1,12 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Archivo, Instrument_Sans, IBM_Plex_Mono } from "next/font/google";
 import dynamic from "next/dynamic";
 import "./globals.css";
-import { SmoothScroll } from "@/components/smooth-scroll";
-import { IntroSplash } from "@/components/intro-splash";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { MicrosoftClarity } from "@/components/analytics/microsoft-clarity";
 import { LanguageProvider } from "@/lib/i18n/context";
+import { MotionPreferenceProvider } from "@/components/motion-preference-provider";
 
 // Client-only widget, no SEO content: skip SSR entirely to shave initial payload.
 const AccessibilityPanel = dynamic(
@@ -15,12 +14,6 @@ const AccessibilityPanel = dynamic(
 );
 const LanguageNotice = dynamic(
   () => import("@/components/language-notice").then((m) => m.LanguageNotice),
-  { ssr: false }
-);
-// Retícula de ápex: puro adorno de puntero, sin nada que renderizar en el
-// servidor y sin utilidad alguna en móvil.
-const ApexCursor = dynamic(
-  () => import("@/components/ui/apex-cursor").then((m) => m.ApexCursor),
   { ssr: false }
 );
 
@@ -99,6 +92,11 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
+export const viewport: Viewport = {
+  colorScheme: "dark",
+  themeColor: "#070d0b",
+};
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
@@ -133,20 +131,27 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="font-sans">
+        <a
+          href="#main-content"
+          className="fixed left-4 top-4 z-[250] inline-flex min-h-11 -translate-y-24 items-center rounded-sm border border-primary bg-background px-4 py-3 font-mono text-xs font-medium uppercase tracking-[0.14em] text-primary transition-transform focus:translate-y-0"
+        >
+          Saltar al contenido
+        </a>
         <GoogleAnalytics />
         <MicrosoftClarity />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <SmoothScroll />
-        <IntroSplash />
-        <LanguageProvider>
-          {children}
-          <LanguageNotice />
-        </LanguageProvider>
-        <AccessibilityPanel />
-        <ApexCursor />
+        <MotionPreferenceProvider>
+          <LanguageProvider>
+            <div id="main-content" tabIndex={-1}>
+              {children}
+            </div>
+            <LanguageNotice />
+          </LanguageProvider>
+          <AccessibilityPanel />
+        </MotionPreferenceProvider>
       </body>
     </html>
   );

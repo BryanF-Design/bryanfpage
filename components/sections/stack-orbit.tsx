@@ -95,7 +95,7 @@ export function StackOrbit() {
 
               {[...Array(ORBIT_COUNT)].map((_, orbitIdx) => {
                 const size = `${12 + ORBIT_GAP * (orbitIdx + 1)}rem`;
-                const duration = 26 + orbitIdx * 8;
+                const orbitRotation = -8 + orbitIdx * 7;
                 const angleStep = (2 * Math.PI) / iconsPerOrbit;
 
                 return (
@@ -105,7 +105,7 @@ export function StackOrbit() {
                     style={{
                       width: size,
                       height: size,
-                      animation: `spin ${duration}s linear infinite`,
+                      transform: `rotate(${orbitRotation}deg)`,
                     }}
                   >
                     {stack
@@ -130,11 +130,12 @@ export function StackOrbit() {
                               transform: "translate(-50%, -50%)",
                             }}
                           >
-                            {/* Counter-rotate so the logo stays upright */}
+                            {/* Contrarrotación estática: el sistema conserva
+                                tensión visual sin movimiento perpetuo. */}
                             <div
                               className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-secondary/80 backdrop-blur"
                               style={{
-                                animation: `spin ${duration}s linear infinite reverse`,
+                                transform: `rotate(${-orbitRotation}deg)`,
                               }}
                             >
                               <Icon

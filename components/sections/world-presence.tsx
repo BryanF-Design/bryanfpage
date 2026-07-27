@@ -73,7 +73,7 @@ export function WorldPresence() {
           <div className="order-1 lg:order-2">
             <LazyMount
               className="corner-ticks relative mx-auto aspect-square w-full max-w-[560px]"
-              fallback={<div className="absolute inset-6 animate-pulse rounded-full bg-secondary/40" />}
+              fallback={<div className="absolute inset-6 rounded-full border border-border bg-secondary/30" />}
             >
               <GlobeScene
                 locations={LOCATIONS}

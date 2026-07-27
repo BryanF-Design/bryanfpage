@@ -226,19 +226,27 @@ export function Configurator() {
           <div className="flex flex-col gap-8">
             {/* Plans */}
             <div>
-              <p className="tech-label mb-3 text-muted-foreground">
+              <p
+                id="configurator-plan-label"
+                className="tech-label mb-3 text-muted-foreground"
+              >
                 {t.configurator.step1}
               </p>
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div
+                role="group"
+                aria-labelledby="configurator-plan-label"
+                className="grid gap-3 sm:grid-cols-3"
+              >
                 {PLANS.map((p) => {
                   const active = p.id === planId;
                   return (
                     <button
                       key={p.id}
                       type="button"
+                      aria-pressed={active}
                       onClick={() => setPlanId(p.id)}
                       className={cn(
-                        "elevate flex flex-col rounded-lg p-4 text-left",
+                        "elevate flex min-h-11 flex-col rounded-lg p-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                         active
                           ? "glass-tint corner-ticks"
                           : "glass hover:border-primary/40"
@@ -261,14 +269,21 @@ export function Configurator() {
 
             {/* Modules */}
             <div>
-              <p className="tech-label mb-3 text-muted-foreground">
+              <p
+                id="configurator-modules-label"
+                className="tech-label mb-3 text-muted-foreground"
+              >
                 {t.configurator.step2}
               </p>
-              <div className="flex flex-col gap-2">
+              <div
+                role="group"
+                aria-labelledby="configurator-modules-label"
+                className="flex flex-col gap-2"
+              >
                 {MODULES.map((m) => (
                   <label
                     key={m.id}
-                    className="glass elevate flex cursor-pointer items-center justify-between rounded-lg px-4 py-3 hover:border-primary/40"
+                    className="glass elevate flex min-h-11 cursor-pointer items-center justify-between rounded-lg px-4 py-3 hover:border-primary/40 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background"
                   >
                     <span className="flex items-center gap-3">
                       <input
@@ -277,7 +292,7 @@ export function Configurator() {
                         onChange={(e) =>
                           setMods((s) => ({ ...s, [m.id]: e.target.checked }))
                         }
-                        className="h-4 w-4 accent-primary"
+                        className="h-4 w-4 accent-primary focus-visible:outline-none"
                       />
                       <span className="text-sm text-foreground">{m.label}</span>
                     </span>
@@ -299,18 +314,22 @@ export function Configurator() {
                     <button
                       type="button"
                       onClick={() => setSections((n) => Math.max(0, n - 1))}
-                      className="flex h-7 w-7 items-center justify-center rounded-md border border-border text-foreground hover:border-primary"
+                      className="flex h-11 w-11 items-center justify-center rounded-md border border-border text-foreground transition-colors hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                       aria-label={t.configurator.removeSection}
                     >
                       −
                     </button>
-                    <span className="w-5 text-center font-mono text-sm">
+                    <span
+                      className="w-5 text-center font-mono text-sm"
+                      aria-live="polite"
+                      aria-atomic="true"
+                    >
                       {sections}
                     </span>
                     <button
                       type="button"
                       onClick={() => setSections((n) => n + 1)}
-                      className="flex h-7 w-7 items-center justify-center rounded-md border border-border text-foreground hover:border-primary"
+                      className="flex h-11 w-11 items-center justify-center rounded-md border border-border text-foreground transition-colors hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                       aria-label={t.configurator.addSection}
                     >
                       +
@@ -322,10 +341,10 @@ export function Configurator() {
 
             {/* Payment mode + currency + coupon */}
             <div className="grid gap-4 sm:grid-cols-3">
-              <div>
-                <p className="tech-label mb-2 text-muted-foreground">
+              <fieldset>
+                <legend className="tech-label mb-2 text-muted-foreground">
                   {t.configurator.step3}
-                </p>
+                </legend>
                 <div className="flex flex-col gap-2">
                   {[
                     { v: "liquidacion", label: t.configurator.paymentFull },
@@ -333,20 +352,21 @@ export function Configurator() {
                   ].map((o) => (
                     <label
                       key={o.v}
-                      className="flex cursor-pointer items-center gap-2 text-sm text-foreground"
+                      className="flex min-h-11 cursor-pointer items-center gap-2 rounded-md px-1 text-sm text-foreground focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background"
                     >
                       <input
                         type="radio"
-                        name="mode"
+                        name="payment-mode"
+                        value={o.v}
                         checked={mode === o.v}
                         onChange={() => setMode(o.v as "liquidacion" | "anticipo")}
-                        className="h-4 w-4 accent-primary"
+                        className="h-4 w-4 accent-primary focus-visible:outline-none"
                       />
                       {o.label}
                     </label>
                   ))}
                 </div>
-              </div>
+              </fieldset>
               <div>
                 <p className="tech-label mb-2 text-muted-foreground">
                   {t.configurator.currencyLabel}
@@ -363,7 +383,7 @@ export function Configurator() {
                       aria-pressed={currency === c}
                       onClick={() => setCurrency(c)}
                       className={cn(
-                        "px-4 py-2 font-mono text-xs font-medium tracking-[0.12em] transition-colors",
+                        "min-h-11 min-w-11 px-4 py-2 font-mono text-xs font-medium tracking-[0.12em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary",
                         currency === c
                           ? "bg-primary text-primary-foreground"
                           : "bg-transparent text-muted-foreground hover:text-foreground"
@@ -380,20 +400,40 @@ export function Configurator() {
                 )}
               </div>
               <div>
-                <p className="tech-label mb-2 text-muted-foreground">{t.configurator.couponLabel}</p>
+                <label
+                  htmlFor="configurator-coupon"
+                  className="tech-label mb-2 block text-muted-foreground"
+                >
+                  {t.configurator.couponLabel}
+                </label>
                 <div className="flex gap-2">
                   <input
+                    id="configurator-coupon"
+                    name="coupon"
                     value={coupon}
                     onChange={(e) => setCoupon(e.target.value)}
                     placeholder={t.configurator.couponPlaceholder}
-                    className="min-w-0 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    aria-describedby={couponMsg ? "configurator-coupon-status" : undefined}
+                    autoComplete="off"
+                    className="min-h-11 min-w-0 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   />
-                  <Button type="button" variant="outline" onClick={applyCoupon}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={applyCoupon}
+                    className="min-h-11"
+                  >
                     {t.configurator.apply}
                   </Button>
                 </div>
                 {couponMsg && (
-                  <p className="mt-2 text-xs text-muted-foreground">{couponMsg}</p>
+                  <p
+                    id="configurator-coupon-status"
+                    role="status"
+                    className="mt-2 text-xs text-muted-foreground"
+                  >
+                    {couponMsg}
+                  </p>
                 )}
               </div>
             </div>
@@ -441,7 +481,7 @@ export function Configurator() {
                 <Button
                   onClick={() => pay("/api/stripe-checkout", "Stripe")}
                   disabled={!!loading || projectTotal <= 0}
-                  className="w-full"
+                  className="min-h-11 w-full"
                 >
                   {loading === "Stripe" ? (
                     <Loader2 className="mr-1 h-4 w-4 animate-spin" />
@@ -458,7 +498,7 @@ export function Configurator() {
                   variant="secondary"
                   onClick={() => pay("/api/mercadopago", "Mercado Pago")}
                   disabled={!!loading || projectTotal <= 0}
-                  className="w-full"
+                  className="min-h-11 w-full"
                 >
                   {loading === "Mercado Pago" ? (
                     <Loader2 className="mr-1 h-4 w-4 animate-spin" />
@@ -474,7 +514,9 @@ export function Configurator() {
                 <Button
                   variant="outline"
                   onClick={() => setTransfer((prev) => !prev)}
-                  className="w-full"
+                  aria-expanded={transfer}
+                  aria-controls="bank-transfer-details"
+                  className="min-h-11 w-full"
                 >
                   <Building2 className="mr-1 h-4 w-4" />
                   {t.configurator.payTransfer}
@@ -489,7 +531,10 @@ export function Configurator() {
 
               {/* Transfer details */}
               {transfer && (
-                <div className="glass mt-1 flex flex-col gap-2 rounded-lg p-4">
+                <div
+                  id="bank-transfer-details"
+                  className="glass mt-1 flex flex-col gap-2 rounded-lg p-4"
+                >
                   <p className="text-xs text-muted-foreground">
                     {t.configurator.transferInstructions(formatMXN(payableNowMxn))}
                   </p>
@@ -506,7 +551,7 @@ export function Configurator() {
                         <button
                           type="button"
                           onClick={() => copy(b.value, b.label)}
-                          className="text-muted-foreground hover:text-primary"
+                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                           aria-label={t.configurator.copyLabel(b.label)}
                         >
                           {copied === b.label ? (
@@ -519,7 +564,7 @@ export function Configurator() {
                     </div>
                   ))}
                   <div className="mt-2 flex flex-col gap-2">
-                    <Button asChild size="sm" className="w-full">
+                    <Button asChild size="sm" className="min-h-11 w-full">
                       <a
                         href={`https://wa.me/${WA_PHONE}?text=${transferMsg}`}
                         target="_blank"
@@ -536,7 +581,12 @@ export function Configurator() {
                         {t.configurator.sendWhatsapp}
                       </a>
                     </Button>
-                    <Button asChild size="sm" variant="outline" className="w-full">
+                    <Button
+                      asChild
+                      size="sm"
+                      variant="outline"
+                      className="min-h-11 w-full"
+                    >
                       <a href="mailto:bryanf@bryanfdesign.com.mx?subject=Comprobante%20de%20transferencia%20-%20BryanF%20Design">
                         {t.configurator.sendEmail}
                       </a>
@@ -547,11 +597,17 @@ export function Configurator() {
 
               <p className="pt-1 text-center text-[11px] text-muted-foreground">
                 {t.configurator.securePaymentPrefix}{" "}
-                <a href="/terminos" className="underline hover:text-primary">
+                <a
+                  href="/terminos"
+                  className="inline-flex min-h-11 items-center rounded-sm underline transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
                   {t.configurator.terms}
                 </a>{" "}
                 {t.configurator.and}{" "}
-                <a href="/privacidad" className="underline hover:text-primary">
+                <a
+                  href="/privacidad"
+                  className="inline-flex min-h-11 items-center rounded-sm underline transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
                   {t.configurator.privacyNotice}
                 </a>
                 .

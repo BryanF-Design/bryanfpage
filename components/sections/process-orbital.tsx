@@ -26,11 +26,7 @@ export function ProcessOrbital() {
           subtitle={t.process.subtitle}
         />
 
-        <ol className="relative mx-auto mt-16 grid max-w-5xl gap-10 md:mt-24 md:grid-cols-5 md:gap-6">
-          <div
-            aria-hidden="true"
-            className="absolute bottom-6 left-6 top-6 w-px bg-border md:bottom-auto md:left-[10%] md:right-[10%] md:top-6 md:h-px md:w-auto"
-          />
+        <ol className="relative mx-auto mt-16 grid max-w-5xl gap-10 before:absolute before:bottom-6 before:left-6 before:top-6 before:w-px before:bg-border before:content-[''] md:mt-24 md:grid-cols-5 md:gap-6 md:before:bottom-auto md:before:left-[10%] md:before:right-[10%] md:before:top-6 md:before:h-px md:before:w-auto">
           {steps.map((step, i) => {
             const Icon = step.icon;
             return (

@@ -2,6 +2,7 @@
 
 import * as THREE from "three";
 
+import { isReducedMotionRequested } from "@/lib/motion-preference";
 import { requestStageFrame, useThreeStage } from "@/lib/three/stage";
 
 export type FloatingShapeVariant = "icosahedron" | "torusKnot" | "octahedron";
@@ -25,8 +26,6 @@ export function FloatingShape({ variant = "icosahedron", opacity = 0.55, classNa
     cameraZ: 4.4,
     maxDpr: 1.5,
     build: ({ scene, container }) => {
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
       const group = new THREE.Group();
       scene.add(group);
 
@@ -80,9 +79,14 @@ export function FloatingShape({ variant = "icosahedron", opacity = 0.55, classNa
       let dragYaw = 0;
       let dragPitch = 0;
       const onMove = (e: PointerEvent) => {
-        const rect = el.getBoundingClientRect();
-        targetX = ((e.clientX - rect.left) / rect.width - 0.5) * 0.6;
-        targetY = ((e.clientY - rect.top) / rect.height - 0.5) * 0.6;
+        if (isReducedMotionRequested()) {
+          targetX = 0;
+          targetY = 0;
+        } else {
+          const rect = el.getBoundingClientRect();
+          targetX = ((e.clientX - rect.left) / rect.width - 0.5) * 0.6;
+          targetY = ((e.clientY - rect.top) / rect.height - 0.5) * 0.6;
+        }
         if (dragging) {
           dragYaw += (e.clientX - lastX) * 0.008;
           dragPitch = THREE.MathUtils.clamp(dragPitch + (e.clientY - lastY) * 0.006, -1, 1);
@@ -111,6 +115,7 @@ export function FloatingShape({ variant = "icosahedron", opacity = 0.55, classNa
       el.addEventListener("pointercancel", onUp);
 
       return (dt, elapsed) => {
+        const reduced = isReducedMotionRequested();
         if (!dragging) {
           dragYaw *= 1 - Math.min(1, dt * 1.2);
           dragPitch *= 1 - Math.min(1, dt * 1.2);

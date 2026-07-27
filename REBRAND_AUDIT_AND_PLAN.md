@@ -1,7 +1,9 @@
 # BryanF Design — Auditoría y plan de rebranding 2026
 
-Fecha: 26 de julio de 2026  
-Estado: dirección propuesta; no autoriza todavía cambios productivos  
+Fecha: 26 de julio de 2026
+
+Estado: dirección aprobada para implementación el 26 de julio de 2026
+
 Concepto interno recomendado: **Apex / Taller de precisión**
 
 ---

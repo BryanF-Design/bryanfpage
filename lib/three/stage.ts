@@ -3,6 +3,11 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
+import {
+  isReducedMotionRequested,
+  subscribeReducedMotionPreference,
+} from "@/lib/motion-preference";
+
 export interface ThreeStage {
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
@@ -32,8 +37,9 @@ interface StageOptions {
  *    (IntersectionObserver) and the tab is visible (visibilitychange)
  *  - devicePixelRatio is capped
  *  - everything is disposed on unmount (geometries, materials, textures, GL)
- *  - prefers-reduced-motion renders stills: one frame on mount/resize and
- *    whatever frames user interaction requests, no idle animation
+ *  - the OS preference and the site's reduced-motion override render stills:
+ *    one frame on mount/resize and whatever frames direct interaction
+ *    requests, with no idle animation
  */
 export function useThreeStage({ build, fov = 40, cameraZ = 5, maxDpr = 1.75 }: StageOptions) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -44,7 +50,7 @@ export function useThreeStage({ build, fov = 40, cameraZ = 5, maxDpr = 1.75 }: S
     const container = containerRef.current;
     if (!container) return;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let reduced = isReducedMotionRequested();
 
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -110,6 +116,16 @@ export function useThreeStage({ build, fov = 40, cameraZ = 5, maxDpr = 1.75 }: S
       renderFrame(performance.now());
     }
     if (reduced) still();
+
+    const unsubscribeMotionPreference = subscribeReducedMotionPreference(() => {
+      const next = isReducedMotionRequested();
+      if (next === reduced) return;
+
+      reduced = next;
+      update();
+      if (reduced) still();
+    });
+
     // Scenes can request extra frames (e.g. while dragging under reduced
     // motion) through this hook-provided event.
     const requestStill = () => {
@@ -146,6 +162,7 @@ export function useThreeStage({ build, fov = 40, cameraZ = 5, maxDpr = 1.75 }: S
       ro.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
       container.removeEventListener("three-frame", requestStill);
+      unsubscribeMotionPreference();
       scene.traverse((obj) => {
         const mesh = obj as THREE.Mesh;
         if (mesh.geometry) mesh.geometry.dispose();

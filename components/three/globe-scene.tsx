@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
+import { isReducedMotionRequested } from "@/lib/motion-preference";
 import { latLngToVec3, requestStageFrame, useThreeStage } from "@/lib/three/stage";
 import { LAND_DOTS } from "@/lib/three/land-dots";
 
@@ -38,8 +39,6 @@ export function GlobeScene({ locations, arcs, className }: GlobeSceneProps) {
     fov: 34,
     cameraZ: 4.1,
     build: ({ scene, camera, container }) => {
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
       const globe = new THREE.Group();
       scene.add(globe);
 
@@ -201,6 +200,8 @@ export function GlobeScene({ locations, arcs, className }: GlobeSceneProps) {
       const camDir = new THREE.Vector3(0, 0, 1);
 
       return (dt, elapsed) => {
+        const reduced = isReducedMotionRequested();
+        const idle = reduced ? 0 : elapsed;
         const rot = rotation.current;
         if (!dragging.current) {
           // Inercia + rotación de reposo.
@@ -211,13 +212,14 @@ export function GlobeScene({ locations, arcs, className }: GlobeSceneProps) {
         globe.rotation.set(rot.pitch, rot.yaw, 0);
 
         pulses.forEach((pulse, i) => {
-          const s = 1 + ((elapsed * 0.9 + i * 0.4) % 1) * 1.6;
+          const phase = (idle * 0.9 + i * 0.4) % 1;
+          const s = 1 + phase * 1.6;
           pulse.scale.setScalar(s);
-          (pulse.material as THREE.MeshBasicMaterial).opacity = 0.55 * (1 - ((elapsed * 0.9 + i * 0.4) % 1));
+          (pulse.material as THREE.MeshBasicMaterial).opacity = 0.55 * (1 - phase);
         });
 
         travelers.forEach(({ mesh, curve, offset }) => {
-          mesh.position.copy(curve.getPoint((elapsed * 0.14 + offset) % 1));
+          mesh.position.copy(curve.getPoint((idle * 0.14 + offset) % 1));
         });
 
         // Etiquetas HTML pegadas a sus marcadores; se ocultan al pasar atrás.

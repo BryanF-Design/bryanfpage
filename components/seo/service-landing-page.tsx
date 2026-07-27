@@ -8,6 +8,7 @@ import { Floating3d } from "@/components/three/floating-3d";
 import { MarqueeBand } from "@/components/sections/marquee-band";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { SiteHeader } from "@/components/sections/site-header";
+import { SpanishPageLanguage } from "@/components/seo/spanish-page-language";
 import { TrackedWhatsAppLink } from "@/components/analytics/tracked-whatsapp-link";
 import {
   BRAND_NAME,
@@ -109,7 +110,13 @@ function LandingHeading({
     <Reveal delay={delay}>
       <div className="flex flex-col gap-4 border-t border-border pt-6">
         <p className="tech-label inline-flex items-center gap-3 text-primary">
-          <span className="h-1.5 w-1.5 bg-primary" />
+          <span
+            aria-hidden
+            className="relative inline-flex h-2 w-10 shrink-0 items-center"
+          >
+            <span className="h-px w-full bg-primary/55" />
+            <span className="absolute right-0 h-2 w-2 rounded-full border border-primary bg-background" />
+          </span>
           {eyebrow}
         </p>
         <h2 className="max-w-2xl font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
@@ -128,24 +135,92 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
       <JsonLd data={buildServiceSchema(page)} />
       <JsonLd data={buildBreadcrumbSchema(page)} />
       <JsonLd data={buildFaqSchema(page)} />
+      <SpanishPageLanguage />
 
       <ScrollProgress />
-      <SiteHeader />
+      <SiteHeader spanishOnly />
 
-      <main className="bg-background">
+      <main className="bg-background" data-language="es-only">
         {/* Hero con el mismo lenguaje del home: retícula, glow y display XXL */}
-        <section className="relative overflow-hidden border-b border-border pb-16 pt-32 md:pb-24 md:pt-40">
+        <section className="relative isolate overflow-hidden border-b border-border bg-grain pb-16 pt-32 md:pb-24 md:pt-40">
           <div aria-hidden className="bg-blueprint absolute inset-0" />
           <div aria-hidden className="mesh-glow-a absolute inset-0" />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 top-20 hidden opacity-55 lg:block"
+          >
+            <svg
+              className="h-full w-full"
+              viewBox="0 0 1440 620"
+              preserveAspectRatio="none"
+              fill="none"
+              focusable="false"
+            >
+              <path
+                d="M-80 610C190 610 330 570 610 570C820 570 850 250 1040 250C1190 250 1280 334 1520 112"
+                stroke="hsl(var(--border))"
+                strokeWidth="1"
+                vectorEffect="non-scaling-stroke"
+              />
+              <path
+                d="M610 570C820 570 850 250 1040 250"
+                stroke="hsl(var(--primary) / 0.72)"
+                strokeWidth="1.5"
+                vectorEffect="non-scaling-stroke"
+              />
+              <path
+                d="M1040 250C1110 250 1146 286 1204 306M1040 250C1118 228 1160 196 1232 180"
+                stroke="hsl(var(--border))"
+                strokeWidth="1"
+                vectorEffect="non-scaling-stroke"
+              />
+              <circle
+                cx="610"
+                cy="570"
+                r="4"
+                fill="hsl(var(--background))"
+                stroke="hsl(var(--primary) / 0.72)"
+                vectorEffect="non-scaling-stroke"
+              />
+              <circle
+                cx="1040"
+                cy="250"
+                r="6"
+                fill="hsl(var(--background))"
+                stroke="hsl(var(--primary))"
+                strokeWidth="1.5"
+                vectorEffect="non-scaling-stroke"
+              />
+              <circle
+                cx="1204"
+                cy="306"
+                r="3"
+                fill="hsl(var(--background))"
+                stroke="hsl(var(--border))"
+                vectorEffect="non-scaling-stroke"
+              />
+              <circle
+                cx="1232"
+                cy="180"
+                r="3"
+                fill="hsl(var(--background))"
+                stroke="hsl(var(--border))"
+                vectorEffect="non-scaling-stroke"
+              />
+            </svg>
+          </div>
 
-          <div className="container relative grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+          <div className="container relative z-10 grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
             <div className="max-w-3xl">
               <Reveal blur={0} y={16}>
                 <nav
                   aria-label="Breadcrumb"
                   className="mb-8 flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
                 >
-                  <Link href="/" className="transition-colors hover:text-primary">
+                  <Link
+                    href="/"
+                    className="inline-flex min-h-11 min-w-11 items-center transition-colors hover:text-primary"
+                  >
                     Inicio
                   </Link>
                   <span className="text-primary">/</span>
@@ -155,7 +230,10 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
 
               <Reveal delay={0.05}>
                 <p className="tech-label mb-4 inline-flex items-center gap-3 text-primary">
-                  <span className="h-1.5 w-1.5 bg-primary" />
+                  <span
+                    aria-hidden
+                    className="h-2 w-2 rounded-full border border-primary bg-background"
+                  />
                   {page.eyebrow}
                 </p>
               </Reveal>
@@ -191,7 +269,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
             </div>
 
             <Reveal delay={0.2}>
-              <aside className="glass corner-ticks rounded-lg p-6">
+              <aside className="glass corner-ticks rounded-sm border-primary/20 bg-card/90 p-6">
                 <Floating3d
                   variant="icosahedron"
                   className="relative mx-auto -mt-2 h-44 w-44"
@@ -214,7 +292,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
             <div className="grid gap-4 md:grid-cols-3">
               {page.problems.map((problem, i) => (
                 <Reveal key={problem} delay={i * 0.08} className="h-full">
-                  <div className="glass elevate corner-ticks h-full rounded-lg p-5">
+                  <div className="glass elevate corner-ticks h-full rounded-sm p-5">
                     <CheckCircle2 className="mb-4 h-5 w-5 text-primary" />
                     <p className="text-sm leading-6 text-muted-foreground">
                       {problem}
@@ -240,7 +318,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
             <div className="grid gap-4 sm:grid-cols-2">
               {page.deliverables.map((item, i) => (
                 <Reveal key={item} delay={i * 0.06} className="h-full">
-                  <div className="elevate h-full rounded-lg border border-border p-5 hover:border-primary/40">
+                  <div className="elevate h-full rounded-sm border border-border bg-card/35 p-5 hover:border-primary/40">
                     <p className="text-sm leading-6 text-foreground">{item}</p>
                   </div>
                 </Reveal>
@@ -255,22 +333,19 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
         <section className="border-b border-border py-16 md:py-24">
           <div className="container grid gap-10 lg:grid-cols-[1fr_1fr]">
             <LandingHeading eyebrow="Proceso" title="Cómo avanzamos sin improvisar" />
-            <ol className="relative grid gap-6">
-              <div
-                aria-hidden
-                className="absolute bottom-5 left-5 top-5 w-px bg-border"
-              />
+            <ol className="relative grid gap-6 before:absolute before:bottom-5 before:left-5 before:top-5 before:w-px before:bg-border before:content-['']">
               {page.process.map((step, index) => (
-                <Reveal key={step} delay={index * 0.08}>
-                  <li className="grid grid-cols-[2.5rem_1fr] items-start gap-4">
-                    <span className="glass corner-ticks relative z-10 flex h-10 w-10 items-center justify-center rounded-md font-mono text-xs tracking-[0.14em] text-primary">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <p className="pt-2 text-base leading-7 text-muted-foreground">
-                      {step}
-                    </p>
-                  </li>
-                </Reveal>
+                <li
+                  key={step}
+                  className="grid grid-cols-[2.5rem_1fr] items-start gap-4"
+                >
+                  <span className="glass corner-ticks relative z-10 flex h-10 w-10 items-center justify-center rounded-sm font-mono text-xs tracking-[0.14em] text-primary">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <p className="pt-2 text-base leading-7 text-muted-foreground">
+                    {step}
+                  </p>
+                </li>
               ))}
             </ol>
           </div>
@@ -282,7 +357,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
             <div className="mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
               {page.differentiators.map((item, i) => (
                 <Reveal key={item} delay={i * 0.07} className="h-full">
-                  <div className="glass elevate h-full rounded-lg p-5 hover:border-primary/40">
+                  <div className="glass elevate corner-ticks h-full rounded-sm p-5 hover:border-primary/40">
                     <span className="mb-3 block font-mono text-xs tracking-[0.18em] text-primary">
                       {String(i + 1).padStart(2, "0")}
                     </span>
@@ -303,7 +378,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
             <div className="grid gap-4">
               {page.faqs.map((faq, i) => (
                 <Reveal key={faq.question} delay={i * 0.06}>
-                  <article className="elevate rounded-lg border border-border p-5 hover:border-primary/40">
+                  <article className="elevate rounded-sm border border-border bg-card/35 p-5 hover:border-primary/40">
                     <h3 className="font-medium text-foreground">{faq.question}</h3>
                     <p className="mt-3 text-sm leading-6 text-muted-foreground">
                       {faq.answer}
@@ -324,7 +399,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                   <Reveal key={related.slug} delay={i * 0.06}>
                     <Link
                       href={`/${related.slug}`}
-                      className="elevate group flex items-center justify-between rounded-lg border border-border px-4 py-3.5 text-sm text-foreground transition-colors hover:border-primary hover:text-primary"
+                      className="elevate group flex items-center justify-between rounded-sm border border-border px-4 py-3.5 text-sm text-foreground transition-colors hover:border-primary hover:text-primary"
                     >
                       {related.serviceType}
                       <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -344,12 +419,13 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                 </p>
               </Reveal>
               <ul className="mt-6 grid gap-3 text-sm text-muted-foreground">
-                {page.relatedCases.map((name, i) => (
-                  <Reveal key={name} delay={0.15 + i * 0.06}>
-                    <li className="rounded-lg border border-border px-4 py-3">
-                      {name}
-                    </li>
-                  </Reveal>
+                {page.relatedCases.map((name) => (
+                  <li
+                    key={name}
+                    className="rounded-sm border border-border bg-card/35 px-4 py-3"
+                  >
+                    {name}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -390,7 +466,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
         </section>
       </main>
 
-      <SiteFooter />
+      <SiteFooter spanishOnly />
     </>
   );
 }

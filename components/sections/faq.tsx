@@ -21,7 +21,7 @@ export function Faq() {
   return (
     <section
       id="faq"
-      aria-label="Preguntas frecuentes"
+      aria-label={t.faq.title}
       className="relative overflow-hidden border-t border-border py-20 md:py-28"
     >
       <div aria-hidden className="mesh-glow-a opacity-40" />
@@ -40,12 +40,12 @@ export function Faq() {
                 key={item.id}
                 className="last:border-b"
               >
-                <AccordionTrigger className="-space-y-6 overflow-hidden pl-2 text-left text-foreground/20 duration-200 hover:no-underline data-[state=open]:space-y-0 data-[state=open]:text-primary md:pl-6 [&>svg]:hidden">
+                <AccordionTrigger className="-space-y-6 min-h-11 overflow-hidden pl-2 text-left text-muted-foreground transition-colors duration-200 hover:text-foreground hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary data-[state=open]:space-y-0 data-[state=open]:text-primary md:pl-6 [&>svg]:hidden">
                   <div className="flex flex-1 items-start gap-4">
                     <span className="pt-1 font-mono text-xs">{item.id}</span>
-                    <h3 className="font-display text-2xl uppercase tracking-tight md:text-4xl">
+                    <span className="font-display text-2xl uppercase tracking-tight md:text-4xl">
                       {item.title}
-                    </h3>
+                    </span>
                   </div>
                 </AccordionTrigger>
 

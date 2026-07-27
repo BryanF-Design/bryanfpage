@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useLanguage } from "@/lib/i18n/context";
+import { DICTIONARIES } from "@/lib/i18n/dictionaries";
 
 const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
 
@@ -33,9 +34,14 @@ const social = [
  * En móvil abre un menú de pantalla completa con los enlaces en display
  * gigante (antes el teléfono no tenía navegación alguna).
  */
-export function SiteHeader() {
-  const { t } = useLanguage();
+export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
+  const { t: localizedT } = useLanguage();
+  const t = spanishOnly ? DICTIONARIES.es : localizedT;
   const [open, setOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  const menuPanelRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const firstMenuLinkRef = useRef<HTMLAnchorElement>(null);
 
   const links = [
     { label: t.nav.proceso, href: "/#proceso" },
@@ -51,37 +57,82 @@ export function SiteHeader() {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        window.setTimeout(() => menuButtonRef.current?.focus());
+        return;
+      }
+      if (e.key === "Tab") {
+        const selector =
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+        const focusable = [headerRef.current, menuPanelRef.current]
+          .flatMap((region) =>
+            region
+              ? Array.from(region.querySelectorAll<HTMLElement>(selector))
+              : []
+          )
+          .filter((element) => element.getClientRects().length > 0);
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (!first || !last) return;
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
+    const desktopQuery = window.matchMedia("(min-width: 768px)");
+    const onDesktop = (event: MediaQueryListEvent) => {
+      if (event.matches) setOpen(false);
+    };
+    const focusTimer = window.setTimeout(() => firstMenuLinkRef.current?.focus());
     window.addEventListener("keydown", onKey);
+    desktopQuery.addEventListener("change", onDesktop);
     return () => {
       document.body.style.overflow = prev;
+      window.clearTimeout(focusTimer);
       window.removeEventListener("keydown", onKey);
+      desktopQuery.removeEventListener("change", onDesktop);
     };
   }, [open]);
 
   return (
     <>
-    <header className="glass-nav fixed inset-x-0 top-0 z-[100] border-b border-border">
-      <div className="container grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3 md:grid-cols-[1fr_auto_1fr]">
-        <Link href="/" className="flex min-w-0 items-center justify-self-start" aria-label="BryanF Design — inicio">
+    <header
+      ref={headerRef}
+      className="glass-nav fixed inset-x-0 top-0 z-[100] border-b border-border"
+    >
+      <div className="container grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-2 md:grid-cols-[1fr_auto_1fr]">
+        <Link
+          href="/"
+          onClick={() => setOpen(false)}
+          className="flex min-h-11 min-w-0 items-center justify-self-start rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          aria-label="BryanF Design — inicio"
+        >
           <Image
             src="/img/logotipo-blanco.png"
             alt="BryanF Design"
             width={2904}
             height={1016}
             priority
+            sizes="(max-width: 767px) 104px, 140px"
             style={{ height: 36, width: "auto" }}
             className="object-contain"
           />
         </Link>
 
-        <nav className="hidden items-center justify-center gap-5 md:flex xl:gap-8">
+        <nav
+          aria-label={t.nav.menu}
+          className="hidden items-center justify-center gap-5 md:flex xl:gap-8"
+        >
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              className="font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-primary"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               {l.label}
             </Link>
@@ -89,23 +140,35 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center justify-self-end gap-1 sm:gap-2">
-          <LanguageSwitcher />
-          <Button asChild size="sm" variant="ghost" className="hidden lg:inline-flex">
+          {!spanishOnly && (
+            <div className="[&_button]:min-h-11 [&_button]:min-w-11 [&_button]:focus-visible:outline-none [&_button]:focus-visible:ring-2 [&_button]:focus-visible:ring-primary">
+              <LanguageSwitcher />
+            </div>
+          )}
+          <Button
+            asChild
+            size="sm"
+            variant="ghost"
+            className="hidden min-h-11 lg:inline-flex"
+          >
             <Link href={CLIENT_PORTAL} target="_blank" rel="noopener noreferrer">
               <LogIn className="mr-1.5 h-3.5 w-3.5" />
               {t.nav.cliente}
             </Link>
           </Button>
-          <Button asChild size="sm" className="hidden sm:inline-flex">
+          <Button asChild size="sm" className="hidden min-h-11 sm:inline-flex">
             <Link href="/#precios">{t.nav.armaTuWeb}</Link>
           </Button>
 
           {/* Disparador del menú móvil */}
           <button
+            ref={menuButtonRef}
+            type="button"
             onClick={() => setOpen((o) => !o)}
             aria-label={open ? t.nav.closeMenu : t.nav.menu}
+            aria-controls="mobile-site-menu"
             aria-expanded={open}
-            className="flex h-10 w-10 items-center justify-center rounded-md border border-border text-foreground transition-colors hover:border-primary hover:text-primary md:hidden"
+            className="flex h-11 w-11 items-center justify-center rounded-md border border-border text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background md:hidden"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -119,6 +182,8 @@ export function SiteHeader() {
     <AnimatePresence>
         {open && (
           <motion.div
+            ref={menuPanelRef}
+            id="mobile-site-menu"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -128,7 +193,10 @@ export function SiteHeader() {
             <div aria-hidden className="bg-blueprint absolute inset-0 opacity-60" />
             <div aria-hidden className="mesh-glow-a absolute inset-0 opacity-70" />
 
-            <nav className="container relative z-10 flex flex-1 flex-col justify-center gap-1 py-10">
+            <nav
+              aria-label={t.nav.menu}
+              className="container relative z-10 flex flex-1 flex-col justify-center gap-1 py-10"
+            >
               {links.map((l, i) => (
                 <motion.div
                   key={l.href}
@@ -138,9 +206,10 @@ export function SiteHeader() {
                   transition={{ delay: 0.06 + i * 0.06, duration: 0.4, ease: [0.2, 0, 0, 1] }}
                 >
                   <Link
+                    ref={i === 0 ? firstMenuLinkRef : undefined}
                     href={l.href}
                     onClick={() => setOpen(false)}
-                    className="group flex items-baseline justify-between border-b border-border py-4 active:bg-secondary/40"
+                    className="group flex min-h-11 items-baseline justify-between rounded-sm border-b border-border py-4 active:bg-secondary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
                   >
                     <span className="font-display text-4xl font-bold uppercase tracking-tight text-foreground transition-colors group-hover:text-primary">
                       {l.label}
@@ -164,7 +233,12 @@ export function SiteHeader() {
                   <Link href="/#precios">{t.nav.armaTuWeb}</Link>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="w-full">
-                  <Link href={CLIENT_PORTAL} target="_blank" rel="noopener noreferrer">
+                  <Link
+                    href={CLIENT_PORTAL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setOpen(false)}
+                  >
                     <LogIn className="mr-2 h-4 w-4" />
                     {t.nav.cliente}
                   </Link>
@@ -189,7 +263,7 @@ export function SiteHeader() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={label}
-                      className="glass flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-primary active:scale-95"
+                      className="glass flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground transition-[color,transform] hover:text-primary active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                     >
                       <Icon className="h-4 w-4" />
                     </Link>

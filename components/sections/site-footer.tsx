@@ -11,23 +11,26 @@ import {
   FaGithub,
 } from "react-icons/fa";
 import { useLanguage } from "@/lib/i18n/context";
+import { DICTIONARIES } from "@/lib/i18n/dictionaries";
 import { trackEvent } from "@/lib/analytics";
 import { HankoSeal } from "@/components/ui/hanko-seal";
+import { TractionLine } from "@/components/ui/traction-line";
 
 const GOOGLE_MAPS_REVIEW = "https://maps.app.goo.gl/CWNcgPfAZt31K3ey6";
 
 const social = [
-  { Icon: FaInstagram, href: "https://www.instagram.com/bryanf_design/", label: "Instagram", glow: "#E1306C" },
-  { Icon: FaFacebookF, href: "https://www.facebook.com/share/1R1rS2ToKf/", label: "Facebook", glow: "#1877F2" },
-  { Icon: FaWhatsapp, href: "https://wa.me/525663012505", label: "WhatsApp", glow: "#25D366" },
-  { Icon: FaLinkedinIn, href: "https://www.linkedin.com/in/bryanfdesigner", label: "LinkedIn", glow: "#0A66C2" },
-  { Icon: FaGithub, href: "https://github.com/BryanF-Design", label: "GitHub", glow: "#FFFFFF" },
+  { Icon: FaInstagram, href: "https://www.instagram.com/bryanf_design/", label: "Instagram" },
+  { Icon: FaFacebookF, href: "https://www.facebook.com/share/1R1rS2ToKf/", label: "Facebook" },
+  { Icon: FaWhatsapp, href: "https://wa.me/525663012505", label: "WhatsApp" },
+  { Icon: FaLinkedinIn, href: "https://www.linkedin.com/in/bryanfdesigner", label: "LinkedIn" },
+  { Icon: FaGithub, href: "https://github.com/BryanF-Design", label: "GitHub" },
 ];
 
 const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
 
-export function SiteFooter() {
-  const { t } = useLanguage();
+export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
+  const { t: localizedT } = useLanguage();
+  const t = spanishOnly ? DICTIONARIES.es : localizedT;
 
   const nav = [
     { label: t.nav.inicio, href: "/" },
@@ -49,6 +52,7 @@ export function SiteFooter() {
   return (
     <footer id="site-footer" className="relative overflow-hidden border-t border-border bg-background" aria-label={t.footer.legalLabel}>
       <div aria-hidden className="mesh-glow-b opacity-40" />
+      <TractionLine className="pointer-events-none absolute -bottom-10 right-0 hidden h-52 w-[min(760px,85vw)] opacity-[0.07] md:block" />
       <div className="container relative grid gap-10 py-14 md:grid-cols-[1.3fr_0.85fr_1fr_1fr]">
         {/* Brand */}
         <div className="flex flex-col gap-5">
@@ -57,6 +61,7 @@ export function SiteFooter() {
             alt="BryanF Design"
             width={2904}
             height={1016}
+            sizes="132px"
             style={{ height: 46, width: "auto" }}
             className="object-contain"
           />
@@ -65,15 +70,14 @@ export function SiteFooter() {
             {t.footer.taglineRest}
           </p>
           <div className="flex gap-3">
-            {social.map(({ Icon, href, label, glow }) => (
+            {social.map(({ Icon, href, label }) => (
               <Link
                 key={label}
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                style={{ ["--glow" as string]: glow }}
-                className="glass elevate flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:border-[var(--glow)] hover:text-[var(--glow)] hover:shadow-[0_0_16px_var(--glow)]"
+                className="glass elevate flex size-11 items-center justify-center rounded-md text-muted-foreground hover:border-primary/60 hover:text-primary hover:shadow-[0_0_16px_hsl(var(--primary)/0.2)]"
               >
                 <Icon className="h-4 w-4" />
               </Link>
@@ -86,12 +90,12 @@ export function SiteFooter() {
           <p className="tech-label mb-4 text-muted-foreground">
             {t.footer.navLabel}
           </p>
-          <ul className="flex flex-col gap-2.5 text-sm">
+          <ul className="flex flex-col text-sm">
             {nav.map((l) => (
               <li key={l.href}>
                 <Link
                   href={l.href}
-                  className="text-foreground/80 transition-colors hover:text-primary"
+                  className="inline-flex min-h-11 min-w-11 items-center text-foreground/80 transition-colors hover:text-primary"
                 >
                   {l.label}
                 </Link>
@@ -102,7 +106,7 @@ export function SiteFooter() {
                 href={CLIENT_PORTAL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium text-primary transition-colors hover:text-primary/80"
+                className="inline-flex min-h-11 min-w-11 items-center font-medium text-primary transition-colors hover:text-primary/80"
               >
                 {t.footer.clientQuestion}
               </Link>
@@ -114,12 +118,12 @@ export function SiteFooter() {
           <p className="tech-label mb-4 text-muted-foreground">
             {t.footer.servicesLabel}
           </p>
-          <ul className="flex flex-col gap-2.5 text-sm">
+          <ul className="flex flex-col text-sm">
             {services.map((l) => (
               <li key={l.href}>
                 <Link
                   href={l.href}
-                  className="text-foreground/80 transition-colors hover:text-primary"
+                  className="inline-flex min-h-11 min-w-11 items-center text-foreground/80 transition-colors hover:text-primary"
                 >
                   {l.label}
                 </Link>
@@ -133,24 +137,24 @@ export function SiteFooter() {
           <p className="tech-label mb-4 text-muted-foreground">
             {t.footer.legalLabel}
           </p>
-          <ul className="flex flex-col gap-2.5 text-sm">
+          <ul className="flex flex-col text-sm">
             <li>
-              <Link href="/privacidad" className="text-foreground/80 transition-colors hover:text-primary">
+              <Link href="/privacidad" className="inline-flex min-h-11 min-w-11 items-center text-foreground/80 transition-colors hover:text-primary">
                 {t.footer.privacy}
               </Link>
             </li>
             <li>
-              <Link href="/terminos" className="text-foreground/80 transition-colors hover:text-primary">
+              <Link href="/terminos" className="inline-flex min-h-11 min-w-11 items-center text-foreground/80 transition-colors hover:text-primary">
                 {t.footer.terms}
               </Link>
             </li>
             <li>
-              <a href="tel:+525663012505" className="text-foreground/80 transition-colors hover:text-primary">
+              <a href="tel:+525663012505" className="inline-flex min-h-11 min-w-11 items-center text-foreground/80 transition-colors hover:text-primary">
                 +52 56 6301 2505
               </a>
             </li>
             <li>
-              <a href="mailto:bryanf@bryanfdesign.com.mx" className="text-foreground/80 transition-colors hover:text-primary">
+              <a href="mailto:bryanf@bryanfdesign.com.mx" className="inline-flex min-h-11 min-w-11 items-center text-foreground/80 transition-colors hover:text-primary">
                 bryanf@bryanfdesign.com.mx
               </a>
             </li>
@@ -160,7 +164,7 @@ export function SiteFooter() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackEvent("generate_lead", { method: "whatsapp", location: "footer" })}
-                className="text-foreground/80 transition-colors hover:text-primary"
+                className="inline-flex min-h-11 min-w-11 items-center text-foreground/80 transition-colors hover:text-primary"
               >
                 {t.closingCta.ctaSecondary}
               </a>
@@ -170,7 +174,7 @@ export function SiteFooter() {
                 href={GOOGLE_MAPS_REVIEW}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-foreground/80 transition-colors hover:text-primary"
+                className="inline-flex min-h-11 min-w-11 items-center gap-1.5 text-foreground/80 transition-colors hover:text-primary"
               >
                 <MapPin className="h-3.5 w-3.5" />
                 {t.footer.reviewGoogle}
@@ -189,11 +193,11 @@ export function SiteFooter() {
           </span>
           <span>
             {t.footer.acceptPrefix}{" "}
-            <Link href="/privacidad" className="underline underline-offset-2 hover:text-primary">
+            <Link href="/privacidad" className="inline-flex min-h-11 items-center underline underline-offset-2 hover:text-primary">
               {t.footer.privacy}
             </Link>{" "}
             {t.footer.and}{" "}
-            <Link href="/terminos" className="underline underline-offset-2 hover:text-primary">
+            <Link href="/terminos" className="inline-flex min-h-11 items-center underline underline-offset-2 hover:text-primary">
               {t.footer.terms}
             </Link>
             .

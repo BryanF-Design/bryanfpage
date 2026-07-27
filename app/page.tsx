@@ -1,6 +1,5 @@
 "use client";
 
-import { useRef } from "react";
 import dynamic from "next/dynamic";
 import { Hero } from "@/components/ui/hero";
 import { StatCounter } from "@/components/ui/stat-counter";
@@ -8,11 +7,7 @@ import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { SiteHeader } from "@/components/sections/site-header";
 import { MarqueeBand } from "@/components/sections/marquee-band";
 import { SocialRail } from "@/components/social-rail";
-import { WebCorner } from "@/components/ui/web-corner";
-import { LazyMount } from "@/components/three/lazy-mount";
-import { useSectionProgress } from "@/lib/use-section-progress";
 import { useLanguage } from "@/lib/i18n/context";
-import { useVtecKeys } from "@/lib/vtec";
 
 // Below-the-fold sections: code-split so the initial hydration bundle stays
 // small (main lever on mobile TBT). SSR stays on (default) for all of these
@@ -20,9 +15,6 @@ import { useVtecKeys } from "@/lib/vtec";
 // — only the client JS is deferred into separate chunks.
 const MeetBryan = dynamic(() =>
   import("@/components/sections/meet-bryan").then((m) => m.MeetBryan)
-);
-const Garage = dynamic(() =>
-  import("@/components/sections/garage").then((m) => m.Garage)
 );
 const ClosingCta = dynamic(() =>
   import("@/components/sections/closing-cta").then((m) => m.ClosingCta)
@@ -57,16 +49,9 @@ const LuminaChat = dynamic(
   () => import("@/components/lumina-chat").then((m) => m.LuminaChat),
   { ssr: false }
 );
-const ParallaxShards = dynamic(
-  () => import("@/components/three/parallax-shards").then((m) => m.ParallaxShards),
-  { ssr: false }
-);
 
 export default function HomePage() {
   const { t } = useLanguage();
-  const statsRef = useRef<HTMLElement>(null);
-  const statsProgress = useSectionProgress(statsRef);
-  useVtecKeys();
 
   return (
     <main id="home" className="relative">
@@ -89,21 +74,9 @@ export default function HomePage() {
         ]}
       />
 
-      {/* Franja de datos: cifras en display expandido sobre hairlines,
-          con escombros 3D cruzando al fondo a su propia velocidad. */}
-      <section ref={statsRef} className="relative overflow-hidden border-b border-border">
+      {/* Prueba rápida: cifras legibles, sin otra escena compitiendo con el hero. */}
+      <section className="relative overflow-hidden border-b border-border">
         <div aria-hidden className="mesh-glow-b opacity-50" />
-        {/* La franja de telemetría queda cosida por sus esquinas. */}
-        <WebCorner corner="bl" size={124} opacity={0.2} />
-        <WebCorner corner="tr" size={124} opacity={0.2} />
-        <LazyMount className="pointer-events-none absolute inset-0" rootMargin="300px">
-          <ParallaxShards
-            progressRef={statsProgress}
-            count={8}
-            opacity={0.35}
-            className="absolute inset-0"
-          />
-        </LazyMount>
         <div className="container relative grid grid-cols-3 divide-x divide-border">
           <div className="flex flex-col gap-1 py-6 pr-3 sm:py-8 sm:pr-8">
             <p className="font-display text-2xl font-bold text-foreground sm:text-3xl md:text-4xl xl:text-5xl">
@@ -137,38 +110,35 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Créditos de taller cruzando la pantalla, ligados al scroll. */}
+      {/* El trabajo aparece antes que el relato: capacidad primero. */}
+      <ProjectsShowcase />
+
+      {/* Puente de autor: una sola historia de precisión, ritmo y conexión. */}
+      <MeetBryan />
+
       <MarqueeBand words={t.marquee.words} />
 
       <ProcessOrbital />
 
       <StackOrbit />
 
-      <ProjectsShowcase />
-
-      <MarqueeBand words={t.marquee.words} reverse outline />
+      <LuminaFeature />
 
       <WorldPresence />
 
+      <Configurator />
+
       <ClientsMarquee />
 
-      <LuminaFeature />
-
-      <Configurator />
+      <MarqueeBand words={t.marquee.words} reverse outline />
 
       <Faq />
 
-      <ClosingCta />
-
-      <MeetBryan />
-
-      {/* Cierre de autor: conoces a la persona y luego lo que la formó.
-          El Type R es lo último antes del sello del footer. */}
-      <Garage />
-
-      <SiteFooter />
-
       <LuminaChat />
+
+      {/* Después del cierre comercial solo queda la firma del footer. */}
+      <ClosingCta />
+      <SiteFooter />
     </main>
   );
 }

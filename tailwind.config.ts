@@ -54,8 +54,6 @@ const config: Config = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        // 朱 — tinta de detalle del rebranding. Nunca en CTAs.
-        redline: "hsl(var(--redline))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -75,19 +73,10 @@ const config: Config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        marquee: {
-          from: { transform: "translateX(0)" },
-          to: { transform: "translateX(-50%)" },
-        },
-        spin: {
-          to: { transform: "rotate(360deg)" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        marquee: "marquee 30s linear infinite",
-        "spin-slow": "spin 24s linear infinite",
       },
     },
   },

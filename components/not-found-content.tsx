@@ -3,16 +3,17 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Compass } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useReducedMotionPreference } from "@/lib/motion-preference";
 
 const REDIRECT_SECONDS = 5;
 
 export function NotFoundContent() {
   const router = useRouter();
-  const prefersReducedMotion = useReducedMotion();
+  const prefersReducedMotion = useReducedMotionPreference();
   const [secondsLeft, setSecondsLeft] = useState(REDIRECT_SECONDS);
 
   useEffect(() => {
@@ -42,8 +43,8 @@ export function NotFoundContent() {
         className="relative z-10 flex flex-col items-center gap-6"
       >
         <motion.div
-          animate={prefersReducedMotion ? undefined : { rotate: 360 }}
-          transition={{ duration: 10, ease: "linear", repeat: Infinity }}
+          animate={prefersReducedMotion ? undefined : { rotate: 12 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
           className="flex h-20 w-20 items-center justify-center rounded-full border border-primary/40 bg-primary/10"
           aria-hidden="true"
         >

@@ -5,9 +5,9 @@ import Image from "next/image";
 import { ArrowUpRight, ChevronDown } from "lucide-react";
 
 import { projects, desktopShot, mobileShot } from "@/lib/projects";
-import { TextRotate } from "@/components/ui/text-rotate";
 import { Tilt } from "@/components/ui/tilt";
 import { Button } from "@/components/ui/button";
+import { TractionLine } from "@/components/ui/traction-line";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 
@@ -43,8 +43,9 @@ export function ProjectsShowcase() {
       {/* Legacy anchor: keep older internal links (#portafolio) landing here. */}
       <span id="portafolio" className="absolute -top-24" aria-hidden />
       <div aria-hidden className="mesh-glow-b opacity-60" />
+      <TractionLine className="pointer-events-none absolute -right-[12%] -top-24 hidden h-72 w-[min(1050px,100vw)] opacity-[0.12] sm:block" />
       <div className="container relative">
-        {/* Animated heading */}
+        {/* El trabajo aparece pronto: primero evidencia, después historia. */}
         <div className="mx-auto flex max-w-2xl flex-col items-center gap-4 text-center">
           <span className="tech-label inline-flex items-center gap-3 text-primary">
             <span className="h-1.5 w-1.5 bg-primary" />
@@ -52,19 +53,7 @@ export function ProjectsShowcase() {
           </span>
           <h2 className="flex flex-wrap items-baseline justify-center gap-x-3 font-display text-4xl font-semibold tracking-tight md:text-5xl">
             <span>{t.projects.titlePrefix}</span>
-            <TextRotate
-              key={t.projects.rotatingWords.join("|")}
-              texts={t.projects.rotatingWords}
-              mainClassName="text-primary justify-center"
-              splitLevelClassName="overflow-hidden pb-1"
-              rotationInterval={2200}
-              staggerDuration={0.02}
-              staggerFrom="first"
-              initial={{ y: "100%", opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: "-110%", opacity: 0 }}
-              transition={{ type: "spring", damping: 28, stiffness: 320 }}
-            />
+            <span className="text-primary">{t.projects.rotatingWords[0]}</span>
           </h2>
           <p className="text-balance text-base text-muted-foreground md:text-lg">
             {t.projects.subtitle}
@@ -91,7 +80,7 @@ export function ProjectsShowcase() {
               href={p.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="elevate group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card hover:border-primary/40"
+              className="elevate group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               {/* Browser chrome */}
               <div className="flex items-center gap-3 border-b border-border bg-secondary/50 px-3.5 py-2.5">
@@ -103,17 +92,7 @@ export function ProjectsShowcase() {
                 <span className="min-w-0 flex-1 truncate rounded-full bg-background/60 px-2.5 py-0.5 text-center font-mono text-[11px] text-muted-foreground">
                   {hostname(p.url)}
                 </span>
-                {/* Posición de parrilla: la rejilla se lee como una pizarra de
-                    tiempos, y el primero (el destacado ancho) lleva el rojo. */}
-                <span
-                  aria-hidden
-                  className={cn(
-                    "shrink-0 font-mono text-[10px] font-medium tracking-[0.14em]",
-                    idx === 0 ? "text-redline" : "text-muted-foreground/50"
-                  )}
-                >
-                  P{String(idx + 1).padStart(2, "0")}
-                </span>
+                <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-primary/65" />
               </div>
 
               {/* Screenshot: object-cover desde arriba, así el marco 4:3

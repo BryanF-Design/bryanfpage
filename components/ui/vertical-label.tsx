@@ -1,5 +1,3 @@
-"use client";
-
 import { cn } from "@/lib/utils";
 
 interface VerticalLabelProps {
@@ -7,14 +5,13 @@ interface VerticalLabelProps {
   jp: string;
   /** Lectura o traducción corta, en mono rotada. Opcional. */
   romaji?: string;
-  tone?: "primary" | "muted" | "redline";
+  tone?: "primary" | "muted";
   className?: string;
 }
 
 const TONE = {
   primary: "text-primary/70",
   muted: "text-muted-foreground/60",
-  redline: "text-redline/70",
 } as const;
 
 /**

@@ -24,13 +24,14 @@ const nextConfig = {
     // crear-web.html — none of them are attacker-controlled, and the real
     // protection here is the origin allowlist (blocks injected <script src>
     // from a third-party domain) plus frame-ancestors/object-src/base-uri.
+    const devEval = process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : "";
     const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://*.googletagmanager.com https://*.clarity.ms https://cdnjs.cloudflare.com",
+      `script-src 'self' 'unsafe-inline'${devEval} https://*.googletagmanager.com https://*.clarity.ms https://cdnjs.cloudflare.com`,
       "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com",
-      "img-src 'self' data: blob:",
+      "img-src 'self' data: blob: https://*.clarity.ms https://c.bing.com",
       "font-src 'self' https://cdnjs.cloudflare.com data:",
-      "connect-src 'self' https://*.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://*.clarity.ms",
+      "connect-src 'self' https://*.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://www.google.com https://*.clarity.ms",
       "frame-ancestors 'self'",
       "object-src 'none'",
       "base-uri 'self'",
