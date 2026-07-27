@@ -318,6 +318,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
             eyebrow={t.configurator.eyebrow}
             title={t.configurator.title}
             subtitle={t.configurator.subtitle}
+            chapter={{ kanji: "見積", romaji: "mitsumori", index: 8 }}
           />
         )}
 

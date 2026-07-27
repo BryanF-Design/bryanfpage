@@ -10,6 +10,8 @@ import {
   IGNITION_STORAGE_KEY,
   IgnitionPreloader,
 } from "@/components/japan/ignition-preloader";
+import { PageFrame } from "@/components/japan/page-frame";
+import { SeigaihaRule } from "@/components/japan/seigaiha-rule";
 import { useLanguage } from "@/lib/i18n/context";
 
 // Below-the-fold sections: code-split so the initial hydration bundle stays
@@ -72,6 +74,9 @@ export default function HomePage() {
         <style>{`.ignition-loader{display:none!important}`}</style>
       </noscript>
       <IgnitionPreloader />
+      {/* El marco que el preloader acaba de trazar. Es el mismo rectángulo:
+          mismo inset, mismas marcas de registro. */}
+      <PageFrame />
       <ScrollProgress />
       <SiteHeader />
 
@@ -152,6 +157,11 @@ export default function HomePage() {
 
       <StackOrbit />
 
+      {/* 青海波. Los tres tramos donde el recorrido dejaba pantallas enteras de
+          negro entre un bloque y el siguiente. La banda cierra la composición
+          anterior en vez de dejar el hueco. */}
+      <SeigaihaRule />
+
       {/* Lumina guía el tramo comercial sin desplazar el trabajo real. */}
       <LuminaFeature />
 
@@ -160,6 +170,8 @@ export default function HomePage() {
 
       {/* Qué ofrecemos → cotiza y paga. Servicios y cotizador quedan juntos
           para que descubrir la oferta y armar el proyecto sea un solo tramo. */}
+      <SeigaihaRule />
+
       <EntryServices />
 
       <Configurator />
@@ -170,6 +182,8 @@ export default function HomePage() {
       <ClientsMarquee />
 
       <MarqueeBand words={t.marquee.words} reverse outline />
+
+      <SeigaihaRule signal />
 
       {/* Dudas y cierre. */}
       <Faq />

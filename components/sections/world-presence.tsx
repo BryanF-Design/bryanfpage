@@ -85,6 +85,7 @@ export function WorldPresence() {
           eyebrow={t.world.eyebrow}
           title={t.world.title}
           subtitle={t.world.subtitle}
+          chapter={{ kanji: "世界", romaji: "sekai", index: 9 }}
         />
 
         <div className="mt-12 grid items-center gap-10 lg:grid-cols-[0.85fr_1.15fr]">
@@ -119,8 +120,16 @@ export function WorldPresence() {
             ))}
           </ol>
 
-          {/* Globo interactivo */}
-          <div className="order-1 lg:order-2">
+          {/* Globo interactivo, ahora dentro del disco.
+              El globo flotaba solo en medio de la columna y las esquinas del
+              marco HUD quedaban colgando en el vacío. El hinomaru le da el
+              mismo ancla circular que sostiene al Civic en el hero, así que
+              las dos escenas 3D del sitio comparten encuadre. */}
+          <div className="relative order-1 lg:order-2">
+            <div
+              aria-hidden
+              className="hinomaru left-1/2 top-1/2 aspect-square w-[min(92%,34rem)] -translate-x-1/2 -translate-y-1/2"
+            />
             {decorative3dEnabled ? (
               <LazyMount className={globeClassName} fallback={<StaticGlobe />}>
                 <GlobeScene

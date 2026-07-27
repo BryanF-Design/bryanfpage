@@ -64,6 +64,7 @@ export function StackOrbit() {
               eyebrow={t.stack.eyebrow}
               title={t.stack.title}
               subtitle={t.stack.subtitle}
+              chapter={{ kanji: "道具", romaji: "dōgu", index: 5 }}
             />
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">

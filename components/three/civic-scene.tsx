@@ -44,73 +44,49 @@ export function CivicScene({
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 0.94;
 
-      camera.position.set(3.6, 1.9, 5.8);
-      camera.lookAt(0, 0.52, 0);
+      // Cámara más baja y algo más lejos: encuadre de póster, no de inspector
+      // de assets mirando desde arriba.
+      camera.position.set(3.9, 1.42, 6.15);
+      camera.lookAt(0, 0.46, 0);
 
       const stage = new THREE.Group();
       stage.rotation.y = -0.6;
       scene.add(stage);
 
-      scene.add(new THREE.HemisphereLight(0xf2f3ec, 0x06100c, 1.15));
+      scene.add(new THREE.HemisphereLight(0xf2f3ec, 0x06100c, 1.05));
 
-      const key = new THREE.DirectionalLight(0xffffff, 2.15);
+      const key = new THREE.DirectionalLight(0xffffff, 2.4);
       key.position.set(4.5, 6, 5);
       scene.add(key);
 
-      const limeRim = new THREE.PointLight(0xb4e332, 22, 13, 1.6);
+      // El rim lima estaba en intensidad 22 y teñía de verde toda la
+      // carrocería: el auto se leía como asset iluminado, no como fotografía.
+      const limeRim = new THREE.PointLight(0xb4e332, 6, 12, 1.8);
       limeRim.position.set(-3.2, 1.5, -2.8);
       scene.add(limeRim);
 
-      const signalRim = new THREE.PointLight(0xe8342a, 14, 10, 1.8);
+      const signalRim = new THREE.PointLight(0xe8342a, 7, 9, 1.9);
       signalRim.position.set(2.8, 0.9, -3.4);
       scene.add(signalRim);
 
-      const floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(18, 18),
-        new THREE.MeshStandardMaterial({
-          color: 0x07110d,
-          metalness: 0.18,
-          roughness: 0.76,
-          transparent: true,
-          opacity: 0.84,
-        })
-      );
-      floor.rotation.x = -Math.PI / 2;
-      floor.position.y = -0.055;
-      stage.add(floor);
-
-      const grid = new THREE.GridHelper(16, 28, 0xb4e332, 0x273128);
-      grid.position.y = -0.048;
-      const gridMaterial = grid.material as THREE.LineBasicMaterial;
-      gridMaterial.transparent = true;
-      gridMaterial.opacity = 0.34;
-      stage.add(grid);
-
-      const routeCurve = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(-6, 0.01, 2.6),
-        new THREE.Vector3(-3.4, 0.01, 0.4),
-        new THREE.Vector3(-0.8, 0.01, -2.3),
-        new THREE.Vector3(2.2, 0.01, -1.2),
-        new THREE.Vector3(5.8, 0.01, 1.8),
-      ]);
-      const route = new THREE.Mesh(
-        new THREE.TubeGeometry(routeCurve, 96, 0.018, 5, false),
+      // Sombra de contacto. Reemplaza al piso plano + GridHelper verde que
+      // hacían de suelo: aquellos dibujaban una grilla de videojuego con un
+      // borde recto muy visible donde terminaba el plano. Esto solo oscurece
+      // debajo del auto y se desvanece, así que el Civic apoya en vez de
+      // flotar y el horizonte lo pone el DOM.
+      const contact = new THREE.Mesh(
+        new THREE.PlaneGeometry(7.2, 4.4),
         new THREE.MeshBasicMaterial({
-          color: 0xb4e332,
           transparent: true,
-          opacity: 0.82,
+          depthWrite: false,
+          opacity: 0.72,
+          map: makeContactShadow(),
           toneMapped: false,
         })
       );
-      stage.add(route);
-
-      const apex = new THREE.Mesh(
-        new THREE.SphereGeometry(0.07, 12, 8),
-        new THREE.MeshBasicMaterial({ color: 0xe8342a, toneMapped: false })
-      );
-      apex.position.copy(routeCurve.getPointAt(0.57));
-      apex.position.y = 0.045;
-      stage.add(apex);
+      contact.rotation.x = -Math.PI / 2;
+      contact.position.y = -0.045;
+      stage.add(contact);
 
       const modelRoot = new THREE.Group();
       modelRoot.position.y = 0.04;
@@ -241,10 +217,6 @@ export function CivicScene({
           Math.min(1, dt * 4.4);
 
         stage.position.y = reduced ? 0 : Math.sin(elapsed * 0.7) * 0.018;
-        route.material &&
-          ((route.material as THREE.MeshBasicMaterial).opacity =
-            0.58 + progress * 0.3);
-        apex.scale.setScalar(0.8 + Math.sin(elapsed * 2.1) * 0.15);
 
         return true;
       };
@@ -253,6 +225,7 @@ export function CivicScene({
         tick,
         dispose: () => {
           disposed = true;
+          (contact.material as THREE.MeshBasicMaterial).map?.dispose();
           container.removeEventListener("pointerdown", onPointerDown);
           container.removeEventListener("pointermove", onPointerMove);
           container.removeEventListener("pointerup", onPointerUp);
@@ -270,6 +243,40 @@ export function CivicScene({
       role="img"
     />
   );
+}
+
+/**
+ * Sombra de contacto pintada en canvas: una elipse difusa que se desvanece a
+ * transparente. Es más barata que activar mapas de sombra en el renderer y no
+ * deja el borde recto que delataba al plano anterior.
+ */
+function makeContactShadow() {
+  const size = 256;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+
+  if (ctx) {
+    const gradient = ctx.createRadialGradient(
+      size / 2,
+      size / 2,
+      0,
+      size / 2,
+      size / 2,
+      size / 2
+    );
+    gradient.addColorStop(0, "rgba(0,0,0,0.92)");
+    gradient.addColorStop(0.42, "rgba(0,0,0,0.55)");
+    gradient.addColorStop(0.72, "rgba(0,0,0,0.16)");
+    gradient.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, size, size);
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
 }
 
 function disposeObject(root: THREE.Object3D) {

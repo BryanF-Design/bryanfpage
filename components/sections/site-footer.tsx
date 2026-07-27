@@ -15,6 +15,7 @@ import { DICTIONARIES } from "@/lib/i18n/dictionaries";
 import { trackEvent } from "@/lib/analytics";
 import { HankoSeal } from "@/components/ui/hanko-seal";
 import { TractionLine } from "@/components/ui/traction-line";
+import { SeigaihaRule } from "@/components/japan/seigaiha-rule";
 
 const GOOGLE_MAPS_REVIEW = "https://maps.app.goo.gl/CWNcgPfAZt31K3ey6";
 
@@ -55,6 +56,10 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
     <footer id="site-footer" className="relative overflow-hidden border-t border-border bg-background" aria-label={t.footer.legalLabel}>
       <div aria-hidden className="mesh-glow-b opacity-40" />
       <div aria-hidden className="route-grid absolute inset-0 opacity-15" />
+      {/* 青海波 cerrando la hoja, como el pie de los pósters de la carpeta. */}
+      <SeigaihaRule className="absolute inset-x-0 top-0 opacity-60" />
+      {/* La TractionLine se queda aquí: en el cierre, una firma es una firma.
+          Donde dejó de tener sentido fue como ruido de fondo en Proyectos. */}
       <TractionLine className="pointer-events-none absolute -bottom-10 right-0 hidden h-52 w-[min(760px,85vw)] opacity-[0.07] md:block" />
       <div className="container relative grid gap-10 py-14 md:grid-cols-[1.3fr_0.85fr_1fr_1fr]">
         {/* Brand */}

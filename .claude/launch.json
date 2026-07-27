@@ -8,6 +8,12 @@
       "port": 3000
     },
     {
+      "name": "next-redesign",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["next", "dev", "-p", "3210"],
+      "port": 3210
+    },
+    {
       "name": "static",
       "runtimeExecutable": "npx",
       "runtimeArgs": ["-y", "serve", "-l", "5050", "."],

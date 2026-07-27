@@ -38,6 +38,7 @@ export function Faq() {
             eyebrow={t.faq.eyebrow}
             title={t.faq.title}
             subtitle={t.faq.subtitle}
+            chapter={{ kanji: "問答", romaji: "mondō", index: 10 }}
           />
         </div>
 

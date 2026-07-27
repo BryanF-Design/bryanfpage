@@ -7,8 +7,10 @@ import { ArrowUpRight, ChevronDown } from "lucide-react";
 import { projects, desktopShot, mobileShot } from "@/lib/projects";
 import { Tilt } from "@/components/ui/tilt";
 import { Button } from "@/components/ui/button";
-import { TractionLine } from "@/components/ui/traction-line";
 import { LazyMount } from "@/components/three/lazy-mount";
+import { SeigaihaRule } from "@/components/japan/seigaiha-rule";
+import { ChapterMark } from "@/components/japan/chapter-mark";
+import { CHAPTER_TOTAL } from "@/components/sections/section-heading";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 
@@ -51,26 +53,23 @@ export function ProjectsShowcase() {
       <span id="portafolio" className="absolute -top-24" aria-hidden />
       <div aria-hidden className="route-grid absolute inset-0 -z-20 opacity-30" />
       <div aria-hidden className="japan-halftone absolute inset-0 -z-10 opacity-25" />
-      <TractionLine className="pointer-events-none absolute -right-[18%] -top-20 -z-10 hidden h-80 w-[min(1120px,100vw)] opacity-[0.13] sm:block" />
+      {/* Aquí flotaba la TractionLine a 13% de opacidad, desbordada un 18% por
+          la derecha: la firma de marca convertida en ruido de fondo. Sigue
+          existiendo donde una firma tiene sentido —el cierre del footer— y su
+          lugar aquí lo toma la banda de olas, que sí separa dos bloques. */}
+      <SeigaihaRule className="absolute inset-x-0 top-0 -z-10 opacity-70" />
 
       <div className="container relative">
         <div className="grid gap-8 border-y border-border py-7 lg:grid-cols-12 lg:items-end lg:gap-10 md:py-9">
           <div className="lg:col-span-8">
-            <div className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-2">
-              <span className="signal-kicker tech-label inline-flex items-center gap-3 text-primary">
-                {t.projects.eyebrow}
-              </span>
-              <span
-                className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground"
-                aria-label={`jissō · ${t.experience.phaseDevelopment}`}
-              >
-                <span lang="ja" className="font-jp text-foreground/80">
-                  実装
-                </span>
-                <span aria-hidden> / </span>
-                jissō · {t.experience.phaseDevelopment}
-              </span>
-            </div>
+            <ChapterMark
+              kanji="作品"
+              romaji="sakuhin"
+              label={t.projects.eyebrow}
+              index={2}
+              total={CHAPTER_TOTAL}
+              className="mb-6"
+            />
             <h2 className="max-w-4xl font-display text-[clamp(2.65rem,7vw,6.8rem)] font-semibold uppercase leading-[0.84] tracking-[-0.055em]">
               <span className="block">{t.projects.titlePrefix}</span>
               <span className="block text-primary">
@@ -134,9 +133,13 @@ export function ProjectsShowcase() {
                     <ArrowUpRight className="h-4 w-4 shrink-0 text-foreground/55 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
                   </div>
 
+                  {/* 網点. Las capturas entraban a color pleno y no
+                      pertenecían al mismo mundo de tinta que la interfaz. La
+                      trama las integra y se retira al pasar el puntero, que es
+                      cuando de verdad estás mirando la pieza. */}
                   <div
                     className={cn(
-                      "relative aspect-[4/3] overflow-hidden bg-secondary/20",
+                      "amiten relative aspect-[4/3] overflow-hidden bg-secondary/20",
                       wide && "lg:aspect-[16/9]"
                     )}
                   >

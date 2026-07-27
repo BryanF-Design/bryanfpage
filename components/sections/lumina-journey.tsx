@@ -58,6 +58,7 @@ export function LuminaJourney() {
           eyebrow={t.luminaJourney.eyebrow}
           title={t.luminaJourney.title}
           subtitle={t.luminaJourney.subtitle}
+          chapter={{ kanji: "道筋", romaji: "michisuji", index: 6 }}
         />
 
         <div ref={railRef} className="relative mx-auto mt-14 max-w-3xl md:mt-20">

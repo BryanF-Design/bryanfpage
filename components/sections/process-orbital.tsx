@@ -37,6 +37,7 @@ export function ProcessOrbital() {
           eyebrow={t.process.eyebrow}
           title={t.process.title}
           subtitle={t.process.subtitle}
+          chapter={{ kanji: "工程", romaji: "kōtei", index: 4 }}
         />
 
         <div className="editorial-panel relative mt-14 overflow-hidden md:mt-20">
