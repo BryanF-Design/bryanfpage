@@ -17,6 +17,12 @@ const LanguageNotice = dynamic(
   () => import("@/components/language-notice").then((m) => m.LanguageNotice),
   { ssr: false }
 );
+// Retícula de ápex: puro adorno de puntero, sin nada que renderizar en el
+// servidor y sin utilidad alguna en móvil.
+const ApexCursor = dynamic(
+  () => import("@/components/ui/apex-cursor").then((m) => m.ApexCursor),
+  { ssr: false }
+);
 
 // Cuerpo: Instrument Sans (variable, un solo archivo).
 const instrumentSans = Instrument_Sans({
@@ -140,6 +146,7 @@ export default function RootLayout({
           <LanguageNotice />
         </LanguageProvider>
         <AccessibilityPanel />
+        <ApexCursor />
       </body>
     </html>
   );

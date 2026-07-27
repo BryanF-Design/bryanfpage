@@ -212,6 +212,54 @@ const zh: Dictionary = {
     ctaSecondary: "了解流程",
     quote: "这里的每一个网站，都诞生于这张书桌。",
   },
+  garage: {
+    eyebrow: "塑造我的东西",
+    title: "这不是装饰，而是我的工作方式。",
+    subtitle:
+      "三种执念渗进了我的手艺：一辆车、一个日本理念，和一张网。每一个都决定着您的网站最终的样子。",
+    verticalJp: "速さと精度",
+    verticalRomaji: "hayasa to seido",
+    hint: "用指针拖动 · 输入 VTEC",
+    spec: {
+      modelLabel: "车型",
+      model: "本田 思域 Type R",
+      codeLabel: "代号",
+      code: "FK2 · 2016",
+      colorLabel: "颜色",
+      color: "Championship White",
+      engineLabel: "引擎",
+      engine: "2.0 VTEC 涡轮增压",
+    },
+    cards: [
+      {
+        index: "01",
+        jp: "限界",
+        romaji: "genkai",
+        title: "不提升性能的，就不上线。",
+        body:
+          "Type R 不会装载任何无助于提速的东西。您的网站也一样：每一个库、每一个动画、每一KB都要有存在的理由，否则就删掉。所以它在您客户的手机上也能快速打开，而不只是在我的显示器上。",
+        spec: "性能 · Core Web Vitals",
+      },
+      {
+        index: "02",
+        jp: "職人",
+        romaji: "shokunin",
+        title: "没人会注意到的细节。",
+        body:
+          "日本的匠人精神讲究：看不见的地方也要同样打磨。键盘焦点、替代文本、按钮在六寸屏幕上的呼吸感。没有人会提起，但所有人都感受得到。",
+        spec: "设计 · 无障碍",
+      },
+      {
+        index: "03",
+        jp: "網",
+        romaji: "ami",
+        title: "网站，本身就是一张网。",
+        body:
+          "节点与丝线：页面、链接、数据和人。我交付的不是一个孤立的页面，而是编织整张网：架构、SEO，以及从一次点击到主动联系您的那条路径。",
+        spec: "架构 · SEO",
+      },
+    ],
+  },
   luminaSection: {
     eyebrow: "您的AI顾问",
     titlePrefix: "她是",

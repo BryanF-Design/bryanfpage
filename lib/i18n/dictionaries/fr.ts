@@ -241,6 +241,54 @@ const fr: Dictionary = {
     ctaSecondary: "Voir mon processus",
     quote: "Chaque site que vous voyez ici est né sur ce bureau.",
   },
+  garage: {
+    eyebrow: "Ce qui m'a formé",
+    title: "Ce n'est pas de la déco. C'est ma façon de travailler.",
+    subtitle:
+      "Trois obsessions se sont glissées dans mon métier : une voiture, une idée japonaise et une toile. Chacune explique quelque chose sur le résultat de votre site.",
+    verticalJp: "速さと精度",
+    verticalRomaji: "hayasa to seido",
+    hint: "Bougez-la au pointeur · tapez VTEC",
+    spec: {
+      modelLabel: "Modèle",
+      model: "ホンダ・シビック タイプR",
+      codeLabel: "Génération",
+      code: "FK2 · 2016",
+      colorLabel: "Couleur",
+      color: "Championship White",
+      engineLabel: "Moteur",
+      engine: "2.0 VTEC Turbo",
+    },
+    cards: [
+      {
+        index: "01",
+        jp: "限界",
+        romaji: "genkai",
+        title: "Si ça n'apporte rien, ça ne passe pas.",
+        body:
+          "Une Type R n'embarque rien qui ne la rende plus rapide. Votre site, pareil : chaque bibliothèque, chaque animation et chaque kilo-octet se justifie ou dégage. C'est pour ça qu'il s'ouvre vite sur le téléphone de votre client, pas seulement sur mon écran.",
+        spec: "Performance · Core Web Vitals",
+      },
+      {
+        index: "02",
+        jp: "職人",
+        romaji: "shokunin",
+        title: "Le détail que personne ne remarque.",
+        body:
+          "L'artisanat japonais dit qu'on finit aussi bien la partie qu'on ne voit pas. Le focus clavier, le texte alternatif, la façon dont un bouton respire sur un écran de six pouces. Personne ne vous en parlera jamais. Tout le monde le sentira.",
+        spec: "Design · Accessibilité",
+      },
+      {
+        index: "03",
+        jp: "網",
+        romaji: "ami",
+        title: "Un site web est une toile.",
+        body:
+          "Des nœuds et des fils : pages, liens, données et gens. Je ne livre pas une page isolée — je tisse toute la toile : architecture, SEO et le chemin qui mène quelqu'un d'un clic jusqu'à votre messagerie.",
+        spec: "Architecture · SEO",
+      },
+    ],
+  },
   luminaSection: {
     eyebrow: "Votre conseillère IA",
     titlePrefix: "Voici",

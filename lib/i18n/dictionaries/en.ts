@@ -241,6 +241,54 @@ const en: Dictionary = {
     ctaSecondary: "See my process",
     quote: "Every site you see here came out of this desk.",
   },
+  garage: {
+    eyebrow: "What shaped me",
+    title: "It's not decoration. It's how I work.",
+    subtitle:
+      "Three obsessions worked their way into the craft: a car, a Japanese idea and a web. Each one explains something about how your site turns out.",
+    verticalJp: "速さと精度",
+    verticalRomaji: "hayasa to seido",
+    hint: "Move it with your pointer · type VTEC",
+    spec: {
+      modelLabel: "Model",
+      model: "ホンダ・シビック タイプR",
+      codeLabel: "Generation",
+      code: "FK2 · 2016",
+      colorLabel: "Colour",
+      color: "Championship White",
+      engineLabel: "Engine",
+      engine: "2.0 VTEC Turbo",
+    },
+    cards: [
+      {
+        index: "01",
+        jp: "限界",
+        romaji: "genkai",
+        title: "If it doesn't perform, it doesn't ship.",
+        body:
+          "A Type R carries nothing that doesn't make it faster. Your site is the same: every library, every animation and every kilobyte earns its place or goes. That's why it opens fast on your customer's phone, not just on my monitor.",
+        spec: "Performance · Core Web Vitals",
+      },
+      {
+        index: "02",
+        jp: "職人",
+        romaji: "shokunin",
+        title: "The detail nobody notices.",
+        body:
+          "Japanese craft says you finish the part nobody sees just as well. Keyboard focus, alt text, how a button breathes on a six-inch screen. Nobody will ever mention it. Everybody will feel it.",
+        spec: "Design · Accessibility",
+      },
+      {
+        index: "03",
+        jp: "網",
+        romaji: "ami",
+        title: "A website is a web.",
+        body:
+          "Nodes and threads: pages, links, data and people. I don't hand over a single page — I weave the whole web: architecture, SEO and the path that takes someone from a click to writing to you.",
+        spec: "Architecture · SEO",
+      },
+    ],
+  },
   luminaSection: {
     eyebrow: "Your AI advisor",
     titlePrefix: "Meet",

@@ -241,6 +241,54 @@ const pt: Dictionary = {
     ctaSecondary: "Veja meu processo",
     quote: "Cada site que você vê aqui saiu desta mesa.",
   },
+  garage: {
+    eyebrow: "O que me formou",
+    title: "Não é decoração. É como eu trabalho.",
+    subtitle:
+      "Três obsessões entraram no meu ofício: um carro, uma ideia japonesa e uma rede. Cada uma explica algo de como o seu site vai ficar.",
+    verticalJp: "速さと精度",
+    verticalRomaji: "hayasa to seido",
+    hint: "Mova com o ponteiro · digite VTEC",
+    spec: {
+      modelLabel: "Modelo",
+      model: "ホンダ・シビック タイプR",
+      codeLabel: "Geração",
+      code: "FK2 · 2016",
+      colorLabel: "Cor",
+      color: "Championship White",
+      engineLabel: "Motor",
+      engine: "2.0 VTEC Turbo",
+    },
+    cards: [
+      {
+        index: "01",
+        jp: "限界",
+        romaji: "genkai",
+        title: "Se não rende, não sai.",
+        body:
+          "Um Type R não carrega nada que não o faça ir mais rápido. Seu site é igual: cada biblioteca, cada animação e cada kilobyte se justifica ou vai embora. Por isso ele abre rápido no celular do seu cliente, não só no meu monitor.",
+        spec: "Performance · Core Web Vitals",
+      },
+      {
+        index: "02",
+        jp: "職人",
+        romaji: "shokunin",
+        title: "O detalhe que ninguém nota.",
+        body:
+          "O ofício japonês diz que a parte que não se vê se acaba igualmente bem. O foco do teclado, o texto alternativo, como um botão respira numa tela de seis polegadas. Ninguém vai comentar. Todos vão sentir.",
+        spec: "Design · Acessibilidade",
+      },
+      {
+        index: "03",
+        jp: "網",
+        romaji: "ami",
+        title: "Um site é uma rede.",
+        body:
+          "Nós e fios: páginas, links, dados e pessoas. Não entrego uma página solta — teço a rede inteira: arquitetura, SEO e o caminho que leva alguém de um clique a te escrever.",
+        spec: "Arquitetura · SEO",
+      },
+    ],
+  },
   luminaSection: {
     eyebrow: "Sua consultora IA",
     titlePrefix: "Ela é a",

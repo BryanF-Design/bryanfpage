@@ -103,6 +103,17 @@ export function ProjectsShowcase() {
                 <span className="min-w-0 flex-1 truncate rounded-full bg-background/60 px-2.5 py-0.5 text-center font-mono text-[11px] text-muted-foreground">
                   {hostname(p.url)}
                 </span>
+                {/* Posición de parrilla: la rejilla se lee como una pizarra de
+                    tiempos, y el primero (el destacado ancho) lleva el rojo. */}
+                <span
+                  aria-hidden
+                  className={cn(
+                    "shrink-0 font-mono text-[10px] font-medium tracking-[0.14em]",
+                    idx === 0 ? "text-redline" : "text-muted-foreground/50"
+                  )}
+                >
+                  P{String(idx + 1).padStart(2, "0")}
+                </span>
               </div>
 
               {/* Screenshot: object-cover desde arriba, así el marco 4:3

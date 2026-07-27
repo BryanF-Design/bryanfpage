@@ -31,6 +31,12 @@
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
 
+    /* 朱 bermellón — la única tinta nueva del rebranding. Es a la vez el rojo
+       de la insignia H, el del torii y el de la zona roja del tacómetro: un
+       color que carga las tres obsesiones. Regla de uso: menos del 5% del
+       área y JAMÁS en un CTA (la lima sigue siendo el color de conversión). */
+    --redline: 6 78% 52%;
+
     --border: 156 12% 14%;
     --input: 156 12% 16%;
     --ring: 76 76% 54%;
@@ -41,6 +47,12 @@
     --font-sans: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
     --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
     --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    /* Japonés: stack de sistema, cero bytes descargados. Windows, macOS, iOS y
+       Android traen todos una gótica CJK — a tamaño de ornamento la diferencia
+       de trazo entre sistemas es irrelevante, y nos ahorra los 1–4 MB que pesa
+       Noto Sans JP completo. */
+    --font-jp: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic",
+      "Noto Sans JP", Meiryo, "MS Gothic", sans-serif;
 
     --ease-material: cubic-bezier(0.2, 0, 0, 1);
   }
@@ -168,6 +180,172 @@
     border-right: 1px solid hsl(var(--primary) / 0.7);
   }
 
+  /* ——— TALLER R ———————————————————————————————————————————————
+     Capa de autor del rebranding: pit lane, oficio japonés y geometría de
+     red. Todo aquí es CSS/SVG — el canvas se reserva para las escenas 3D. */
+
+  /* Voz japonesa. Solo ornamento: nunca carga información que el usuario
+     necesite para operar el sitio (la traducción viaja al lado, en romaji). */
+  .font-jp {
+    font-family: var(--font-jp);
+    font-weight: 400;
+  }
+
+  /* Escritura vertical de derecha a izquierda. Los kanji salen derechos solos
+     (orientación `mixed`); el latín que se cuele va rotado, que es justo el
+     efecto de tategaki que buscamos en las etiquetas de sección. */
+  .vertical-jp {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    letter-spacing: 0.25em;
+  }
+
+  /* Marco de HUD: cuatro corchetes de instrumento alrededor de un bloque.
+     Hermano de .corner-ticks, pero cerrando las cuatro esquinas. */
+  .hud-frame {
+    position: relative;
+  }
+  .hud-frame::before,
+  .hud-frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border: 1px solid transparent;
+  }
+  .hud-frame::before {
+    border-top-color: hsl(var(--primary) / 0.55);
+    border-left-color: hsl(var(--primary) / 0.55);
+    clip-path: polygon(
+      0 0, 18px 0, 18px 1px, 1px 1px, 1px 18px, 0 18px,
+      0 100%, 1px 100%, 1px calc(100% - 18px), 0 calc(100% - 18px)
+    );
+  }
+  .hud-frame::after {
+    border-bottom-color: hsl(var(--primary) / 0.55);
+    border-right-color: hsl(var(--primary) / 0.55);
+    clip-path: polygon(
+      100% 0, 100% 18px, calc(100% - 1px) 18px, calc(100% - 1px) 1px,
+      calc(100% - 18px) 1px, calc(100% - 18px) 0,
+      100% 100%, calc(100% - 18px) 100%, calc(100% - 18px) calc(100% - 1px),
+      100% calc(100% - 1px)
+    );
+  }
+
+  /* Trama de puntos tipo cómic impreso. Muy por debajo del umbral de ruido:
+     se percibe como textura de papel, no como estampado. */
+  .halftone {
+    background-image: radial-gradient(
+      hsl(var(--primary) / 0.14) 1px,
+      transparent 1.4px
+    );
+    background-size: 6px 6px;
+  }
+
+  /* Bermellón: helpers para la tinta de detalle. */
+  .text-redline {
+    color: hsl(var(--redline));
+  }
+  .bg-redline {
+    background-color: hsl(var(--redline));
+  }
+
+  /* Sello hanko: el círculo bermellón que firma el trabajo. El borde grueso y
+     el ligero desnivel imitan la tinta de un sello real apretado a mano. */
+  .hanko {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid hsl(var(--redline));
+    border-radius: 6px;
+    color: hsl(var(--redline));
+    font-family: var(--font-jp);
+    line-height: 1;
+    background-color: hsl(var(--redline) / 0.08);
+    transform: rotate(-4deg);
+  }
+
+  /* Cursor HUD. El cursor nativo solo se oculta cuando el componente está
+     realmente montado y activo (clase en <html>), nunca por defecto: si el JS
+     no corre, el puntero del sistema sigue ahí. */
+  .apex-cursor-on,
+  .apex-cursor-on * {
+    cursor: none !important;
+  }
+  /* Escribir necesita la barra nativa; el modo de movimiento reducido devuelve
+     todo el control al sistema. */
+  .apex-cursor-on input,
+  .apex-cursor-on textarea,
+  .apex-cursor-on [contenteditable="true"],
+  .a11y-reduce-motion.apex-cursor-on,
+  .a11y-reduce-motion.apex-cursor-on * {
+    cursor: auto !important;
+  }
+
+  .apex-cursor {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 180ms var(--ease-material);
+    mix-blend-mode: screen;
+  }
+  .apex-cursor[data-visible="true"][data-hidden="false"] {
+    opacity: 1;
+  }
+  .apex-cursor svg {
+    display: block;
+    overflow: visible;
+    transition: transform 260ms var(--ease-material);
+  }
+  /* Sobre algo accionable la retícula se abre; al apretar, se cierra de golpe
+     — el "apex hit". */
+  .apex-cursor[data-active="true"] svg {
+    transform: scale(1.28);
+  }
+  .apex-cursor[data-press="true"] svg {
+    transform: scale(0.82);
+  }
+
+  .apex-cursor__ticks,
+  .apex-cursor__ring,
+  .apex-cursor__sense {
+    transition: opacity 220ms var(--ease-material);
+  }
+  .apex-cursor__ring {
+    opacity: 0.5;
+    transform-origin: 32px 32px;
+    animation: apex-spin 9s linear infinite;
+  }
+  .apex-cursor__sense {
+    opacity: 0;
+  }
+  .apex-cursor[data-active="true"] .apex-cursor__sense {
+    opacity: 1;
+    animation: apex-sense 1.1s var(--ease-material) infinite;
+  }
+  .apex-cursor[data-active="true"] .apex-cursor__ring {
+    opacity: 0.9;
+  }
+  @keyframes apex-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes apex-sense {
+    0% {
+      opacity: 0.15;
+    }
+    45% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.15;
+    }
+  }
+
   /* Elevación con curva material compartida. */
   .elevate {
     transition-property: transform, box-shadow, border-color, background-color;
@@ -276,6 +454,9 @@
   --secondary: 0 0% 15%;
   --muted-foreground: 0 0% 88%;
   --border: 0 0% 45%;
+  /* El bermellón sube de luminosidad: el #E8442F original no alcanza contraste
+     AA sobre negro puro cuando el usuario pidió alto contraste. */
+  --redline: 6 92% 66%;
 }
 
 .a11y-reduce-motion *,

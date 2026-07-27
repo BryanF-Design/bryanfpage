@@ -18,6 +18,7 @@ const config: Config = {
         sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
         display: ["var(--font-display)", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "ui-monospace", "SF Mono", "Menlo", "monospace"],
+        jp: ["var(--font-jp)", "sans-serif"],
       },
       colors: {
         background: "hsl(var(--background))",
@@ -53,6 +54,8 @@ const config: Config = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        // 朱 — tinta de detalle del rebranding. Nunca en CTAs.
+        redline: "hsl(var(--redline))",
       },
       borderRadius: {
         lg: "var(--radius)",

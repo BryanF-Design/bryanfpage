@@ -12,6 +12,7 @@ import {
 } from "react-icons/fa";
 import { useLanguage } from "@/lib/i18n/context";
 import { trackEvent } from "@/lib/analytics";
+import { HankoSeal } from "@/components/ui/hanko-seal";
 
 const GOOGLE_MAPS_REVIEW = "https://maps.app.goo.gl/CWNcgPfAZt31K3ey6";
 
@@ -180,8 +181,12 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-border">
-        <div className="container flex flex-col items-center justify-between gap-2 py-6 text-xs text-muted-foreground sm:flex-row">
-          <span>{t.footer.copyright(new Date().getFullYear())}</span>
+        <div className="container flex flex-col items-center justify-between gap-4 py-6 text-xs text-muted-foreground sm:flex-row">
+          {/* El sello firma el trabajo, como en un grabado. */}
+          <span className="flex items-center gap-4">
+            <HankoSeal />
+            {t.footer.copyright(new Date().getFullYear())}
+          </span>
           <span>
             {t.footer.acceptPrefix}{" "}
             <Link href="/privacidad" className="underline underline-offset-2 hover:text-primary">

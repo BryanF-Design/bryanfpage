@@ -7,6 +7,8 @@ import { motion } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { WebCorner } from "@/components/ui/web-corner";
+import { VerticalLabel } from "@/components/ui/vertical-label";
 
 // La laptop 3D es clienteside puro y va en su propio chunk: el HTML del hero
 // (h1, subtítulo, CTAs — lo que lee Google y pinta el LCP) no depende de ella.
@@ -102,6 +104,15 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
           <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden bg-background">
             <div aria-hidden className="bg-blueprint absolute inset-0" />
             <div aria-hidden className="mesh-glow-a absolute inset-0" />
+            {/* Capa de autor: la tela anclada arriba a la derecha y la
+                columna vertical al margen. Ambas por debajo del contenido. */}
+            <WebCorner corner="tr" size={190} opacity={0.2} className="z-[1]" />
+            <VerticalLabel
+              jp="速さと精度"
+              romaji="hayasa to seido"
+              tone="primary"
+              className="right-4 top-1/2 z-[1] hidden -translate-y-1/2 xl:flex"
+            />
             {/* Terreno de partículas vivo: ondula solo, se levanta bajo el
                 puntero y se hunde hacia el horizonte conforme bajas. */}
             <ParticleField
@@ -180,11 +191,11 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
               </motion.div>
             </div>
 
-            {/* Pie técnico del hero */}
+            {/* Pie técnico del hero, ahora con telemetría viva */}
             <div className="relative z-10 border-t border-border">
               <div className="container flex items-center justify-between py-3 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                 <span>19.4326° N — 99.1332° O · CDMX</span>
-                <span className="hidden sm:block">MX · ES · FR</span>
+                <GearReadout progressRef={progressRef} />
                 <span className="text-primary">EST. 2020</span>
               </div>
             </div>
@@ -195,6 +206,49 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
   }
 );
 Hero.displayName = "Hero";
+
+/**
+ * Telemetría del hero: la marcha sube conforme abres la laptop y la barra de
+ * gases la acompaña. Lee el mismo ref de progreso que la escena 3D y escribe
+ * directo al DOM en su propio rAF — ni un re-render de React por scroll.
+ */
+function GearReadout({ progressRef }: { progressRef: React.MutableRefObject<number> }) {
+  const gearRef = React.useRef<HTMLSpanElement>(null);
+  const barRef = React.useRef<HTMLSpanElement>(null);
+
+  React.useEffect(() => {
+    let raf = 0;
+    let lastGear = -1;
+    const loop = () => {
+      const p = Math.min(1, Math.max(0, progressRef.current));
+      const gear = Math.min(5, 1 + Math.floor(p * 5));
+      if (gear !== lastGear && gearRef.current) {
+        gearRef.current.textContent = String(gear);
+        lastGear = gear;
+      }
+      if (barRef.current) barRef.current.style.transform = `scaleX(${p.toFixed(3)})`;
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [progressRef]);
+
+  return (
+    <span aria-hidden className="hidden items-center gap-3 sm:flex">
+      <span className="text-muted-foreground/70">Gear</span>
+      <span ref={gearRef} className="text-primary">
+        1
+      </span>
+      <span className="relative block h-[3px] w-16 bg-border">
+        <span
+          ref={barRef}
+          className="absolute inset-0 origin-left bg-primary"
+          style={{ transform: "scaleX(0)" }}
+        />
+      </span>
+    </span>
+  );
+}
 
 function ScrollArrow() {
   return (

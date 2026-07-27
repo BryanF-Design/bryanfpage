@@ -261,6 +261,56 @@ const es = {
     ctaSecondary: "Mira mi proceso",
     quote: "Cada web que ves aquí salió de este escritorio.",
   },
+  // 「ガレージ」 — la sección de autor. Regla de escritura: ninguna tarjeta
+  // habla de gustos. Cada obsesión entra como argumento de trabajo, o no entra.
+  garage: {
+    eyebrow: "Lo que me formó",
+    title: "No es decoración. Es cómo trabajo.",
+    subtitle:
+      "Tres obsesiones se me metieron en el oficio: un coche, una idea japonesa y una red. Cada una explica algo de cómo va a quedar tu sitio.",
+    verticalJp: "速さと精度",
+    verticalRomaji: "hayasa to seido",
+    hint: "Muévelo con el puntero · teclea VTEC",
+    spec: {
+      modelLabel: "Modelo",
+      model: "ホンダ・シビック タイプR",
+      codeLabel: "Generación",
+      code: "FK2 · 2016",
+      colorLabel: "Color",
+      color: "Championship White",
+      engineLabel: "Motor",
+      engine: "2.0 VTEC Turbo",
+    },
+    cards: [
+      {
+        index: "01",
+        jp: "限界",
+        romaji: "genkai",
+        title: "Si no rinde, no sale.",
+        body:
+          "Un Type R no carga nada que no lo haga ir más rápido. Tu sitio igual: cada librería, cada animación y cada kilobyte se justifica o se va. Por eso abre rápido en el teléfono de tu cliente, no solo en mi monitor.",
+        spec: "Performance · Core Web Vitals",
+      },
+      {
+        index: "02",
+        jp: "職人",
+        romaji: "shokunin",
+        title: "El detalle que nadie nota.",
+        body:
+          "El oficio japonés dice que la parte que no se ve se remata igual de bien. El foco del teclado, el texto alternativo, cómo respira un botón en una pantalla de seis pulgadas. Nadie te lo va a mencionar. Todos lo van a sentir.",
+        spec: "Diseño · Accesibilidad",
+      },
+      {
+        index: "03",
+        jp: "網",
+        romaji: "ami",
+        title: "Una web es una red.",
+        body:
+          "Nodos e hilos: páginas, enlaces, datos y personas. No entrego una página suelta — tejo la red completa: arquitectura, SEO y el camino que lleva a alguien de un clic a escribirte.",
+        spec: "Arquitectura · SEO",
+      },
+    ],
+  },
   luminaSection: {
     eyebrow: "Tu asesora IA",
     titlePrefix: "Ella es",

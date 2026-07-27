@@ -241,6 +241,54 @@ const de: Dictionary = {
     ctaSecondary: "Mein Ablauf",
     quote: "Jede Website, die du hier siehst, ist an diesem Schreibtisch entstanden.",
   },
+  garage: {
+    eyebrow: "Was mich geprägt hat",
+    title: "Das ist keine Deko. So arbeite ich.",
+    subtitle:
+      "Drei Obsessionen haben sich in mein Handwerk geschlichen: ein Auto, eine japanische Idee und ein Netz. Jede erklärt etwas daran, wie deine Website am Ende wird.",
+    verticalJp: "速さと精度",
+    verticalRomaji: "hayasa to seido",
+    hint: "Mit dem Zeiger bewegen · VTEC tippen",
+    spec: {
+      modelLabel: "Modell",
+      model: "ホンダ・シビック タイプR",
+      codeLabel: "Generation",
+      code: "FK2 · 2016",
+      colorLabel: "Farbe",
+      color: "Championship White",
+      engineLabel: "Motor",
+      engine: "2.0 VTEC Turbo",
+    },
+    cards: [
+      {
+        index: "01",
+        jp: "限界",
+        romaji: "genkai",
+        title: "Was nichts bringt, kommt nicht rein.",
+        body:
+          "Ein Type R trägt nichts mit sich, was ihn nicht schneller macht. Deine Website genauso: jede Bibliothek, jede Animation und jedes Kilobyte muss sich rechtfertigen oder fliegt raus. Deshalb öffnet sie schnell auf dem Handy deiner Kundschaft, nicht nur auf meinem Monitor.",
+        spec: "Performance · Core Web Vitals",
+      },
+      {
+        index: "02",
+        jp: "職人",
+        romaji: "shokunin",
+        title: "Das Detail, das niemand bemerkt.",
+        body:
+          "Japanisches Handwerk sagt: Was niemand sieht, wird genauso sauber verarbeitet. Tastaturfokus, Alternativtexte, wie ein Button auf einem Sechs-Zoll-Display atmet. Niemand wird es je erwähnen. Alle werden es spüren.",
+        spec: "Design · Barrierefreiheit",
+      },
+      {
+        index: "03",
+        jp: "網",
+        romaji: "ami",
+        title: "Eine Website ist ein Netz.",
+        body:
+          "Knoten und Fäden: Seiten, Links, Daten und Menschen. Ich liefere keine einzelne Seite ab — ich webe das ganze Netz: Architektur, SEO und den Weg, der jemanden von einem Klick bis zu deiner Nachricht führt.",
+        spec: "Architektur · SEO",
+      },
+    ],
+  },
   luminaSection: {
     eyebrow: "Deine KI-Beraterin",
     titlePrefix: "Das ist",
