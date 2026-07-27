@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, Send, X } from "lucide-react";
+import { MessageCircle, RotateCcw, Send, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useFooterInView } from "@/lib/use-footer-in-view";
@@ -26,13 +26,21 @@ Tu meta es orientar, resolver dudas y guiar al usuario a armar su web o contacta
 
 Lo que hace BryanF Design: branding, diseño UX/UI, desarrollo web, WordPress, SEO técnico, performance, mantenimiento, e-commerce, landing pages y automatización.
 Cómo funciona: paquete base desde $3,500 MXN + módulos (e-commerce, pagos, secciones extra) + modalidad de pago.
+También ofrecemos servicios de entrada, más económicos: tarjeta de presentación digital ($900 MXN), tarjeta de presentación imprimible ($650 MXN), firma de correo profesional ($350 MXN), kit de presencia digital ($1,500 MXN) y landing page esencial (desde $2,400 MXN).
 Tiempos de entrega: desde 3 días hábiles cuando la información está completa.
 Pagos: Stripe (tarjeta), Mercado Pago o transferencia bancaria BBVA.
-Para armar y pagar: invita a abrir el configurador en /crear-web.
+Para armar y pagar: invita a abrir el cotizador en /crear-web.
+
+Puedes DEJARLE EL COTIZADOR YA ARMADO con un enlace preconfigurado según lo que necesite:
+- Sitio a medida: <a href="/crear-web?plan=full" target="_blank">cotizar mi web</a>
+- Tienda en línea: <a href="/crear-web?plan=full&modules=ecommerce,payments" target="_blank">cotizar mi tienda</a>
+- Actualización de web: <a href="/crear-web?plan=update" target="_blank">cotizar actualización</a>
+- Mantenimiento: <a href="/crear-web?plan=maintenance" target="_blank">cotizar mantenimiento</a>
+Añade &sections=2 para secciones extra. Recomienda la mejor opción, explica en 1 línea por qué, y comparte el enlace correcto.
 
 Reglas:
 - Responde siempre en ${languageName}, sin importar en qué idioma esté escrito este prompt.
-- Si preguntan precios, responde que depende del alcance, desde $3,500 MXN, e invita a /crear-web o a WhatsApp: <a href="https://wa.me/525663012505" target="_blank">WhatsApp</a>.
+- Si preguntan precios, responde que depende del alcance, desde $3,500 MXN, y comparte el enlace preconfigurado del cotizador que mejor le quede, o WhatsApp: <a href="https://wa.me/525663012505" target="_blank">WhatsApp</a>.
 - Responde en tono premium, claro y breve (máx 3-4 líneas).
 - Usa HTML básico: <strong>, <br>, <ul>, <li>, <a>.`;
 }
@@ -40,6 +48,34 @@ Reglas:
 interface Msg {
   role: "user" | "assistant";
   content: string;
+}
+
+// sessionStorage, not localStorage: the conversation should survive a reload
+// or a navigation within the site (tab close = fresh start), no backend involved.
+const SESSION_KEY = "bryanf_lumina_chat_v1";
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function readStoredMessages(): Msg[] | null {
+  try {
+    const raw = window.sessionStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (
+      Array.isArray(parsed) &&
+      parsed.every(
+        (message) =>
+          message &&
+          (message.role === "user" || message.role === "assistant") &&
+          typeof message.content === "string"
+      )
+    ) {
+      return parsed as Msg[];
+    }
+  } catch {
+    /* storage bloqueado o corrupto */
+  }
+  return null;
 }
 
 // Allowlist-based sanitizer for assistant HTML (defense-in-depth vs XSS).
@@ -94,11 +130,27 @@ export function LuminaChat() {
   const [messages, setMessages] = useState<Msg[]>([
     { role: "assistant", content: t.lumina.greeting },
   ]);
+  const [messagesRestored, setMessagesRestored] = useState(false);
+  const [retryText, setRetryText] = useState<string | null>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fabRef = useRef<HTMLButtonElement>(null);
   const hasTeasedRef = useRef(false);
+  const openRef = useRef(open);
+  openRef.current = open;
   const footerInView = useFooterInView();
+  const footerInViewRef = useRef(footerInView);
+  footerInViewRef.current = footerInView;
+
+  const restoreChatFocus = useCallback(() => {
+    window.setTimeout(() => {
+      const target = footerInViewRef.current
+        ? document.querySelector<HTMLElement>('footer a[href], footer button:not([disabled])')
+        : fabRef.current;
+      target?.focus();
+    });
+  }, []);
 
   function markTeased() {
     hasTeasedRef.current = true;
@@ -108,6 +160,43 @@ export function LuminaChat() {
       /* sessionStorage bloqueado */
     }
   }
+
+  // Broadcast open/closed so other fixed UI (the language notice banner) can
+  // get out of the way instead of covering the full-screen mobile chat.
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("lumina:visibility", { detail: { open } }));
+  }, [open]);
+
+  // Restore only after hydration so the server and first client render match.
+  useEffect(() => {
+    const stored = readStoredMessages();
+    if (stored?.length) setMessages(stored);
+    setMessagesRestored(true);
+  }, []);
+
+  // Persist so a reload or in-site navigation doesn't drop the conversation.
+  useEffect(() => {
+    if (!messagesRestored) return;
+    try {
+      window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(messages));
+    } catch {
+      /* storage bloqueado */
+    }
+  }, [messages, messagesRestored]);
+
+  // Body scroll lock only on mobile: there the chat is a full-screen sheet, so
+  // the page underneath shouldn't scroll behind it. Desktop stays a corner
+  // panel that never covers navigation, so its scroll is left untouched.
+  useEffect(() => {
+    if (!open || typeof window === "undefined") return;
+    const isMobile = window.matchMedia("(max-width: 639px)").matches;
+    if (!isMobile) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
   // If the visitor changes language before sending their first message,
   // swap the greeting too — but never touch an in-progress conversation.
@@ -125,7 +214,6 @@ export function LuminaChat() {
 
   useEffect(() => {
     if (footerInView) {
-      setOpen(false);
       setTeaser(false);
     }
   }, [footerInView]);
@@ -134,26 +222,60 @@ export function LuminaChat() {
   // cierra el panel grande, descarta el teaser y deja solo el acceso compacto.
   useEffect(() => {
     if (configuratorInView) {
+      if (openRef.current) restoreChatFocus();
       setOpen(false);
       setTeaser(false);
     }
-  }, [configuratorInView]);
+  }, [configuratorInView, restoreChatFocus]);
 
   useEffect(() => {
     if (!open) return;
+    const panel = panelRef.current;
+    const parent = panel?.parentElement;
+    const background = parent
+      ? Array.from(parent.children)
+          .filter((element): element is HTMLElement => element instanceof HTMLElement && element !== panel)
+          .map((element) => ({ element, inert: element.inert }))
+      : [];
+    background.forEach(({ element }) => {
+      element.inert = true;
+    });
+
     const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 120);
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setOpen(false);
-        window.setTimeout(() => fabRef.current?.focus());
+        restoreChatFocus();
+        return;
+      }
+      if (event.key !== "Tab" || !panel) return;
+
+      const focusable = Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
+        (element) => element.getAttribute("aria-hidden") !== "true"
+      );
+      if (!focusable.length) {
+        event.preventDefault();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && (document.activeElement === first || !panel.contains(document.activeElement))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => {
       window.clearTimeout(focusTimer);
       window.removeEventListener("keydown", onKeyDown);
+      background.forEach(({ element, inert }) => {
+        element.inert = inert;
+      });
     };
-  }, [open]);
+  }, [open, restoreChatFocus]);
 
   // Proactive teaser bubble: pops up once, a bit after load, if the visitor
   // hasn't opened the chat yet — makes Lumina feel present, not just clickable.
@@ -218,6 +340,7 @@ export function LuminaChat() {
     setInput("");
     setLoading(true);
     setMood("Enfocada");
+    setRetryText(null);
     try {
       const res = await fetch("/api/openai-chat", {
         method: "POST",
@@ -241,6 +364,7 @@ export function LuminaChat() {
       ]);
       setMood(uncertain ? "Duda" : "Normal");
       if (uncertain) window.setTimeout(() => setMood("Normal"), 4000);
+      if (data?.error) setRetryText(content);
     } catch {
       setMessages((m) => [
         ...m,
@@ -250,28 +374,38 @@ export function LuminaChat() {
         },
       ]);
       setMood("Offline");
+      setRetryText(content);
     } finally {
       setLoading(false);
     }
   }
   sendRef.current = send;
 
+  function retry() {
+    if (!retryText || loading) return;
+    const text = retryText;
+    setRetryText(null);
+    send(text);
+  }
+
   return (
     <>
-      {/* Panel */}
+      {/* Hoja de pantalla completa en móvil; panel flotante desde sm. */}
       <AnimatePresence>
-        {open && !footerInView && (
+        {open && (
           <motion.div
+            ref={panelRef}
             id="lumina-chat-panel"
-            initial={{ opacity: 0, y: 12, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 12, scale: 0.95 }}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
             transition={{ duration: 0.25 }}
-            className="glass fixed bottom-[calc(5.5rem_+_env(safe-area-inset-bottom))] right-3 z-[120] flex max-h-[calc(100dvh_-_7rem_-_env(safe-area-inset-bottom))] w-[min(calc(100vw_-_1.5rem),22rem)] origin-bottom-right flex-col overflow-hidden rounded-2xl shadow-2xl sm:right-6"
+            className="glass fixed inset-0 z-[130] flex h-[100dvh] w-full flex-col overflow-hidden rounded-none bg-[hsl(var(--card))] shadow-2xl sm:inset-auto sm:bottom-[calc(6rem+env(safe-area-inset-bottom))] sm:right-4 sm:h-auto sm:max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] sm:w-[min(92vw,22rem)] sm:origin-bottom-right sm:rounded-2xl sm:bg-[hsl(var(--card)/0.82)] md:right-6"
             role="dialog"
+            aria-modal="true"
             aria-labelledby="lumina-chat-title"
           >
-        <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-4 py-3">
+            <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
           <div className="flex items-center gap-2">
             <span className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full ring-1 ring-primary/40">
               <AnimatePresence mode="wait">
@@ -313,7 +447,7 @@ export function LuminaChat() {
             type="button"
             onClick={() => {
               setOpen(false);
-              window.setTimeout(() => fabRef.current?.focus());
+              restoreChatFocus();
             }}
             aria-label={t.lumina.close}
             className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -328,7 +462,7 @@ export function LuminaChat() {
           aria-live="polite"
           aria-relevant="additions"
           aria-busy={loading}
-          className="flex min-h-[12rem] flex-1 flex-col gap-3 overflow-y-auto p-4 sm:min-h-[16rem]"
+          className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-4 sm:max-h-[50vh] sm:min-h-[16rem] sm:flex-none"
         >
           {messages.map((m, i) => {
             const className = cn(
@@ -356,6 +490,16 @@ export function LuminaChat() {
               {t.lumina.typing}
             </div>
           )}
+          {retryText && !loading && (
+            <button
+              type="button"
+              onClick={retry}
+              className="inline-flex min-h-11 items-center gap-1.5 self-start rounded-full border border-border px-3 py-2 text-xs text-muted-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <RotateCcw className="h-3 w-3" />
+              {t.lumina.retry}
+            </button>
+          )}
           {messages.length <= 1 && (
             <div className="mt-1 flex flex-wrap gap-2">
               {t.lumina.quick.map((q) => (
@@ -377,7 +521,7 @@ export function LuminaChat() {
             e.preventDefault();
             send(input);
           }}
-          className="flex items-center gap-2 border-t border-border p-3"
+          className="flex shrink-0 items-center gap-2 border-t border-border px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3"
         >
           <label htmlFor="lumina-message" className="sr-only">
             {t.lumina.placeholder}
@@ -389,7 +533,8 @@ export function LuminaChat() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={t.lumina.placeholder}
-            className="min-h-11 min-w-0 flex-1 rounded-full border border-input bg-background px-4 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            enterKeyHint="send"
+            className="min-h-11 min-w-0 flex-1 rounded-full border border-input bg-background px-4 py-2 text-base outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:text-sm"
           />
           <button
             type="submit"

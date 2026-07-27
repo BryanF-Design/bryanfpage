@@ -13,6 +13,9 @@ const zh: Dictionary = {
     menu: "打开菜单",
     closeMenu: "关闭菜单",
     skipToContent: "跳到内容",
+    serviciosEntrada: "入门服务",
+    lumina: "Lumina",
+    servicios: "服务",
   },
   marquee: {
     words: ["设计", "代码", "SEO", "性能", "电商", "品牌"],
@@ -135,6 +138,55 @@ const zh: Dictionary = {
   clients: {
     label: "值得信赖的合作品牌",
   },
+  entryServices: {
+    eyebrow: "入门服务",
+    title: "无需完整网站也能建立专业形象",
+    subtitle: "如果你还不需要完整的网站，从这里开始：几天内就能拥有同样高品质设计的联系身份。",
+    cta: "咨询这项服务",
+    note: "价格以墨西哥比索（MXN）计价。项目更大？我们可以把它和完整网站结合起来——问问 Lumina。",
+    items: [
+      {
+        id: "tarjetaDigital",
+        name: "数字名片",
+        price: "$900 MXN",
+        desc: "在专属页面展示你的联系资料，带保存联系人按钮和二维码。",
+        features: ["公开的个人资料页面", "保存联系人按钮（vCard）", "定制二维码", "与你的品牌风格一致的设计"],
+        question: "我想了解数字名片的信息",
+      },
+      {
+        id: "tarjetaImprimible",
+        name: "印刷名片",
+        price: "$650 MXN",
+        desc: "可直接印刷的实体设计，二维码连接到你的数字身份。",
+        features: ["正反面设计", "联系二维码", "印刷用文件", "2轮修改"],
+        question: "我想了解印刷名片的信息",
+      },
+      {
+        id: "firmaCorreo",
+        name: "专业邮件签名",
+        price: "$350 MXN",
+        desc: "让你发出的每一封邮件都和你的品牌一样专业。",
+        features: ["兼容 Gmail、Outlook 和 Apple Mail", "联系方式和社交媒体信息", "全程指导安装", "支持团队版本"],
+        question: "我想了解专业邮件签名的信息",
+      },
+      {
+        id: "kitPresencia",
+        name: "数字形象套装",
+        price: "$1,500 MXN",
+        desc: "数字名片、邮件签名和二维码打包在一起，比单独购买更划算。",
+        features: ["数字名片 + 邮件签名", "含二维码", "社交媒体封面图", "头像照片处理"],
+        question: "我想了解数字形象套装的信息",
+      },
+      {
+        id: "landingEsencial",
+        name: "基础落地页",
+        price: "$2,400 MXN 起",
+        desc: "一个真正可用于销售或自我介绍的页面，规模小于完整网站。",
+        features: ["适合自由职业者、活动和本地商户", "包含基础技术 SEO", "最快3个工作日交付", "结构围绕单一目标设计"],
+        question: "我想了解基础落地页的信息",
+      },
+    ],
+  },
   configurator: {
     eyebrow: "配置器",
     title: "定制您的网站并在线支付",
@@ -189,6 +241,8 @@ const zh: Dictionary = {
     copyLabel: (label) => `复制${label}`,
     sendWhatsapp: "通过WhatsApp发送凭证",
     sendEmail: "通过邮件发送凭证",
+    emailQuote: "把报价发到我的邮箱",
+    emailQuoteSubject: "我的报价 — BryanF Design",
     securePaymentPrefix: "安全支付。继续操作即表示您同意我们的",
     terms: "服务条款",
     and: "和",
@@ -322,6 +376,20 @@ const zh: Dictionary = {
       },
     ],
   },
+  luminaJourney: {
+    eyebrow: "如何运作",
+    title: "从想法到项目，每一步都陪着你",
+    subtitle:
+      "Lumina 不是答完就走的聊天机器人。几分钟内带你走完全程。",
+    steps: [
+      { title: "了解你", desc: "你说需求，她就理解你的业务、目标和受众。" },
+      { title: "给建议", desc: "推荐最适合你的套餐和模块，并说明原因。" },
+      { title: "做报价", desc: "当场生成预算，价格透明，没有小字条款。" },
+      { title: "带你付款", desc: "支持刷卡、Mercado Pago 或转账。定金或全款，由你决定。" },
+      { title: "陪伴你", desc: "收到凭证和单号，填写需求表，我们就开工。" },
+    ],
+    cta: "从 Lumina 开始",
+  },
   luminaSection: {
     eyebrow: "您的AI顾问",
     titlePrefix: "她是",
@@ -330,6 +398,13 @@ const zh: Dictionary = {
     cta: "与Lumina聊天",
     status: "在线 24/7",
     hint: "点击换表情 · 拖动可旋转",
+    badges: [
+      { title: "即时回答", desc: "随时回复，无需等待。" },
+      { title: "熟悉全部服务", desc: "价格、周期、模块与流程。" },
+      { title: "帮你备好报价", desc: "预填报价并带你去付款。" },
+    ],
+    privacy: "聊天中不会索取敏感信息。对话仅保存在本设备。",
+    quotePresets: ["定制网站报价", "在线商店报价", "维护报价"],
     moods: {
       normal: "正常模式",
       enfocada: "专注模式",
@@ -379,6 +454,7 @@ const zh: Dictionary = {
     open: "打开与Lumina的对话",
     teaser: "想要打造您的网站吗？问我价格、交付时间，或从哪里开始 ✨",
     typing: "正在输入…",
+    retry: "重试",
     languageInstruction: "中文",
     errorFallback:
       "现在暂时无法回复，请通过<a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a>联系我们，我们会立即为您处理。",

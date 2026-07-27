@@ -37,6 +37,12 @@ const ClientsMarquee = dynamic(() =>
 const LuminaFeature = dynamic(() =>
   import("@/components/sections/lumina-feature").then((m) => m.LuminaFeature)
 );
+const LuminaJourney = dynamic(() =>
+  import("@/components/sections/lumina-journey").then((m) => m.LuminaJourney)
+);
+const EntryServices = dynamic(() =>
+  import("@/components/sections/entry-services").then((m) => m.EntryServices)
+);
 const Configurator = dynamic(() =>
   import("@/components/sections/configurator").then((m) => m.Configurator)
 );
@@ -61,19 +67,21 @@ export default function HomePage() {
 
       <main id="main-content" tabIndex={-1} className="relative">
         <Hero
-        eyebrow={t.hero.eyebrow}
-        title={
-          <>
-            {t.hero.titlePrefix} <span className="text-primary">{t.hero.titleHighlight}</span>
-          </>
-        }
-        subtitle={t.hero.subtitle}
-        scrollHint={t.hero.scrollHint}
-        actions={[
-          { label: t.nav.armaTuWeb, href: "#precios", variant: "default" },
-          { label: t.nav.verProyectos, href: "#projects", variant: "outline" },
-        ]}
-      />
+          id="home"
+          eyebrow={t.hero.eyebrow}
+          title={
+            <>
+              {t.hero.titlePrefix}{" "}
+              <span className="text-primary">{t.hero.titleHighlight}</span>
+            </>
+          }
+          subtitle={t.hero.subtitle}
+          scrollHint={t.hero.scrollHint}
+          actions={[
+            { label: t.nav.armaTuWeb, href: "#precios", variant: "default" },
+            { label: t.nav.verProyectos, href: "#projects", variant: "outline" },
+          ]}
+        />
 
       {/* Prueba rápida: cifras legibles, sin otra escena compitiendo con el hero. */}
       <section className="relative overflow-hidden border-b border-border">
@@ -119,20 +127,31 @@ export default function HomePage() {
 
       <MarqueeBand words={t.marquee.words} />
 
+      {/* Tras demostrar capacidad y presentar al autor, explicamos el oficio. */}
       <ProcessOrbital />
 
       <StackOrbit />
 
+      {/* Lumina guía el tramo comercial sin desplazar el trabajo real. */}
       <LuminaFeature />
 
-      <WorldPresence />
+      {/* Narrativa por pasos: cómo Lumina te lleva de la idea al proyecto. */}
+      <LuminaJourney />
+
+      {/* Qué ofrecemos → cotiza y paga. Servicios y cotizador quedan juntos
+          para que descubrir la oferta y armar el proyecto sea un solo tramo. */}
+      <EntryServices />
 
       <Configurator />
+
+      {/* Alcance y confianza después de entender la oferta. */}
+      <WorldPresence />
 
       <ClientsMarquee />
 
       <MarqueeBand words={t.marquee.words} reverse outline />
 
+      {/* Dudas y cierre. */}
       <Faq />
 
       {/* Después del cierre comercial solo queda la firma del footer. */}

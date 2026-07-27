@@ -13,6 +13,9 @@ const en: Dictionary = {
     menu: "Open menu",
     closeMenu: "Close menu",
     skipToContent: "Skip to content",
+    serviciosEntrada: "Entry-level services",
+    lumina: "Lumina",
+    servicios: "Services",
   },
   marquee: {
     words: ["Design", "Code", "SEO", "Performance", "E-commerce", "Branding"],
@@ -150,6 +153,81 @@ const en: Dictionary = {
   clients: {
     label: "Brands that have trusted us",
   },
+  entryServices: {
+    eyebrow: "Entry-level services",
+    title: "Professional presence without a full website",
+    subtitle:
+      "If you don't need a complete site yet, start here: a ready contact identity in days, with the same design quality.",
+    cta: "Ask about this service",
+    note: "Prices in Mexican pesos (MXN). Bigger project in mind? We can combine it with a full site — ask Lumina.",
+    items: [
+      {
+        id: "tarjetaDigital",
+        name: "Digital business card",
+        price: "$900 MXN",
+        desc: "Your contact profile on its own page, with a save-contact button and a QR code.",
+        features: [
+          "Public page with your details",
+          "Save-contact button (vCard)",
+          "Custom QR code",
+          "Design matched to your brand",
+        ],
+        question: "I'd like info about the digital business card",
+      },
+      {
+        id: "tarjetaImprimible",
+        name: "Printable business card",
+        price: "$650 MXN",
+        desc: "A print-ready physical design with a QR code linking to your digital presence.",
+        features: [
+          "Front and back design",
+          "Contact QR code",
+          "Print-ready files",
+          "2 rounds of revisions",
+        ],
+        question: "I'd like info about the printable business card",
+      },
+      {
+        id: "firmaCorreo",
+        name: "Professional email signature",
+        price: "$350 MXN",
+        desc: "Make every email you send look as professional as your brand.",
+        features: [
+          "Works with Gmail, Outlook, and Apple Mail",
+          "Contact details and socials",
+          "Guided install",
+          "Team variant available",
+        ],
+        question: "I'd like info about the professional email signature",
+      },
+      {
+        id: "kitPresencia",
+        name: "Digital presence kit",
+        price: "$1,500 MXN",
+        desc: "Digital card, email signature, and QR in one bundle, discounted vs. buying them separately.",
+        features: [
+          "Digital card + email signature",
+          "QR code included",
+          "Social media cover",
+          "Profile photo treatment",
+        ],
+        question: "I'd like info about the digital presence kit",
+      },
+      {
+        id: "landingEsencial",
+        name: "Essential landing page",
+        price: "From $2,400 MXN",
+        desc: "A real page, ready to sell or introduce you, without the scope of a full site.",
+        features: [
+          "Great for professionals, events, and local businesses",
+          "Basic technical SEO included",
+          "Delivery from 3 business days",
+          "Structure focused on a single goal",
+        ],
+        question: "I'd like info about the essential landing page",
+      },
+    ],
+  },
   configurator: {
     eyebrow: "Configurator",
     title: "Build your site and pay online",
@@ -213,6 +291,8 @@ const en: Dictionary = {
     copyLabel: (label) => `Copy ${label}`,
     sendWhatsapp: "Send receipt via WhatsApp",
     sendEmail: "Send receipt via email",
+    emailQuote: "Email me this quote",
+    emailQuoteSubject: "My quote — BryanF Design",
     securePaymentPrefix: "Secure payment. By continuing you accept our",
     terms: "Terms",
     and: "and",
@@ -351,6 +431,20 @@ const en: Dictionary = {
       },
     ],
   },
+  luminaJourney: {
+    eyebrow: "How it works",
+    title: "From idea to project, with you at every step",
+    subtitle:
+      "Lumina isn't a chatbot that just answers. She walks you through the whole path, in minutes.",
+    steps: [
+      { title: "Gets to know you", desc: "Tell her what you need; she understands your business, your goal and your audience." },
+      { title: "Recommends", desc: "Suggests the package and modules that fit you best, and explains why." },
+      { title: "Quotes you", desc: "Builds your budget instantly, with clear prices and no fine print." },
+      { title: "Takes you to checkout", desc: "Pay by card, Mercado Pago or transfer. Deposit or full payment, your call." },
+      { title: "Stays with you", desc: "You get your folio and receipt, fill your brief, and we kick off your project." },
+    ],
+    cta: "Start with Lumina",
+  },
   luminaSection: {
     eyebrow: "Your AI advisor",
     titlePrefix: "Meet",
@@ -359,6 +453,13 @@ const en: Dictionary = {
     cta: "Chat with Lumina",
     status: "Online 24/7",
     hint: "Tap her to change her mood · drag to spin her around",
+    badges: [
+      { title: "Instant answers", desc: "Any time, no waiting." },
+      { title: "Knows the whole catalog", desc: "Prices, timelines, modules and process." },
+      { title: "Builds your quote", desc: "Pre-fills your quote and takes you to checkout." },
+    ],
+    privacy: "No sensitive data in the chat. Your conversation stays on this device only.",
+    quotePresets: ["Quote a custom site", "Quote an online store", "Quote maintenance"],
     moods: {
       normal: "Normal mode",
       enfocada: "Focused mode",
@@ -409,6 +510,7 @@ const en: Dictionary = {
     open: "Open chat with Lumina",
     teaser: "Looking to build your site? Ask me about pricing, timelines, or where to start ✨",
     typing: "Typing…",
+    retry: "Retry",
     languageInstruction: "English",
     errorFallback:
       "I can't reply right now, but message us on <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a> and we'll help right away.",

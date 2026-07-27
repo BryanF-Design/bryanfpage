@@ -13,6 +13,9 @@ const ja: Dictionary = {
     menu: "メニューを開く",
     closeMenu: "メニューを閉じる",
     skipToContent: "コンテンツへ移動",
+    serviciosEntrada: "エントリーサービス",
+    lumina: "Lumina",
+    servicios: "サービス",
   },
   marquee: {
     words: ["デザイン", "コード", "SEO", "パフォーマンス", "EC", "ブランディング"],
@@ -148,6 +151,81 @@ const ja: Dictionary = {
   clients: {
     label: "信頼していただいたブランド",
   },
+  entryServices: {
+    eyebrow: "エントリーサービス",
+    title: "フルサイトを作らずにプロフェッショナルな存在感を",
+    subtitle:
+      "まだ本格的なウェブサイトが必要なければ、ここから始めましょう。数日で完成する、同じ品質のコンタクトアイデンティティです。",
+    cta: "このサービスについて問い合わせる",
+    note: "価格はメキシコペソ(MXN)です。もっと大きなプロジェクトをお考えなら、フルサイトと組み合わせることもできます — Luminaにご相談ください。",
+    items: [
+      {
+        id: "tarjetaDigital",
+        name: "デジタル名刺",
+        price: "$900 MXN",
+        desc: "専用ページに連絡先情報をまとめ、連絡先保存ボタンとQRコードを添えます。",
+        features: [
+          "あなたの情報を掲載した公開ページ",
+          "連絡先保存ボタン（vCard）",
+          "カスタムQRコード",
+          "ブランドに合わせたデザイン",
+        ],
+        question: "デジタル名刺について詳しく知りたいです",
+      },
+      {
+        id: "tarjetaImprimible",
+        name: "印刷用名刺",
+        price: "$650 MXN",
+        desc: "印刷してすぐ使える物理デザイン。QRコードでデジタルの存在ともつながります。",
+        features: [
+          "表面・裏面のデザイン",
+          "連絡先QRコード",
+          "印刷用に整えたデータ",
+          "2回の修正",
+        ],
+        question: "印刷用名刺について詳しく知りたいです",
+      },
+      {
+        id: "firmaCorreo",
+        name: "プロフェッショナルなメール署名",
+        price: "$350 MXN",
+        desc: "送るすべてのメールを、ブランドと同じくらいプロフェッショナルに見せます。",
+        features: [
+          "Gmail、Outlook、Apple Mailに対応",
+          "連絡先とSNS情報",
+          "導入サポート付き",
+          "チーム向けプランあり",
+        ],
+        question: "プロフェッショナルなメール署名について詳しく知りたいです",
+      },
+      {
+        id: "kitPresencia",
+        name: "デジタルプレゼンスキット",
+        price: "$1,500 MXN",
+        desc: "デジタル名刺、メール署名、QRコードを1つにまとめたパッケージ。個別購入よりお得です。",
+        features: [
+          "デジタル名刺 + メール署名",
+          "QRコード込み",
+          "SNS用カバー画像",
+          "プロフィール写真の調整",
+        ],
+        question: "デジタルプレゼンスキットについて詳しく知りたいです",
+      },
+      {
+        id: "landingEsencial",
+        name: "エッセンシャルランディングページ",
+        price: "$2,400 MXNから",
+        desc: "フルサイトほどの規模はなくても、実際に販売や自己紹介に使える1ページです。",
+        features: [
+          "個人事業主、イベント、地域ビジネスに最適",
+          "基本的なテクニカルSEOを含む",
+          "最短営業3日から納品",
+          "1つの目的に絞った構成",
+        ],
+        question: "エッセンシャルランディングページについて詳しく知りたいです",
+      },
+    ],
+  },
   configurator: {
     eyebrow: "コンフィギュレーター",
     title: "サイトを作って、オンラインで支払う",
@@ -211,6 +289,8 @@ const ja: Dictionary = {
     copyLabel: (label) => `${label}をコピー`,
     sendWhatsapp: "WhatsAppで領収書を送る",
     sendEmail: "メールで領収書を送る",
+    emailQuote: "見積もりをメールで送る",
+    emailQuoteSubject: "私の見積もり — BryanF Design",
     securePaymentPrefix: "安全な決済です。続行すると、以下に同意したことになります：",
     terms: "利用規約",
     and: "・",
@@ -344,6 +424,20 @@ const ja: Dictionary = {
       },
     ],
   },
+  luminaJourney: {
+    eyebrow: "使い方",
+    title: "アイデアからプロジェクトまで、各ステップで伴走",
+    subtitle:
+      "Luminaは答えて終わりのチャットではありません。数分で最後まで案内します。",
+    steps: [
+      { title: "あなたを知る", desc: "必要なことを伝えると、事業・目的・ターゲットを理解します。" },
+      { title: "提案する", desc: "最適なプランとモジュールを提案し、その理由も説明します。" },
+      { title: "見積もる", desc: "透明な価格で、その場で予算を作成。細かい注釈はありません。" },
+      { title: "決済へ案内", desc: "カード・Mercado Pago・振込で支払い。前金でも全額でも、あなた次第。" },
+      { title: "伴走する", desc: "受領書と受付番号を受け取り、ブリーフを記入したらプロジェクト開始。" },
+    ],
+    cta: "Luminaで始める",
+  },
   luminaSection: {
     eyebrow: "あなたのAIアドバイザー",
     titlePrefix: "彼女は",
@@ -352,6 +446,13 @@ const ja: Dictionary = {
     cta: "Luminaとチャット",
     status: "オンライン 24/7",
     hint: "タップで表情が変わる · ドラッグで回転",
+    badges: [
+      { title: "即時に回答", desc: "いつでも、待ち時間なし。" },
+      { title: "全カタログを把握", desc: "価格・納期・モジュール・工程。" },
+      { title: "見積もりを用意", desc: "見積もりを事前入力し、決済へ案内します。" },
+    ],
+    privacy: "チャットで機微な情報は尋ねません。会話はこの端末にのみ残ります。",
+    quotePresets: ["オーダーメイドのサイトを見積", "オンラインストアを見積", "保守を見積"],
     moods: {
       normal: "ノーマルモード",
       enfocada: "集中モード",
@@ -401,6 +502,7 @@ const ja: Dictionary = {
     open: "Luminaとチャットを開く",
     teaser: "サイト制作をお考えですか？料金や納期、始め方について聞いてください ✨",
     typing: "入力中…",
+    retry: "再試行",
     languageInstruction: "日本語",
     errorFallback:
       "只今お答えできませんが、<a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a>でご連絡いただければすぐに対応いたします。",

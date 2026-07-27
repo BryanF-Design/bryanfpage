@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Check,
   Copy,
   Building2,
   Loader2,
+  Mail,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { SiStripe, SiMercadopago } from "react-icons/si";
@@ -25,23 +26,14 @@ import {
   mxnToUsd,
   type Currency,
 } from "@/lib/currency";
+import {
+  CONFIGURATOR_MODULES as MODULE_META,
+  CONFIGURATOR_PLANS as PLAN_META,
+  SECTION_PRICE,
+} from "@/lib/catalog";
 
 const WA_PHONE = "525663012505";
 const USD_MXN_RATE = getUsdMxnRate(process.env.NEXT_PUBLIC_USD_MXN_RATE);
-
-const PLAN_META = [
-  { id: "full", price: 3500, featured: true },
-  { id: "update", price: 1800, featured: false },
-  { id: "maintenance", price: 1000, featured: false },
-] as const;
-
-const MODULE_META = [
-  { id: "ecommerce", price: 3500 },
-  { id: "payments", price: 1500 },
-  { id: "maintenance", price: 1000 },
-] as const;
-
-const SECTION_PRICE = 350;
 
 const BANK_VALUES = {
   banco: "BBVA Bancomer",
@@ -52,11 +44,17 @@ const BANK_VALUES = {
 };
 
 function getPlans(t: Dictionary) {
-  return PLAN_META.map((m) => ({ ...m, ...t.configurator.plans[m.id] }));
+  return PLAN_META.map((m) => ({
+    ...m,
+    ...t.configurator.plans[m.id as keyof typeof t.configurator.plans],
+  }));
 }
 
 function getModules(t: Dictionary) {
-  return MODULE_META.map((m) => ({ ...m, label: t.configurator.modules[m.id] }));
+  return MODULE_META.map((m) => ({
+    ...m,
+    label: t.configurator.modules[m.id as keyof typeof t.configurator.modules],
+  }));
 }
 
 function getBank(t: Dictionary) {
@@ -70,7 +68,9 @@ function formatMXN(value: number) {
   return formatMoney(value, "MXN");
 }
 
-export function Configurator() {
+const QUOTE_KEY = "bryanf_quote_v1";
+
+export function Configurator({ hideHeading = false }: { hideHeading?: boolean } = {}) {
   const { t } = useLanguage();
   const PLANS = getPlans(t);
   const MODULES = getModules(t);
@@ -81,6 +81,7 @@ export function Configurator() {
   const [sections, setSections] = useState(0);
   const [mode, setMode] = useState<"liquidacion" | "anticipo">("liquidacion");
   const [currency, setCurrency] = useState<Currency>("MXN");
+  const [restored, setRestored] = useState(false);
   const [coupon, setCoupon] = useState("");
   const [couponMsg, setCouponMsg] = useState("");
   const [loading, setLoading] = useState<string | null>(null);
@@ -89,6 +90,81 @@ export function Configurator() {
   const [copied, setCopied] = useState("");
 
   const plan = PLANS.find((p) => p.id === planId)!;
+
+  // Preselección por enlace: Lumina (o cualquier CTA) puede mandar a
+  // /crear-web?plan=full&modules=ecommerce,payments&sections=2 y el cotizador
+  // arranca con esa configuración. El deep-link gana sobre lo guardado.
+  // Retomar después: si no hay deep-link, restaura lo guardado en el dispositivo.
+  // Sólo cliente (localStorage/URL no existen en SSR).
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const hasDeepLink =
+        params.has("plan") || params.has("modules") || params.has("sections");
+      if (hasDeepLink) {
+        const p = params.get("plan");
+        if (p && PLAN_META.some((x) => x.id === p)) setPlanId(p);
+        const wanted = (params.get("modules") || "")
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+        if (wanted.length) {
+          setMods(
+            Object.fromEntries(
+              MODULE_META.filter((m) => wanted.includes(m.id)).map((m) => [m.id, true])
+            )
+          );
+        }
+        const sec = Number(params.get("sections"));
+        if (Number.isFinite(sec)) setSections(Math.max(0, Math.min(50, Math.floor(sec))));
+        const dlMode = params.get("mode");
+        if (dlMode === "anticipo" || dlMode === "liquidacion") setMode(dlMode);
+        const dlCur = params.get("currency");
+        if (dlCur === "MXN" || dlCur === "USD") setCurrency(dlCur);
+        setRestored(true);
+        return;
+      }
+    } catch {
+      /* URL no disponible */
+    }
+    try {
+      const raw = window.localStorage.getItem(QUOTE_KEY);
+      if (raw) {
+        const s = JSON.parse(raw) as Record<string, unknown>;
+        if (s && typeof s === "object") {
+          if (typeof s.planId === "string" && PLAN_META.some((p) => p.id === s.planId))
+            setPlanId(s.planId);
+          if (s.mods && typeof s.mods === "object")
+            setMods(
+              Object.fromEntries(
+                Object.entries(s.mods as Record<string, unknown>).filter(
+                  ([k, v]) => MODULE_META.some((m) => m.id === k) && typeof v === "boolean"
+                )
+              ) as Record<string, boolean>
+            );
+          const sec = Number(s.sections);
+          if (Number.isFinite(sec)) setSections(Math.max(0, Math.min(50, Math.floor(sec))));
+          if (s.mode === "anticipo" || s.mode === "liquidacion") setMode(s.mode);
+          if (s.currency === "MXN" || s.currency === "USD") setCurrency(s.currency);
+        }
+      }
+    } catch {
+      /* storage bloqueado o corrupto */
+    }
+    setRestored(true);
+  }, []);
+
+  useEffect(() => {
+    if (!restored) return;
+    try {
+      window.localStorage.setItem(
+        QUOTE_KEY,
+        JSON.stringify({ planId, mods, sections, mode, currency })
+      );
+    } catch {
+      /* storage bloqueado */
+    }
+  }, [restored, planId, mods, sections, mode, currency]);
 
   // Cada partida vive en MXN (precio fuente); la vista y el cobro se derivan
   // según la moneda elegida, con redondeo hacia arriba por partida en USD
@@ -153,6 +229,13 @@ export function Configurator() {
           monto: projectTotal,
           currency,
           modalidad: mode,
+          // Selección estructurada: el servidor recompone el precio desde el
+          // catálogo con esto y cobra su propio total (no el del navegador).
+          selection: {
+            planId,
+            moduleIds: MODULES.filter((m) => mods[m.id]).map((m) => m.id),
+            sections,
+          },
           descripcion: `Configura tu Proyecto Web - ${plan.name}`,
           metadata: {
             flow: "fast-track",
@@ -196,6 +279,19 @@ export function Configurator() {
     }
   }
 
+  // Enviar cotización por correo: abre el cliente de correo del usuario con el
+  // resumen ya redactado (sin backend, funciona siempre).
+  function emailQuote() {
+    const lines = items.map((it) => `• ${it.source}: ${display(it.price)}`).join("\n");
+    const body = `${t.configurator.summary}:\n${lines}\n\n${t.configurator.totalProject}: ${formatMoney(
+      projectTotal,
+      currency
+    )}\n${t.configurator.payNow}: ${formatMoney(payableNow, currency)}`;
+    window.location.href = `mailto:bryanf@bryanfdesign.com.mx?subject=${encodeURIComponent(
+      t.configurator.emailQuoteSubject
+    )}&body=${encodeURIComponent(body)}`;
+  }
+
   // La transferencia siempre es a cuenta mexicana: montos en MXN.
   const transferMsg = encodeURIComponent(
     t.configurator.whatsappTransferMsg({
@@ -215,11 +311,13 @@ export function Configurator() {
     >
       <div aria-hidden className="mesh-glow-a opacity-50" />
       <div className="container relative">
-        <SectionHeading
-          eyebrow={t.configurator.eyebrow}
-          title={t.configurator.title}
-          subtitle={t.configurator.subtitle}
-        />
+        {!hideHeading && (
+          <SectionHeading
+            eyebrow={t.configurator.eyebrow}
+            title={t.configurator.title}
+            subtitle={t.configurator.subtitle}
+          />
+        )}
 
         <div className="mt-14 grid gap-8 lg:grid-cols-[1.3fr_1fr]">
           {/* LEFT: configuration */}
@@ -520,6 +618,15 @@ export function Configurator() {
                 >
                   <Building2 className="mr-1 h-4 w-4" />
                   {t.configurator.payTransfer}
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={emailQuote}
+                  disabled={projectTotal <= 0}
+                  className="w-full"
+                >
+                  <Mail className="mr-1 h-4 w-4" />
+                  {t.configurator.emailQuote}
                 </Button>
               </div>
 

@@ -13,6 +13,9 @@ const pt: Dictionary = {
     menu: "Abrir menu",
     closeMenu: "Fechar menu",
     skipToContent: "Pular para o conteúdo",
+    serviciosEntrada: "Serviços de entrada",
+    lumina: "Lumina",
+    servicios: "Serviços",
   },
   marquee: {
     words: ["Design", "Código", "SEO", "Performance", "E-commerce", "Branding"],
@@ -150,6 +153,81 @@ const pt: Dictionary = {
   clients: {
     label: "Marcas que confiaram",
   },
+  entryServices: {
+    eyebrow: "Serviços de entrada",
+    title: "Presença profissional sem construir um site completo",
+    subtitle:
+      "Se você ainda não precisa de um site completo, comece por aqui: identidade de contato pronta em dias, com a mesma qualidade de design.",
+    cta: "Perguntar sobre este serviço",
+    note: "Preços em pesos mexicanos (MXN). Projeto maior em mente? Podemos combinar com um site completo — pergunte à Lumina.",
+    items: [
+      {
+        id: "tarjetaDigital",
+        name: "Cartão de visita digital",
+        price: "$900 MXN",
+        desc: "Seu perfil de contato em uma página própria, com botão para salvar seus dados e código QR.",
+        features: [
+          "Página pública com seus dados",
+          "Botão para salvar contato (vCard)",
+          "Código QR personalizado",
+          "Design alinhado à sua marca",
+        ],
+        question: "Quero informações sobre o cartão de visita digital",
+      },
+      {
+        id: "tarjetaImprimible",
+        name: "Cartão de visita impresso",
+        price: "$650 MXN",
+        desc: "Design físico pronto para impressão, com código QR que conecta à sua presença digital.",
+        features: [
+          "Design de frente e verso",
+          "Código QR de contato",
+          "Arquivos prontos para gráfica",
+          "2 rodadas de ajustes",
+        ],
+        question: "Quero informações sobre o cartão de visita impresso",
+      },
+      {
+        id: "firmaCorreo",
+        name: "Assinatura de e-mail profissional",
+        price: "$350 MXN",
+        desc: "Faça cada e-mail que você envia parecer tão profissional quanto sua marca.",
+        features: [
+          "Compatível com Gmail, Outlook e Apple Mail",
+          "Dados de contato e redes sociais",
+          "Instalação guiada",
+          "Variante para equipe",
+        ],
+        question: "Quero informações sobre a assinatura de e-mail profissional",
+      },
+      {
+        id: "kitPresencia",
+        name: "Kit de presença digital",
+        price: "$1.500 MXN",
+        desc: "Cartão digital, assinatura de e-mail e QR em um único pacote, com desconto em relação à compra separada.",
+        features: [
+          "Cartão digital + assinatura de e-mail",
+          "Código QR incluído",
+          "Capa para redes sociais",
+          "Tratamento de foto de perfil",
+        ],
+        question: "Quero informações sobre o kit de presença digital",
+      },
+      {
+        id: "landingEsencial",
+        name: "Landing page essencial",
+        price: "A partir de $2.400 MXN",
+        desc: "Uma página real, pronta para vender ou te apresentar, sem o alcance de um site completo.",
+        features: [
+          "Ideal para profissionais, eventos e negócios locais",
+          "SEO técnico básico incluído",
+          "Entrega a partir de 3 dias úteis",
+          "Estrutura focada em um único objetivo",
+        ],
+        question: "Quero informações sobre a landing page essencial",
+      },
+    ],
+  },
   configurator: {
     eyebrow: "Configurador",
     title: "Monte seu site e pague online",
@@ -213,6 +291,8 @@ const pt: Dictionary = {
     copyLabel: (label) => `Copiar ${label}`,
     sendWhatsapp: "Enviar comprovante pelo WhatsApp",
     sendEmail: "Enviar comprovante por e-mail",
+    emailQuote: "Enviar orçamento por e-mail",
+    emailQuoteSubject: "Meu orçamento — BryanF Design",
     securePaymentPrefix: "Pagamento seguro. Ao continuar você aceita nossos",
     terms: "Termos",
     and: "e",
@@ -351,6 +431,20 @@ const pt: Dictionary = {
       },
     ],
   },
+  luminaJourney: {
+    eyebrow: "Como funciona",
+    title: "Da ideia ao projeto, contigo em cada passo",
+    subtitle:
+      "A Lumina não é um chatbot que só responde. Ela leva-te por todo o caminho, em minutos.",
+    steps: [
+      { title: "Conhece-te", desc: "Dizes o que precisas; ela entende o teu negócio, o teu objetivo e o teu público." },
+      { title: "Recomenda", desc: "Sugere o pacote e os módulos que melhor te servem, e explica porquê." },
+      { title: "Orça", desc: "Monta o teu orçamento na hora, com preços claros e sem letras miúdas." },
+      { title: "Leva-te ao pagamento", desc: "Pagas com cartão, Mercado Pago ou transferência. Sinal ou pagamento total, tu escolhes." },
+      { title: "Acompanha-te", desc: "Recebes o teu comprovativo e folio, preenches o briefing, e arrancamos o projeto." },
+    ],
+    cta: "Começar com a Lumina",
+  },
   luminaSection: {
     eyebrow: "Sua consultora IA",
     titlePrefix: "Ela é a",
@@ -359,6 +453,13 @@ const pt: Dictionary = {
     cta: "Converse com a Lumina",
     status: "Online 24/7",
     hint: "Toque nela para mudar o humor · arraste para girá-la",
+    badges: [
+      { title: "Respostas na hora", desc: "A qualquer hora, sem espera." },
+      { title: "Conhece todo o catálogo", desc: "Preços, prazos, módulos e processo." },
+      { title: "Monta o teu orçamento", desc: "Preenche o teu orçamento e leva-te ao pagamento." },
+    ],
+    privacy: "Não pedimos dados sensíveis no chat. A tua conversa fica só neste dispositivo.",
+    quotePresets: ["Orçar site sob medida", "Orçar loja online", "Orçar manutenção"],
     moods: {
       normal: "Modo normal",
       enfocada: "Modo focada",
@@ -409,6 +510,7 @@ const pt: Dictionary = {
     open: "Abrir chat com a Lumina",
     teaser: "Quer criar seu site? Pergunte sobre preços, prazos ou como começar ✨",
     typing: "Digitando…",
+    retry: "Tentar novamente",
     languageInstruction: "português",
     errorFallback:
       "Agora não consigo responder, mas fale conosco pelo <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a> que te atendemos na hora.",

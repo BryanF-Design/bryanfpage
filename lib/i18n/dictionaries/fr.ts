@@ -13,6 +13,9 @@ const fr: Dictionary = {
     menu: "Ouvrir le menu",
     closeMenu: "Fermer le menu",
     skipToContent: "Aller au contenu",
+    serviciosEntrada: "Services d'entrée",
+    lumina: "Lumina",
+    servicios: "Services",
   },
   marquee: {
     words: ["Design", "Code", "SEO", "Performance", "E-commerce", "Branding"],
@@ -150,6 +153,81 @@ const fr: Dictionary = {
   clients: {
     label: "Des marques qui nous ont fait confiance",
   },
+  entryServices: {
+    eyebrow: "Services d'entrée",
+    title: "Une présence professionnelle sans site complet",
+    subtitle:
+      "Si vous n'avez pas encore besoin d'un site complet, commencez ici : une identité de contact prête en quelques jours, avec la même qualité de design.",
+    cta: "Se renseigner sur ce service",
+    note: "Prix en pesos mexicains (MXN). Un projet plus grand en tête ? On peut le combiner avec un site complet — demandez à Lumina.",
+    items: [
+      {
+        id: "tarjetaDigital",
+        name: "Carte de visite numérique",
+        price: "$900 MXN",
+        desc: "Votre profil de contact sur une page dédiée, avec un bouton pour enregistrer vos coordonnées et un QR code.",
+        features: [
+          "Page publique avec vos coordonnées",
+          "Bouton pour enregistrer le contact (vCard)",
+          "QR code personnalisé",
+          "Design assorti à votre marque",
+        ],
+        question: "Je voudrais des infos sur la carte de visite numérique",
+      },
+      {
+        id: "tarjetaImprimible",
+        name: "Carte de visite imprimable",
+        price: "$650 MXN",
+        desc: "Un design physique prêt à imprimer, avec un QR code qui renvoie vers votre présence numérique.",
+        features: [
+          "Design recto et verso",
+          "QR code de contact",
+          "Fichiers prêts pour l'impression",
+          "2 séries de retouches",
+        ],
+        question: "Je voudrais des infos sur la carte de visite imprimable",
+      },
+      {
+        id: "firmaCorreo",
+        name: "Signature d'e-mail professionnelle",
+        price: "$350 MXN",
+        desc: "Faites en sorte que chaque e-mail que vous envoyez soit aussi professionnel que votre marque.",
+        features: [
+          "Compatible avec Gmail, Outlook et Apple Mail",
+          "Coordonnées et réseaux sociaux",
+          "Installation guidée",
+          "Variante pour équipe disponible",
+        ],
+        question: "Je voudrais des infos sur la signature d'e-mail professionnelle",
+      },
+      {
+        id: "kitPresencia",
+        name: "Kit de présence numérique",
+        price: "$1 500 MXN",
+        desc: "Carte numérique, signature d'e-mail et QR code dans un seul pack, à prix réduit par rapport à l'achat séparé.",
+        features: [
+          "Carte numérique + signature d'e-mail",
+          "QR code inclus",
+          "Couverture pour réseaux sociaux",
+          "Retouche de photo de profil",
+        ],
+        question: "Je voudrais des infos sur le kit de présence numérique",
+      },
+      {
+        id: "landingEsencial",
+        name: "Landing page essentielle",
+        price: "À partir de $2 400 MXN",
+        desc: "Une vraie page, prête à vendre ou à vous présenter, sans l'ampleur d'un site complet.",
+        features: [
+          "Idéal pour les indépendants, événements et commerces locaux",
+          "SEO technique de base inclus",
+          "Livraison à partir de 3 jours ouvrés",
+          "Structure centrée sur un seul objectif",
+        ],
+        question: "Je voudrais des infos sur la landing page essentielle",
+      },
+    ],
+  },
   configurator: {
     eyebrow: "Configurateur",
     title: "Créez votre site et payez en ligne",
@@ -213,6 +291,8 @@ const fr: Dictionary = {
     copyLabel: (label) => `Copier ${label}`,
     sendWhatsapp: "Envoyer le justificatif par WhatsApp",
     sendEmail: "Envoyer le justificatif par e-mail",
+    emailQuote: "Recevoir le devis par e-mail",
+    emailQuoteSubject: "Mon devis — BryanF Design",
     securePaymentPrefix: "Paiement sécurisé. En continuant, vous acceptez nos",
     terms: "Conditions générales",
     and: "et",
@@ -351,6 +431,20 @@ const fr: Dictionary = {
       },
     ],
   },
+  luminaJourney: {
+    eyebrow: "Comment ça marche",
+    title: "De l'idée au projet, à tes côtés à chaque étape",
+    subtitle:
+      "Lumina n'est pas un chatbot qui répond, point. Elle t'accompagne sur tout le parcours, en minutes.",
+    steps: [
+      { title: "Elle te connaît", desc: "Tu dis ce dont tu as besoin ; elle comprend ton activité, ton objectif et ton audience." },
+      { title: "Elle recommande", desc: "Elle propose le forfait et les modules qui te conviennent, et explique pourquoi." },
+      { title: "Elle chiffre", desc: "Elle établit ton devis à l'instant, avec des prix clairs et sans petites lignes." },
+      { title: "Elle t'amène au paiement", desc: "Paie par carte, Mercado Pago ou virement. Acompte ou paiement complet, à toi de voir." },
+      { title: "Elle t'accompagne", desc: "Tu reçois ton reçu et ton numéro de dossier, remplis ton brief, et on démarre." },
+    ],
+    cta: "Commencer avec Lumina",
+  },
   luminaSection: {
     eyebrow: "Votre conseillère IA",
     titlePrefix: "Voici",
@@ -359,6 +453,13 @@ const fr: Dictionary = {
     cta: "Discuter avec Lumina",
     status: "En ligne 24/7",
     hint: "Touchez-la pour changer son humeur · faites-la tourner en glissant",
+    badges: [
+      { title: "Réponses instantanées", desc: "À toute heure, sans attente." },
+      { title: "Connaît tout le catalogue", desc: "Prix, délais, modules et processus." },
+      { title: "Prépare ton devis", desc: "Pré-remplit ton devis et t'amène au paiement." },
+    ],
+    privacy: "Aucune donnée sensible dans le chat. Ta conversation reste sur cet appareil.",
+    quotePresets: ["Devis site sur mesure", "Devis boutique en ligne", "Devis maintenance"],
     moods: {
       normal: "Mode normal",
       enfocada: "Mode concentrée",
@@ -409,6 +510,7 @@ const fr: Dictionary = {
     open: "Ouvrir le chat avec Lumina",
     teaser: "Vous voulez créer votre site ? Demandez-moi les tarifs, les délais ou comment démarrer ✨",
     typing: "En train d'écrire…",
+    retry: "Réessayer",
     languageInstruction: "français",
     errorFallback:
       "Je ne peux pas répondre pour l'instant, mais écrivez-nous sur <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a>, on vous répond tout de suite.",

@@ -8,10 +8,11 @@ const nextConfig = {
     ],
   },
   // Clean URLs for the legacy pages still served as static files from /public
-  // (payments configurator + legal pages, pending migration to Next routes).
+  // (legal pages + post-payment briefing, pending migration to Next routes).
+  // `/crear-web` ya NO se reescribe: ahora es una ruta React real
+  // (app/crear-web) con el Configurador nuevo y el catálogo centralizado.
   async rewrites() {
     return [
-      { source: "/crear-web", destination: "/crear-web.html" },
       { source: "/privacidad", destination: "/privacidad.html" },
       { source: "/terminos", destination: "/terminos.html" },
       { source: "/gracias", destination: "/gracias.html" },

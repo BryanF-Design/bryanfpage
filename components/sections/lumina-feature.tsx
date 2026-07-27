@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
-import { MessageCircle, Sparkles } from "lucide-react";
+import { MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { LazyMount } from "@/components/three/lazy-mount";
@@ -17,6 +17,14 @@ const LuminaHologram = dynamic(
 );
 
 const MOOD_CYCLE: LuminaMood[] = ["Normal", "Sorprendida", "Enfocada", "Duda"];
+
+// Enlaces preconfigurados del cotizador, en el mismo orden que
+// `luminaSection.quotePresets` (sitio a medida · tienda · mantenimiento).
+const QUOTE_PRESET_HREFS = [
+  "/crear-web?plan=full",
+  "/crear-web?plan=full&modules=ecommerce,payments",
+  "/crear-web?plan=maintenance",
+] as const;
 
 /** Abre el chat de Lumina desde cualquier parte (lo escucha LuminaChat). */
 export function openLuminaChat(message?: string) {
@@ -134,6 +142,26 @@ export function LuminaFeature() {
             ))}
           </motion.div>
 
+          {/* Casos de uso: cada uno abre el cotizador YA preconfigurado. */}
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, delay: 0.21, ease: [0.2, 0, 0, 1] }}
+            className="flex flex-wrap gap-2"
+          >
+            {t.luminaSection.quotePresets.map((label, i) => (
+              <a
+                key={label}
+                href={QUOTE_PRESET_HREFS[i]}
+                className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-4 py-2 text-xs font-medium text-primary ring-1 ring-primary/30 transition-all duration-200 hover:bg-primary/20 active:scale-95 md:text-sm"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                {label}
+              </a>
+            ))}
+          </motion.div>
+
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -150,6 +178,34 @@ export function LuminaFeature() {
               {t.luminaSection.status}
             </span>
           </motion.div>
+
+          {/* Qué es capaz de hacer — tres capacidades reales, sin relleno. */}
+          <motion.ul
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, delay: 0.3, ease: [0.2, 0, 0, 1] }}
+            className="grid w-full gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-3"
+          >
+            {t.luminaSection.badges.map((b) => (
+              <li key={b.title} className="flex flex-col gap-1 bg-background p-4">
+                <span className="text-sm font-semibold text-foreground">{b.title}</span>
+                <span className="text-xs text-muted-foreground">{b.desc}</span>
+              </li>
+            ))}
+          </motion.ul>
+
+          {/* Privacidad / límites: claridad, no letras chiquitas. */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, delay: 0.36 }}
+            className="inline-flex items-start gap-2 text-xs text-muted-foreground"
+          >
+            <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+            {t.luminaSection.privacy}
+          </motion.p>
         </div>
 
         {/* Holograma */}

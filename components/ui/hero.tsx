@@ -232,7 +232,7 @@ function StaticLaptop() {
   return (
     <div aria-hidden className="absolute inset-0 flex items-center justify-center">
       <div className="relative w-[92%] max-w-[520px]">
-        <div className="relative mx-auto aspect-[16/9] w-[82%] origin-bottom -skew-y-2 overflow-hidden rounded-t-md border border-primary/25 bg-[#07100c] shadow-[0_0_55px_hsl(var(--primary)/0.1)]">
+        <div className="relative mx-auto aspect-[16/9] w-[82%] origin-bottom -skew-y-2 overflow-hidden rounded-t-md border border-primary/25 bg-card shadow-[0_0_55px_hsl(var(--primary)/0.1)]">
           <div className="absolute inset-[5%] overflow-hidden border border-border bg-background">
             <span className="absolute inset-x-0 top-0 h-[12%] border-b border-border bg-secondary/70" />
             <span className="absolute left-[7%] top-[24%] h-2 w-[38%] bg-primary/25" />
@@ -242,7 +242,7 @@ function StaticLaptop() {
             <span className="absolute right-[7%] top-[24%] h-[54%] w-[28%] border border-primary/20 bg-primary/[0.035]" />
           </div>
         </div>
-        <div className="relative -mt-px h-8 w-full [clip-path:polygon(8%_0%,92%_0%,100%_72%,96%_100%,4%_100%,0%_72%)] bg-gradient-to-b from-[#17251b] to-[#050806] shadow-[0_18px_35px_rgba(0,0,0,0.45)]">
+        <div className="relative -mt-px h-8 w-full [clip-path:polygon(8%_0%,92%_0%,100%_72%,96%_100%,4%_100%,0%_72%)] bg-gradient-to-b from-secondary to-background shadow-[0_18px_35px_hsl(var(--background)/0.8)]">
           <span className="absolute left-1/2 top-1 h-px w-10 -translate-x-1/2 bg-primary/80" />
         </div>
       </div>

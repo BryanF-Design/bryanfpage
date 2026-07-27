@@ -36,6 +36,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
     { label: t.nav.inicio, href: "/" },
     { label: t.nav.proceso, href: "/#proceso" },
     { label: t.nav.proyectos, href: "/#projects" },
+    { label: t.nav.serviciosEntrada, href: "/#servicios-entrada" },
     { label: t.nav.precios, href: "/#precios" },
     { label: t.nav.faq, href: "/#faq" },
   ];

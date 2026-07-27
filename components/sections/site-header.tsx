@@ -44,9 +44,10 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
   const firstMenuLinkRef = useRef<HTMLAnchorElement>(null);
 
   const links = [
-    { label: t.nav.proceso, href: "/#proceso" },
-    { label: t.nav.proyectos, href: "/#projects" },
+    { label: t.nav.lumina, href: "/#lumina" },
+    { label: t.nav.servicios, href: "/#servicios-entrada" },
     { label: t.nav.precios, href: "/#precios" },
+    { label: t.nav.proyectos, href: "/#projects" },
     { label: t.nav.faq, href: "/#faq" },
   ];
 

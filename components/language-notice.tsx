@@ -22,6 +22,17 @@ export function LanguageNotice() {
   const pathname = usePathname();
   const [visible, setVisible] = useState(false);
   const configuratorInView = useConfiguratorInView();
+  const [chatOpen, setChatOpen] = useState(false);
+
+  // The mobile Lumina chat is a full-screen sheet at the same bottom edge —
+  // step aside while it's open instead of covering its input on top of it.
+  useEffect(() => {
+    function onChatVisibility(e: Event) {
+      setChatOpen(!!(e as CustomEvent<{ open?: boolean }>).detail?.open);
+    }
+    window.addEventListener("lumina:visibility", onChatVisibility);
+    return () => window.removeEventListener("lumina:visibility", onChatVisibility);
+  }, []);
 
   useEffect(() => {
     if (document.querySelector('main[data-language="es-only"]')) {
@@ -53,7 +64,7 @@ export function LanguageNotice() {
     markDismissed();
   }
 
-  if (!visible || configuratorInView) return null;
+  if (!visible || configuratorInView || chatOpen) return null;
 
   return (
     // Móvil: tarjeta sobre la fila de accesibilidad/Lumina. Desktop: tarjeta

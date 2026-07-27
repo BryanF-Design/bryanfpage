@@ -14,6 +14,9 @@ const es = {
     menu: "Abrir menú",
     closeMenu: "Cerrar menú",
     skipToContent: "Saltar al contenido",
+    serviciosEntrada: "Servicios de entrada",
+    lumina: "Lumina",
+    servicios: "Servicios",
   },
   marquee: {
     words: ["Diseño", "Código", "SEO", "Performance", "E-commerce", "Branding"],
@@ -157,6 +160,81 @@ const es = {
   clients: {
     label: "Marcas que han confiado",
   },
+  entryServices: {
+    eyebrow: "Servicios de entrada",
+    title: "Presencia profesional sin construir un sitio completo",
+    subtitle:
+      "Si todavía no necesitas una web completa, arranca aquí: identidad de contacto lista en días, con la misma calidad de diseño.",
+    cta: "Preguntar por este servicio",
+    note: "Precios en pesos mexicanos (MXN). ¿Tu proyecto es más grande? Podemos combinarlo con un sitio completo — pregúntale a Lumina.",
+    items: [
+      {
+        id: "tarjetaDigital",
+        name: "Tarjeta de presentación digital",
+        price: "$900 MXN",
+        desc: "Tu perfil de contacto en una página propia, con botón para guardar tus datos y código QR.",
+        features: [
+          "Página pública con tus datos",
+          "Botón para guardar contacto (vCard)",
+          "Código QR personalizado",
+          "Diseño alineado a tu marca",
+        ],
+        question: "Quiero información sobre la tarjeta de presentación digital",
+      },
+      {
+        id: "tarjetaImprimible",
+        name: "Tarjeta de presentación imprimible",
+        price: "$650 MXN",
+        desc: "Diseño físico listo para imprimir, con código QR que conecta con tu presencia digital.",
+        features: [
+          "Diseño frontal y posterior",
+          "Código QR de contacto",
+          "Archivos listos para imprenta",
+          "2 rondas de ajustes",
+        ],
+        question: "Quiero información sobre la tarjeta de presentación imprimible",
+      },
+      {
+        id: "firmaCorreo",
+        name: "Firma de correo profesional",
+        price: "$350 MXN",
+        desc: "Que cada correo que envíes se vea tan profesional como tu marca.",
+        features: [
+          "Compatible con Gmail, Outlook y Apple Mail",
+          "Datos de contacto y redes",
+          "Instalación guiada",
+          "Variante para equipo",
+        ],
+        question: "Quiero información sobre la firma de correo profesional",
+      },
+      {
+        id: "kitPresencia",
+        name: "Kit de presencia digital",
+        price: "$1,500 MXN",
+        desc: "Tarjeta digital, firma de correo y QR en un solo paquete, con descuento sobre comprarlos por separado.",
+        features: [
+          "Tarjeta digital + firma de correo",
+          "Código QR incluido",
+          "Portada para redes sociales",
+          "Tratamiento de foto de perfil",
+        ],
+        question: "Quiero información sobre el kit de presencia digital",
+      },
+      {
+        id: "landingEsencial",
+        name: "Landing page esencial",
+        price: "Desde $2,400 MXN",
+        desc: "Una página real, lista para vender o presentarte, sin el alcance de un sitio completo.",
+        features: [
+          "Ideal para profesionistas, eventos y negocios locales",
+          "SEO técnico básico incluido",
+          "Entrega desde 3 días hábiles",
+          "Estructura enfocada en un solo objetivo",
+        ],
+        question: "Quiero información sobre la landing page esencial",
+      },
+    ],
+  },
   configurator: {
     eyebrow: "Configurador",
     title: "Arma tu web y paga en línea",
@@ -223,6 +301,8 @@ const es = {
     copyLabel: (label: string) => `Copiar ${label}`,
     sendWhatsapp: "Enviar comprobante por WhatsApp",
     sendEmail: "Enviar comprobante por correo",
+    emailQuote: "Enviar cotización por correo",
+    emailQuoteSubject: "Mi cotización — BryanF Design",
     securePaymentPrefix: "Pago seguro. Al continuar aceptas nuestros",
     terms: "Términos",
     and: "y",
@@ -372,6 +452,20 @@ const es = {
       },
     ],
   },
+  luminaJourney: {
+    eyebrow: "Cómo funciona",
+    title: "De la idea al proyecto, contigo en cada paso",
+    subtitle:
+      "Lumina no es un chat que responde y ya. Te lleva por todo el camino, en minutos.",
+    steps: [
+      { title: "Te conoce", desc: "Le cuentas qué necesitas y entiende tu negocio, tu objetivo y a quién le hablas." },
+      { title: "Te recomienda", desc: "Sugiere el paquete y los módulos que mejor te quedan, y te explica por qué." },
+      { title: "Te cotiza", desc: "Arma tu presupuesto al instante, con precios claros y sin letras chiquitas." },
+      { title: "Te lleva al pago", desc: "Pagas con tarjeta, Mercado Pago o transferencia. Anticipo o pago completo, tú eliges." },
+      { title: "Te acompaña", desc: "Recibes tu folio y tu comprobante, llenas tu briefing y arrancamos tu proyecto." },
+    ],
+    cta: "Empieza con Lumina",
+  },
   luminaSection: {
     eyebrow: "Tu asesora IA",
     titlePrefix: "Ella es",
@@ -380,6 +474,13 @@ const es = {
     cta: "Chatea con Lumina",
     status: "En línea 24/7",
     hint: "Tócala para cambiar su ánimo · arrástrala para girarla",
+    badges: [
+      { title: "Responde al instante", desc: "A cualquier hora, sin esperas." },
+      { title: "Conoce todo el catálogo", desc: "Precios, tiempos, módulos y proceso." },
+      { title: "Te deja tu web armada", desc: "Preselecciona tu cotización y te lleva al pago." },
+    ],
+    privacy: "No pedimos datos sensibles en el chat. Tu conversación vive sólo en este dispositivo.",
+    quotePresets: ["Cotiza tu sitio a medida", "Cotiza tu tienda en línea", "Cotiza tu mantenimiento"],
     moods: {
       normal: "Modo normal",
       enfocada: "Modo enfocada",
@@ -434,6 +535,7 @@ const es = {
     open: "Abrir chat con Lumina",
     teaser: "¿Buscas crear tu web? Pregúntame precios, tiempos o cómo empezamos ✨",
     typing: "Escribiendo…",
+    retry: "Reintentar",
     languageInstruction: "español",
     errorFallback:
       "Ahorita no puedo responder, pero escríbenos por <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a> y te atendemos al instante.",

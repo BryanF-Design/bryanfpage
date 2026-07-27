@@ -8,7 +8,8 @@ import { DICTIONARIES } from "@/lib/i18n/dictionaries";
 export function SkipLink() {
   const pathname = usePathname();
   const { t } = useLanguage();
-  const label = pathname === "/" ? t.nav.skipToContent : DICTIONARIES.es.nav.skipToContent;
+  const localizedPage = pathname === "/" || pathname === "/crear-web";
+  const label = localizedPage ? t.nav.skipToContent : DICTIONARIES.es.nav.skipToContent;
 
   return (
     <a
