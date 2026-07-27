@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
-import { Archivo, Instrument_Sans, IBM_Plex_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Instrument_Sans, IBM_Plex_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import dynamic from "next/dynamic";
 import "./globals.css";
-import { SmoothScroll } from "@/components/smooth-scroll";
-import { IntroSplash } from "@/components/intro-splash";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { MicrosoftClarity } from "@/components/analytics/microsoft-clarity";
 import { LanguageProvider } from "@/lib/i18n/context";
+import { MotionPreferenceProvider } from "@/components/motion-preference-provider";
+import { SkipLink } from "@/components/skip-link";
 
 // Client-only widget, no SEO content: skip SSR entirely to shave initial payload.
 const AccessibilityPanel = dynamic(
@@ -25,13 +26,14 @@ const instrumentSans = Instrument_Sans({
   display: "swap",
 });
 
-// Display: Archivo variable con eje de anchura — los titulares se componen
-// expandidos (font-stretch en globals.css), la voz visual del rediseño.
-const archivo = Archivo({
-  subsets: ["latin"],
-  axes: ["wdth"],
+// Display: instancia latina expandida de Archivo con peso variable. Conserva
+// la geometría de marca sin descargar el eje de anchura completo en el LCP.
+const archivo = localFont({
+  src: "../public/fonts/archivo-expanded-latin.woff2",
   variable: "--font-display",
   display: "swap",
+  weight: "100 900",
+  style: "normal",
 });
 
 // Voz técnica: etiquetas, precios, coordenadas.
@@ -76,10 +78,10 @@ export const metadata: Metadata = {
       "Diseño y desarrollo web a medida: sitios rápidos, animados y orientados a conversión. Arma tu web y arrancamos.",
     images: [
       {
-        url: "/img/logotipo-blanco.png",
-        width: 2904,
-        height: 1016,
-        alt: "BryanF Design",
+        url: "/img/og-bryanf-apex.png",
+        width: 1200,
+        height: 630,
+        alt: "BryanF Design — Haz que pase. Precisión, ritmo y conexión.",
       },
     ],
   },
@@ -88,9 +90,14 @@ export const metadata: Metadata = {
     title: "Crea tu Página Web en México | BryanF Design",
     description:
       "Diseño y desarrollo web a medida: sitios rápidos, animados y orientados a conversión.",
-    images: ["/img/logotipo-blanco.png"],
+    images: ["/img/og-bryanf-apex.png"],
   },
   robots: { index: true, follow: true },
+};
+
+export const viewport: Viewport = {
+  colorScheme: "dark",
+  themeColor: "#070d0b",
 };
 
 const jsonLd = {
@@ -115,6 +122,18 @@ const jsonLd = {
   ],
 };
 
+// El panel completo se hidrata de forma diferida, pero la preferencia de
+// movimiento debe existir antes del primer frame para evitar animaciones
+// iniciales en visitas posteriores.
+const a11yBootstrap = `
+  try {
+    var saved = JSON.parse(localStorage.getItem("bfd-a11y") || "{}");
+    if (saved.reduceMotion === true) {
+      document.documentElement.classList.add("a11y-reduce-motion");
+    }
+  } catch (_) {}
+`;
+
 export default function RootLayout({
   children,
 }: {
@@ -126,6 +145,9 @@ export default function RootLayout({
       className={`dark ${instrumentSans.variable} ${archivo.variable} ${plexMono.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: a11yBootstrap }} />
+      </head>
       <body className="font-sans">
         <GoogleAnalytics />
         <MicrosoftClarity />
@@ -133,13 +155,14 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <SmoothScroll />
-        <IntroSplash />
-        <LanguageProvider>
-          {children}
-          <LanguageNotice />
-        </LanguageProvider>
-        <AccessibilityPanel />
+        <MotionPreferenceProvider>
+          <LanguageProvider>
+            <SkipLink />
+            {children}
+            <LanguageNotice />
+          </LanguageProvider>
+          <AccessibilityPanel />
+        </MotionPreferenceProvider>
       </body>
     </html>
   );

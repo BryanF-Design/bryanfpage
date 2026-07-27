@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
+import { isReducedMotionRequested } from "@/lib/motion-preference";
 import { requestStageFrame, useThreeStage } from "@/lib/three/stage";
 
 export type LuminaMood = "Normal" | "Enfocada" | "Duda" | "Sorprendida";
@@ -43,8 +44,6 @@ export function LuminaHologram({ mood, onPoke, className }: LuminaHologramProps)
     cameraZ: 5.6,
     maxDpr: 1.75,
     build: ({ scene, container }) => {
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
       const rig = new THREE.Group(); // sigue al puntero
       const spin = new THREE.Group(); // gira con el arrastre
       rig.add(spin);
@@ -197,9 +196,14 @@ export function LuminaHologram({ mood, onPoke, className }: LuminaHologramProps)
       let dragYaw = 0;
 
       const onMove = (e: PointerEvent) => {
-        const rect = el.getBoundingClientRect();
-        targetX = ((e.clientX - rect.left) / rect.width - 0.5) * 0.5;
-        targetY = ((e.clientY - rect.top) / rect.height - 0.5) * 0.4;
+        if (isReducedMotionRequested()) {
+          targetX = 0;
+          targetY = 0;
+        } else {
+          const rect = el.getBoundingClientRect();
+          targetX = ((e.clientX - rect.left) / rect.width - 0.5) * 0.5;
+          targetY = ((e.clientY - rect.top) / rect.height - 0.5) * 0.4;
+        }
         if (dragging) {
           const delta = e.clientX - lastX;
           moved += Math.abs(delta);
@@ -231,6 +235,7 @@ export function LuminaHologram({ mood, onPoke, className }: LuminaHologramProps)
       el.addEventListener("pointercancel", onUp);
 
       return (dt, elapsed) => {
+        const reduced = isReducedMotionRequested();
         const idle = reduced ? 0 : elapsed;
 
         // Regreso elástico del giro de moneda.

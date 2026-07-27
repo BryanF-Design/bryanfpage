@@ -12,6 +12,7 @@ const en: Dictionary = {
     verProyectos: "See projects",
     menu: "Open menu",
     closeMenu: "Close menu",
+    skipToContent: "Skip to content",
     serviciosEntrada: "Entry-level services",
     lumina: "Lumina",
     servicios: "Services",
@@ -24,7 +25,7 @@ const en: Dictionary = {
     titlePrefix: "Make it",
     titleHighlight: "happen.",
     subtitle:
-      "We build your website from scratch: fast, animated, and built to convert. Real strategy, performance, and SEO so your site looks incredible and sells.",
+      "I design and build fast, clear websites made to convert. You work with me from the first idea to launch.",
     scrollHint: "Scroll to open the laptop",
   },
   trust: {
@@ -102,6 +103,45 @@ const en: Dictionary = {
       "nezga-arquitectos-vercel-app": "Architecture and construction",
       "epiko-vercel-app": "Event production",
       "element-experiences-com": "Experiences and events",
+    },
+    caseLabels: {
+      problem: "Problem",
+      decision: "Decision",
+      result: "Outcome",
+    },
+    cases: {
+      "koi-arquitectura-vercel-app": {
+        problem:
+          "Translate needs and ways of living into spaces without reducing the architecture practice to a gallery.",
+        decision:
+          "Structure the story around listening, design, construction, and follow-up, using the project as evidence.",
+        result:
+          "A site that explains the process and the value of improving a space, then opens a direct path to contact.",
+      },
+      "element-experiences-com": {
+        problem:
+          "Bring open routes, private experiences, and corporate services together without diluting the brand's purpose.",
+        decision:
+          "Separate the offer by experience type and support it with dates, difficulty levels, and clear booking or quote actions.",
+        result:
+          "A journey where each visitor can identify the right experience and reach the appropriate next step.",
+      },
+      "efficientplasticolors-com": {
+        problem:
+          "Explain a technical masterbatch and additives catalog while making color matching easier.",
+        decision:
+          "Turn color into an interactive tool with Pantone® matching, product families, and a direct quote path.",
+        result:
+          "Visitors can explore shades and products and submit a WhatsApp request within the same flow.",
+      },
+      "nkmohcafe-com": {
+        problem:
+          "Tell the story of the Zongolica origin while presenting specialty coffee and solutions for businesses.",
+        decision:
+          "Combine the origin story, service profiles, and product details with clear paths to request a quote.",
+        result:
+          "The site distinguishes specialty coffee, commercial coffee, and custom grinding, then guides visitors toward an order.",
+      },
     },
   },
   world: {
@@ -311,15 +351,85 @@ const en: Dictionary = {
     ctaSecondary: "WhatsApp us directly",
   },
   about: {
-    eyebrow: "Who's behind this",
-    title: "I'm Bryan. I design and build every site myself.",
+    eyebrow: "Design with authorship",
+    title: "I'm Bryan. I design with intent and build things that work.",
     subtitle:
-      "No agency in between, no middlemen: you talk to me from the first message to the day your site goes live. Mexico, flexible hours, plenty of coffee.",
+      "I design and develop every site from end to end. No agency or middlemen: you work with me from the first idea to launch.",
     role: "Designer & developer",
-    chips: ["Design + code", "Direct contact, no agency", "Delivery from 3 days"],
+    photoAlt: "Bryan designing and developing at his desk",
+    inspirationLabel: "What I bring to the work",
+    inspiration:
+      "I'm inspired by high-performance cars—my favorite is the 2016 Honda Civic Type R—Japanese visual culture and the logic of a well-built network. I don't paste them on as decoration: I translate them into precision, rhythm and connection.",
+    chips: ["Design + code", "Direct contact", "Performance with purpose"],
+    principlesLabel: "How I work · precision, rhythm and connection",
+    principles: [
+      {
+        title: "Precision",
+        body: "Every element has a reason.",
+        detail: "Hierarchy · accessibility · detail",
+      },
+      {
+        title: "Rhythm",
+        body: "An experience should feel fast before you measure it.",
+        detail: "Performance · motion · response",
+      },
+      {
+        title: "Connection",
+        body: "Design, code, SEO and business work as one system.",
+        detail: "From first click to contact",
+      },
+    ],
     ctaPrimary: "Let's work together",
     ctaSecondary: "See my process",
     quote: "Every site you see here came out of this desk.",
+  },
+  garage: {
+    eyebrow: "Design with authorship",
+    title: "Precision, rhythm and connection.",
+    subtitle:
+      "My influences become concrete decisions across design, code and business.",
+    verticalJp: "速さと精度",
+    verticalRomaji: "seido · nagare · tsunagari",
+    hint: "One route, from idea to outcome",
+    spec: {
+      modelLabel: "Principle",
+      model: "Precision",
+      codeLabel: "Experience",
+      code: "Rhythm",
+      colorLabel: "System",
+      color: "Connection",
+      engineLabel: "Craft",
+      engine: "Design + code",
+    },
+    cards: [
+      {
+        index: "01",
+        jp: "精度",
+        romaji: "seido",
+        title: "Every element has a reason.",
+        body:
+          "Hierarchy, accessibility and every detail come from a deliberate decision.",
+        spec: "Precision · intent",
+      },
+      {
+        index: "02",
+        jp: "流れ",
+        romaji: "nagare",
+        title: "Speed is something you feel.",
+        body:
+          "Content, motion and response keep a clear pace before and after performance is measured.",
+        spec: "Rhythm · performance",
+      },
+      {
+        index: "03",
+        jp: "繋",
+        romaji: "tsunagari",
+        title: "Everything works as a system.",
+        body:
+          "Design, code, SEO and business connect the first click to a useful action.",
+        spec: "Connection · outcome",
+      },
+    ],
   },
   luminaJourney: {
     eyebrow: "How it works",
@@ -373,6 +483,7 @@ const en: Dictionary = {
     terms: "Terms and Conditions",
     reviewGoogle: "Leave us a review on Google Maps",
     clientQuestion: "Already a client?",
+    signatureLabel: "Bryan F.'s signature",
     copyright: (year) => `© ${year} BryanF Design · Made in Mexico`,
     acceptPrefix: "By contacting us you accept our",
     and: "and",

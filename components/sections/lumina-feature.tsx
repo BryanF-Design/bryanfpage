@@ -2,13 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import { MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { LazyMount } from "@/components/three/lazy-mount";
 import type { LuminaMood } from "@/components/three/lumina-hologram";
 import { useLanguage } from "@/lib/i18n/context";
+import { useReducedMotionPreference } from "@/lib/motion-preference";
 
 const LuminaHologram = dynamic(
   () => import("@/components/three/lumina-hologram").then((m) => m.LuminaHologram),
@@ -38,7 +39,7 @@ export function openLuminaChat(message?: string) {
  */
 export function LuminaFeature() {
   const { t } = useLanguage();
-  const reduced = useReducedMotion();
+  const reduced = useReducedMotionPreference();
   const sectionRef = useRef<HTMLElement>(null);
   const [mood, setMood] = useState<LuminaMood>("Normal");
 
@@ -134,7 +135,7 @@ export function LuminaFeature() {
               <button
                 key={q}
                 onClick={() => openLuminaChat(q)}
-                className="rounded-full border border-border px-4 py-2 text-left text-xs text-muted-foreground transition-all duration-200 hover:border-primary hover:text-primary active:scale-95 md:text-sm"
+                className="min-h-11 rounded-full border border-border px-4 py-2 text-left text-xs text-muted-foreground transition-[border-color,color,transform] duration-200 hover:border-primary hover:text-primary active:scale-95 md:text-sm"
               >
                 {q}
               </button>
@@ -173,10 +174,7 @@ export function LuminaFeature() {
               {t.luminaSection.cta}
             </Button>
             <span className="tech-label inline-flex items-center gap-2 text-muted-foreground">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
-              </span>
+              <span className="inline-flex size-2 rounded-full bg-primary shadow-[0_0_10px_hsl(var(--primary)/0.5)]" />
               {t.luminaSection.status}
             </span>
           </motion.div>
@@ -214,7 +212,7 @@ export function LuminaFeature() {
         <div className="order-1 lg:order-2">
           <LazyMount
             className="corner-ticks relative mx-auto aspect-square w-full max-w-[300px] sm:max-w-[420px] lg:max-w-[540px]"
-            fallback={<div className="absolute inset-10 animate-pulse rounded-full bg-secondary/40" />}
+            fallback={<div className="absolute inset-10 rounded-full border border-border bg-secondary/30" />}
           >
             <LuminaHologram mood={mood} onPoke={poke} className="absolute inset-0" />
 
@@ -244,39 +242,27 @@ export function LuminaFeature() {
   );
 }
 
-/** Terminal chiquita donde Lumina teclea frases en loop, con caret vivo. */
+/** Terminal chiquita: Lumina escribe una frase una vez y después queda quieta. */
 function TypedPhrases({ phrases }: { phrases: string[] }) {
-  const reduced = useReducedMotion();
+  const reduced = useReducedMotionPreference();
   const [text, setText] = useState("");
-  const [idx, setIdx] = useState(0);
 
   useEffect(() => {
-    if (reduced || phrases.length === 0) {
-      setText(phrases[0] ?? "");
+    const phrase = phrases[0] ?? "";
+    if (reduced || phrase.length === 0) {
+      setText(phrase);
       return;
     }
+
+    setText("");
     let char = 0;
-    let deleting = false;
-    const phrase = phrases[idx % phrases.length];
     const timer = window.setInterval(() => {
-      if (!deleting) {
-        char++;
-        setText(phrase.slice(0, char));
-        if (char >= phrase.length) {
-          deleting = true;
-          char = phrase.length + 14; // pausa leyendo
-        }
-      } else {
-        char--;
-        if (char <= phrase.length) setText(phrase.slice(0, Math.max(0, char)));
-        if (char <= 0) {
-          window.clearInterval(timer);
-          setIdx((i) => i + 1);
-        }
-      }
+      char++;
+      setText(phrase.slice(0, char));
+      if (char >= phrase.length) window.clearInterval(timer);
     }, 42);
     return () => window.clearInterval(timer);
-  }, [idx, phrases, reduced]);
+  }, [phrases, reduced]);
 
   return (
     <motion.div
@@ -292,7 +278,7 @@ function TypedPhrases({ phrases }: { phrases: string[] }) {
       </span>
       <p className="min-h-[1.25rem] flex-1 truncate font-mono text-xs text-foreground/90 md:text-sm">
         {text}
-        <span className="ml-0.5 inline-block h-[1em] w-[2px] translate-y-[2px] animate-pulse bg-primary" aria-hidden />
+        <span className="ml-0.5 inline-block h-[1em] w-[2px] translate-y-[2px] bg-primary" aria-hidden />
       </p>
     </motion.div>
   );

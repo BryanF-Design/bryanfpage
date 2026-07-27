@@ -427,10 +427,10 @@ export function createServiceMetadata(page: ServicePage): Metadata {
       description: page.metaDescription,
       images: [
         {
-          url: "/img/logotipo-blanco.png",
-          width: 2904,
-          height: 1016,
-          alt: BRAND_NAME,
+          url: "/img/og-bryanf-apex.png",
+          width: 1200,
+          height: 630,
+          alt: `${BRAND_NAME} — Haz que pase`,
         },
       ],
     },
@@ -438,7 +438,7 @@ export function createServiceMetadata(page: ServicePage): Metadata {
       card: "summary_large_image",
       title: page.metaTitle,
       description: page.metaDescription,
-      images: ["/img/logotipo-blanco.png"],
+      images: ["/img/og-bryanf-apex.png"],
     },
     robots: { index: true, follow: true },
   };

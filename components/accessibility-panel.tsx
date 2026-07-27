@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Accessibility,
@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { useConfiguratorInView } from "@/lib/use-configurator-in-view";
 import { useFooterInView } from "@/lib/use-footer-in-view";
 
 const STORAGE_KEY = "bfd-a11y";
@@ -53,11 +54,33 @@ export function AccessibilityPanel() {
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState<A11ySettings>(DEFAULT_SETTINGS);
   const [hydrated, setHydrated] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const configuratorInView = useConfiguratorInView();
+  const closeRef = useRef<HTMLButtonElement>(null);
   const footerInView = useFooterInView();
 
   useEffect(() => {
     if (footerInView) setOpen(false);
   }, [footerInView]);
+
+  useEffect(() => {
+    if (!open) return;
+    const focusTimer = window.setTimeout(() => closeRef.current?.focus());
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      window.setTimeout(() => triggerRef.current?.focus());
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (configuratorInView) setOpen(false);
+  }, [configuratorInView]);
 
   useEffect(() => {
     try {
@@ -112,18 +135,27 @@ export function AccessibilityPanel() {
             exit={{ opacity: 0, y: 12, scale: 0.96 }}
             transition={{ duration: 0.2 }}
             role="dialog"
-            aria-label="Opciones de accesibilidad"
-            className="fixed bottom-24 left-4 z-[120] w-[min(90vw,20rem)] overflow-hidden rounded-2xl border border-border bg-card shadow-2xl sm:left-6"
+            aria-labelledby="accessibility-panel-title"
+            id="accessibility-panel"
+            className="fixed bottom-[calc(5.5rem_+_env(safe-area-inset-bottom))] left-3 z-[120] max-h-[calc(100dvh_-_7rem_-_env(safe-area-inset-bottom))] w-[min(calc(100vw_-_1.5rem),20rem)] overflow-y-auto rounded-2xl border border-border bg-card shadow-2xl sm:left-6"
           >
             <div className="flex items-center justify-between border-b border-border bg-secondary/40 px-4 py-3">
-              <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <Accessibility className="h-4 w-4 text-primary" />
+              <p
+                id="accessibility-panel-title"
+                className="flex items-center gap-2 text-sm font-semibold text-foreground"
+              >
+                <Accessibility className="h-4 w-4 text-primary" aria-hidden />
                 Accesibilidad
               </p>
               <button
-                onClick={() => setOpen(false)}
+                ref={closeRef}
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  window.setTimeout(() => triggerRef.current?.focus());
+                }}
                 aria-label="Cerrar panel de accesibilidad"
-                className="text-muted-foreground transition-colors hover:text-foreground"
+                className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -136,23 +168,28 @@ export function AccessibilityPanel() {
                 </p>
                 <div className="flex items-center gap-2">
                   <button
+                    type="button"
                     onClick={() => update({ fontStep: Math.max(0, settings.fontStep - 1) })}
                     disabled={settings.fontStep === 0}
                     aria-label="Disminuir tamaño de texto"
-                    className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:border-primary hover:text-primary disabled:opacity-40"
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-40"
                   >
                     <Minus className="h-4 w-4" />
                   </button>
-                  <span className="min-w-[3rem] text-center text-sm text-muted-foreground">
+                  <span
+                    className="min-w-[3rem] text-center text-sm text-muted-foreground"
+                    aria-live="polite"
+                  >
                     {Math.round(FONT_STEPS[settings.fontStep])}%
                   </span>
                   <button
+                    type="button"
                     onClick={() =>
                       update({ fontStep: Math.min(FONT_STEPS.length - 1, settings.fontStep + 1) })
                     }
                     disabled={settings.fontStep === FONT_STEPS.length - 1}
                     aria-label="Aumentar tamaño de texto"
-                    className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:border-primary hover:text-primary disabled:opacity-40"
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-40"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
@@ -165,17 +202,18 @@ export function AccessibilityPanel() {
                   return (
                     <button
                       key={key}
+                      type="button"
                       onClick={() => update({ [key]: !active } as Partial<A11ySettings>)}
                       aria-pressed={active}
                       className={cn(
-                        "flex items-center justify-between rounded-lg px-2.5 py-2 text-sm transition-colors",
+                        "flex min-h-11 items-center justify-between rounded-lg px-2.5 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                         active
                           ? "bg-primary/15 text-primary"
                           : "text-foreground/80 hover:bg-secondary"
                       )}
                     >
                       <span className="flex items-center gap-2">
-                        <Icon className="h-4 w-4" />
+                        <Icon className="h-4 w-4" aria-hidden />
                         {label}
                       </span>
                       <span
@@ -197,8 +235,9 @@ export function AccessibilityPanel() {
               </div>
 
               <button
+                type="button"
                 onClick={reset}
-                className="flex items-center justify-center gap-1.5 rounded-lg border border-border py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                className="flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
                 Restablecer
@@ -209,13 +248,20 @@ export function AccessibilityPanel() {
       </AnimatePresence>
 
       <button
+        ref={triggerRef}
+        type="button"
         onClick={() => setOpen((o) => !o)}
-        aria-label="Abrir opciones de accesibilidad"
+        aria-label={
+          open
+            ? "Cerrar opciones de accesibilidad"
+            : "Abrir opciones de accesibilidad"
+        }
+        aria-controls="accessibility-panel"
         aria-expanded={open}
         aria-hidden={footerInView}
         tabIndex={footerInView ? -1 : 0}
         className={cn(
-          "fixed bottom-5 left-4 z-[120] flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-lg transition-all duration-300 hover:scale-105 hover:text-primary sm:left-6",
+          "fixed bottom-[calc(1rem_+_env(safe-area-inset-bottom))] left-3 z-[120] flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-lg transition-[opacity,transform,color,border-color,background-color] duration-300 hover:scale-105 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:bottom-[calc(1.25rem_+_env(safe-area-inset-bottom))] sm:left-6",
           footerInView
             ? "pointer-events-none translate-y-3 opacity-0"
             : "pointer-events-auto translate-y-0 opacity-100"

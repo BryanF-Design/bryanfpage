@@ -1,6 +1,5 @@
 "use client";
 
-import { useRef } from "react";
 import dynamic from "next/dynamic";
 import { Hero } from "@/components/ui/hero";
 import { StatCounter } from "@/components/ui/stat-counter";
@@ -8,8 +7,6 @@ import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { SiteHeader } from "@/components/sections/site-header";
 import { MarqueeBand } from "@/components/sections/marquee-band";
 import { SocialRail } from "@/components/social-rail";
-import { LazyMount } from "@/components/three/lazy-mount";
-import { useSectionProgress } from "@/lib/use-section-progress";
 import { useLanguage } from "@/lib/i18n/context";
 
 // Below-the-fold sections: code-split so the initial hydration bundle stays
@@ -58,49 +55,37 @@ const LuminaChat = dynamic(
   () => import("@/components/lumina-chat").then((m) => m.LuminaChat),
   { ssr: false }
 );
-const ParallaxShards = dynamic(
-  () => import("@/components/three/parallax-shards").then((m) => m.ParallaxShards),
-  { ssr: false }
-);
 
 export default function HomePage() {
   const { t } = useLanguage();
-  const statsRef = useRef<HTMLElement>(null);
-  const statsProgress = useSectionProgress(statsRef);
 
   return (
-    <main id="home" className="relative">
+    <>
       <ScrollProgress />
       <SiteHeader />
       <SocialRail />
 
-      <Hero
-        eyebrow={t.hero.eyebrow}
-        title={
-          <>
-            {t.hero.titlePrefix} <span className="text-primary">{t.hero.titleHighlight}</span>
-          </>
-        }
-        subtitle={t.hero.subtitle}
-        scrollHint={t.hero.scrollHint}
-        actions={[
-          { label: t.nav.armaTuWeb, href: "#precios", variant: "default" },
-          { label: t.nav.verProyectos, href: "#projects", variant: "outline" },
-        ]}
-      />
+      <main id="main-content" tabIndex={-1} className="relative">
+        <Hero
+          id="home"
+          eyebrow={t.hero.eyebrow}
+          title={
+            <>
+              {t.hero.titlePrefix}{" "}
+              <span className="text-primary">{t.hero.titleHighlight}</span>
+            </>
+          }
+          subtitle={t.hero.subtitle}
+          scrollHint={t.hero.scrollHint}
+          actions={[
+            { label: t.nav.armaTuWeb, href: "#precios", variant: "default" },
+            { label: t.nav.verProyectos, href: "#projects", variant: "outline" },
+          ]}
+        />
 
-      {/* Franja de datos: cifras en display expandido sobre hairlines,
-          con escombros 3D cruzando al fondo a su propia velocidad. */}
-      <section ref={statsRef} className="relative overflow-hidden border-b border-border">
+      {/* Prueba rápida: cifras legibles, sin otra escena compitiendo con el hero. */}
+      <section className="relative overflow-hidden border-b border-border">
         <div aria-hidden className="mesh-glow-b opacity-50" />
-        <LazyMount className="pointer-events-none absolute inset-0" rootMargin="300px">
-          <ParallaxShards
-            progressRef={statsProgress}
-            count={8}
-            opacity={0.35}
-            className="absolute inset-0"
-          />
-        </LazyMount>
         <div className="container relative grid grid-cols-3 divide-x divide-border">
           <div className="flex flex-col gap-1 py-6 pr-3 sm:py-8 sm:pr-8">
             <p className="font-display text-2xl font-bold text-foreground sm:text-3xl md:text-4xl xl:text-5xl">
@@ -134,24 +119,24 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Créditos de taller cruzando la pantalla, ligados al scroll. */}
+      {/* El trabajo aparece antes que el relato: capacidad primero. */}
+      <ProjectsShowcase />
+
+      {/* Puente de autor: una sola historia de precisión, ritmo y conexión. */}
+      <MeetBryan />
+
       <MarqueeBand words={t.marquee.words} />
 
-      {/* Nuevo orden por embudo de conversión (ver PLAN.md §Orden de secciones):
-          Descubrimiento → Guía IA → Cómo trabajamos → Servicios → Cotización →
-          Prueba (portafolio + presencia) → Dudas → Contacto.
-          Lumina sube justo tras el hero para volverse el hilo conductor. */}
+      {/* Tras demostrar capacidad y presentar al autor, explicamos el oficio. */}
+      <ProcessOrbital />
 
-      {/* Guía: Lumina se presenta antes que nada y acompaña el resto del viaje. */}
+      <StackOrbit />
+
+      {/* Lumina guía el tramo comercial sin desplazar el trabajo real. */}
       <LuminaFeature />
 
       {/* Narrativa por pasos: cómo Lumina te lleva de la idea al proyecto. */}
       <LuminaJourney />
-
-      {/* Cómo trabajamos y con qué (confianza + capacidad). */}
-      <ProcessOrbital />
-
-      <StackOrbit />
 
       {/* Qué ofrecemos → cotiza y paga. Servicios y cotizador quedan juntos
           para que descubrir la oferta y armar el proyecto sea un solo tramo. */}
@@ -159,25 +144,22 @@ export default function HomePage() {
 
       <Configurator />
 
-      {/* Prueba: trabajo real y presencia, después de haber visto la oferta. */}
-      <ProjectsShowcase />
-
-      <MarqueeBand words={t.marquee.words} reverse outline />
-
+      {/* Alcance y confianza después de entender la oferta. */}
       <WorldPresence />
 
       <ClientsMarquee />
 
+      <MarqueeBand words={t.marquee.words} reverse outline />
+
       {/* Dudas y cierre. */}
       <Faq />
 
+      {/* Después del cierre comercial solo queda la firma del footer. */}
       <ClosingCta />
-
-      <MeetBryan />
-
-      <SiteFooter />
+      </main>
 
       <LuminaChat />
-    </main>
+      <SiteFooter />
+    </>
   );
 }

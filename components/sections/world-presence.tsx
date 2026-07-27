@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { SectionHeading } from "@/components/sections/section-heading";
 import { LazyMount } from "@/components/three/lazy-mount";
 import { useLanguage } from "@/lib/i18n/context";
+import { useDecorative3dEnabled } from "@/lib/motion-preference";
 
 // El globo (three.js) viaja en su propio chunk y solo se descarga/monta
 // cuando la sección se acerca al viewport (LazyMount) — el bundle inicial
@@ -27,8 +28,27 @@ const ARCS: [number, number][] = [
   [1, 2],
 ];
 
+function StaticGlobe() {
+  return (
+    <div aria-hidden className="absolute inset-6 grid place-items-center">
+      <div className="relative size-[82%] rounded-full border border-primary/35 bg-secondary/30 shadow-[0_0_70px_hsl(var(--primary)/0.08)]">
+        <span className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_34%_28%,hsl(var(--primary)/0.16),transparent_30%)]" />
+        <span className="absolute inset-[12%] rounded-full border border-primary/20" />
+        <span className="absolute left-1/2 top-[8%] h-[84%] w-[34%] -translate-x-1/2 rounded-[50%] border border-primary/20" />
+        <span className="absolute left-[8%] top-1/2 h-[32%] w-[84%] -translate-y-1/2 rounded-[50%] border border-primary/20" />
+        <span className="absolute left-[20%] top-[38%] size-2 rounded-full bg-primary shadow-[0_0_18px_hsl(var(--primary)/0.65)]" />
+        <span className="absolute right-[24%] top-[30%] size-1.5 rounded-full bg-foreground/80" />
+        <span className="absolute right-[18%] bottom-[30%] size-1.5 rounded-full bg-primary" />
+        <span className="absolute left-[23%] top-[39%] h-px w-[54%] origin-left -rotate-[9deg] bg-gradient-to-r from-primary/70 to-primary/10" />
+      </div>
+    </div>
+  );
+}
+
 export function WorldPresence() {
   const { t } = useLanguage();
+  const decorative3dEnabled = useDecorative3dEnabled();
+  const globeClassName = "corner-ticks relative mx-auto aspect-square w-full max-w-[560px]";
 
   return (
     <section
@@ -71,19 +91,24 @@ export function WorldPresence() {
 
           {/* Globo interactivo */}
           <div className="order-1 lg:order-2">
-            <LazyMount
-              className="corner-ticks relative mx-auto aspect-square w-full max-w-[560px]"
-              fallback={<div className="absolute inset-6 animate-pulse rounded-full bg-secondary/40" />}
-            >
-              <GlobeScene
-                locations={LOCATIONS}
-                arcs={ARCS}
-                className="absolute inset-0"
-              />
-            </LazyMount>
-            <p className="tech-label mt-3 text-center text-muted-foreground">
-              {t.world.dragHint}
-            </p>
+            {decorative3dEnabled ? (
+              <LazyMount className={globeClassName} fallback={<StaticGlobe />}>
+                <GlobeScene
+                  locations={LOCATIONS}
+                  arcs={ARCS}
+                  className="absolute inset-0"
+                />
+              </LazyMount>
+            ) : (
+              <div className={globeClassName}>
+                <StaticGlobe />
+              </div>
+            )}
+            {decorative3dEnabled && (
+              <p className="tech-label mt-3 text-center text-muted-foreground">
+                {t.world.dragHint}
+              </p>
+            )}
           </div>
         </div>
       </div>

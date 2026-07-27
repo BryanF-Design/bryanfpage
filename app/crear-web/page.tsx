@@ -17,10 +17,10 @@ export const metadata: Metadata = {
       "Arma tu página web, elige módulos y paga en línea. Precios transparentes, sin sorpresas.",
     images: [
       {
-        url: "/img/logotipo-blanco.png",
-        width: 2904,
-        height: 1016,
-        alt: "BryanF Design",
+        url: "/img/og-bryanf-apex.png",
+        width: 1200,
+        height: 630,
+        alt: "BryanF Design — Haz que pase. Precisión, ritmo y conexión.",
       },
     ],
   },

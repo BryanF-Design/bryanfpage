@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, RotateCcw, Send, X } from "lucide-react";
@@ -8,6 +8,7 @@ import { MessageCircle, RotateCcw, Send, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFooterInView } from "@/lib/use-footer-in-view";
 import { useLanguage } from "@/lib/i18n/context";
+import { useConfiguratorInView } from "@/lib/use-configurator-in-view";
 
 type Mood = "Normal" | "Enfocada" | "Duda" | "Sorprendida" | "Offline";
 
@@ -52,14 +53,24 @@ interface Msg {
 // sessionStorage, not localStorage: the conversation should survive a reload
 // or a navigation within the site (tab close = fresh start), no backend involved.
 const SESSION_KEY = "bryanf_lumina_chat_v1";
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 function readStoredMessages(): Msg[] | null {
   try {
     const raw = window.sessionStorage.getItem(SESSION_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed) && parsed.every((m) => m && typeof m.content === "string")) {
-      return parsed;
+    if (
+      Array.isArray(parsed) &&
+      parsed.every(
+        (message) =>
+          message &&
+          (message.role === "user" || message.role === "assistant") &&
+          typeof message.content === "string"
+      )
+    ) {
+      return parsed as Msg[];
     }
   } catch {
     /* storage bloqueado o corrupto */
@@ -111,16 +122,44 @@ function sanitizeHtml(html: string): string {
 export function LuminaChat() {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
+  const configuratorInView = useConfiguratorInView();
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [mood, setMood] = useState<Mood>("Normal");
   const [teaser, setTeaser] = useState(false);
-  const [messages, setMessages] = useState<Msg[]>(
-    () => readStoredMessages() ?? [{ role: "assistant", content: t.lumina.greeting }]
-  );
+  const [messages, setMessages] = useState<Msg[]>([
+    { role: "assistant", content: t.lumina.greeting },
+  ]);
+  const [messagesRestored, setMessagesRestored] = useState(false);
   const [retryText, setRetryText] = useState<string | null>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const fabRef = useRef<HTMLButtonElement>(null);
+  const hasTeasedRef = useRef(false);
+  const openRef = useRef(open);
+  openRef.current = open;
   const footerInView = useFooterInView();
+  const footerInViewRef = useRef(footerInView);
+  footerInViewRef.current = footerInView;
+
+  const restoreChatFocus = useCallback(() => {
+    window.setTimeout(() => {
+      const target = footerInViewRef.current
+        ? document.querySelector<HTMLElement>('footer a[href], footer button:not([disabled])')
+        : fabRef.current;
+      target?.focus();
+    });
+  }, []);
+
+  function markTeased() {
+    hasTeasedRef.current = true;
+    try {
+      window.sessionStorage.setItem("bryanf_lumina_teased", "1");
+    } catch {
+      /* sessionStorage bloqueado */
+    }
+  }
 
   // Broadcast open/closed so other fixed UI (the language notice banner) can
   // get out of the way instead of covering the full-screen mobile chat.
@@ -128,14 +167,22 @@ export function LuminaChat() {
     window.dispatchEvent(new CustomEvent("lumina:visibility", { detail: { open } }));
   }, [open]);
 
+  // Restore only after hydration so the server and first client render match.
+  useEffect(() => {
+    const stored = readStoredMessages();
+    if (stored?.length) setMessages(stored);
+    setMessagesRestored(true);
+  }, []);
+
   // Persist so a reload or in-site navigation doesn't drop the conversation.
   useEffect(() => {
+    if (!messagesRestored) return;
     try {
       window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(messages));
     } catch {
       /* storage bloqueado */
     }
-  }, [messages]);
+  }, [messages, messagesRestored]);
 
   // Body scroll lock only on mobile: there the chat is a full-screen sheet, so
   // the page underneath shouldn't scroll behind it. Desktop stays a corner
@@ -167,27 +214,99 @@ export function LuminaChat() {
 
   useEffect(() => {
     if (footerInView) {
-      setOpen(false);
       setTeaser(false);
     }
   }, [footerInView]);
 
+  // El configurador concentra las acciones de compra. Si ocupa el viewport,
+  // cierra el panel grande, descarta el teaser y deja solo el acceso compacto.
+  useEffect(() => {
+    if (configuratorInView) {
+      if (openRef.current) restoreChatFocus();
+      setOpen(false);
+      setTeaser(false);
+    }
+  }, [configuratorInView, restoreChatFocus]);
+
+  useEffect(() => {
+    if (!open) return;
+    const panel = panelRef.current;
+    const parent = panel?.parentElement;
+    const background = parent
+      ? Array.from(parent.children)
+          .filter((element): element is HTMLElement => element instanceof HTMLElement && element !== panel)
+          .map((element) => ({ element, inert: element.inert }))
+      : [];
+    background.forEach(({ element }) => {
+      element.inert = true;
+    });
+
+    const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 120);
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        restoreChatFocus();
+        return;
+      }
+      if (event.key !== "Tab" || !panel) return;
+
+      const focusable = Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
+        (element) => element.getAttribute("aria-hidden") !== "true"
+      );
+      if (!focusable.length) {
+        event.preventDefault();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && (document.activeElement === first || !panel.contains(document.activeElement))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      window.removeEventListener("keydown", onKeyDown);
+      background.forEach(({ element, inert }) => {
+        element.inert = inert;
+      });
+    };
+  }, [open, restoreChatFocus]);
+
   // Proactive teaser bubble: pops up once, a bit after load, if the visitor
   // hasn't opened the chat yet — makes Lumina feel present, not just clickable.
   useEffect(() => {
-    if (open) {
+    try {
+      hasTeasedRef.current =
+        hasTeasedRef.current ||
+        window.sessionStorage.getItem("bryanf_lumina_teased") === "1";
+    } catch {
+      /* sessionStorage bloqueado */
+    }
+
+    if (open || configuratorInView || hasTeasedRef.current) {
       setTeaser(false);
       return;
     }
-    const showAt = window.setTimeout(() => setTeaser(true), 9000);
-    const hideAt = window.setTimeout(() => setTeaser(false), 18000);
+    // El aviso de idioma desaparece a los 11.2 s; Lumina entra después para
+    // que ambos mensajes proactivos no compitan en la misma zona móvil.
+    const showAt = window.setTimeout(() => {
+      markTeased();
+      setTeaser(true);
+    }, 12_500);
+    const hideAt = window.setTimeout(() => setTeaser(false), 21_500);
     return () => {
       window.clearTimeout(showAt);
       window.clearTimeout(hideAt);
     };
-  }, [open]);
+  }, [configuratorInView, open]);
 
   function openChat() {
+    markTeased();
     setOpen((o) => !o);
     setTeaser(false);
     setMood("Sorprendida");
@@ -200,6 +319,7 @@ export function LuminaChat() {
   const sendRef = useRef<(text: string) => void>(() => {});
   useEffect(() => {
     function onOpenEvent(e: Event) {
+      markTeased();
       setOpen(true);
       setTeaser(false);
       setMood("Sorprendida");
@@ -270,24 +390,22 @@ export function LuminaChat() {
 
   return (
     <>
-      {/* Panel — hoja de pantalla completa en móvil (interfaz dedicada, no el
-          panel de escritorio encogido); en sm+ vuelve a ser el panel flotante
-          de esquina. h-[100dvh] sigue el viewport dinámico del navegador, así
-          que cuando el teclado virtual abre, el panel se encoge con él en vez
-          de quedar tapado. */}
-      <div
-        className={cn(
-          "glass fixed inset-0 z-[130] flex h-[100dvh] w-full flex-col overflow-hidden rounded-none bg-[hsl(var(--card))] transition-all duration-300",
-          "sm:inset-auto sm:bottom-[calc(6rem+env(safe-area-inset-bottom))] sm:right-4 sm:h-auto sm:w-[min(92vw,22rem)] sm:origin-bottom-right sm:rounded-2xl sm:bg-[hsl(var(--card)/0.82)] sm:shadow-2xl md:right-6",
-          open
-            ? "pointer-events-auto translate-y-0 opacity-100 sm:scale-100"
-            : "pointer-events-none translate-y-full opacity-0 sm:translate-y-3 sm:scale-95 sm:opacity-0"
-        )}
-        role="dialog"
-        aria-modal={open ? true : undefined}
-        aria-label={t.lumina.open}
-      >
-        <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+      {/* Hoja de pantalla completa en móvil; panel flotante desde sm. */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            ref={panelRef}
+            id="lumina-chat-panel"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
+            transition={{ duration: 0.25 }}
+            className="glass fixed inset-0 z-[130] flex h-[100dvh] w-full flex-col overflow-hidden rounded-none bg-[hsl(var(--card))] shadow-2xl sm:inset-auto sm:bottom-[calc(6rem+env(safe-area-inset-bottom))] sm:right-4 sm:h-auto sm:max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] sm:w-[min(92vw,22rem)] sm:origin-bottom-right sm:rounded-2xl sm:bg-[hsl(var(--card)/0.82)] md:right-6"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="lumina-chat-title"
+          >
+            <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
           <div className="flex items-center gap-2">
             <span className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full ring-1 ring-primary/40">
               <AnimatePresence mode="wait">
@@ -313,7 +431,9 @@ export function LuminaChat() {
               )}
             </span>
             <div className="leading-tight">
-              <p className="text-sm font-semibold text-foreground">{t.lumina.name}</p>
+              <p id="lumina-chat-title" className="text-sm font-semibold text-foreground">
+                {t.lumina.name}
+              </p>
               <p className="text-[11px] text-muted-foreground">
                 {mood === "Offline"
                   ? t.lumina.offline
@@ -324,9 +444,13 @@ export function LuminaChat() {
             </div>
           </div>
           <button
-            onClick={() => setOpen(false)}
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              restoreChatFocus();
+            }}
             aria-label={t.lumina.close}
-            className="flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+            className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <X className="h-5 w-5" />
           </button>
@@ -334,6 +458,10 @@ export function LuminaChat() {
 
         <div
           ref={scrollRef}
+          role="log"
+          aria-live="polite"
+          aria-relevant="additions"
+          aria-busy={loading}
           className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-4 sm:max-h-[50vh] sm:min-h-[16rem] sm:flex-none"
         >
           {messages.map((m, i) => {
@@ -364,8 +492,9 @@ export function LuminaChat() {
           )}
           {retryText && !loading && (
             <button
+              type="button"
               onClick={retry}
-              className="inline-flex items-center gap-1.5 self-start rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+              className="inline-flex min-h-11 items-center gap-1.5 self-start rounded-full border border-border px-3 py-2 text-xs text-muted-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <RotateCcw className="h-3 w-3" />
               {t.lumina.retry}
@@ -376,8 +505,9 @@ export function LuminaChat() {
               {t.lumina.quick.map((q) => (
                 <button
                   key={q}
+                  type="button"
                   onClick={() => send(q)}
-                  className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                  className="min-h-11 rounded-full border border-border px-3 py-2 text-xs text-muted-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
                   {q}
                 </button>
@@ -393,40 +523,49 @@ export function LuminaChat() {
           }}
           className="flex shrink-0 items-center gap-2 border-t border-border px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3"
         >
+          <label htmlFor="lumina-message" className="sr-only">
+            {t.lumina.placeholder}
+          </label>
           <input
+            ref={inputRef}
+            id="lumina-message"
+            name="message"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={t.lumina.placeholder}
             enterKeyHint="send"
-            className="min-w-0 flex-1 rounded-full border border-input bg-background px-4 py-2 text-base outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-sm"
+            className="min-h-11 min-w-0 flex-1 rounded-full border border-input bg-background px-4 py-2 text-base outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:text-sm"
           />
           <button
             type="submit"
             disabled={loading || !input.trim()}
             aria-label={t.lumina.send}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity disabled:opacity-50 sm:h-9 sm:w-9"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <Send className="h-4 w-4" />
           </button>
         </form>
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Proactive teaser bubble */}
       <AnimatePresence>
-        {teaser && !open && !footerInView && (
+        {teaser && !open && !footerInView && !configuratorInView && (
           <motion.div
             initial={{ opacity: 0, y: 8, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.3 }}
-            className="glass fixed bottom-[calc(6rem+env(safe-area-inset-bottom))] right-4 z-[120] max-w-[16rem] rounded-2xl rounded-br-sm px-4 py-3 text-sm text-foreground shadow-xl sm:right-6"
+            className="glass fixed bottom-[calc(5.5rem_+_env(safe-area-inset-bottom))] right-3 z-[120] max-w-[min(16rem,calc(100vw_-_1.5rem))] rounded-2xl rounded-br-sm px-4 py-3 pr-9 text-sm text-foreground shadow-xl sm:right-6"
           >
             <button
+              type="button"
               onClick={() => setTeaser(false)}
               aria-label={t.lumina.close}
-              className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-secondary text-muted-foreground hover:text-foreground"
+              className="absolute -right-2 -top-3 flex h-11 w-11 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              <X className="h-3 w-3" />
+              <X className="h-4 w-4" />
             </button>
             {t.lumina.teaser}
           </motion.div>
@@ -435,8 +574,12 @@ export function LuminaChat() {
 
       {/* FAB */}
       <motion.button
+        ref={fabRef}
+        type="button"
         onClick={openChat}
-        aria-label={t.lumina.open}
+        aria-label={open ? t.lumina.close : t.lumina.open}
+        aria-controls="lumina-chat-panel"
+        aria-expanded={open}
         aria-hidden={footerInView}
         tabIndex={footerInView ? -1 : 0}
         animate={{
@@ -448,11 +591,17 @@ export function LuminaChat() {
           scale: { duration: 0.3, ease: "easeInOut" },
         }}
         className={cn(
-          "glass-nav fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-3 z-[120] flex items-center gap-2.5 rounded-2xl border border-primary/35 p-2 pr-3 text-left text-foreground shadow-[0_12px_40px_-14px_hsl(var(--primary)/0.45)] transition-colors hover:border-primary/70 sm:bottom-[calc(1.25rem+env(safe-area-inset-bottom))] sm:right-6 sm:gap-3 sm:pr-4",
+          "glass-nav fixed bottom-[calc(1rem_+_env(safe-area-inset-bottom))] right-3 z-[120] flex min-h-11 min-w-11 items-center rounded-xl border border-primary/35 p-1 text-left text-foreground shadow-[0_12px_40px_-14px_hsl(var(--primary)/0.45)] transition-[border-color,background-color,color] hover:border-primary/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:bottom-[calc(1.25rem_+_env(safe-area-inset-bottom))] sm:right-6 sm:gap-3 sm:rounded-2xl sm:p-2 sm:pr-4",
+          configuratorInView && "rounded-full p-1 pr-1 sm:p-1 sm:pr-1",
           footerInView && "pointer-events-none"
         )}
       >
-        <span className="relative flex h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-primary/10 ring-1 ring-primary/45 sm:h-12 sm:w-12">
+        <span
+          className={cn(
+            "relative flex h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-primary/10 ring-1 ring-primary/45 sm:h-12 sm:w-12",
+            configuratorInView && "rounded-full sm:h-11 sm:w-11"
+          )}
+        >
           <Image src={MOOD_IMG.Normal} alt="" fill sizes="48px" className="object-cover" />
           <span
             className={cn(
@@ -461,7 +610,12 @@ export function LuminaChat() {
             )}
           />
         </span>
-        <span className="min-w-0 leading-tight">
+        <span
+          className={cn(
+            "hidden min-w-0 leading-tight sm:block",
+            configuratorInView && "sm:hidden"
+          )}
+        >
           <span className="flex items-center gap-1.5 font-semibold">
             {t.lumina.name}
             <MessageCircle className="h-3.5 w-3.5 text-primary" />

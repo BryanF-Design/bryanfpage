@@ -6,7 +6,13 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 
 import { cn } from "@/lib/utils";
+import {
+  useDecorative3dEnabled,
+  useReducedMotionPreference,
+} from "@/lib/motion-preference";
 import { Button } from "@/components/ui/button";
+import { TractionLine } from "@/components/ui/traction-line";
+import { VerticalLabel } from "@/components/ui/vertical-label";
 
 // La laptop 3D es clienteside puro y va en su propio chunk: el HTML del hero
 // (h1, subtítulo, CTAs — lo que lee Google y pinta el LCP) no depende de ella.
@@ -14,12 +20,6 @@ const LaptopScene = dynamic(
   () => import("@/components/three/laptop-scene").then((m) => m.LaptopScene),
   { ssr: false }
 );
-// Terreno de partículas al fondo del hero: mismo chunk diferido, cero SSR.
-const ParticleField = dynamic(
-  () => import("@/components/three/particle-field").then((m) => m.ParticleField),
-  { ssr: false }
-);
-
 interface HeroAction {
   label: string;
   href: string;
@@ -62,10 +62,17 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
   ) => {
     const wrapperRef = React.useRef<HTMLDivElement>(null);
     const progressRef = React.useRef(0);
+    const reducedMotion = useReducedMotionPreference();
+    const interactiveLaptop = useDecorative3dEnabled();
 
     // Progreso de scroll del hero (0 = arriba, 1 = tapa abierta). Se escribe
     // en un ref — la escena 3D lo lee en su propio RAF, sin re-renders React.
     React.useEffect(() => {
+      if (!interactiveLaptop) {
+        progressRef.current = 1;
+        return;
+      }
+
       const wrapper = wrapperRef.current;
       if (!wrapper) return;
       let raf = 0;
@@ -90,7 +97,7 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
         window.removeEventListener("resize", onScroll);
         if (raf) cancelAnimationFrame(raf);
       };
-    }, []);
+    }, [interactiveLaptop]);
 
     return (
       <section
@@ -98,51 +105,70 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
         className={cn("relative z-0 w-full", className)}
         {...props}
       >
-        <div ref={wrapperRef} className="relative h-[165svh] md:h-[185svh]">
+        <div ref={wrapperRef} className="relative h-[120svh] md:h-[185svh]">
           <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden bg-background">
             <div aria-hidden className="bg-blueprint absolute inset-0" />
             <div aria-hidden className="mesh-glow-a absolute inset-0" />
-            {/* Terreno de partículas vivo: ondula solo, se levanta bajo el
-                puntero y se hunde hacia el horizonte conforme bajas. */}
-            <ParticleField
-              progressRef={progressRef}
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-[62svh] md:h-[70svh] [mask-image:linear-gradient(to_bottom,transparent,black_42%)]"
+            <TractionLine className="pointer-events-none absolute left-[2%] top-[17%] z-[2] h-[58%] w-[96%] opacity-[0.55] md:top-[13%] lg:left-[4%] lg:top-[17%] lg:h-[62%] lg:w-[92%]" />
+            {/* La columna japonesa queda como señal editorial secundaria. */}
+            <VerticalLabel
+              jp="速さと精度"
+              romaji="hayasa to seido"
+              tone="primary"
+              className="right-4 top-1/2 z-[1] hidden -translate-y-1/2 xl:flex"
             />
-
             <div className="container relative z-10 flex flex-1 flex-col justify-center gap-10 pb-10 pt-28 lg:grid lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-6">
               {/* Copy */}
-              <motion.div
-                initial={{ y: 40, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ ease: [0.2, 0, 0, 1], delay: 0.15, duration: 0.8 }}
-                className="flex flex-col items-start gap-6"
-              >
+              <div className="flex flex-col items-start gap-6">
                 {eyebrow && (
-                  <span className="tech-label inline-flex items-center gap-3 text-muted-foreground">
+                  <motion.span
+                    initial={reducedMotion ? false : { y: 12, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{
+                      ease: [0.2, 0, 0, 1],
+                      delay: reducedMotion ? 0 : 0.08,
+                      duration: reducedMotion ? 0 : 0.48,
+                    }}
+                    className="tech-label inline-flex items-center gap-3 text-muted-foreground"
+                  >
                     <span className="h-1.5 w-1.5 bg-primary" />
                     {eyebrow}
-                  </span>
+                  </motion.span>
                 )}
                 <h1
                   className={cn(
-                    "font-display text-[13vw] font-bold uppercase leading-[0.95] tracking-tight sm:text-6xl md:text-7xl xl:text-[5.4rem]",
+                    "hero-title max-w-full font-display text-[13vw] font-bold uppercase leading-[0.95] tracking-tight sm:text-6xl md:text-7xl xl:text-[5.4rem]",
                     titleClassName
                   )}
                 >
                   {title}
                 </h1>
                 {subtitle && (
-                  <p
+                  <motion.p
+                    initial={reducedMotion ? false : { y: 16, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{
+                      ease: [0.2, 0, 0, 1],
+                      delay: reducedMotion ? 0 : 0.12,
+                      duration: reducedMotion ? 0 : 0.55,
+                    }}
                     className={cn(
                       "max-w-xl text-pretty text-base text-muted-foreground md:text-lg",
                       subtitleClassName
                     )}
                   >
                     {subtitle}
-                  </p>
+                  </motion.p>
                 )}
                 {actions && actions.length > 0 && (
-                  <div
+                  <motion.div
+                    initial={reducedMotion ? false : { y: 16, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{
+                      ease: [0.2, 0, 0, 1],
+                      delay: reducedMotion ? 0 : 0.18,
+                      duration: reducedMotion ? 0 : 0.55,
+                    }}
                     className={cn(
                       "mt-2 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center",
                       actionsClassName
@@ -159,20 +185,27 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                         <Link href={action.href}>{action.label}</Link>
                       </Button>
                     ))}
-                  </div>
+                  </motion.div>
                 )}
-              </motion.div>
+              </div>
 
               {/* Laptop 3D */}
               <motion.div
-                initial={{ opacity: 0 }}
+                initial={reducedMotion ? false : { opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.45, duration: 0.9 }}
+                transition={{
+                  delay: reducedMotion ? 0 : 0.32,
+                  duration: reducedMotion ? 0 : 0.72,
+                }}
                 className="corner-ticks relative h-[34svh] min-h-[220px] w-full sm:h-[40svh] lg:h-[56svh] lg:min-h-[380px]"
               >
-                <LaptopScene progressRef={progressRef} className="absolute inset-0" />
-                {scrollHint && (
-                  <span className="tech-label pointer-events-none absolute bottom-0 left-1/2 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap text-muted-foreground">
+                {interactiveLaptop ? (
+                  <LaptopScene progressRef={progressRef} className="absolute inset-0" />
+                ) : (
+                  <StaticLaptop />
+                )}
+                {interactiveLaptop && scrollHint && (
+                  <span className="tech-label pointer-events-none absolute bottom-0 left-1/2 hidden -translate-x-1/2 items-center gap-2 whitespace-nowrap text-muted-foreground sm:flex">
                     <ScrollArrow />
                     {scrollHint}
                   </span>
@@ -180,11 +213,10 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
               </motion.div>
             </div>
 
-            {/* Pie técnico del hero */}
-            <div className="relative z-10 border-t border-border">
-              <div className="container flex items-center justify-between py-3 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            {/* Pie técnico: datos reales, sin simular un tablero de auto. */}
+            <div className="relative z-10 hidden border-t border-border md:block">
+              <div className="container flex items-center justify-between py-3 pl-20 pr-52 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground lg:pl-6">
                 <span>19.4326° N — 99.1332° O · CDMX</span>
-                <span className="hidden sm:block">MX · ES · FR</span>
                 <span className="text-primary">EST. 2020</span>
               </div>
             </div>
@@ -196,16 +228,33 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
 );
 Hero.displayName = "Hero";
 
+function StaticLaptop() {
+  return (
+    <div aria-hidden className="absolute inset-0 flex items-center justify-center">
+      <div className="relative w-[92%] max-w-[520px]">
+        <div className="relative mx-auto aspect-[16/9] w-[82%] origin-bottom -skew-y-2 overflow-hidden rounded-t-md border border-primary/25 bg-card shadow-[0_0_55px_hsl(var(--primary)/0.1)]">
+          <div className="absolute inset-[5%] overflow-hidden border border-border bg-background">
+            <span className="absolute inset-x-0 top-0 h-[12%] border-b border-border bg-secondary/70" />
+            <span className="absolute left-[7%] top-[24%] h-2 w-[38%] bg-primary/25" />
+            <span className="absolute left-[7%] top-[35%] h-4 w-[56%] bg-foreground/[0.08]" />
+            <span className="absolute left-[7%] top-[52%] h-px w-[66%] bg-primary/45" />
+            <span className="absolute bottom-[12%] left-[7%] h-[14%] w-[28%] rounded-sm bg-primary" />
+            <span className="absolute right-[7%] top-[24%] h-[54%] w-[28%] border border-primary/20 bg-primary/[0.035]" />
+          </div>
+        </div>
+        <div className="relative -mt-px h-8 w-full [clip-path:polygon(8%_0%,92%_0%,100%_72%,96%_100%,4%_100%,0%_72%)] bg-gradient-to-b from-secondary to-background shadow-[0_18px_35px_hsl(var(--background)/0.8)]">
+          <span className="absolute left-1/2 top-1 h-px w-10 -translate-x-1/2 bg-primary/80" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ScrollArrow() {
   return (
-    <motion.span
-      aria-hidden
-      animate={{ y: [0, 5, 0] }}
-      transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-      className="inline-block text-primary"
-    >
+    <span aria-hidden className="inline-block text-primary">
       ↓
-    </motion.span>
+    </span>
   );
 }
 

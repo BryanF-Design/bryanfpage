@@ -6,7 +6,7 @@ export function MicrosoftClarity() {
   if (!CLARITY_ID) return null;
 
   return (
-    <Script id="microsoft-clarity-init" strategy="afterInteractive">
+    <Script id="microsoft-clarity-init" strategy="lazyOnload">
       {`
         (function(c,l,a,r,i,t,y){
           c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};

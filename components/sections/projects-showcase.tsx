@@ -5,9 +5,10 @@ import Image from "next/image";
 import { ArrowUpRight, ChevronDown } from "lucide-react";
 
 import { projects, desktopShot, mobileShot } from "@/lib/projects";
-import { TextRotate } from "@/components/ui/text-rotate";
 import { Tilt } from "@/components/ui/tilt";
 import { Button } from "@/components/ui/button";
+import { TractionLine } from "@/components/ui/traction-line";
+import { LazyMount } from "@/components/three/lazy-mount";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 
@@ -18,16 +19,22 @@ const FEATURED_SLUGS = [
   "element-experiences-com",
   "efficientplasticolors-com",
   "nkmohcafe-com",
-];
+] as const;
+
+type FeaturedSlug = (typeof FEATURED_SLUGS)[number];
+
+const isFeaturedSlug = (slug: string): slug is FeaturedSlug =>
+  (FEATURED_SLUGS as readonly string[]).includes(slug);
 
 const orderedProjects = [
   ...FEATURED_SLUGS.map((slug) => projects.find((p) => p.slug === slug)).filter(
     (p): p is (typeof projects)[number] => Boolean(p)
   ),
-  ...projects.filter((p) => !FEATURED_SLUGS.includes(p.slug)),
+  ...projects.filter((p) => !isFeaturedSlug(p.slug)),
 ];
 
 const hostname = (url: string) => new URL(url).hostname.replace(/^www\./, "");
+const CASE_FIELDS = ["problem", "decision", "result"] as const;
 
 export function ProjectsShowcase() {
   const { t } = useLanguage();
@@ -43,8 +50,9 @@ export function ProjectsShowcase() {
       {/* Legacy anchor: keep older internal links (#portafolio) landing here. */}
       <span id="portafolio" className="absolute -top-24" aria-hidden />
       <div aria-hidden className="mesh-glow-b opacity-60" />
+      <TractionLine className="pointer-events-none absolute -right-[12%] -top-24 hidden h-72 w-[min(1050px,100vw)] opacity-[0.12] sm:block" />
       <div className="container relative">
-        {/* Animated heading */}
+        {/* El trabajo aparece pronto: primero evidencia, después historia. */}
         <div className="mx-auto flex max-w-2xl flex-col items-center gap-4 text-center">
           <span className="tech-label inline-flex items-center gap-3 text-primary">
             <span className="h-1.5 w-1.5 bg-primary" />
@@ -52,19 +60,7 @@ export function ProjectsShowcase() {
           </span>
           <h2 className="flex flex-wrap items-baseline justify-center gap-x-3 font-display text-4xl font-semibold tracking-tight md:text-5xl">
             <span>{t.projects.titlePrefix}</span>
-            <TextRotate
-              key={t.projects.rotatingWords.join("|")}
-              texts={t.projects.rotatingWords}
-              mainClassName="text-primary justify-center"
-              splitLevelClassName="overflow-hidden pb-1"
-              rotationInterval={2200}
-              staggerDuration={0.02}
-              staggerFrom="first"
-              initial={{ y: "100%", opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: "-110%", opacity: 0 }}
-              transition={{ type: "spring", damping: 28, stiffness: 320 }}
-            />
+            <span className="text-primary">{t.projects.rotatingWords[0]}</span>
           </h2>
           <p className="text-balance text-base text-muted-foreground md:text-lg">
             {t.projects.subtitle}
@@ -80,70 +76,104 @@ export function ProjectsShowcase() {
             desktop one. Title and description live in their own solid
             footer below the image, never on top of it. */}
         <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 md:mt-16 lg:grid-cols-3">
-          {visibleProjects.map((p, idx) => (
-            <Tilt
-              key={p.slug}
-              reveal
-              revealDelay={(idx % 3) * 0.08}
-              className={cn(idx === 0 && "sm:col-span-2 lg:col-span-2")}
-            >
-            <a
-              href={p.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="elevate group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card hover:border-primary/40"
-            >
-              {/* Browser chrome */}
-              <div className="flex items-center gap-3 border-b border-border bg-secondary/50 px-3.5 py-2.5">
-                <span className="flex gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-muted-foreground/25" />
-                  <span className="h-2 w-2 rounded-full bg-muted-foreground/25" />
-                  <span className="h-2 w-2 rounded-full bg-muted-foreground/25" />
-                </span>
-                <span className="min-w-0 flex-1 truncate rounded-full bg-background/60 px-2.5 py-0.5 text-center font-mono text-[11px] text-muted-foreground">
-                  {hostname(p.url)}
-                </span>
-              </div>
+          {visibleProjects.map((p, idx) => {
+            const projectCase = isFeaturedSlug(p.slug) ? t.projects.cases[p.slug] : undefined;
 
-              {/* Screenshot: object-cover desde arriba, así el marco 4:3
-                  siempre se llena con la parte superior del sitio (nada de
-                  tiras letterboxeadas en móvil — la captura de teléfono es
-                  muy alta y solo interesa su inicio). El swap tipo <picture>
-                  mantiene la optimización: solo se descarga la captura que
-                  corresponde al breakpoint. */}
+            return (
+              <Tilt
+                key={p.slug}
+                reveal
+                revealDelay={(idx % 3) * 0.08}
+                className={cn(idx === 0 && "sm:col-span-2 lg:col-span-2")}
+              >
+                <a
+                  href={p.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="elevate group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                >
+                  {/* Browser chrome */}
+                  <div className="flex items-center gap-3 border-b border-border bg-secondary/50 px-3.5 py-2.5">
+                    <span className="flex gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-muted-foreground/25" />
+                      <span className="h-2 w-2 rounded-full bg-muted-foreground/25" />
+                      <span className="h-2 w-2 rounded-full bg-muted-foreground/25" />
+                    </span>
+                    <span className="min-w-0 flex-1 truncate rounded-full bg-background/60 px-2.5 py-0.5 text-center font-mono text-[11px] text-muted-foreground">
+                      {hostname(p.url)}
+                    </span>
+                    <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-primary/65" />
+                  </div>
+
+                  {/* Screenshot: object-cover desde arriba, así el marco 4:3
+                      siempre se llena con la parte superior del sitio (nada de
+                      tiras letterboxeadas en móvil — la captura de teléfono es
+                      muy alta y solo interesa su inicio). El swap tipo <picture>
+                      mantiene la optimización: solo se descarga la captura que
+                      corresponde al breakpoint. */}
               <div className="relative aspect-[4/3] overflow-hidden bg-secondary/20">
-                <Image
-                  src={mobileShot(p.slug)}
-                  alt={`${p.name} — captura del sitio`}
-                  fill
-                  sizes="100vw"
-                  loading="lazy"
-                  className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03] md:hidden"
-                />
-                <Image
-                  src={desktopShot(p.slug)}
-                  alt={`${p.name} — captura del sitio`}
-                  fill
-                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                  loading="lazy"
-                  className="hidden object-cover object-top transition-transform duration-500 group-hover:scale-[1.03] md:block"
-                />
+                <LazyMount
+                  rootMargin="320px"
+                  className="absolute inset-0"
+                  fallback={<div aria-hidden className="h-full w-full bg-blueprint opacity-25" />}
+                >
+                  <Image
+                    src={mobileShot(p.slug)}
+                    alt={`${p.name} — captura del sitio`}
+                    fill
+                    sizes="(max-width: 639px) calc(100vw - 3rem), 50vw"
+                    quality={60}
+                    loading="lazy"
+                    className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03] md:hidden"
+                  />
+                  <Image
+                    src={desktopShot(p.slug)}
+                    alt={`${p.name} — captura del sitio`}
+                    fill
+                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    quality={60}
+                    loading="lazy"
+                    className="hidden object-cover object-top transition-transform duration-500 group-hover:scale-[1.03] md:block"
+                  />
+                </LazyMount>
               </div>
 
-              {/* Caption — solid card background, never over the image. */}
-              <div className="flex flex-1 flex-col gap-1.5 p-5">
-                <h3 className="font-display text-lg font-semibold tracking-tight text-foreground">
-                  {p.name}
-                </h3>
-                <p className="text-sm text-muted-foreground">{t.projects.descs[p.slug] ?? p.desc}</p>
-                <span className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-foreground/90 transition-colors group-hover:text-primary">
-                  {t.projects.visitSite}
-                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </span>
-              </div>
-            </a>
-            </Tilt>
-          ))}
+                  {/* Caption — solid card background, never over the image. */}
+                  <div className="flex flex-1 flex-col gap-1.5 p-5">
+                    <h3 className="font-display text-lg font-semibold tracking-tight text-foreground">
+                      {p.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {t.projects.descs[p.slug] ?? p.desc}
+                    </p>
+
+                    {projectCase && (
+                      <dl className="mt-3 divide-y divide-border/80 border-y border-border/80">
+                        {CASE_FIELDS.map((field) => (
+                          <div
+                            key={field}
+                            className="grid grid-cols-[5.25rem_minmax(0,1fr)] gap-3 py-2.5"
+                          >
+                            <dt className="pt-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
+                              {t.projects.caseLabels[field]}
+                            </dt>
+                            <dd className="text-[13px] leading-relaxed text-foreground/75">
+                              {projectCase[field]}
+                            </dd>
+                          </div>
+                        ))}
+                      </dl>
+                    )}
+
+                    <span className="mt-auto inline-flex items-center gap-1.5 pt-3 text-sm font-semibold text-foreground/90 transition-colors group-hover:text-primary">
+                      {t.projects.visitSite}
+                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </span>
+                  </div>
+                </a>
+              </Tilt>
+            );
+          })}
         </div>
 
         {!showAll && orderedProjects.length > visibleProjects.length && (

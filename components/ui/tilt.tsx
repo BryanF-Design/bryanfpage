@@ -1,8 +1,9 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 
+import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { cn } from "@/lib/utils";
 
 interface TiltProps {
@@ -23,7 +24,7 @@ interface TiltProps {
  */
 export function Tilt({ children, className, max = 4, reveal = false, revealDelay = 0 }: TiltProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion();
+  const reduced = useReducedMotionPreference();
 
   function reset() {
     const el = ref.current;
@@ -33,7 +34,7 @@ export function Tilt({ children, className, max = 4, reveal = false, revealDelay
   function onPointerMove(e: React.PointerEvent<HTMLDivElement>) {
     const el = ref.current;
     if (!el || e.pointerType !== "mouse") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (reduced) return;
     const rect = el.getBoundingClientRect();
     const px = (e.clientX - rect.left) / rect.width - 0.5;
     const py = (e.clientY - rect.top) / rect.height - 0.5;

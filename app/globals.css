@@ -41,6 +41,12 @@
     --font-sans: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
     --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
     --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    /* Japonés: stack de sistema, cero bytes descargados. Windows, macOS, iOS y
+       Android traen todos una gótica CJK — a tamaño de ornamento la diferencia
+       de trazo entre sistemas es irrelevante, y nos ahorra los 1–4 MB que pesa
+       Noto Sans JP completo. */
+    --font-jp: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic",
+      "Noto Sans JP", Meiryo, "MS Gothic", sans-serif;
 
     --ease-material: cubic-bezier(0.2, 0, 0, 1);
   }
@@ -52,6 +58,8 @@
   }
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    color-scheme: dark;
   }
   body {
     @apply bg-background text-foreground antialiased;
@@ -59,6 +67,13 @@
     /* Las bandas marquee y los nombres gigantes sobresalen a propósito:
        nada de scroll horizontal fantasma en móvil. */
     overflow-x: clip;
+  }
+  :where(a, button, input, textarea, select, summary):focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 3px;
+  }
+  :where(a, button, input, textarea, select, summary) {
+    touch-action: manipulation;
   }
 
   /* Scrollbar de taller: delgada, tinta y lima. */
@@ -85,11 +100,9 @@
     color: hsl(var(--primary-foreground));
   }
 
-  /* El display (Archivo variable) se usa expandido: es lo que separa los
-     titulares de cualquier grotesca por defecto. Se suma a la clase
-     font-display de Tailwind (propiedades distintas, sin conflicto). */
+  /* La instancia local de Archivo ya está expandida: es lo que separa los
+     titulares de cualquier grotesca por defecto sin cargar otro eje. */
   .font-display {
-    font-stretch: 124%;
     letter-spacing: -0.015em;
   }
 
@@ -166,6 +179,72 @@
     right: -1px;
     border-bottom: 1px solid hsl(var(--primary) / 0.7);
     border-right: 1px solid hsl(var(--primary) / 0.7);
+  }
+
+  /* ——— APEX ———————————————————————————————————————————————————
+     Capa de autor: precisión, ritmo y conexión. Todo aquí es CSS/SVG;
+     el canvas se reserva para escenas 3D que sí aportan al contenido. */
+
+  /* Voz japonesa. Solo ornamento: nunca carga información que el usuario
+     necesite para operar el sitio (la traducción viaja al lado, en romaji). */
+  .font-jp {
+    font-family: var(--font-jp);
+    font-weight: 400;
+  }
+
+  /* Escritura vertical de derecha a izquierda. Los kanji salen derechos solos
+     (orientación `mixed`); el latín que se cuele va rotado, que es justo el
+     efecto de tategaki que buscamos en las etiquetas de sección. */
+  .vertical-jp {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    letter-spacing: 0.25em;
+  }
+
+  /* Marco de HUD: cuatro corchetes de instrumento alrededor de un bloque.
+     Hermano de .corner-ticks, pero cerrando las cuatro esquinas. */
+  .hud-frame {
+    position: relative;
+  }
+  .hud-frame::before,
+  .hud-frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border: 1px solid transparent;
+  }
+  .hud-frame::before {
+    border-top-color: hsl(var(--primary) / 0.55);
+    border-left-color: hsl(var(--primary) / 0.55);
+    clip-path: polygon(
+      0 0, 18px 0, 18px 1px, 1px 1px, 1px 18px, 0 18px,
+      0 100%, 1px 100%, 1px calc(100% - 18px), 0 calc(100% - 18px)
+    );
+  }
+  .hud-frame::after {
+    border-bottom-color: hsl(var(--primary) / 0.55);
+    border-right-color: hsl(var(--primary) / 0.55);
+    clip-path: polygon(
+      100% 0, 100% 18px, calc(100% - 1px) 18px, calc(100% - 1px) 1px,
+      calc(100% - 18px) 1px, calc(100% - 18px) 0,
+      100% 100%, calc(100% - 18px) 100%, calc(100% - 18px) calc(100% - 1px),
+      100% calc(100% - 1px)
+    );
+  }
+
+  /* Firma del autor inspirada en un sello de taller. Es estática y usa el
+     verde existente para seguir perteneciendo a BryanF Design. */
+  .maker-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid hsl(var(--primary) / 0.7);
+    border-radius: 6px;
+    color: hsl(var(--primary));
+    font-family: var(--font-jp);
+    line-height: 1;
+    background-color: hsl(var(--primary) / 0.06);
   }
 
   /* Elevación con curva material compartida. */
@@ -307,4 +386,11 @@
 .a11y-visible-focus *:focus-visible {
   outline: 3px solid hsl(var(--primary)) !important;
   outline-offset: 3px !important;
+}
+
+/* "Acontecer." es la palabra hero más larga entre los siete idiomas. */
+@media (max-width: 639px) {
+  html[lang="pt"] .hero-title {
+    font-size: 10vw;
+  }
 }

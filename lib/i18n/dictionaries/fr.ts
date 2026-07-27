@@ -12,6 +12,7 @@ const fr: Dictionary = {
     verProyectos: "Voir les projets",
     menu: "Ouvrir le menu",
     closeMenu: "Fermer le menu",
+    skipToContent: "Aller au contenu",
     serviciosEntrada: "Services d'entrée",
     lumina: "Lumina",
     servicios: "Services",
@@ -24,7 +25,7 @@ const fr: Dictionary = {
     titlePrefix: "Fais-le",
     titleHighlight: "vraiment.",
     subtitle:
-      "Nous créons votre site sur mesure : rapide, animé et pensé pour convertir. Stratégie, performance et SEO réels pour un site qui a de l'allure et qui vend.",
+      "Je conçois et développe des sites rapides, clairs et faits pour convertir. Vous travaillez avec moi de la première idée au lancement.",
     scrollHint: "Faites défiler pour ouvrir le laptop",
   },
   trust: {
@@ -102,6 +103,45 @@ const fr: Dictionary = {
       "nezga-arquitectos-vercel-app": "Architecture et construction",
       "epiko-vercel-app": "Production d'événements",
       "element-experiences-com": "Expériences et événements",
+    },
+    caseLabels: {
+      problem: "Problème",
+      decision: "Décision",
+      result: "Résultat",
+    },
+    cases: {
+      "koi-arquitectura-vercel-app": {
+        problem:
+          "Traduire les besoins et les modes de vie en espaces, sans réduire le travail d'architecture à une galerie.",
+        decision:
+          "Structurer le récit autour de l'écoute, de la conception, de la construction et du suivi, projet à l'appui.",
+        result:
+          "Un site qui explique le processus et la valeur d'une intervention, puis ouvre un contact direct.",
+      },
+      "element-experiences-com": {
+        problem:
+          "Réunir sorties ouvertes, expériences privées et services aux entreprises sans diluer la raison d'être de la marque.",
+        decision:
+          "Organiser l'offre par type d'expérience et l'appuyer par un calendrier, des niveaux et des actions claires pour réserver ou demander un devis.",
+        result:
+          "Un parcours où chaque visiteur identifie l'expérience adaptée et atteint la bonne étape suivante.",
+      },
+      "efficientplasticolors-com": {
+        problem:
+          "Expliquer un catalogue technique de masterbatch et d'additifs tout en simplifiant la correspondance des couleurs.",
+        decision:
+          "Transformer la couleur en outil interactif avec recherche Pantone®, familles de produits et demande de devis directe.",
+        result:
+          "Le visiteur explore teintes et produits puis envoie une demande WhatsApp dans le même parcours.",
+      },
+      "nkmohcafe-com": {
+        problem:
+          "Raconter l'origine à Zongolica tout en présentant le café de spécialité et les solutions pour les entreprises.",
+        decision:
+          "Associer récit d'origine, profils de service et produit à des accès clairs vers la demande de devis.",
+        result:
+          "Le site distingue café de spécialité, café commercial et mouture personnalisée, puis guide vers la commande.",
+      },
     },
   },
   world: {
@@ -311,15 +351,85 @@ const fr: Dictionary = {
     ctaSecondary: "WhatsApp direct",
   },
   about: {
-    eyebrow: "Qui est derrière tout ça",
-    title: "Je suis Bryan. Je conçois et je construis chaque site moi-même.",
+    eyebrow: "Un design qui porte ma signature",
+    title: "Je suis Bryan. Je conçois avec intention et je construis pour que ça fonctionne.",
     subtitle:
-      "Pas d'agence entre nous, pas d'intermédiaires : vous me parlez, du premier message jusqu'au jour où votre site est en ligne. Mexique, horaires flexibles, café à volonté.",
+      "Je conçois et développe chaque site de bout en bout. Sans agence ni intermédiaires : vous travaillez avec moi de la première idée au lancement.",
     role: "Designer & développeur",
-    chips: ["Design + code", "Contact direct, sans agence", "Livraison dès 3 jours"],
+    photoAlt: "Bryan en train de concevoir et de développer à son bureau",
+    inspirationLabel: "Ce que j'apporte au travail",
+    inspiration:
+      "Je m'inspire des voitures hautes performances — ma préférée est la Honda Civic Type R 2016 —, de la culture visuelle japonaise et de la logique d'un réseau bien construit. Je ne les colle pas comme décoration : je les traduis en précision, rythme et connexion.",
+    chips: ["Design + code", "Contact direct", "Performance intentionnelle"],
+    principlesLabel: "Ma façon de travailler · précision, rythme et connexion",
+    principles: [
+      {
+        title: "Précision",
+        body: "Chaque élément a une raison d'être.",
+        detail: "Hiérarchie · accessibilité · détail",
+      },
+      {
+        title: "Rythme",
+        body: "Une expérience doit sembler rapide avant même d'être mesurée.",
+        detail: "Performance · mouvement · réponse",
+      },
+      {
+        title: "Connexion",
+        body: "Design, code, SEO et activité fonctionnent comme un système.",
+        detail: "Du premier clic au contact",
+      },
+    ],
     ctaPrimary: "Travaillons ensemble",
     ctaSecondary: "Voir mon processus",
     quote: "Chaque site que vous voyez ici est né sur ce bureau.",
+  },
+  garage: {
+    eyebrow: "Un design qui porte ma signature",
+    title: "Précision, rythme et connexion.",
+    subtitle:
+      "Mes influences deviennent des décisions concrètes de design, de code et d'activité.",
+    verticalJp: "速さと精度",
+    verticalRomaji: "seido · nagare · tsunagari",
+    hint: "Une trajectoire, de l'idée au résultat",
+    spec: {
+      modelLabel: "Principe",
+      model: "Précision",
+      codeLabel: "Expérience",
+      code: "Rythme",
+      colorLabel: "Système",
+      color: "Connexion",
+      engineLabel: "Métier",
+      engine: "Design + code",
+    },
+    cards: [
+      {
+        index: "01",
+        jp: "精度",
+        romaji: "seido",
+        title: "Chaque élément a une raison d'être.",
+        body:
+          "La hiérarchie, l'accessibilité et chaque détail viennent d'une décision réfléchie.",
+        spec: "Précision · intention",
+      },
+      {
+        index: "02",
+        jp: "流れ",
+        romaji: "nagare",
+        title: "La vitesse se ressent aussi.",
+        body:
+          "Contenu, mouvement et réponse gardent un rythme clair avant et après la mesure.",
+        spec: "Rythme · performance",
+      },
+      {
+        index: "03",
+        jp: "繋",
+        romaji: "tsunagari",
+        title: "Tout fonctionne comme un système.",
+        body:
+          "Design, code, SEO et activité relient le premier clic à une action utile.",
+        spec: "Connexion · résultat",
+      },
+    ],
   },
   luminaJourney: {
     eyebrow: "Comment ça marche",
@@ -373,6 +483,7 @@ const fr: Dictionary = {
     terms: "Conditions générales",
     reviewGoogle: "Laissez-nous un avis sur Google Maps",
     clientQuestion: "Déjà client ?",
+    signatureLabel: "Signature de Bryan F.",
     copyright: (year) => `© ${year} BryanF Design · Fabriqué au Mexique`,
     acceptPrefix: "En nous contactant, vous acceptez notre",
     and: "et nos",

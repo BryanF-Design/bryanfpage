@@ -4,7 +4,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
-import { Floating3d } from "@/components/three/floating-3d";
 import { useLanguage } from "@/lib/i18n/context";
 
 const WHATSAPP = "https://wa.me/525663012505";
@@ -13,20 +12,14 @@ export function ClosingCta() {
   const { t } = useLanguage();
 
   return (
-    <section className="relative overflow-hidden border-t border-border py-24 md:py-32">
-      {/* Nudo toroidal 3D de fondo — puro ambiente, no intercepta clics. */}
-      <Floating3d
-        variant="torusKnot"
-        opacity={0.22}
-        className="pointer-events-none absolute inset-0 -z-10"
+    <section
+      aria-label={t.closingCta.title}
+      className="relative overflow-hidden border-t border-border py-24 md:py-32"
+    >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--primary)/0.12),transparent_52%)]"
       />
-      <div className="pointer-events-none absolute inset-0 -z-20 flex items-center justify-center">
-        <motion.div
-          className="h-[36rem] w-[36rem] rounded-full bg-primary/20 blur-[120px]"
-          animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </div>
 
       <div className="container flex flex-col items-center gap-6 text-center">
         <motion.h2
@@ -55,7 +48,6 @@ export function ClosingCta() {
           className="mt-2 flex flex-col gap-3 sm:flex-row"
         >
           <span className="relative inline-flex">
-            <span className="absolute inset-0 -z-10 animate-ping rounded-md bg-primary/40 [animation-duration:2.5s]" />
             <Button asChild size="lg">
               <Link href="#precios">{t.closingCta.ctaPrimary}</Link>
             </Button>

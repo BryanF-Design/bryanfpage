@@ -12,6 +12,7 @@ const ja: Dictionary = {
     verProyectos: "実績を見る",
     menu: "メニューを開く",
     closeMenu: "メニューを閉じる",
+    skipToContent: "コンテンツへ移動",
     serviciosEntrada: "エントリーサービス",
     lumina: "Lumina",
     servicios: "サービス",
@@ -24,7 +25,7 @@ const ja: Dictionary = {
     titlePrefix: "実現",
     titleHighlight: "しよう。",
     subtitle:
-      "コンバージョンを意識した、速くてアニメーション豊かなオーダーメイドのウェブサイトを制作します。戦略・パフォーマンス・SEOで、見た目も成果も妥協しません。",
+      "速く、明快で、成果につながるサイトをデザイン・開発します。最初のアイデアから公開まで、私が直接担当します。",
     scrollHint: "スクロールしてラップトップを開く",
   },
   trust: {
@@ -100,6 +101,45 @@ const ja: Dictionary = {
       "nezga-arquitectos-vercel-app": "建築・建設",
       "epiko-vercel-app": "イベントプロデュース",
       "element-experiences-com": "体験・イベント",
+    },
+    caseLabels: {
+      problem: "課題",
+      decision: "判断",
+      result: "成果",
+    },
+    cases: {
+      "koi-arquitectura-vercel-app": {
+        problem:
+          "建築事務所を単なる作品ギャラリーにせず、要望や暮らし方を空間へ翻訳すること。",
+        decision:
+          "ヒアリング、設計、施工、アフターフォローの順に物語を構成し、実例を根拠として示す。",
+        result:
+          "プロセスと空間を改善する価値が伝わり、その流れのまま直接相談できるサイト。",
+      },
+      "element-experiences-com": {
+        problem:
+          "一般向けルート、プライベート体験、法人サービスを、ブランドの目的を薄めず一つにまとめること。",
+        decision:
+          "体験の種類ごとに情報を整理し、日程、難易度、予約・見積もりへの明確な導線を設ける。",
+        result:
+          "訪問者が自分に合う体験を見分け、適切な次の行動へ進める構成。",
+      },
+      "efficientplasticolors-com": {
+        problem:
+          "マスターバッチと添加剤の専門的なカタログを説明しながら、色合わせを分かりやすくすること。",
+        decision:
+          "Pantone®検索、製品カテゴリー、直接見積もりを組み合わせ、色をインタラクティブなツールにする。",
+        result:
+          "色と製品を同じ流れで確認し、そのままWhatsAppで依頼を送れるサイト。",
+      },
+      "nkmohcafe-com": {
+        problem:
+          "ゾンゴリカの産地物語と、スペシャルティコーヒーおよび法人向けサービスを同時に伝えること。",
+        decision:
+          "産地の物語、サービス別の提案、商品情報を、明確な見積もり導線と組み合わせる。",
+        result:
+          "スペシャルティ、業務用、挽き方の違いが分かり、注文へ進めるサイト。",
+      },
     },
   },
   world: {
@@ -305,14 +345,84 @@ const ja: Dictionary = {
     ctaSecondary: "WhatsAppで直接連絡",
   },
   about: {
-    eyebrow: "制作者について",
-    title: "Bryanです。すべてのサイトを自分自身でデザイン・制作しています。",
-    subtitle: "代理店や仲介業者を挟まず、最初のメッセージからサイト公開の日まで、私と直接やり取りしていただけます。メキシコから、柔軟な時間で、コーヒー片手に。",
+    eyebrow: "つくり手の視点",
+    title: "Bryanです。意図を持ってデザインし、機能するものをつくります。",
+    subtitle: "すべてのサイトを最初から最後まで私がデザイン・開発します。代理店や仲介者を挟まず、最初のアイデアから公開まで直接やり取りできます。",
     role: "デザイナー & デベロッパー",
-    chips: ["デザイン + コード", "代理店なしの直接対応", "最短3日で納品"],
+    photoAlt: "デスクでデザインと開発をするBryan",
+    inspirationLabel: "仕事に持ち込む視点",
+    inspiration:
+      "高性能な車（特に2016年のホンダ・シビック TYPE Rが好きです）、日本のビジュアル文化、そしてよく設計されたネットワークの論理に惹かれます。それらを飾りとして貼るのではなく、精度・リズム・つながりへと翻訳します。",
+    chips: ["デザイン + コード", "直接対応", "意図のあるパフォーマンス"],
+    principlesLabel: "私の仕事の軸 · 精度、リズム、つながり",
+    principles: [
+      {
+        title: "精度",
+        body: "すべての要素に理由があります。",
+        detail: "階層 · アクセシビリティ · 細部",
+      },
+      {
+        title: "リズム",
+        body: "体験は、計測する前から速く感じられるべきです。",
+        detail: "性能 · 動き · 応答",
+      },
+      {
+        title: "つながり",
+        body: "デザイン、コード、SEO、ビジネスを一つの仕組みとして考えます。",
+        detail: "最初のクリックから問い合わせまで",
+      },
+    ],
     ctaPrimary: "一緒に作りましょう",
     ctaSecondary: "進め方を見る",
     quote: "ここに並ぶサイトは、すべてこの机から生まれました。",
+  },
+  garage: {
+    eyebrow: "つくり手の視点",
+    title: "精度、リズム、つながり。",
+    subtitle:
+      "私のインスピレーションを、デザイン・コード・ビジネスの具体的な判断へ変換します。",
+    verticalJp: "速さと精度",
+    verticalRomaji: "seido · nagare · tsunagari",
+    hint: "アイデアから成果まで、一つの軌道",
+    spec: {
+      modelLabel: "原則",
+      model: "精度",
+      codeLabel: "体験",
+      code: "リズム",
+      colorLabel: "仕組み",
+      color: "つながり",
+      engineLabel: "技術",
+      engine: "デザイン + コード",
+    },
+    cards: [
+      {
+        index: "01",
+        jp: "精度",
+        romaji: "seido",
+        title: "すべての要素に理由があります。",
+        body:
+          "情報の階層、アクセシビリティ、細部のすべてを意図的に決めます。",
+        spec: "精度 · 意図",
+      },
+      {
+        index: "02",
+        jp: "流れ",
+        romaji: "nagare",
+        title: "速さは感覚にも表れます。",
+        body:
+          "コンテンツ、動き、応答が、計測の前後を通して明快なリズムをつくります。",
+        spec: "リズム · パフォーマンス",
+      },
+      {
+        index: "03",
+        jp: "繋",
+        romaji: "tsunagari",
+        title: "すべてを一つの仕組みに。",
+        body:
+          "デザイン、コード、SEO、ビジネスを、最初のクリックから次の行動までつなげます。",
+        spec: "つながり · 成果",
+      },
+    ],
   },
   luminaJourney: {
     eyebrow: "使い方",
@@ -366,6 +476,7 @@ const ja: Dictionary = {
     terms: "利用規約",
     reviewGoogle: "Googleマップにレビューを投稿する",
     clientQuestion: "既にお客様ですか？",
+    signatureLabel: "ブライアンF.の署名",
     copyright: (year) => `© ${year} BryanF Design · メキシコ製`,
     acceptPrefix: "ご連絡いただくと、以下に同意したことになります：",
     and: "・",

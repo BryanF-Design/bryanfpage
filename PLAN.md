@@ -12,7 +12,7 @@
 ## 1. Diagnóstico (auditoría)
 
 **Stack.** Next.js 14 (App Router) · React 18 · TypeScript · Tailwind + tokens
-propios en `app/globals.css` · framer-motion · three.js · Lenis (smooth scroll).
+propios en `app/globals.css` · framer-motion · three.js.
 Pagos ya integrados: **Stripe** (`app/api/stripe-checkout`) y **Mercado Pago**
 (`app/api/mercadopago`) + transferencia por WhatsApp. Chat de Lumina sobre
 `app/api/openai-chat`. i18n propio en 7 idiomas (`lib/i18n`), tipado contra `es`.
@@ -60,9 +60,13 @@ degradar Core Web Vitals si Lumina sube y carga 3D antes de tiempo.
 
 ---
 
-## 3. Nuevo orden de secciones (implementado)
+## 3. Orden previo del rediseño de Lumina (histórico)
 
-Embudo: **Descubrimiento → Guía IA → Confianza → Servicios → Cotización →
+> Este fue el orden del trabajo de Lumina antes de integrar el rebranding.
+> La arquitectura final de la Home se documenta en §3A y en
+> `REBRAND_AUDIT_AND_PLAN.md`.
+
+Embudo previo: **Descubrimiento → Guía IA → Confianza → Servicios → Cotización →
 Prueba → Dudas → Contacto.**
 
 | # | Sección | Ancla | Rol |
@@ -82,6 +86,25 @@ Prueba → Dudas → Contacto.**
 Navegación del header actualizada a: **Lumina · Servicios · Precios · Proyectos ·
 FAQ**. Todas las anclas existentes se conservan (sin romper enlaces internos ni SEO).
 
+### 3A. Orden final tras integrar el rebranding
+
+La rama `feat/rebrand-taller-r` conserva el trabajo real y la autoría antes del
+tramo comercial, sin perder Lumina, servicios ni el cotizador incorporados en
+`main`:
+
+1. Hero + prueba rápida.
+2. Proyectos seleccionados.
+3. Bryan: precisión, ritmo y conexión.
+4. Proceso + stack.
+5. Lumina + su recorrido guiado.
+6. Servicios de entrada + configurador.
+7. Presencia mundial + clientes.
+8. FAQ + CTA final.
+9. Footer.
+
+Las anclas públicas `#home`, `#projects`, `#lumina`, `#servicios-entrada`,
+`#precios`, `#presencia`, `#faq` y `#bryan` se mantienen.
+
 ---
 
 ## 4. Cambios de esta sesión (Fases 1-3 + base de 7-8)
@@ -96,7 +119,7 @@ FAQ**. Todas las anclas existentes se conservan (sin romper enlaces internos ni 
 - `lib/i18n/dictionaries/*.ts` — llaves `nav.lumina` y `nav.servicios` en los 7
   idiomas.
 
-**Validación:** `npm run build` en verde (type-check + lint + 18 páginas
+**Validación:** `npm run build` en verde (type-check + lint + 19 páginas
 estáticas). SEO intacto: mismas rutas, anclas, metadatos y componentes SSR.
 
 ---
