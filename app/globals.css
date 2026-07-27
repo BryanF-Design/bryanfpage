@@ -100,11 +100,9 @@
     color: hsl(var(--primary-foreground));
   }
 
-  /* El display (Archivo variable) se usa expandido: es lo que separa los
-     titulares de cualquier grotesca por defecto. Se suma a la clase
-     font-display de Tailwind (propiedades distintas, sin conflicto). */
+  /* La instancia local de Archivo ya está expandida: es lo que separa los
+     titulares de cualquier grotesca por defecto sin cargar otro eje. */
   .font-display {
-    font-stretch: 124%;
     letter-spacing: -0.015em;
   }
 

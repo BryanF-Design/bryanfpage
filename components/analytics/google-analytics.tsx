@@ -11,7 +11,7 @@ export function GoogleAnalytics() {
         src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
         strategy="lazyOnload"
       />
-      <Script id="google-analytics-init" strategy="lazyOnload">
+      <Script id="google-analytics-init" strategy="beforeInteractive">
         {`
           window.dataLayer = window.dataLayer || [];
           window.gtag = window.gtag || function(){window.dataLayer.push(arguments);};

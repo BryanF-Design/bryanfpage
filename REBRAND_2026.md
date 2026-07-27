@@ -47,8 +47,9 @@ aceptación viven en [`REBRAND_AUDIT_AND_PLAN.md`](./REBRAND_AUDIT_AND_PLAN.md).
 
 El sistema quedó implementado en `feat/rebrand-taller-r` y validado con TypeScript, build, smoke
 SEO, revisión responsive en seis anchos, teclado, movimiento reducido y Lighthouse comparativo.
-La medición de laboratorio mejoró de 64 a un rango de 74–83 en Performance y mantuvo 100 en
-accesibilidad, buenas prácticas y SEO. El LCP sigue siendo variable (3.3–4.9 s), por lo que la meta
-de ≤ 2.5 s debe confirmarse y terminar de optimizarse con una vista previa de producción.
+La corrida final de laboratorio mejoró de 64 a 84 en Performance, bajó TBT de 460 a 163 ms y la
+transferencia de 678 a 630 KB; accesibilidad, buenas prácticas y SEO permanecieron en 100. El LCP
+quedó en 3.9 s, por lo que la meta de ≤ 2.5 s debe confirmarse y terminar de optimizarse con una
+vista previa de producción.
 
 Siguen pendientes la revisión humana del detalle japonés y el smoke externo del flujo de pago.

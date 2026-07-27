@@ -12,6 +12,7 @@ const ja: Dictionary = {
     verProyectos: "実績を見る",
     menu: "メニューを開く",
     closeMenu: "メニューを閉じる",
+    skipToContent: "コンテンツへ移動",
   },
   marquee: {
     words: ["デザイン", "コード", "SEO", "パフォーマンス", "EC", "ブランディング"],
@@ -374,6 +375,7 @@ const ja: Dictionary = {
     terms: "利用規約",
     reviewGoogle: "Googleマップにレビューを投稿する",
     clientQuestion: "既にお客様ですか？",
+    signatureLabel: "ブライアンF.の署名",
     copyright: (year) => `© ${year} BryanF Design · メキシコ製`,
     acceptPrefix: "ご連絡いただくと、以下に同意したことになります：",
     and: "・",

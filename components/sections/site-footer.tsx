@@ -188,7 +188,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
         <div className="container flex flex-col items-center justify-between gap-4 py-6 text-xs text-muted-foreground sm:flex-row">
           {/* El sello firma el trabajo, como en un grabado. */}
           <span className="flex items-center gap-4">
-            <HankoSeal />
+            <HankoSeal label={t.footer.signatureLabel} />
             {t.footer.copyright(new Date().getFullYear())}
           </span>
           <span>

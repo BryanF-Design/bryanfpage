@@ -4,13 +4,21 @@ import { useSyncExternalStore } from "react";
 
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 const REDUCED_MOTION_CLASS = "a11y-reduce-motion";
+const DECORATIVE_3D_QUERY = "(min-width: 768px)";
 
 let mediaQuery: MediaQueryList | null = null;
+let decorative3dQuery: MediaQueryList | null = null;
 
 function getMediaQuery() {
   if (typeof window === "undefined") return null;
   mediaQuery ??= window.matchMedia(REDUCED_MOTION_QUERY);
   return mediaQuery;
+}
+
+function getDecorative3dQuery() {
+  if (typeof window === "undefined") return null;
+  decorative3dQuery ??= window.matchMedia(DECORATIVE_3D_QUERY);
+  return decorative3dQuery;
 }
 
 /**
@@ -57,4 +65,29 @@ export function useReducedMotionPreference() {
     isReducedMotionRequested,
     () => false
   );
+}
+
+function subscribeDecorative3dViewport(listener: () => void) {
+  const query = getDecorative3dQuery();
+  query?.addEventListener("change", listener);
+  return () => query?.removeEventListener("change", listener);
+}
+
+function isDecorative3dViewport() {
+  return getDecorative3dQuery()?.matches === true;
+}
+
+/**
+ * Non-essential WebGL is reserved for desktop sessions that permit motion.
+ * Mobile and reduced-motion users receive the same composition as static CSS.
+ */
+export function useDecorative3dEnabled() {
+  const reducedMotion = useReducedMotionPreference();
+  const desktopViewport = useSyncExternalStore(
+    subscribeDecorative3dViewport,
+    isDecorative3dViewport,
+    () => false
+  );
+
+  return desktopViewport && !reducedMotion;
 }

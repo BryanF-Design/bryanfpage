@@ -6,7 +6,10 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 
 import { cn } from "@/lib/utils";
-import { useReducedMotionPreference } from "@/lib/motion-preference";
+import {
+  useDecorative3dEnabled,
+  useReducedMotionPreference,
+} from "@/lib/motion-preference";
 import { Button } from "@/components/ui/button";
 import { TractionLine } from "@/components/ui/traction-line";
 import { VerticalLabel } from "@/components/ui/vertical-label";
@@ -60,11 +63,12 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
     const wrapperRef = React.useRef<HTMLDivElement>(null);
     const progressRef = React.useRef(0);
     const reducedMotion = useReducedMotionPreference();
+    const interactiveLaptop = useDecorative3dEnabled();
 
     // Progreso de scroll del hero (0 = arriba, 1 = tapa abierta). Se escribe
     // en un ref — la escena 3D lo lee en su propio RAF, sin re-renders React.
     React.useEffect(() => {
-      if (reducedMotion) {
+      if (!interactiveLaptop) {
         progressRef.current = 1;
         return;
       }
@@ -93,7 +97,7 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
         window.removeEventListener("resize", onScroll);
         if (raf) cancelAnimationFrame(raf);
       };
-    }, [reducedMotion]);
+    }, [interactiveLaptop]);
 
     return (
       <section
@@ -101,7 +105,7 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
         className={cn("relative z-0 w-full", className)}
         {...props}
       >
-        <div ref={wrapperRef} className="relative h-[165svh] md:h-[185svh]">
+        <div ref={wrapperRef} className="relative h-[120svh] md:h-[185svh]">
           <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden bg-background">
             <div aria-hidden className="bg-blueprint absolute inset-0" />
             <div aria-hidden className="mesh-glow-a absolute inset-0" />
@@ -195,8 +199,12 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                 }}
                 className="corner-ticks relative h-[34svh] min-h-[220px] w-full sm:h-[40svh] lg:h-[56svh] lg:min-h-[380px]"
               >
-                <LaptopScene progressRef={progressRef} className="absolute inset-0" />
-                {scrollHint && (
+                {interactiveLaptop ? (
+                  <LaptopScene progressRef={progressRef} className="absolute inset-0" />
+                ) : (
+                  <StaticLaptop />
+                )}
+                {interactiveLaptop && scrollHint && (
                   <span className="tech-label pointer-events-none absolute bottom-0 left-1/2 hidden -translate-x-1/2 items-center gap-2 whitespace-nowrap text-muted-foreground sm:flex">
                     <ScrollArrow />
                     {scrollHint}
@@ -219,6 +227,28 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
   }
 );
 Hero.displayName = "Hero";
+
+function StaticLaptop() {
+  return (
+    <div aria-hidden className="absolute inset-0 flex items-center justify-center">
+      <div className="relative w-[92%] max-w-[520px]">
+        <div className="relative mx-auto aspect-[16/9] w-[82%] origin-bottom -skew-y-2 overflow-hidden rounded-t-md border border-primary/25 bg-[#07100c] shadow-[0_0_55px_hsl(var(--primary)/0.1)]">
+          <div className="absolute inset-[5%] overflow-hidden border border-border bg-background">
+            <span className="absolute inset-x-0 top-0 h-[12%] border-b border-border bg-secondary/70" />
+            <span className="absolute left-[7%] top-[24%] h-2 w-[38%] bg-primary/25" />
+            <span className="absolute left-[7%] top-[35%] h-4 w-[56%] bg-foreground/[0.08]" />
+            <span className="absolute left-[7%] top-[52%] h-px w-[66%] bg-primary/45" />
+            <span className="absolute bottom-[12%] left-[7%] h-[14%] w-[28%] rounded-sm bg-primary" />
+            <span className="absolute right-[7%] top-[24%] h-[54%] w-[28%] border border-primary/20 bg-primary/[0.035]" />
+          </div>
+        </div>
+        <div className="relative -mt-px h-8 w-full [clip-path:polygon(8%_0%,92%_0%,100%_72%,96%_100%,4%_100%,0%_72%)] bg-gradient-to-b from-[#17251b] to-[#050806] shadow-[0_18px_35px_rgba(0,0,0,0.45)]">
+          <span className="absolute left-1/2 top-1 h-px w-10 -translate-x-1/2 bg-primary/80" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function ScrollArrow() {
   return (

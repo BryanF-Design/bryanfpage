@@ -12,6 +12,7 @@ const zh: Dictionary = {
     verProyectos: "查看作品",
     menu: "打开菜单",
     closeMenu: "关闭菜单",
+    skipToContent: "跳到内容",
   },
   marquee: {
     words: ["设计", "代码", "SEO", "性能", "电商", "品牌"],
@@ -352,6 +353,7 @@ const zh: Dictionary = {
     terms: "服务条款",
     reviewGoogle: "在Google地图上给我们留下评价",
     clientQuestion: "已经是客户？",
+    signatureLabel: "Bryan F. 的签名",
     copyright: (year) => `© ${year} BryanF Design · 制作于墨西哥`,
     acceptPrefix: "联系我们即表示您同意我们的",
     and: "与",

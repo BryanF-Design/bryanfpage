@@ -546,9 +546,9 @@ Objetivos de salida:
 - [x] `prefers-reduced-motion` y el panel interno detienen movimiento no esencial.
 - [x] TypeScript, build, landings, sitemap, robots, API de salud y smoke SEO pasan.
 - [ ] El flujo externo de pago pasa smoke de extremo a extremo.
-- [x] Lighthouse mejora frente a la línea base: Performance 74–83 frente a 64; accesibilidad,
-      buenas prácticas y SEO permanecen en 100.
-- [ ] LCP móvil alcanza ≤ 2.5 s de forma estable; las corridas actuales varían entre 3.3 y 4.9 s.
+- [x] Lighthouse mejora frente a la línea base: la corrida final obtuvo Performance 84 frente a
+      64, FCP 1.7 s, TBT 163 ms y 630 KB; accesibilidad, buenas prácticas y SEO permanecen en 100.
+- [ ] LCP móvil alcanza ≤ 2.5 s de forma estable; la corrida final obtuvo 3.9 s.
 
 ---
 

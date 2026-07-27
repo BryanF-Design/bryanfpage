@@ -13,11 +13,10 @@
 }
 
 @font-face {
-  font-family: "Archivo";
+  font-family: "Archivo Condensed";
   src: url("/fonts/archivo-variable-latin.woff2") format("woff2");
   font-style: normal;
   font-weight: 100 900;
-  font-stretch: 62% 125%;
   font-display: swap;
 }
 
@@ -49,7 +48,7 @@
   --bf-lime-line: rgba(180, 227, 50, 0.48);
   --bf-route: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 260 52' fill='none'%3E%3Cpath d='M1 42C51 42 68 10 117 10c52 0 61 31 142 31' stroke='%23b4e332' stroke-opacity='.56'/%3E%3Cpath d='M117 10c32 0 46 12 68 22M117 10c30-1 44-5 66-9' stroke='%231f2825'/%3E%3Ccircle cx='117' cy='10' r='4' fill='%23070d0b' stroke='%23b4e332'/%3E%3Ccircle cx='185' cy='32' r='2.5' fill='%23070d0b' stroke='%231f2825'/%3E%3Ccircle cx='183' cy='1' r='2.5' fill='%23070d0b' stroke='%231f2825'/%3E%3C/svg%3E");
   --bf-sans: "Instrument Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --bf-display: "Archivo", system-ui, sans-serif;
+  --bf-display: "Archivo Condensed", system-ui, sans-serif;
   --bf-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
   --font: var(--bf-sans);
 }
@@ -181,7 +180,6 @@ body.cw-page > :is(#preloader, .preloader) {
 .cw-step h2 {
   color: var(--bf-bone);
   font-family: var(--bf-display);
-  font-stretch: condensed;
   font-weight: 800;
   letter-spacing: -0.035em;
 }
@@ -355,7 +353,6 @@ body.cw-page > :is(#preloader, .preloader) {
 .gracias-form-wrap h2 {
   color: var(--bf-bone);
   font-family: var(--bf-display);
-  font-stretch: condensed;
   letter-spacing: -0.035em;
 }
 
@@ -512,7 +509,6 @@ body:not(.cw-page):not(.gracias-page) {
   border-bottom: 1px solid var(--bf-hairline);
   color: var(--bf-bone) !important;
   font-family: var(--bf-display);
-  font-stretch: condensed;
   font-weight: 800;
   letter-spacing: -0.035em !important;
 }
@@ -523,7 +519,6 @@ body:not(.cw-page):not(.gracias-page) {
   color: var(--bf-bone) !important;
   font-family: var(--bf-display);
   font-size: clamp(1.35rem, 4vw, 1.75rem) !important;
-  font-stretch: condensed;
   letter-spacing: -0.02em;
 }
 

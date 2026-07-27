@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Instrument_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Instrument_Sans, IBM_Plex_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import dynamic from "next/dynamic";
 import "./globals.css";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { MicrosoftClarity } from "@/components/analytics/microsoft-clarity";
 import { LanguageProvider } from "@/lib/i18n/context";
 import { MotionPreferenceProvider } from "@/components/motion-preference-provider";
+import { SkipLink } from "@/components/skip-link";
 
 // Client-only widget, no SEO content: skip SSR entirely to shave initial payload.
 const AccessibilityPanel = dynamic(
@@ -24,12 +26,14 @@ const instrumentSans = Instrument_Sans({
   display: "swap",
 });
 
-// Display: Archivo variable por peso. No descargar el eje de anchura completo
-// reduce el recurso que compite con el H1 sin cambiar la familia de marca.
-const archivo = Archivo({
-  subsets: ["latin"],
+// Display: instancia latina expandida de Archivo con peso variable. Conserva
+// la geometría de marca sin descargar el eje de anchura completo en el LCP.
+const archivo = localFont({
+  src: "../public/fonts/archivo-expanded-latin.woff2",
   variable: "--font-display",
   display: "swap",
+  weight: "100 900",
+  style: "normal",
 });
 
 // Voz técnica: etiquetas, precios, coordenadas.
@@ -118,6 +122,18 @@ const jsonLd = {
   ],
 };
 
+// El panel completo se hidrata de forma diferida, pero la preferencia de
+// movimiento debe existir antes del primer frame para evitar animaciones
+// iniciales en visitas posteriores.
+const a11yBootstrap = `
+  try {
+    var saved = JSON.parse(localStorage.getItem("bfd-a11y") || "{}");
+    if (saved.reduceMotion === true) {
+      document.documentElement.classList.add("a11y-reduce-motion");
+    }
+  } catch (_) {}
+`;
+
 export default function RootLayout({
   children,
 }: {
@@ -129,13 +145,10 @@ export default function RootLayout({
       className={`dark ${instrumentSans.variable} ${archivo.variable} ${plexMono.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: a11yBootstrap }} />
+      </head>
       <body className="font-sans">
-        <a
-          href="#main-content"
-          className="fixed left-4 top-4 z-[250] inline-flex min-h-11 -translate-y-24 items-center rounded-sm border border-primary bg-background px-4 py-3 font-mono text-xs font-medium uppercase tracking-[0.14em] text-primary transition-transform focus:translate-y-0"
-        >
-          Saltar al contenido
-        </a>
         <GoogleAnalytics />
         <MicrosoftClarity />
         <script
@@ -144,6 +157,7 @@ export default function RootLayout({
         />
         <MotionPreferenceProvider>
           <LanguageProvider>
+            <SkipLink />
             {children}
             <LanguageNotice />
           </LanguageProvider>

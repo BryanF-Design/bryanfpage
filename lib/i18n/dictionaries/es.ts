@@ -13,6 +13,7 @@ const es = {
     verProyectos: "Ver proyectos",
     menu: "Abrir menú",
     closeMenu: "Cerrar menú",
+    skipToContent: "Saltar al contenido",
   },
   marquee: {
     words: ["Diseño", "Código", "SEO", "Performance", "E-commerce", "Branding"],
@@ -402,6 +403,7 @@ const es = {
     terms: "Términos y Condiciones",
     reviewGoogle: "Déjanos tu reseña en Google Maps",
     clientQuestion: "¿Ya eres cliente?",
+    signatureLabel: "Firma de Bryan F.",
     copyright: (year: number) => `© ${year} BryanF Design · Hecho en México`,
     acceptPrefix: "Al contactarnos aceptas nuestro",
     and: "y",

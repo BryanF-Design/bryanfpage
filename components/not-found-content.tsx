@@ -33,7 +33,11 @@ export function NotFoundContent() {
   const progress = ((REDIRECT_SECONDS - secondsLeft) / REDIRECT_SECONDS) * 100;
 
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background bg-grain px-6 text-center">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background bg-grain px-6 text-center"
+    >
       <div className="pointer-events-none absolute inset-auto top-1/2 z-0 h-72 w-72 -translate-y-1/2 rounded-full bg-primary/20 opacity-70 blur-3xl" />
 
       <motion.div

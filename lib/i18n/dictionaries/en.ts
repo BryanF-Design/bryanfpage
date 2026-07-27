@@ -12,6 +12,7 @@ const en: Dictionary = {
     verProyectos: "See projects",
     menu: "Open menu",
     closeMenu: "Close menu",
+    skipToContent: "Skip to content",
   },
   marquee: {
     words: ["Design", "Code", "SEO", "Performance", "E-commerce", "Branding"],
@@ -381,6 +382,7 @@ const en: Dictionary = {
     terms: "Terms and Conditions",
     reviewGoogle: "Leave us a review on Google Maps",
     clientQuestion: "Already a client?",
+    signatureLabel: "Bryan F.'s signature",
     copyright: (year) => `© ${year} BryanF Design · Made in Mexico`,
     acceptPrefix: "By contacting us you accept our",
     and: "and",

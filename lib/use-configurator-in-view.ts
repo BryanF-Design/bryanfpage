@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 /**
  * Shared collision signal for the purchase configurator. Floating helpers use
@@ -8,10 +9,14 @@ import { useEffect, useState } from "react";
  */
 export function useConfiguratorInView() {
   const [inView, setInView] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const configurator = document.getElementById("precios");
-    if (!configurator) return;
+    if (!configurator) {
+      setInView(false);
+      return;
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => setInView(entry.isIntersecting),
@@ -19,7 +24,7 @@ export function useConfiguratorInView() {
     );
     observer.observe(configurator);
     return () => observer.disconnect();
-  }, []);
+  }, [pathname]);
 
   return inView;
 }
