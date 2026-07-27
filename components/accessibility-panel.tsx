@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { useConfiguratorInView } from "@/lib/use-configurator-in-view";
 import { useFooterInView } from "@/lib/use-footer-in-view";
 
 const STORAGE_KEY = "bfd-a11y";
@@ -54,6 +55,7 @@ export function AccessibilityPanel() {
   const [settings, setSettings] = useState<A11ySettings>(DEFAULT_SETTINGS);
   const [hydrated, setHydrated] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const configuratorInView = useConfiguratorInView();
   const closeRef = useRef<HTMLButtonElement>(null);
   const footerInView = useFooterInView();
 
@@ -77,18 +79,8 @@ export function AccessibilityPanel() {
   }, [open]);
 
   useEffect(() => {
-    const configurator = document.getElementById("precios");
-    if (!configurator) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setOpen(false);
-      },
-      { rootMargin: "-12% 0px -12% 0px", threshold: 0.05 }
-    );
-    observer.observe(configurator);
-    return () => observer.disconnect();
-  }, []);
+    if (configuratorInView) setOpen(false);
+  }, [configuratorInView]);
 
   useEffect(() => {
     try {

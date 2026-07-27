@@ -54,12 +54,13 @@ export default function HomePage() {
   const { t } = useLanguage();
 
   return (
-    <main id="home" className="relative">
+    <>
       <ScrollProgress />
       <SiteHeader />
       <SocialRail />
 
-      <Hero
+      <main id="main-content" tabIndex={-1} className="relative">
+        <Hero
         eyebrow={t.hero.eyebrow}
         title={
           <>
@@ -134,11 +135,12 @@ export default function HomePage() {
 
       <Faq />
 
-      <LuminaChat />
-
       {/* Después del cierre comercial solo queda la firma del footer. */}
       <ClosingCta />
+      </main>
+
+      <LuminaChat />
       <SiteFooter />
-    </main>
+    </>
   );
 }

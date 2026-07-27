@@ -100,6 +100,45 @@ const de: Dictionary = {
       "epiko-vercel-app": "Eventproduktion",
       "element-experiences-com": "Erlebnisse und Events",
     },
+    caseLabels: {
+      problem: "Aufgabe",
+      decision: "Entscheidung",
+      result: "Ergebnis",
+    },
+    cases: {
+      "koi-arquitectura-vercel-app": {
+        problem:
+          "Bedürfnisse und Lebensweisen in Räume übersetzen, ohne das Architekturbüro auf eine Galerie zu reduzieren.",
+        decision:
+          "Die Geschichte über Zuhören, Entwurf, Bau und Begleitung strukturieren und das Projekt als Beleg einsetzen.",
+        result:
+          "Eine Website, die Prozess und Wert der räumlichen Intervention erklärt und direkt zur Kontaktaufnahme führt.",
+      },
+      "element-experiences-com": {
+        problem:
+          "Offene Touren, private Erlebnisse und Unternehmensangebote vereinen, ohne den Markenkern zu verwässern.",
+        decision:
+          "Das Angebot nach Erlebnisart gliedern und mit Terminen, Schwierigkeitsgraden sowie klaren Buchungs- und Anfragewegen stützen.",
+        result:
+          "Eine Nutzerführung, in der jeder das passende Erlebnis erkennt und den richtigen nächsten Schritt erreicht.",
+      },
+      "efficientplasticolors-com": {
+        problem:
+          "Einen technischen Katalog für Masterbatch und Additive erklären und zugleich die Farbabstimmung erleichtern.",
+        decision:
+          "Farbe als interaktives Werkzeug inszenieren: Pantone®-Suche, Produktfamilien und direkter Anfrageweg.",
+        result:
+          "Besucher können Farbtöne und Produkte erkunden und im selben Ablauf eine WhatsApp-Anfrage senden.",
+      },
+      "nkmohcafe-com": {
+        problem:
+          "Die Herkunft aus Zongolica erzählen und zugleich Spezialitätenkaffee sowie Lösungen für Unternehmen präsentieren.",
+        decision:
+          "Herkunftsgeschichte, Leistungsprofile und Produktinformationen mit klaren Anfragewegen verbinden.",
+        result:
+          "Die Website unterscheidet Spezialitätenkaffee, Gewerbekaffee und individuelle Mahlung und führt zur Bestellung.",
+      },
+    },
   },
   world: {
     eyebrow: "Präsenz",

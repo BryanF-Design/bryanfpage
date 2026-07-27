@@ -140,7 +140,12 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
       <ScrollProgress />
       <SiteHeader spanishOnly />
 
-      <main className="bg-background" data-language="es-only">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="bg-background"
+        data-language="es-only"
+      >
         {/* Hero con el mismo lenguaje del home: retícula, glow y display XXL */}
         <section className="relative isolate overflow-hidden border-b border-border bg-grain pb-16 pt-32 md:pb-24 md:pt-40">
           <div aria-hidden className="bg-blueprint absolute inset-0" />

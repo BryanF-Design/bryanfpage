@@ -100,6 +100,45 @@ const en: Dictionary = {
       "epiko-vercel-app": "Event production",
       "element-experiences-com": "Experiences and events",
     },
+    caseLabels: {
+      problem: "Problem",
+      decision: "Decision",
+      result: "Outcome",
+    },
+    cases: {
+      "koi-arquitectura-vercel-app": {
+        problem:
+          "Translate needs and ways of living into spaces without reducing the architecture practice to a gallery.",
+        decision:
+          "Structure the story around listening, design, construction, and follow-up, using the project as evidence.",
+        result:
+          "A site that explains the process and the value of improving a space, then opens a direct path to contact.",
+      },
+      "element-experiences-com": {
+        problem:
+          "Bring open routes, private experiences, and corporate services together without diluting the brand's purpose.",
+        decision:
+          "Separate the offer by experience type and support it with dates, difficulty levels, and clear booking or quote actions.",
+        result:
+          "A journey where each visitor can identify the right experience and reach the appropriate next step.",
+      },
+      "efficientplasticolors-com": {
+        problem:
+          "Explain a technical masterbatch and additives catalog while making color matching easier.",
+        decision:
+          "Turn color into an interactive tool with Pantone® matching, product families, and a direct quote path.",
+        result:
+          "Visitors can explore shades and products and submit a WhatsApp request within the same flow.",
+      },
+      "nkmohcafe-com": {
+        problem:
+          "Tell the story of the Zongolica origin while presenting specialty coffee and solutions for businesses.",
+        decision:
+          "Combine the origin story, service profiles, and product details with clear paths to request a quote.",
+        result:
+          "The site distinguishes specialty coffee, commercial coffee, and custom grinding, then guides visitors toward an order.",
+      },
+    },
   },
   world: {
     eyebrow: "Reach",

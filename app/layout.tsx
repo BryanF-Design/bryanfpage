@@ -24,11 +24,10 @@ const instrumentSans = Instrument_Sans({
   display: "swap",
 });
 
-// Display: Archivo variable con eje de anchura — los titulares se componen
-// expandidos (font-stretch en globals.css), la voz visual del rediseño.
+// Display: Archivo variable por peso. No descargar el eje de anchura completo
+// reduce el recurso que compite con el H1 sin cambiar la familia de marca.
 const archivo = Archivo({
   subsets: ["latin"],
-  axes: ["wdth"],
   variable: "--font-display",
   display: "swap",
 });
@@ -75,10 +74,10 @@ export const metadata: Metadata = {
       "Diseño y desarrollo web a medida: sitios rápidos, animados y orientados a conversión. Arma tu web y arrancamos.",
     images: [
       {
-        url: "/img/logotipo-blanco.png",
-        width: 2904,
-        height: 1016,
-        alt: "BryanF Design",
+        url: "/img/og-bryanf-apex.png",
+        width: 1200,
+        height: 630,
+        alt: "BryanF Design — Haz que pase. Precisión, ritmo y conexión.",
       },
     ],
   },
@@ -87,7 +86,7 @@ export const metadata: Metadata = {
     title: "Crea tu Página Web en México | BryanF Design",
     description:
       "Diseño y desarrollo web a medida: sitios rápidos, animados y orientados a conversión.",
-    images: ["/img/logotipo-blanco.png"],
+    images: ["/img/og-bryanf-apex.png"],
   },
   robots: { index: true, follow: true },
 };
@@ -145,9 +144,7 @@ export default function RootLayout({
         />
         <MotionPreferenceProvider>
           <LanguageProvider>
-            <div id="main-content" tabIndex={-1}>
-              {children}
-            </div>
+            {children}
             <LanguageNotice />
           </LanguageProvider>
           <AccessibilityPanel />

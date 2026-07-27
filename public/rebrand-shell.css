@@ -4,6 +4,39 @@
  * It intentionally does not alter document structure, form behavior or scripts.
  */
 
+@font-face {
+  font-family: "Instrument Sans";
+  src: url("/fonts/instrument-sans-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Archivo";
+  src: url("/fonts/archivo-variable-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("/fonts/ibm-plex-mono-400-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("/fonts/ibm-plex-mono-500-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
 :root {
   color-scheme: dark;
   --bf-ink: #070d0b;
@@ -15,9 +48,9 @@
   --bf-lime-soft: rgba(180, 227, 50, 0.1);
   --bf-lime-line: rgba(180, 227, 50, 0.48);
   --bf-route: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 260 52' fill='none'%3E%3Cpath d='M1 42C51 42 68 10 117 10c52 0 61 31 142 31' stroke='%23b4e332' stroke-opacity='.56'/%3E%3Cpath d='M117 10c32 0 46 12 68 22M117 10c30-1 44-5 66-9' stroke='%231f2825'/%3E%3Ccircle cx='117' cy='10' r='4' fill='%23070d0b' stroke='%23b4e332'/%3E%3Ccircle cx='185' cy='32' r='2.5' fill='%23070d0b' stroke='%231f2825'/%3E%3Ccircle cx='183' cy='1' r='2.5' fill='%23070d0b' stroke='%231f2825'/%3E%3C/svg%3E");
-  --bf-sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --bf-display: "Arial Narrow", "Roboto Condensed", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
-  --bf-mono: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --bf-sans: "Instrument Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --bf-display: "Archivo", system-ui, sans-serif;
+  --bf-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
   --font: var(--bf-sans);
 }
 

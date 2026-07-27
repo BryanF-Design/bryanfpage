@@ -1,17 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-
-function preferredLocale() {
-  const match = document.cookie.match(/(?:^|; )bryanf_lang=([^;]+)/);
-  if (match?.[1]) return decodeURIComponent(match[1]);
-
-  try {
-    return window.localStorage.getItem("bryanf_lang");
-  } catch {
-    return null;
-  }
-}
+import { readStoredLocale } from "@/lib/i18n/context";
 
 /**
  * Estas landings editoriales todavía existen solo en español. Mantiene
@@ -30,7 +20,7 @@ export function SpanishPageLanguage() {
 
     return () => {
       observer.disconnect();
-      root.lang = preferredLocale() || "es";
+      root.lang = readStoredLocale() || "es";
     };
   }, []);
 

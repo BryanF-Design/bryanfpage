@@ -107,6 +107,45 @@ const es = {
       "epiko-vercel-app": "Producción de eventos",
       "element-experiences-com": "Experiencias y eventos",
     } as Record<string, string>,
+    caseLabels: {
+      problem: "Problema",
+      decision: "Decisión",
+      result: "Resultado",
+    },
+    cases: {
+      "koi-arquitectura-vercel-app": {
+        problem:
+          "Traducir necesidades y estilos de vida en espacios, sin reducir la arquitectura a una galería.",
+        decision:
+          "Ordenar el relato en escucha, diseño, construcción y acompañamiento, con el proyecto como evidencia.",
+        result:
+          "Un sitio que explica el proceso, el valor de intervenir y abre contacto directo en el mismo recorrido.",
+      },
+      "element-experiences-com": {
+        problem:
+          "Reunir rutas abiertas, experiencias privadas y servicios corporativos sin diluir el propósito de la marca.",
+        decision:
+          "Separar la oferta por tipo de experiencia y sostenerla con calendario, niveles y acciones para reservar o cotizar.",
+        result:
+          "Un recorrido donde cada visitante identifica su experiencia y llega a la acción adecuada.",
+      },
+      "efficientplasticolors-com": {
+        problem:
+          "Explicar un catálogo técnico de masterbatch y aditivos y facilitar la igualación de color.",
+        decision:
+          "Convertir el color en una herramienta interactiva: buscador Pantone®, catálogo por familias y cotización directa.",
+        result:
+          "El sitio permite explorar tonos y productos y generar una solicitud por WhatsApp desde el mismo flujo.",
+      },
+      "nkmohcafe-com": {
+        problem:
+          "Contar el origen de Zongolica y, a la vez, presentar café de especialidad y soluciones para negocios.",
+        decision:
+          "Combinar relato de origen, perfiles de servicio y producto con accesos claros a cotización.",
+        result:
+          "El sitio diferencia especialidad, café comercial y molienda, y guía al visitante hacia un pedido.",
+      },
+    },
   },
   world: {
     eyebrow: "Presencia",

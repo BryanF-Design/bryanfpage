@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { FileSpreadsheet, ClipboardList, Code2, Rocket, LifeBuoy } from "lucide-react";
 
 import { SectionHeading } from "@/components/sections/section-heading";
+import { TractionLine } from "@/components/ui/traction-line";
 import { useLanguage } from "@/lib/i18n/context";
 
 const ICONS = [FileSpreadsheet, ClipboardList, Code2, Rocket, LifeBuoy];
@@ -26,36 +27,39 @@ export function ProcessOrbital() {
           subtitle={t.process.subtitle}
         />
 
-        <ol className="relative mx-auto mt-16 grid max-w-5xl gap-10 before:absolute before:bottom-6 before:left-6 before:top-6 before:w-px before:bg-border before:content-[''] md:mt-24 md:grid-cols-5 md:gap-6 md:before:bottom-auto md:before:left-[10%] md:before:right-[10%] md:before:top-6 md:before:h-px md:before:w-auto">
-          {steps.map((step, i) => {
-            const Icon = step.icon;
-            return (
-              <motion.li
-                key={step.title}
-                initial={{ opacity: 0, y: 28 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.55, delay: i * 0.09, ease: [0.2, 0, 0, 1] }}
-                className="relative flex gap-5 md:flex-col md:items-center md:gap-4 md:text-center"
-              >
-                <div className="glass elevate corner-ticks relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-md text-primary">
-                  <Icon className="h-5 w-5" />
-                </div>
-                <div className="pb-2 md:px-2">
-                  <span className="font-mono text-xs tracking-[0.18em] text-primary">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <h3 className="mt-1 font-display text-xl font-bold text-foreground">
-                    {step.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {step.content}
-                  </p>
-                </div>
-              </motion.li>
-            );
-          })}
-        </ol>
+        <div className="relative mx-auto mt-16 max-w-5xl md:mt-24">
+          <TractionLine className="pointer-events-none absolute -left-[2%] -top-20 hidden h-56 w-[104%] opacity-[0.24] md:block" />
+          <ol className="relative grid gap-10 before:absolute before:bottom-6 before:left-6 before:top-6 before:w-px before:bg-primary/25 before:content-[''] md:grid-cols-5 md:gap-6 md:before:hidden">
+            {steps.map((step, i) => {
+              const Icon = step.icon;
+              return (
+                <motion.li
+                  key={step.title}
+                  initial={{ opacity: 0, y: 28 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 0.55, delay: i * 0.09, ease: [0.2, 0, 0, 1] }}
+                  className="relative flex gap-5 md:flex-col md:items-center md:gap-4 md:text-center"
+                >
+                  <div className="glass elevate corner-ticks relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-md text-primary">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div className="pb-2 md:px-2">
+                    <span className="font-mono text-xs tracking-[0.18em] text-primary">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <h3 className="mt-1 font-display text-xl font-bold text-foreground">
+                      {step.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {step.content}
+                    </p>
+                  </div>
+                </motion.li>
+              );
+            })}
+          </ol>
+        </div>
       </div>
     </section>
   );

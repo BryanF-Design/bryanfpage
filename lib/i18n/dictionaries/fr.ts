@@ -100,6 +100,45 @@ const fr: Dictionary = {
       "epiko-vercel-app": "Production d'événements",
       "element-experiences-com": "Expériences et événements",
     },
+    caseLabels: {
+      problem: "Problème",
+      decision: "Décision",
+      result: "Résultat",
+    },
+    cases: {
+      "koi-arquitectura-vercel-app": {
+        problem:
+          "Traduire les besoins et les modes de vie en espaces, sans réduire le travail d'architecture à une galerie.",
+        decision:
+          "Structurer le récit autour de l'écoute, de la conception, de la construction et du suivi, projet à l'appui.",
+        result:
+          "Un site qui explique le processus et la valeur d'une intervention, puis ouvre un contact direct.",
+      },
+      "element-experiences-com": {
+        problem:
+          "Réunir sorties ouvertes, expériences privées et services aux entreprises sans diluer la raison d'être de la marque.",
+        decision:
+          "Organiser l'offre par type d'expérience et l'appuyer par un calendrier, des niveaux et des actions claires pour réserver ou demander un devis.",
+        result:
+          "Un parcours où chaque visiteur identifie l'expérience adaptée et atteint la bonne étape suivante.",
+      },
+      "efficientplasticolors-com": {
+        problem:
+          "Expliquer un catalogue technique de masterbatch et d'additifs tout en simplifiant la correspondance des couleurs.",
+        decision:
+          "Transformer la couleur en outil interactif avec recherche Pantone®, familles de produits et demande de devis directe.",
+        result:
+          "Le visiteur explore teintes et produits puis envoie une demande WhatsApp dans le même parcours.",
+      },
+      "nkmohcafe-com": {
+        problem:
+          "Raconter l'origine à Zongolica tout en présentant le café de spécialité et les solutions pour les entreprises.",
+        decision:
+          "Associer récit d'origine, profils de service et produit à des accès clairs vers la demande de devis.",
+        result:
+          "Le site distingue café de spécialité, café commercial et mouture personnalisée, puis guide vers la commande.",
+      },
+    },
   },
   world: {
     eyebrow: "Présence",

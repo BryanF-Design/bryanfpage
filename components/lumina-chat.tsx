@@ -8,6 +8,7 @@ import { MessageCircle, Send, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFooterInView } from "@/lib/use-footer-in-view";
 import { useLanguage } from "@/lib/i18n/context";
+import { useConfiguratorInView } from "@/lib/use-configurator-in-view";
 
 type Mood = "Normal" | "Enfocada" | "Duda" | "Sorprendida" | "Offline";
 
@@ -85,7 +86,7 @@ function sanitizeHtml(html: string): string {
 export function LuminaChat() {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
-  const [configuratorInView, setConfiguratorInView] = useState(false);
+  const configuratorInView = useConfiguratorInView();
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [mood, setMood] = useState<Mood>("Normal");
@@ -131,18 +132,6 @@ export function LuminaChat() {
 
   // El configurador concentra las acciones de compra. Si ocupa el viewport,
   // cierra el panel grande, descarta el teaser y deja solo el acceso compacto.
-  useEffect(() => {
-    const configurator = document.getElementById("precios");
-    if (!configurator) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setConfiguratorInView(entry.isIntersecting),
-      { rootMargin: "-12% 0px -12% 0px", threshold: 0.05 }
-    );
-    observer.observe(configurator);
-    return () => observer.disconnect();
-  }, []);
-
   useEffect(() => {
     if (configuratorInView) {
       setOpen(false);

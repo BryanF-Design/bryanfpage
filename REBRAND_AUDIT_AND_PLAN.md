@@ -2,7 +2,8 @@
 
 Fecha: 26 de julio de 2026
 
-Estado: dirección aprobada para implementación el 26 de julio de 2026
+Estado: implementado y validado técnicamente el 26 de julio de 2026; quedan pendientes la revisión
+humana del japonés, el smoke externo de pago y la medición de rendimiento en campo
 
 Concepto interno recomendado: **Apex / Taller de precisión**
 
@@ -529,34 +530,38 @@ Objetivos de salida:
 
 ## 14. Checklist de aceptación final
 
-- [ ] Logo sin cambios.
-- [ ] Paleta sin colores nuevos.
-- [ ] Lumina conserva personalidad y función.
-- [ ] No hay personaje, emblema o patrón de IP ajena.
+- [x] Logo sin cambios.
+- [x] Paleta sin colores nuevos.
+- [x] Lumina conserva personalidad y función.
+- [x] No hay personaje, emblema o patrón de IP ajena.
 - [ ] El detalle japonés fue revisado por una persona competente.
-- [ ] El Civic aparece, como máximo, como referencia biográfica.
-- [ ] La Home no crece por añadir una sección personal duplicada.
-- [ ] El CTA final vuelve a ser el cierre.
-- [ ] No aumenta el número máximo de canvases WebGL.
-- [ ] El puntero nativo funciona siempre.
-- [ ] Hover tiene equivalentes de foco y toque.
-- [ ] Skip link, encabezados, labels y objetivos táctiles pasan revisión manual.
-- [ ] Ningún aviso flotante cubre el configurador o un CTA.
-- [ ] `prefers-reduced-motion` y el panel interno detienen movimiento no esencial.
-- [ ] Build, landings, sitemap y pagos pasan smoke.
-- [ ] Lighthouse mejora frente a la línea base.
+- [x] El Civic aparece, como máximo, como referencia biográfica.
+- [x] La Home no crece por añadir una sección personal duplicada.
+- [x] El CTA final vuelve a ser el cierre.
+- [x] No aumenta el número máximo de canvases WebGL.
+- [x] El puntero nativo funciona siempre.
+- [x] Hover tiene equivalentes de foco y toque.
+- [x] Skip link, encabezados, labels y objetivos táctiles pasan revisión manual.
+- [x] Ningún aviso flotante cubre el configurador o un CTA.
+- [x] `prefers-reduced-motion` y el panel interno detienen movimiento no esencial.
+- [x] TypeScript, build, landings, sitemap, robots, API de salud y smoke SEO pasan.
+- [ ] El flujo externo de pago pasa smoke de extremo a extremo.
+- [x] Lighthouse mejora frente a la línea base: Performance 74–83 frente a 64; accesibilidad,
+      buenas prácticas y SEO permanecen en 100.
+- [ ] LCP móvil alcanza ≤ 2.5 s de forma estable; las corridas actuales varían entre 3.3 y 4.9 s.
 
 ---
 
-## 15. Próximo paso recomendado
+## 15. Resultado y siguiente paso
 
-No continuar acumulando cambios sobre el WIP actual.
+Las fases de identidad, narrativa, accesibilidad, responsive, superficies comerciales y sistema
+visual compartido quedaron implementadas en la rama `feat/rebrand-taller-r`. La revisión final
+incluyó seis anchos de viewport, navegación por teclado, movimiento reducido, rutas públicas,
+metadata social, TypeScript, build y smoke SEO conectado.
 
-El siguiente paso es ejecutar únicamente la **Fase 0** y después construir un prototipo acotado de
-dos piezas:
+Antes de producción:
 
-1. Hero con Línea de tracción.
-2. Sección unificada Bryan + precisión, ritmo y conexión.
-
-Solo cuando ambas piezas se vean profesionales, personales y más rápidas que la base se propaga
-el sistema al resto del sitio.
+1. Revisar con una persona competente la frase japonesa ornamental.
+2. Probar el flujo externo de pago con un entorno y una transacción autorizados.
+3. Desplegar una vista previa y medir LCP con tráfico/dispositivos reales; si se mantiene por encima
+   de 2.5 s, perfilar el hero y el JavaScript inicial antes de promover a producción.

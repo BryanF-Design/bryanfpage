@@ -13,7 +13,7 @@ const STORAGE_KEY = "bryanf_lang";
 // sobrevive entre páginas/sesiones) y localStorage (respaldo cuando el
 // navegador bloquea cookies). Con cualquiera de los dos, el idioma se
 // mantiene sin importar a qué página navegue el visitante.
-function readStoredLocale(): Locale | null {
+export function readStoredLocale(): Locale | null {
   if (typeof document === "undefined") return null;
   const match = document.cookie.match(/(?:^|; )bryanf_lang=([^;]+)/);
   const fromCookie = match ? decodeURIComponent(match[1]) : null;

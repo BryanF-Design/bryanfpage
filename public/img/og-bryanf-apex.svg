@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <pattern id="grid" width="56" height="56" patternUnits="userSpaceOnUse">
+      <path d="M56 0H0V56" stroke="#1f2825" stroke-width="1"/>
+    </pattern>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(955 95) rotate(139) scale(560 430)">
+      <stop stop-color="#b4e332" stop-opacity=".13"/>
+      <stop offset="1" stop-color="#b4e332" stop-opacity="0"/>
+    </radialGradient>
+    <style>
+      @font-face {
+        font-family: "Archivo";
+        src: url("/fonts/archivo-variable-latin.woff2") format("woff2");
+        font-weight: 100 900;
+      }
+      @font-face {
+        font-family: "IBM Plex Mono";
+        src: url("/fonts/ibm-plex-mono-500-latin.woff2") format("woff2");
+        font-weight: 500;
+      }
+      .display { font-family: "Archivo", Arial, sans-serif; }
+      .mono { font-family: "IBM Plex Mono", monospace; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="630" fill="#070d0b"/>
+  <rect width="1200" height="630" fill="url(#grid)" opacity=".66"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <path d="M58 48H1142" stroke="#1f2825"/>
+  <path d="M58 582H1142" stroke="#1f2825"/>
+  <path d="M58 48V582M1142 48V582" stroke="#1f2825"/>
+
+  <g opacity=".82">
+    <path d="M34 525C152 521 218 487 286 431C352 377 410 355 474 355" stroke="#b4e332" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="474" cy="355" r="7" fill="#b4e332"/>
+    <circle cx="474" cy="355" r="17" stroke="#b4e332" opacity=".4"/>
+    <path d="M474 355C596 227 706 237 804 355C854 415 904 409 958 371" stroke="#b4e332" stroke-width="1.5" stroke-linecap="round" opacity=".55"/>
+    <path d="M474 355C610 307 714 305 804 355C860 387 906 387 958 371" stroke="#b4e332" stroke-width="2.5" stroke-linecap="round" opacity=".82"/>
+    <path d="M474 355C610 467 722 477 812 405C864 363 910 363 958 371" stroke="#b4e332" stroke-width="1.5" stroke-linecap="round" opacity=".55"/>
+    <circle cx="958" cy="371" r="5" fill="#b4e332"/>
+    <path d="M958 371C1038 381 1090 333 1164 267" stroke="#b4e332" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <image href="/img/logotipo-blanco.png" x="76" y="82" width="330" height="116" preserveAspectRatio="xMinYMid meet"/>
+
+  <text x="78" y="286" class="mono" fill="#b4e332" font-size="16" font-weight="500" letter-spacing="4">DISEÑO + DESARROLLO WEB</text>
+  <text x="72" y="370" class="display" fill="#f2f3ec" font-size="76" font-weight="700" letter-spacing="-2">HAZ QUE PASE.</text>
+  <text x="78" y="420" class="mono" fill="#95a79e" font-size="17" font-weight="500" letter-spacing="4">PRECISIÓN · RITMO · CONEXIÓN</text>
+
+  <text x="78" y="558" class="mono" fill="#95a79e" font-size="13" font-weight="500" letter-spacing="2.5">BRYANFDESIGN.COM.MX</text>
+  <text x="1090" y="558" class="mono" fill="#b4e332" font-size="13" font-weight="500" text-anchor="end" letter-spacing="2.5">CDMX · EST. 2020</text>
+
+  <g transform="translate(1110 84)">
+    <text class="display" fill="#f2f3ec" font-size="19" font-weight="600" writing-mode="tb" letter-spacing="7">速さと精度</text>
+    <text x="-26" y="2" class="mono" fill="#95a79e" font-size="9" font-weight="500" writing-mode="tb" letter-spacing="2">HAYASA TO SEIDO</text>
+  </g>
+</svg>

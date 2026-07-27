@@ -43,5 +43,12 @@ aceptación viven en [`REBRAND_AUDIT_AND_PLAN.md`](./REBRAND_AUDIT_AND_PLAN.md).
 - Orden de Home: `app/page.tsx`
 - Texto localizado: `lib/i18n/dictionaries/*`
 
-La validación de salida exige TypeScript, build, smoke SEO, revisión visual responsive, teclado,
-movimiento reducido y Lighthouse comparativo.
+## Estado de implementación
+
+El sistema quedó implementado en `feat/rebrand-taller-r` y validado con TypeScript, build, smoke
+SEO, revisión responsive en seis anchos, teclado, movimiento reducido y Lighthouse comparativo.
+La medición de laboratorio mejoró de 64 a un rango de 74–83 en Performance y mantuvo 100 en
+accesibilidad, buenas prácticas y SEO. El LCP sigue siendo variable (3.3–4.9 s), por lo que la meta
+de ≤ 2.5 s debe confirmarse y terminar de optimizarse con una vista previa de producción.
+
+Siguen pendientes la revisión humana del detalle japonés y el smoke externo del flujo de pago.

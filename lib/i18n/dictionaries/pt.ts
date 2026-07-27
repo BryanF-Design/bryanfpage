@@ -100,6 +100,45 @@ const pt: Dictionary = {
       "epiko-vercel-app": "Produção de eventos",
       "element-experiences-com": "Experiências e eventos",
     },
+    caseLabels: {
+      problem: "Problema",
+      decision: "Decisão",
+      result: "Resultado",
+    },
+    cases: {
+      "koi-arquitectura-vercel-app": {
+        problem:
+          "Traduzir necessidades e modos de viver em espaços, sem reduzir o trabalho de arquitetura a uma galeria.",
+        decision:
+          "Estruturar a narrativa em escuta, projeto, construção e acompanhamento, usando o projeto como evidência.",
+        result:
+          "Um site que explica o processo e o valor de intervir no espaço, com acesso direto ao contato.",
+      },
+      "element-experiences-com": {
+        problem:
+          "Reunir rotas abertas, experiências privadas e serviços corporativos sem diluir o propósito da marca.",
+        decision:
+          "Separar a oferta por tipo de experiência e apoiá-la com calendário, níveis e ações claras para reservar ou cotar.",
+        result:
+          "Uma jornada em que cada visitante identifica a experiência certa e chega ao próximo passo adequado.",
+      },
+      "efficientplasticolors-com": {
+        problem:
+          "Explicar um catálogo técnico de masterbatch e aditivos e facilitar a correspondência de cores.",
+        decision:
+          "Transformar a cor em uma ferramenta interativa com busca Pantone®, famílias de produtos e cotação direta.",
+        result:
+          "O visitante pode explorar tons e produtos e enviar uma solicitação pelo WhatsApp no mesmo fluxo.",
+      },
+      "nkmohcafe-com": {
+        problem:
+          "Contar a origem em Zongolica e, ao mesmo tempo, apresentar café especial e soluções para empresas.",
+        decision:
+          "Combinar a história de origem, os perfis de serviço e o produto com acessos claros à cotação.",
+        result:
+          "O site diferencia café especial, café comercial e moagem personalizada e conduz o visitante ao pedido.",
+      },
+    },
   },
   world: {
     eyebrow: "Presença",

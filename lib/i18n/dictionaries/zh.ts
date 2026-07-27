@@ -85,6 +85,45 @@ const zh: Dictionary = {
       "epiko-vercel-app": "活动制作",
       "element-experiences-com": "体验与活动",
     },
+    caseLabels: {
+      problem: "问题",
+      decision: "决策",
+      result: "结果",
+    },
+    cases: {
+      "koi-arquitectura-vercel-app": {
+        problem:
+          "把需求和生活方式转化为空间，同时避免把建筑事务所简化为作品图库。",
+        decision:
+          "以倾听、设计、施工和后续陪伴组织叙事，并用实际项目作为依据。",
+        result:
+          "网站清楚说明流程与空间改造的价值，并在同一路径中提供直接联系入口。",
+      },
+      "element-experiences-com": {
+        problem:
+          "在不削弱品牌宗旨的前提下，整合公开路线、私人体验和企业服务。",
+        decision:
+          "按体验类型划分内容，并通过日期、难度等级以及明确的预订和询价入口支撑选择。",
+        result:
+          "访客可以识别适合自己的体验，并进入正确的下一步。",
+      },
+      "efficientplasticolors-com": {
+        problem:
+          "解释色母粒和添加剂的技术型目录，同时让配色过程更容易理解。",
+        decision:
+          "用Pantone®匹配、产品分类和直接询价，把颜色转化为互动工具。",
+        result:
+          "访客能在同一流程中探索色彩和产品，并通过WhatsApp提交需求。",
+      },
+      "nkmohcafe-com": {
+        problem:
+          "讲述Zongolica产地故事，同时介绍精品咖啡和面向企业的解决方案。",
+        decision:
+          "把产地叙事、服务类型和产品信息与清晰的询价入口结合起来。",
+        result:
+          "网站区分精品咖啡、商用咖啡与定制研磨，并引导访客进入下单流程。",
+      },
+    },
   },
   world: {
     eyebrow: "服务足迹",

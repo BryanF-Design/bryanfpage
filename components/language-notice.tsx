@@ -5,6 +5,7 @@ import { Globe, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { useLanguage } from "@/lib/i18n/context";
+import { useConfiguratorInView } from "@/lib/use-configurator-in-view";
 
 const DISMISS_COOKIE = "bryanf_lang_notice_dismissed";
 // El aviso es informativo, no un consentimiento: se cierra solo a los 10s
@@ -20,7 +21,7 @@ export function LanguageNotice() {
   const { t } = useLanguage();
   const pathname = usePathname();
   const [visible, setVisible] = useState(false);
-  const [configuratorInView, setConfiguratorInView] = useState(false);
+  const configuratorInView = useConfiguratorInView();
 
   useEffect(() => {
     if (document.querySelector('main[data-language="es-only"]')) {
@@ -42,18 +43,6 @@ export function LanguageNotice() {
       window.clearTimeout(hideTimer);
     };
   }, [pathname]);
-
-  useEffect(() => {
-    const configurator = document.getElementById("precios");
-    if (!configurator) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setConfiguratorInView(entry.isIntersecting),
-      { rootMargin: "-12% 0px -12% 0px", threshold: 0.05 }
-    );
-    observer.observe(configurator);
-    return () => observer.disconnect();
-  }, []);
 
   function markDismissed() {
     document.cookie = `${DISMISS_COOKIE}=1; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
