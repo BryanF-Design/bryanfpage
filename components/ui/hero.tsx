@@ -85,6 +85,7 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
     const { t, locale } = useLanguage();
     const wrapperRef = React.useRef<HTMLDivElement>(null);
     const progressRef = React.useRef(0);
+    const speedRef = React.useRef<HTMLSpanElement>(null);
     const reducedMotion = useReducedMotionPreference();
     const [start3d, setStart3d] = React.useState(false);
     const [deferred3d, setDeferred3d] = React.useState(false);
@@ -118,6 +119,14 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
 
       const timer = window.setTimeout(() => setStart3d(true), 450);
       return () => window.clearTimeout(timer);
+    }, []);
+
+    // La aguja de la tira de datos. La escena escribe aquí ~10 veces por
+    // segundo: si esto fuera estado de React, el hero se re-renderizaría a esa
+    // misma frecuencia para pintar tres dígitos.
+    const handleSpeed = React.useCallback((kmh: number) => {
+      const node = speedRef.current;
+      if (node) node.textContent = String(Math.max(0, kmh)).padStart(3, "0");
     }, []);
 
     React.useEffect(() => {
@@ -352,6 +361,7 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                         ariaLabel={t.experience.civicAria}
                         onReady={() => setModelReady(true)}
                         onError={() => setModelFailed(true)}
+                        onSpeed={handleSpeed}
                       />
                     </motion.div>
                   )}
@@ -393,7 +403,11 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                   )}
                 </div>
 
-                <div className="pointer-events-none absolute inset-x-0 bottom-1 flex items-center justify-between px-5 sm:px-8">
+                {/* En teléfono esta fila caía justo sobre los botones
+                    flotantes de accesibilidad y chat, que son fijos al borde
+                    inferior. Sube por encima de ellos y vuelve al canto en
+                    cuanto hay ancho para las dos pistas. */}
+                <div className="pointer-events-none absolute inset-x-0 bottom-10 flex items-center justify-between px-5 sm:bottom-1 sm:px-8">
                   {/* En 390 px las dos pistas no caben en la misma línea y se
                       encimaban entre ellas y con los botones flotantes. En
                       teléfono el scroll vertical no necesita anuncio: se queda
@@ -401,13 +415,29 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                   <span className="hidden font-mono text-[9px] uppercase tracking-[0.2em] text-foreground/45 sm:inline sm:text-[10px]">
                     {scrollHint}
                   </span>
-                  <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-primary sm:text-[10px]">
-                    {locale === "ja" ? (
-                      t.experience.dragRotate
-                    ) : (
-                      <>
-                        {t.experience.dragRotate} ↔ <span lang="ja">回転</span>
-                      </>
+                  {/* Dos gestos, dos renglones. El giro ya estaba; el acelerón
+                      es nuevo y no se adivina, así que se declara igual que el
+                      resto de las instrucciones del hero. */}
+                  <span className="flex flex-col items-end gap-1 text-right">
+                    <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-primary sm:text-[10px]">
+                      {locale === "ja" ? (
+                        t.experience.dragRotate
+                      ) : (
+                        <>
+                          {t.experience.dragRotate} ↔ <span lang="ja">回転</span>
+                        </>
+                      )}
+                    </span>
+                    {!reducedMotion && (
+                      <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-foreground/45 sm:text-[10px]">
+                        {locale === "ja" ? (
+                          t.experience.tapBoost
+                        ) : (
+                          <>
+                            {t.experience.tapBoost} ↑ <span lang="ja">加速</span>
+                          </>
+                        )}
+                      </span>
                     )}
                   </span>
                 </div>
@@ -430,6 +460,25 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                   {locale === "ja" ? "HASHIRI" : `HASHIRI / ${t.experience.driving}`}
                 </span>
                 <span aria-hidden className="sep hidden sm:block" />
+                {/* 速度計. La tira ya declaraba coordenadas y lectura; ahora
+                    declara también a qué velocidad va el Civic. Es telemetría
+                    de la escena, no contenido: por eso queda fuera del árbol
+                    de accesibilidad en vez de anunciar un número que cambia
+                    diez veces por segundo. */}
+                {modelReady && !modelFailed && !reducedMotion && (
+                  <>
+                    <span
+                      aria-hidden
+                      className="inline-flex items-baseline gap-1.5 tabular-nums"
+                    >
+                      <span ref={speedRef} className="text-primary/85">
+                        000
+                      </span>
+                      <span className="opacity-55">km/h</span>
+                    </span>
+                    <span aria-hidden className="sep hidden sm:block" />
+                  </>
+                )}
                 <span className="inline-flex items-center gap-2">
                   <span aria-hidden className="size-1 bg-signal" />
                   <span lang="ja" className="font-jp tracking-[0.2em]">

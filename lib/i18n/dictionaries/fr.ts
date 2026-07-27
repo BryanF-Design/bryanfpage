@@ -46,6 +46,7 @@ const fr: Dictionary = {
     activateModel: "Activer le modèle 3D",
     lightweightView: "Vue allégée active",
     dragRotate: "Faites glisser pour tourner",
+    tapBoost: "Touchez pour accélérer",
     driving: "conduite",
     precision: "Précision",
     systemOnline: "Système prêt",

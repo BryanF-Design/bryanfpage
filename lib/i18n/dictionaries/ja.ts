@@ -46,6 +46,7 @@ const ja: Dictionary = {
     activateModel: "3Dモデルを起動",
     lightweightView: "軽量表示を使用中",
     dragRotate: "ドラッグして回転",
+    tapBoost: "タップで加速",
     driving: "走り",
     precision: "精度",
     systemOnline: "システム準備完了",

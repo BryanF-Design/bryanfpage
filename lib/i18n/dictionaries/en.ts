@@ -46,6 +46,7 @@ const en: Dictionary = {
     activateModel: "Activate 3D model",
     lightweightView: "Lightweight view active",
     dragRotate: "Drag to rotate",
+    tapBoost: "Tap to accelerate",
     driving: "driving",
     precision: "Precision",
     systemOnline: "System ready",

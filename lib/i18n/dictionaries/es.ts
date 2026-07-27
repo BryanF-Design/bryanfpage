@@ -47,6 +47,7 @@ const es = {
     activateModel: "Activar modelo 3D",
     lightweightView: "Vista ligera activa",
     dragRotate: "Arrastra para girar",
+    tapBoost: "Toca para acelerar",
     driving: "conducción",
     precision: "Precisión",
     systemOnline: "Sistema listo",
