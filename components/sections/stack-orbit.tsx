@@ -1,27 +1,29 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
 import type { IconType } from "react-icons";
 import {
-  SiNextdotjs,
-  SiReact,
-  SiTypescript,
-  SiJavascript,
-  SiTailwindcss,
-  SiHtml5,
   SiCss,
-  SiNodedotjs,
-  SiWordpress,
-  SiPhp,
   SiFigma,
-  SiVercel,
   SiGit,
   SiGithub,
+  SiHtml5,
+  SiJavascript,
+  SiNextdotjs,
+  SiNodedotjs,
+  SiPhp,
+  SiReact,
+  SiTailwindcss,
+  SiTypescript,
+  SiVercel,
+  SiWordpress,
 } from "react-icons/si";
-import { Code2 } from "lucide-react";
 
+import { SectionHeading } from "@/components/sections/section-heading";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n/context";
+import { useReducedMotionPreference } from "@/lib/motion-preference";
 
 const stack: { Icon: IconType; label: string }[] = [
   { Icon: SiNextdotjs, label: "Next.js" },
@@ -40,33 +42,31 @@ const stack: { Icon: IconType; label: string }[] = [
   { Icon: SiGithub, label: "GitHub" },
 ];
 
-const ORBIT_COUNT = 3;
-const ORBIT_GAP = 8; // rem between orbits
-const iconsPerOrbit = Math.ceil(stack.length / ORBIT_COUNT);
-
 export function StackOrbit() {
   const { t } = useLanguage();
+  const reducedMotion = useReducedMotionPreference();
 
   return (
     <section
       id="stack"
-      aria-label="Lenguajes y herramientas que manejo"
-      className="py-20 md:py-28"
+      aria-label={t.stack.title}
+      className="relative overflow-hidden border-t border-border py-20 md:py-28"
     >
-      <div className="container">
-        <div className="glass corner-ticks relative flex h-[34rem] flex-col items-center justify-between overflow-hidden rounded-lg bg-grain p-8 md:h-[30rem] md:flex-row md:p-12">
-          <div aria-hidden className="mesh-glow-a opacity-50" />
-          {/* Left: copy */}
-          <div className="z-10 max-w-lg text-center md:w-1/2 md:text-left">
-            <span className="tech-label inline-flex items-center gap-3 text-primary">
-              <span className="h-1.5 w-1.5 bg-primary" />
-              {t.stack.eyebrow}
-            </span>
-            <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
-              {t.stack.title}
-            </h2>
-            <p className="mt-4 text-muted-foreground">{t.stack.subtitle}</p>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3 md:justify-start">
+      <div
+        aria-hidden
+        className="route-grid pointer-events-none absolute inset-0 opacity-25"
+      />
+
+      <div className="container relative">
+        <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
+          <div className="lg:col-span-4">
+            <SectionHeading
+              eyebrow={t.stack.eyebrow}
+              title={t.stack.title}
+              subtitle={t.stack.subtitle}
+            />
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
               <Button asChild>
                 <Link href="#projects">{t.stack.ctaPrimary}</Link>
               </Button>
@@ -82,74 +82,48 @@ export function StackOrbit() {
             </div>
           </div>
 
-          {/* Right: orbit (cropped) */}
-          <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 flex h-[18rem] items-start justify-center md:relative md:h-full md:w-1/2 md:items-center md:justify-start"
-            aria-hidden="true"
-          >
-            <div className="relative flex h-[42rem] w-[42rem] -translate-y-24 items-center justify-center md:translate-x-[40%] md:translate-y-0">
-              {/* Center */}
-              <div className="glass-tint flex h-20 w-20 items-center justify-center rounded-full shadow-lg shadow-primary/10">
-                <Code2 className="h-9 w-9 text-primary" />
-              </div>
-
-              {[...Array(ORBIT_COUNT)].map((_, orbitIdx) => {
-                const size = `${12 + ORBIT_GAP * (orbitIdx + 1)}rem`;
-                const orbitRotation = -8 + orbitIdx * 7;
-                const angleStep = (2 * Math.PI) / iconsPerOrbit;
-
-                return (
-                  <div
-                    key={orbitIdx}
-                    className="absolute rounded-full border border-dashed border-border"
-                    style={{
-                      width: size,
-                      height: size,
-                      transform: `rotate(${orbitRotation}deg)`,
-                    }}
-                  >
-                    {stack
-                      .slice(
-                        orbitIdx * iconsPerOrbit,
-                        orbitIdx * iconsPerOrbit + iconsPerOrbit
-                      )
-                      .map(({ Icon, label }, iconIdx) => {
-                        const angle = iconIdx * angleStep;
-                        // Round so SSR and client agree (avoids hydration mismatch).
-                        const r3 = (n: number) => Math.round(n * 1000) / 1000;
-                        const x = r3(50 + 50 * Math.cos(angle));
-                        const y = r3(50 + 50 * Math.sin(angle));
-
-                        return (
-                          <div
-                            key={label}
-                            className="absolute"
-                            style={{
-                              left: `${x}%`,
-                              top: `${y}%`,
-                              transform: "translate(-50%, -50%)",
-                            }}
-                          >
-                            {/* Contrarrotación estática: el sistema conserva
-                                tensión visual sin movimiento perpetuo. */}
-                            <div
-                              className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-secondary/80 backdrop-blur"
-                              style={{
-                                transform: `rotate(${-orbitRotation}deg)`,
-                              }}
-                            >
-                              <Icon
-                                className="h-6 w-6 text-foreground/75"
-                                title={label}
-                              />
-                            </div>
-                          </div>
-                        );
-                      })}
-                  </div>
-                );
-              })}
+          <div className="editorial-panel overflow-hidden lg:col-span-8">
+            <div className="flex items-center justify-between border-b border-border px-5 py-4 md:px-7">
+              <span className="tech-label text-primary">{t.stack.eyebrow}</span>
+              <span
+                aria-hidden
+                className="h-2 w-2 bg-[#E8342A] shadow-[0_0_18px_rgba(232,52,42,0.45)]"
+              />
             </div>
+
+            <ul className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4">
+              {stack.map(({ Icon, label }, index) => (
+                <motion.li
+                  key={label}
+                  initial={reducedMotion ? false : { opacity: 0, y: 14 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{
+                    duration: reducedMotion ? 0 : 0.38,
+                    delay: reducedMotion ? 0 : (index % 7) * 0.035,
+                    ease: [0.2, 0, 0, 1],
+                  }}
+                  className="group relative min-h-32 border-b border-r border-border bg-background/20 p-4 transition-colors duration-200 hover:bg-primary/[0.045] sm:min-h-36 md:p-5"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="font-mono text-[0.65rem] tracking-[0.18em] text-muted-foreground">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <Icon
+                      aria-hidden="true"
+                      className="h-6 w-6 text-foreground/65 transition-colors duration-200 group-hover:text-primary md:h-7 md:w-7"
+                    />
+                  </div>
+                  <p className="absolute bottom-4 left-4 right-4 font-display text-sm font-semibold text-foreground md:bottom-5 md:left-5 md:right-5 md:text-base">
+                    {label}
+                  </p>
+                  <span
+                    aria-hidden
+                    className="absolute bottom-0 left-0 h-px w-0 bg-primary transition-[width] duration-300 group-hover:w-full"
+                  />
+                </motion.li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>

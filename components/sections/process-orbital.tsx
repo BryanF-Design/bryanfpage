@@ -1,25 +1,37 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FileSpreadsheet, ClipboardList, Code2, Rocket, LifeBuoy } from "lucide-react";
+import { ClipboardList, Code2, FileSpreadsheet, LifeBuoy, Rocket } from "lucide-react";
 
 import { SectionHeading } from "@/components/sections/section-heading";
-import { TractionLine } from "@/components/ui/traction-line";
 import { useLanguage } from "@/lib/i18n/context";
+import { useReducedMotionPreference } from "@/lib/motion-preference";
 
 const ICONS = [FileSpreadsheet, ClipboardList, Code2, Rocket, LifeBuoy];
 
 export function ProcessOrbital() {
   const { t } = useLanguage();
-  const steps = t.process.steps.map((step, i) => ({ ...step, icon: ICONS[i] }));
+  const reducedMotion = useReducedMotionPreference();
+  const steps = t.process.steps.map((step, index) => ({
+    ...step,
+    icon: ICONS[index],
+  }));
 
   return (
     <section
       id="proceso"
-      aria-label="Nuestro proceso"
+      aria-label={t.process.title}
       className="relative overflow-hidden border-t border-border py-20 md:py-28"
     >
-      <div aria-hidden className="mesh-glow-c opacity-70" />
+      <div
+        aria-hidden
+        className="route-grid pointer-events-none absolute inset-0 opacity-35"
+      />
+      <div
+        aria-hidden
+        className="japan-halftone pointer-events-none absolute inset-y-0 right-0 w-2/3 opacity-20"
+      />
+
       <div className="container relative">
         <SectionHeading
           eyebrow={t.process.eyebrow}
@@ -27,38 +39,77 @@ export function ProcessOrbital() {
           subtitle={t.process.subtitle}
         />
 
-        <div className="relative mx-auto mt-16 max-w-5xl md:mt-24">
-          <TractionLine className="pointer-events-none absolute -left-[2%] -top-20 hidden h-56 w-[104%] opacity-[0.24] md:block" />
-          <ol className="relative grid gap-10 before:absolute before:bottom-6 before:left-6 before:top-6 before:w-px before:bg-primary/25 before:content-[''] md:grid-cols-5 md:gap-6 md:before:hidden">
-            {steps.map((step, i) => {
+        <div className="editorial-panel relative mt-14 overflow-hidden md:mt-20">
+          <div
+            aria-hidden
+            className="absolute left-0 top-0 hidden h-px w-full bg-gradient-to-r from-primary via-primary/70 to-[#E8342A] md:block"
+          />
+
+          <ol className="relative grid md:grid-cols-5">
+            {steps.map((step, index) => {
               const Icon = step.icon;
+              const isLast = index === steps.length - 1;
+
               return (
                 <motion.li
                   key={step.title}
-                  initial={{ opacity: 0, y: 28 }}
+                  initial={reducedMotion ? false : { opacity: 0, y: 22 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-60px" }}
-                  transition={{ duration: 0.55, delay: i * 0.09, ease: [0.2, 0, 0, 1] }}
-                  className="relative flex gap-5 md:flex-col md:items-center md:gap-4 md:text-center"
+                  transition={{
+                    duration: reducedMotion ? 0 : 0.5,
+                    delay: reducedMotion ? 0 : index * 0.07,
+                    ease: [0.2, 0, 0, 1],
+                  }}
+                  className="group relative min-h-0 border-l border-border px-6 pb-9 pt-8 md:min-h-[20rem] md:border-l-0 md:border-r md:px-5 md:pb-8 md:pt-10 md:last:border-r-0 lg:px-7"
                 >
-                  <div className="glass elevate corner-ticks relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-md text-primary">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <div className="pb-2 md:px-2">
-                    <span className="font-mono text-xs tracking-[0.18em] text-primary">
-                      {String(i + 1).padStart(2, "0")}
+                  <span
+                    aria-hidden
+                    className={[
+                      "absolute -left-[5px] top-10 h-[9px] w-[9px] border border-background md:-top-[5px] md:left-6",
+                      isLast ? "bg-[#E8342A]" : "bg-primary",
+                    ].join(" ")}
+                  />
+
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="font-mono text-xs tracking-[0.2em] text-primary">
+                      {String(index + 1).padStart(2, "0")}
                     </span>
-                    <h3 className="mt-1 font-display text-xl font-bold text-foreground">
-                      {step.title}
-                    </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                      {step.content}
-                    </p>
+                    <span className="flex h-10 w-10 items-center justify-center border border-border bg-background/45 text-foreground/70 transition-colors duration-200 group-hover:border-primary/55 group-hover:text-primary">
+                      <Icon aria-hidden="true" className="h-4 w-4" />
+                    </span>
                   </div>
+
+                  <h3 className="mt-10 max-w-[13rem] font-display text-xl font-bold text-foreground md:mt-12 md:text-2xl">
+                    {step.title}
+                  </h3>
+                  <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
+                    {step.content}
+                  </p>
+
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute bottom-2 right-4 font-display text-6xl font-bold leading-none text-foreground/[0.025] md:text-7xl"
+                  >
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
                 </motion.li>
               );
             })}
           </ol>
+
+          <motion.div
+            aria-hidden
+            className="absolute bottom-0 left-0 h-0.5 w-full origin-left bg-gradient-to-r from-primary/90 via-primary/35 to-[#E8342A]"
+            initial={reducedMotion ? false : { scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{
+              duration: reducedMotion ? 0 : 1,
+              delay: reducedMotion ? 0 : 0.18,
+              ease: [0.2, 0, 0, 1],
+            }}
+          />
         </div>
       </div>
     </section>

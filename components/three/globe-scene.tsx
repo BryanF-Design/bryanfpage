@@ -11,6 +11,7 @@ export interface GlobeLocation {
   lat: number;
   lng: number;
   label: string;
+  accent?: "primary" | "signal";
 }
 
 interface GlobeSceneProps {
@@ -100,10 +101,11 @@ export function GlobeScene({ locations, arcs, className }: GlobeSceneProps) {
       // Marcadores + anillos de pulso.
       const markerVecs = locations.map((l) => latLngToVec3(l.lat, l.lng, R * 1.005));
       const pulses: THREE.Mesh[] = [];
-      markerVecs.forEach((v) => {
+      markerVecs.forEach((v, index) => {
+        const color = locations[index]?.accent === "signal" ? 0xe8342a : LIME;
         const marker = new THREE.Mesh(
           new THREE.SphereGeometry(0.022, 12, 12),
-          new THREE.MeshBasicMaterial({ color: LIME })
+          new THREE.MeshBasicMaterial({ color })
         );
         marker.position.copy(v);
         globe.add(marker);
@@ -111,7 +113,7 @@ export function GlobeScene({ locations, arcs, className }: GlobeSceneProps) {
         const pulse = new THREE.Mesh(
           new THREE.RingGeometry(0.03, 0.05, 24),
           new THREE.MeshBasicMaterial({
-            color: LIME,
+            color,
             transparent: true,
             opacity: 0.5,
             side: THREE.DoubleSide,
@@ -251,7 +253,11 @@ export function GlobeScene({ locations, arcs, className }: GlobeSceneProps) {
             ref={(node) => {
               labelRefs.current[i] = node;
             }}
-            className="pointer-events-none absolute left-0 top-0 rounded-sm border border-primary/40 bg-background/85 px-2 py-0.5 font-mono text-[11px] text-foreground transition-opacity duration-200"
+            className={
+              l.accent === "signal"
+                ? "pointer-events-none absolute left-0 top-0 border border-signal/50 bg-background/90 px-2 py-0.5 font-mono text-[11px] text-signal transition-opacity duration-200"
+                : "pointer-events-none absolute left-0 top-0 border border-primary/40 bg-background/85 px-2 py-0.5 font-mono text-[11px] text-foreground transition-opacity duration-200"
+            }
           >
             {l.label}
           </span>

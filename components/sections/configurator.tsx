@@ -307,9 +307,11 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
     <section
       id="precios"
       aria-label={t.configurator.title}
-      className="relative overflow-hidden py-20 md:py-28"
+      className="relative overflow-hidden border-t border-border py-20 md:py-28"
     >
       <div aria-hidden className="mesh-glow-a opacity-50" />
+      <div aria-hidden className="route-grid absolute inset-0 opacity-20" />
+      <div aria-hidden className="japan-halftone absolute inset-y-0 right-0 w-2/3 opacity-10" />
       <div className="container relative">
         {!hideHeading && (
           <SectionHeading
@@ -321,7 +323,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
 
         <div className="mt-14 grid gap-8 lg:grid-cols-[1.3fr_1fr]">
           {/* LEFT: configuration */}
-          <div className="flex flex-col gap-8">
+          <div className="editorial-panel flex flex-col gap-8 p-4 sm:p-6 md:p-8">
             {/* Plans */}
             <div>
               <p
@@ -344,10 +346,10 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                       aria-pressed={active}
                       onClick={() => setPlanId(p.id)}
                       className={cn(
-                        "elevate flex min-h-11 flex-col rounded-lg p-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                        "elevate flex min-h-11 flex-col rounded-none p-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                         active
                           ? "glass-tint corner-ticks"
-                          : "glass hover:border-primary/40"
+                          : "editorial-panel hover:border-primary/40"
                       )}
                     >
                       <span className="text-sm font-semibold text-foreground">
@@ -381,7 +383,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                 {MODULES.map((m) => (
                   <label
                     key={m.id}
-                    className="glass elevate flex min-h-11 cursor-pointer items-center justify-between rounded-lg px-4 py-3 hover:border-primary/40 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background"
+                    className="editorial-panel elevate flex min-h-11 cursor-pointer items-center justify-between px-4 py-3 hover:border-primary/40 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background"
                   >
                     <span className="flex items-center gap-3">
                       <input
@@ -401,7 +403,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                 ))}
 
                 {/* Sections counter */}
-                <div className="glass flex items-center justify-between rounded-lg px-4 py-3">
+                <div className="editorial-panel flex items-center justify-between px-4 py-3">
                   <span className="text-sm text-foreground">
                     {t.configurator.extraSections}
                     <span className="ml-1 font-mono text-xs text-muted-foreground">
@@ -412,7 +414,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                     <button
                       type="button"
                       onClick={() => setSections((n) => Math.max(0, n - 1))}
-                      className="flex h-11 w-11 items-center justify-center rounded-md border border-border text-foreground transition-colors hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                      className="flex h-11 w-11 items-center justify-center border border-border text-foreground transition-colors hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                       aria-label={t.configurator.removeSection}
                     >
                       −
@@ -427,7 +429,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                     <button
                       type="button"
                       onClick={() => setSections((n) => n + 1)}
-                      className="flex h-11 w-11 items-center justify-center rounded-md border border-border text-foreground transition-colors hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                      className="flex h-11 w-11 items-center justify-center border border-border text-foreground transition-colors hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                       aria-label={t.configurator.addSection}
                     >
                       +
@@ -472,7 +474,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                 <div
                   role="group"
                   aria-label={t.configurator.currencyLabel}
-                  className="inline-flex overflow-hidden rounded-md border border-border"
+                  className="inline-flex overflow-hidden border border-border"
                 >
                   {(["MXN", "USD"] as Currency[]).map((c) => (
                     <button
@@ -513,7 +515,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                     placeholder={t.configurator.couponPlaceholder}
                     aria-describedby={couponMsg ? "configurator-coupon-status" : undefined}
                     autoComplete="off"
-                    className="min-h-11 min-w-0 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    className="min-h-11 min-w-0 flex-1 border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   />
                   <Button
                     type="button"
@@ -539,7 +541,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
 
           {/* RIGHT: summary + pay */}
           <div className="lg:sticky lg:top-24">
-            <div className="glass-tint corner-ticks flex flex-col gap-4 rounded-lg p-6">
+            <div className="editorial-panel corner-ticks flex flex-col gap-4 border-primary/35 p-6 shadow-[0_24px_80px_-40px_hsl(var(--primary)/0.35)]">
               <p className="tech-label text-muted-foreground">{t.configurator.summary}</p>
               <div className="flex flex-col gap-2">
                 {items.map((it, i) => (
@@ -640,7 +642,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
               {transfer && (
                 <div
                   id="bank-transfer-details"
-                  className="glass mt-1 flex flex-col gap-2 rounded-lg p-4"
+                  className="editorial-panel mt-1 flex flex-col gap-2 p-4"
                 >
                   <p className="text-xs text-muted-foreground">
                     {t.configurator.transferInstructions(formatMXN(payableNowMxn))}
@@ -658,7 +660,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                         <button
                           type="button"
                           onClick={() => copy(b.value, b.label)}
-                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                          className="flex h-11 w-11 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                           aria-label={t.configurator.copyLabel(b.label)}
                         >
                           {copied === b.label ? (

@@ -26,8 +26,33 @@ const es = {
     titlePrefix: "Haz que",
     titleHighlight: "pase.",
     subtitle:
-      "Diseño y construyo sitios rápidos, claros y hechos para convertir. Trabajas conmigo de la idea al lanzamiento.",
-    scrollHint: "Desliza para abrir la laptop",
+      "Hago sitios que se entienden, responden rápido y llevan a una acción. De la primera conversación al lanzamiento, trabajas directamente conmigo.",
+    scrollHint: "Desliza para recorrer el Civic",
+  },
+  experience: {
+    startupSequence: "Secuencia de arranque",
+    preparingAria: "Preparando la experiencia",
+    readyAria: "Experiencia lista",
+    prepare: "preparar",
+    start: "arrancar",
+    loaderLine: "Diseño, código y movimiento a punto.",
+    aligning: "Alineando la interfaz",
+    routeReady: "Ruta lista",
+    skip: "Omitir entrada",
+    phaseDesign: "Diseño",
+    phaseDevelopment: "Desarrollo",
+    phaseLaunch: "Lanzamiento",
+    modelStudy: "Una obsesión personal, llevada a 3D",
+    modelLoading: "Cargando modelo 3D",
+    activateModel: "Activar modelo 3D",
+    lightweightView: "Vista ligera activa",
+    dragRotate: "Arrastra para girar",
+    driving: "conducción",
+    precision: "Precisión",
+    systemOnline: "Sistema listo",
+    civicAria: "Modelo 3D interactivo de un Honda Civic Type R 2023",
+    statsAria: "Datos del estudio",
+    statsRecord: "Datos reales del estudio",
   },
   trust: {
     years: "años",
@@ -42,7 +67,7 @@ const es = {
     eyebrow: "Cómo trabajamos",
     title: "Un proceso claro, de la idea al lanzamiento",
     subtitle:
-      "Sin humo: entregas que inician desde 3 días hábiles, con acompañamiento después de lanzar.",
+      "Te digo qué sigue, qué necesito y cuándo lo verás. Las entregas empiezan desde 3 días hábiles y sigo contigo después del lanzamiento.",
     steps: [
       {
         title: "Cotización",
@@ -75,7 +100,7 @@ const es = {
     eyebrow: "Stack",
     title: "Los lenguajes que manejo",
     subtitle:
-      "Frameworks y herramientas modernas con las que construyo: rápido, escalable y a la medida. La tecnología al servicio de la idea, no al revés.",
+      "Elijo cada herramienta por lo que el proyecto necesita. No por moda, sino para que el sitio cargue bien, escale y sea fácil de mantener.",
     ctaPrimary: "Ver proyectos",
     ctaSecondary: "Trabajemos juntos",
   },
@@ -84,7 +109,7 @@ const es = {
     titlePrefix: "Webs que",
     rotatingWords: ["venden", "convierten", "conectan", "destacan"],
     subtitle:
-      "Webs que generan impacto real en cada cliente. Cada una diseñada y construida a la medida. Toca cualquiera para visitarla.",
+      "Cada proyecto aquí está en línea y resolvió una necesidad distinta. Puedes abrirlos y recorrer el trabajo real.",
     visitSite: "Visitar sitio",
     showMore: "Mostrar más proyectos",
     descs: {
@@ -154,8 +179,15 @@ const es = {
   world: {
     eyebrow: "Presencia",
     title: "Dónde hemos trabajado",
-    subtitle: "Proyectos para clientes en México, España y Francia. Diseñamos sin fronteras.",
+    subtitle:
+      "El trabajo nos ha llevado por México, España y Francia. Japón entra por otra vía: una influencia cultural que atraviesa la manera de diseñar del estudio.",
     dragHint: "Arrastra el globo para girarlo",
+    locations: {
+      mexico: "México",
+      spain: "España",
+      france: "Francia",
+      japan: "Japón · conexión cultural",
+    },
   },
   clients: {
     label: "Marcas que han confiado",
@@ -372,14 +404,14 @@ const es = {
   },
   about: {
     eyebrow: "Diseño con autoría",
-    title: "Soy Bryan. Diseño con intención y construyo para que funcione.",
+    title: "Soy Bryan. Yo diseño la experiencia y también escribo el código.",
     subtitle:
-      "Diseño y desarrollo cada sitio de principio a fin. Sin agencia ni intermediarios: hablas conmigo desde la primera idea hasta el lanzamiento.",
+      "Trabajo contigo sin capas de agencia. La misma persona que escucha tu idea toma las decisiones de diseño y lleva el proyecto hasta producción.",
     role: "Diseñador & desarrollador",
     photoAlt: "Bryan diseñando y desarrollando en su escritorio",
     inspirationLabel: "Lo que llevo al trabajo",
     inspiration:
-      "Me inspiran los autos de alto desempeño —mi favorito es el Honda Civic Type R 2016—, la cultura visual japonesa y la lógica de una red bien construida. No los pego como decoración: los traduzco en precisión, ritmo y conexión.",
+      "Hay cosas que se me quedaron pegadas: el Type R que para mí siempre será el de 2016, la forma en que Japón une oficio y cultura de taller, y la lógica de una red bien hecha. En mi trabajo aparecen como atención al detalle, ritmo y sistemas que sí conectan.",
     chips: ["Diseño + código", "Trato directo", "Performance con intención"],
     principlesLabel: "Mi forma de trabajar · precisión, ritmo y conexión",
     principles: [

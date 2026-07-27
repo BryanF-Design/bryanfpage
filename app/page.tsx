@@ -6,7 +6,10 @@ import { StatCounter } from "@/components/ui/stat-counter";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { SiteHeader } from "@/components/sections/site-header";
 import { MarqueeBand } from "@/components/sections/marquee-band";
-import { SocialRail } from "@/components/social-rail";
+import {
+  IGNITION_STORAGE_KEY,
+  IgnitionPreloader,
+} from "@/components/japan/ignition-preloader";
 import { useLanguage } from "@/lib/i18n/context";
 
 // Below-the-fold sections: code-split so the initial hydration bundle stays
@@ -58,12 +61,19 @@ const LuminaChat = dynamic(
 
 export default function HomePage() {
   const { t } = useLanguage();
+  const ignitionBootstrap = `(function(){try{document.documentElement.dataset.ignitionSeen=sessionStorage.getItem(${JSON.stringify(
+    IGNITION_STORAGE_KEY
+  )})==="1"?"1":"0"}catch(e){document.documentElement.dataset.ignitionSeen="0"}})();`;
 
   return (
     <>
+      <script dangerouslySetInnerHTML={{ __html: ignitionBootstrap }} />
+      <noscript>
+        <style>{`.ignition-loader{display:none!important}`}</style>
+      </noscript>
+      <IgnitionPreloader />
       <ScrollProgress />
       <SiteHeader />
-      <SocialRail />
 
       <main id="main-content" tabIndex={-1} className="relative">
         <Hero
@@ -71,8 +81,10 @@ export default function HomePage() {
           eyebrow={t.hero.eyebrow}
           title={
             <>
-              {t.hero.titlePrefix}{" "}
-              <span className="text-primary">{t.hero.titleHighlight}</span>
+              <span className="block">{t.hero.titlePrefix}</span>
+              <span className="block text-primary drop-shadow-[0_0_32px_hsl(var(--primary)/0.14)]">
+                {t.hero.titleHighlight}
+              </span>
             </>
           }
           subtitle={t.hero.subtitle}
@@ -83,41 +95,49 @@ export default function HomePage() {
           ]}
         />
 
-      {/* Prueba rápida: cifras legibles, sin otra escena compitiendo con el hero. */}
-      <section className="relative overflow-hidden border-b border-border">
-        <div aria-hidden className="mesh-glow-b opacity-50" />
-        <div className="container relative grid grid-cols-3 divide-x divide-border">
-          <div className="flex flex-col gap-1 py-6 pr-3 sm:py-8 sm:pr-8">
-            <p className="font-display text-2xl font-bold text-foreground sm:text-3xl md:text-4xl xl:text-5xl">
-              <StatCounter value={5} prefix="+" />
-            </p>
-            <p className="tech-label text-muted-foreground">
-              <span className="sm:hidden">{t.trust.years}</span>
-              <span className="hidden sm:inline">
-                {t.trust.years} {t.trust.yearsCaption}
+        {/* Pit board con cifras reales. Ningún dato automotriz inventado. */}
+        <section
+          aria-label={t.experience.statsAria}
+          className="relative overflow-hidden border-y border-border bg-card/45"
+        >
+          <div aria-hidden className="japan-halftone absolute inset-0 opacity-10" />
+          <div className="container relative">
+            <div className="flex items-center justify-between border-b border-border py-3 font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground sm:text-[10px]">
+              <span>{t.experience.statsRecord}</span>
+              <span className="inline-flex items-center gap-2 text-primary">
+                <span className="size-1.5 bg-signal" />
+                Est. 2020
               </span>
-            </p>
+            </div>
+            <dl className="grid grid-cols-3 divide-x divide-border">
+              <div className="group flex flex-col gap-1 py-6 pr-3 sm:py-9 sm:pr-8">
+                <dt className="order-2 font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground sm:text-[10px]">
+                  {t.trust.years} <span className="hidden sm:inline">{t.trust.yearsCaption}</span>
+                </dt>
+                <dd className="order-1 font-display text-3xl font-bold leading-none text-foreground sm:text-4xl md:text-5xl xl:text-6xl">
+                  <StatCounter value={5} prefix="+" />
+                </dd>
+              </div>
+              <div className="group flex flex-col gap-1 px-3 py-6 sm:px-8 sm:py-9">
+                <dt className="order-2 font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground sm:text-[10px]">
+                  {t.trust.projects} <span className="hidden sm:inline">{t.trust.projectsCaption}</span>
+                </dt>
+                <dd className="order-1 font-display text-3xl font-bold leading-none text-foreground sm:text-4xl md:text-5xl xl:text-6xl">
+                  <StatCounter value={100} prefix="+" />
+                </dd>
+              </div>
+              <div className="group flex flex-col gap-1 py-6 pl-3 sm:py-9 sm:pl-8">
+                <dt className="order-2 font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground sm:text-[10px]">
+                  {t.trust.deliveryCaption}
+                </dt>
+                <dd className="order-1 font-display text-3xl font-bold leading-none text-foreground sm:text-4xl md:text-5xl xl:text-6xl">
+                  <span className="hidden sm:inline">{t.trust.deliveryPrefix} </span>
+                  <StatCounter value={3} /> <span className="text-primary">{t.trust.days}</span>
+                </dd>
+              </div>
+            </dl>
           </div>
-          <div className="flex flex-col gap-1 px-3 py-6 sm:px-8 sm:py-8">
-            <p className="font-display text-2xl font-bold text-foreground sm:text-3xl md:text-4xl xl:text-5xl">
-              <StatCounter value={100} prefix="+" />
-            </p>
-            <p className="tech-label text-muted-foreground">
-              <span className="sm:hidden">{t.trust.projects}</span>
-              <span className="hidden sm:inline">
-                {t.trust.projects} — {t.trust.projectsCaption}
-              </span>
-            </p>
-          </div>
-          <div className="flex flex-col gap-1 py-6 pl-3 sm:py-8 sm:pl-8">
-            <p className="font-display text-2xl font-bold text-foreground sm:text-3xl md:text-4xl xl:text-5xl">
-              <span className="hidden sm:inline">{t.trust.deliveryPrefix} </span>
-              <StatCounter value={3} /> {t.trust.days}
-            </p>
-            <p className="tech-label text-muted-foreground">{t.trust.deliveryCaption}</p>
-          </div>
-        </div>
-      </section>
+        </section>
 
       {/* El trabajo aparece antes que el relato: capacidad primero. */}
       <ProjectsShowcase />

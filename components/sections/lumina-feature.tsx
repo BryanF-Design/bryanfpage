@@ -71,6 +71,8 @@ export function LuminaFeature() {
       className="relative overflow-hidden border-t border-border py-24 md:py-32"
     >
       <div aria-hidden className="mesh-glow-a opacity-60" />
+      <div aria-hidden className="route-grid absolute inset-0 opacity-25" />
+      <div aria-hidden className="japan-halftone absolute inset-y-0 right-0 w-3/5 opacity-15" />
 
       {/* Nombre gigante en capa profunda */}
       <motion.div
@@ -135,7 +137,7 @@ export function LuminaFeature() {
               <button
                 key={q}
                 onClick={() => openLuminaChat(q)}
-                className="min-h-11 rounded-full border border-border px-4 py-2 text-left text-xs text-muted-foreground transition-[border-color,color,transform] duration-200 hover:border-primary hover:text-primary active:scale-95 md:text-sm"
+                className="min-h-11 border border-border border-l-primary/40 bg-background/45 px-4 py-2 text-left font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground transition-[border-color,color,transform] duration-200 hover:border-primary hover:text-primary active:scale-[0.98] md:text-xs"
               >
                 {q}
               </button>
@@ -154,7 +156,7 @@ export function LuminaFeature() {
               <a
                 key={label}
                 href={QUOTE_PRESET_HREFS[i]}
-                className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-4 py-2 text-xs font-medium text-primary ring-1 ring-primary/30 transition-all duration-200 hover:bg-primary/20 active:scale-95 md:text-sm"
+                className="inline-flex min-h-11 items-center gap-1.5 border border-primary/30 bg-primary/[0.06] px-4 py-2 font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-primary transition-all duration-200 hover:bg-primary/15 active:scale-[0.98] md:text-xs"
               >
                 <Sparkles className="h-3.5 w-3.5" />
                 {label}
@@ -185,10 +187,10 @@ export function LuminaFeature() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6, delay: 0.3, ease: [0.2, 0, 0, 1] }}
-            className="grid w-full gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-3"
+            className="grid w-full gap-px overflow-hidden border border-border bg-border sm:grid-cols-3"
           >
             {t.luminaSection.badges.map((b) => (
-              <li key={b.title} className="flex flex-col gap-1 bg-background p-4">
+              <li key={b.title} className="flex min-h-28 flex-col justify-end gap-1 bg-background/95 p-4">
                 <span className="text-sm font-semibold text-foreground">{b.title}</span>
                 <span className="text-xs text-muted-foreground">{b.desc}</span>
               </li>
@@ -225,7 +227,7 @@ export function LuminaFeature() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -8, scale: 0.9 }}
                   transition={{ duration: 0.25 }}
-                  className="glass inline-flex items-center gap-2 rounded-full px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-primary"
+                  className="glass inline-flex items-center gap-2 rounded-none border-l-primary px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-primary"
                 >
                   <Sparkles className="h-3 w-3" />
                   {moodLabel[mood]}
@@ -270,7 +272,7 @@ function TypedPhrases({ phrases }: { phrases: string[] }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.6, delay: 0.15, ease: [0.2, 0, 0, 1] }}
-      className="glass flex w-full max-w-md items-center gap-3 rounded-md px-4 py-3"
+      className="editorial-panel flex w-full max-w-md items-center gap-3 border-l-primary px-4 py-3"
     >
       <span className="flex gap-1.5" aria-hidden>
         <span className="h-2 w-2 rounded-full bg-primary/60" />

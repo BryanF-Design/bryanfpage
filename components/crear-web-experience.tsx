@@ -24,7 +24,7 @@ const LuminaChat = dynamic(
  * página que Lumina recomienda y que se puede compartir para "cotiza y paga".
  */
 export function CrearWebExperience() {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
 
   return (
     <>
@@ -34,6 +34,8 @@ export function CrearWebExperience() {
       <main id="main-content" tabIndex={-1} className="relative">
         <section className="relative overflow-hidden border-b border-border pb-10 pt-28 md:pt-36">
           <div aria-hidden className="mesh-glow-a opacity-50" />
+          <div aria-hidden className="route-grid absolute inset-0 opacity-45" />
+          <div aria-hidden className="japan-halftone absolute inset-y-0 right-0 w-2/3 opacity-20" />
           <div className="container relative">
             <Link
               href="/"
@@ -45,6 +47,11 @@ export function CrearWebExperience() {
             <p className="tech-label mt-6 inline-flex items-center gap-3 text-primary">
               <span className="h-1.5 w-1.5 bg-primary" />
               {t.configurator.eyebrow}
+            </p>
+            <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+              <span lang="ja" className="font-jp text-signal">始動</span>
+              {" / shidō"}
+              {locale === "ja" ? null : ` / ${t.experience.start}`}
             </p>
             <h1 className="mt-3 font-display text-4xl font-bold uppercase leading-[0.95] tracking-tight sm:text-5xl xl:text-6xl">
               {t.configurator.title}

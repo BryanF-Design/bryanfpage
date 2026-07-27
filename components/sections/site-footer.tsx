@@ -29,8 +29,9 @@ const social = [
 const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
 
 export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
-  const { t: localizedT } = useLanguage();
+  const { t: localizedT, locale } = useLanguage();
   const t = spanishOnly ? DICTIONARIES.es : localizedT;
+  const activeLocale = spanishOnly ? "es" : locale;
 
   const nav = [
     { label: t.nav.inicio, href: "/" },
@@ -53,6 +54,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
   return (
     <footer id="site-footer" className="relative overflow-hidden border-t border-border bg-background" aria-label={t.footer.legalLabel}>
       <div aria-hidden className="mesh-glow-b opacity-40" />
+      <div aria-hidden className="route-grid absolute inset-0 opacity-15" />
       <TractionLine className="pointer-events-none absolute -bottom-10 right-0 hidden h-52 w-[min(760px,85vw)] opacity-[0.07] md:block" />
       <div className="container relative grid gap-10 py-14 md:grid-cols-[1.3fr_0.85fr_1fr_1fr]">
         {/* Brand */}
@@ -78,7 +80,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="glass elevate flex size-11 items-center justify-center rounded-md text-muted-foreground hover:border-primary/60 hover:text-primary hover:shadow-[0_0_16px_hsl(var(--primary)/0.2)]"
+                className="editorial-panel elevate flex size-11 items-center justify-center text-muted-foreground hover:border-primary/60 hover:text-primary hover:shadow-[0_0_16px_hsl(var(--primary)/0.2)]"
               >
                 <Icon className="h-4 w-4" />
               </Link>
@@ -186,13 +188,17 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
       </div>
 
       <div className="border-t border-border">
-        <div className="container flex flex-col items-center justify-between gap-4 py-6 text-xs text-muted-foreground sm:flex-row">
+        <div className="container grid items-center gap-4 py-6 text-xs text-muted-foreground sm:grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr]">
           {/* El sello firma el trabajo, como en un grabado. */}
           <span className="flex items-center gap-4">
             <HankoSeal label={t.footer.signatureLabel} />
             {t.footer.copyright(new Date().getFullYear())}
           </span>
-          <span>
+          <span className="hidden text-center font-mono text-[9px] uppercase tracking-[0.2em] text-primary lg:block">
+            <span lang="ja">精度</span> / SEIDO
+            {activeLocale === "ja" ? null : ` / ${t.experience.precision}`}
+          </span>
+          <span className="sm:text-right">
             {t.footer.acceptPrefix}{" "}
             <Link href="/privacidad" className="inline-flex min-h-11 items-center underline underline-offset-2 hover:text-primary">
               {t.footer.privacy}

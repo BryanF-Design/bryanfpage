@@ -4,9 +4,9 @@
 
 @layer base {
   :root {
-    /* BryanF Design — "taller de precisión": tinta verde-negra con atmósfera,
-       hueso para texto, la lima de marca #B4E332 ≈ hsl(76 76% 54%) como único
-       acento. Nada de negro neutro: el fondo siempre tira a verde. */
+    /* BryanF Design / Ruta de arranque. Se conserva la paleta de marca:
+       tinta verde-negra, hueso y lima #B4E332. El rojo señal aparece en menos
+       del 5% de la interfaz para separar arranque y ápex de los CTA. */
     --background: 160 30% 4%;
     --foreground: 70 22% 94%;
 
@@ -27,6 +27,9 @@
 
     --accent: 158 14% 12%;
     --accent-foreground: 70 22% 94%;
+
+    --signal: 4 81% 53%;
+    --signal-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
@@ -67,6 +70,9 @@
     /* Las bandas marquee y los nombres gigantes sobresalen a propósito:
        nada de scroll horizontal fantasma en móvil. */
     overflow-x: clip;
+    background-image:
+      radial-gradient(circle at 78% 2%, hsl(var(--primary) / 0.035), transparent 30rem),
+      linear-gradient(180deg, hsl(160 34% 4%), hsl(var(--background)) 32rem);
   }
   :where(a, button, input, textarea, select, summary):focus-visible {
     outline: 2px solid hsl(var(--primary));
@@ -115,6 +121,31 @@
     background-size: 3px 3px;
   }
 
+  /* Retícula vial. Las divisiones se leen como carriles que avanzan hacia
+     un punto de fuga, no como otro dashboard tecnológico. */
+  .route-grid {
+    background-image:
+      linear-gradient(90deg, transparent 49.8%, hsl(var(--border) / 0.7) 50%, transparent 50.2%),
+      linear-gradient(hsl(var(--border) / 0.36) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.32) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 72px, 72px 100%;
+    mask-image: linear-gradient(to bottom, black, transparent 92%);
+    -webkit-mask-image: linear-gradient(to bottom, black, transparent 92%);
+  }
+
+  /* Trama editorial generada en CSS. Une las referencias impresas con el
+     mundo de movilidad sin publicar fotografías o símbolos prestados. */
+  .japan-halftone {
+    background-image: radial-gradient(
+      circle,
+      hsl(var(--foreground) / 0.2) 0.8px,
+      transparent 0.9px
+    );
+    background-size: 5px 5px;
+    mask-image: radial-gradient(circle at 72% 34%, black 0, transparent 64%);
+    -webkit-mask-image: radial-gradient(circle at 72% 34%, black 0, transparent 64%);
+  }
+
   /* Retícula de taller: líneas finas tipo plano de obra. Estática y barata. */
   .bg-blueprint {
     background-image:
@@ -146,6 +177,20 @@
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
   }
+  .glass-dark {
+    background-color: hsl(var(--background) / 0.78);
+    border: 1px solid hsl(var(--foreground) / 0.11);
+    box-shadow: 0 18px 52px hsl(160 50% 2% / 0.42);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .signal-kicker::after {
+    content: "";
+    width: 2.5rem;
+    height: 1px;
+    background: linear-gradient(90deg, hsl(var(--primary)), transparent);
+  }
 
   /* Etiqueta técnica: la voz mono del sitio (eyebrows, coordenadas, precios). */
   .tech-label {
@@ -154,6 +199,94 @@
     font-weight: 500;
     letter-spacing: 0.22em;
     text-transform: uppercase;
+  }
+
+  /* Panel editorial: borde duro, luz interior y una esquina de registro.
+     La esquina roja marca un dato; nunca reemplaza la acción lima. */
+  .editorial-panel {
+    position: relative;
+    border: 1px solid hsl(var(--border));
+    background:
+      linear-gradient(145deg, hsl(var(--card) / 0.96), hsl(var(--background) / 0.92));
+    box-shadow: inset 0 1px 0 hsl(var(--foreground) / 0.035);
+  }
+  .editorial-panel::after {
+    content: "";
+    position: absolute;
+    right: -1px;
+    top: -1px;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-right: 1px solid hsl(var(--signal) / 0.8);
+    border-top: 1px solid hsl(var(--signal) / 0.8);
+    pointer-events: none;
+  }
+
+  .paper-panel {
+    --paper-ink: 160 30% 4%;
+    color: hsl(var(--paper-ink));
+    background-color: hsl(var(--foreground));
+    background-image:
+      radial-gradient(hsl(var(--paper-ink) / 0.06) 0.7px, transparent 0.8px),
+      linear-gradient(110deg, hsl(70 22% 96%), hsl(70 14% 88%));
+    background-size: 4px 4px, 100% 100%;
+  }
+
+  .chapter-rule {
+    position: relative;
+  }
+  .chapter-rule::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: clamp(3.5rem, 8vw, 8rem);
+    height: 2px;
+    background: linear-gradient(90deg, hsl(var(--signal)), hsl(var(--primary)));
+  }
+
+  .ignition-loader {
+    isolation: isolate;
+  }
+  html[data-ignition-seen="1"] .ignition-loader {
+    display: none;
+  }
+  .ignition-loader::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 75% 55%, hsl(var(--primary) / 0.13), transparent 30%),
+      linear-gradient(112deg, transparent 54%, hsl(var(--signal) / 0.045) 54.2%, transparent 55%);
+  }
+
+  @media (max-height: 560px) and (orientation: landscape) {
+    .ignition-shell {
+      padding-block: 0.75rem;
+    }
+    .ignition-stage {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      min-height: 0;
+      gap: 0.75rem;
+    }
+    .ignition-copy {
+      flex-direction: row;
+      align-items: flex-end;
+      gap: 0.75rem;
+    }
+    .ignition-kanji {
+      font-size: clamp(3.5rem, 18vh, 4.5rem) !important;
+    }
+    .ignition-dial {
+      max-height: 42vh;
+      max-width: 22rem;
+    }
+    .ignition-copy p:last-child {
+      font-size: 0.75rem;
+      line-height: 1.25;
+    }
   }
 
   /* Esquinas marcadas tipo visor de cámara / plano técnico. */

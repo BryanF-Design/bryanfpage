@@ -180,8 +180,9 @@ export function useThreeStage({ build, fov = 40, cameraZ = 5, maxDpr = 1.75 }: S
 }
 
 function disposeMaterial(material: THREE.Material) {
-  const withMaps = material as THREE.Material & { map?: THREE.Texture | null };
-  if (withMaps.map) withMaps.map.dispose();
+  Object.values(material).forEach((value) => {
+    if (value instanceof THREE.Texture) value.dispose();
+  });
   material.dispose();
 }
 

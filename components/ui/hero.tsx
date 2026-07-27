@@ -6,20 +6,16 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 
 import { cn } from "@/lib/utils";
-import {
-  useDecorative3dEnabled,
-  useReducedMotionPreference,
-} from "@/lib/motion-preference";
+import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { Button } from "@/components/ui/button";
-import { TractionLine } from "@/components/ui/traction-line";
 import { VerticalLabel } from "@/components/ui/vertical-label";
+import { useLanguage } from "@/lib/i18n/context";
 
-// La laptop 3D es clienteside puro y va en su propio chunk: el HTML del hero
-// (h1, subtítulo, CTAs — lo que lee Google y pinta el LCP) no depende de ella.
-const LaptopScene = dynamic(
-  () => import("@/components/three/laptop-scene").then((m) => m.LaptopScene),
+const CivicScene = dynamic(
+  () => import("@/components/three/civic-scene").then((module) => module.CivicScene),
   { ssr: false }
 );
+
 interface HeroAction {
   label: string;
   href: string;
@@ -31,18 +27,35 @@ interface HeroProps extends Omit<React.HTMLAttributes<HTMLElement>, "title"> {
   subtitle?: React.ReactNode;
   eyebrow?: React.ReactNode;
   actions?: HeroAction[];
-  /** Pista mono junto a la laptop ("Desliza para abrirla"). */
   scrollHint?: string;
   titleClassName?: string;
   subtitleClassName?: string;
   actionsClassName?: string;
 }
 
+type IdleWindow = Window & {
+  requestIdleCallback?: (
+    callback: () => void,
+    options?: { timeout: number }
+  ) => number;
+  cancelIdleCallback?: (handle: number) => void;
+};
+
+type NetworkNavigator = Navigator & {
+  deviceMemory?: number;
+  connection?: {
+    saveData?: boolean;
+    effectiveType?: string;
+  };
+};
+
 /**
- * Hero "obra en vivo": composición asimétrica sobre retícula de taller.
- * A la izquierda el titular expandido; a la derecha una laptop 3D que se
- * abre conforme bajas — la sección mide más de una pantalla y el contenido
- * queda pegado (sticky) mientras dura la apertura.
+ * Hero "Ruta de arranque".
+ *
+ * El Civic proporcionado es la demostración principal de 3D del sitio. El
+ * scroll cambia su ángulo y el arrastre permite inspeccionarlo sin bloquear
+ * el gesto vertical en touch. El modelo pesado arranca en idle; el H1, el
+ * copy, los CTA y el fallback se pintan antes.
  */
 const Hero = React.forwardRef<HTMLElement, HeroProps>(
   (
@@ -60,44 +73,77 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
     },
     ref
   ) => {
+    const { t, locale } = useLanguage();
     const wrapperRef = React.useRef<HTMLDivElement>(null);
     const progressRef = React.useRef(0);
     const reducedMotion = useReducedMotionPreference();
-    const interactiveLaptop = useDecorative3dEnabled();
+    const [start3d, setStart3d] = React.useState(false);
+    const [deferred3d, setDeferred3d] = React.useState(false);
+    const [modelReady, setModelReady] = React.useState(false);
+    const [modelFailed, setModelFailed] = React.useState(false);
 
-    // Progreso de scroll del hero (0 = arriba, 1 = tapa abierta). Se escribe
-    // en un ref — la escena 3D lo lee en su propio RAF, sin re-renders React.
     React.useEffect(() => {
-      if (!interactiveLaptop) {
-        progressRef.current = 1;
+      const connection = (navigator as NetworkNavigator).connection;
+      const shouldDefer =
+        connection?.saveData === true ||
+        connection?.effectiveType === "slow-2g" ||
+        connection?.effectiveType === "2g" ||
+        connection?.effectiveType === "3g" ||
+        (typeof (navigator as NetworkNavigator).deviceMemory === "number" &&
+          (navigator as NetworkNavigator).deviceMemory! <= 2) ||
+        navigator.hardwareConcurrency <= 2;
+
+      if (shouldDefer) {
+        setDeferred3d(true);
+        return;
+      }
+
+      const idleWindow = window as IdleWindow;
+      if (idleWindow.requestIdleCallback) {
+        const handle = idleWindow.requestIdleCallback(
+          () => setStart3d(true),
+          { timeout: 1300 }
+        );
+        return () => idleWindow.cancelIdleCallback?.(handle);
+      }
+
+      const timer = window.setTimeout(() => setStart3d(true), 450);
+      return () => window.clearTimeout(timer);
+    }, []);
+
+    React.useEffect(() => {
+      if (reducedMotion) {
+        progressRef.current = 0.52;
         return;
       }
 
       const wrapper = wrapperRef.current;
       if (!wrapper) return;
-      let raf = 0;
+
+      let frame = 0;
       const update = () => {
-        raf = 0;
+        frame = 0;
         const range = wrapper.offsetHeight - window.innerHeight;
         if (range <= 0) {
-          progressRef.current = 1;
+          progressRef.current = 0.52;
           return;
         }
-        const y = -wrapper.getBoundingClientRect().top;
-        progressRef.current = Math.min(1, Math.max(0, (y / range) * 1.35));
+        const distance = -wrapper.getBoundingClientRect().top;
+        progressRef.current = Math.min(1, Math.max(0, distance / range));
       };
       const onScroll = () => {
-        if (!raf) raf = requestAnimationFrame(update);
+        if (!frame) frame = requestAnimationFrame(update);
       };
+
       update();
       window.addEventListener("scroll", onScroll, { passive: true });
       window.addEventListener("resize", onScroll);
       return () => {
         window.removeEventListener("scroll", onScroll);
         window.removeEventListener("resize", onScroll);
-        if (raf) cancelAnimationFrame(raf);
+        if (frame) cancelAnimationFrame(frame);
       };
-    }, [interactiveLaptop]);
+    }, [reducedMotion]);
 
     return (
       <section
@@ -105,21 +151,37 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
         className={cn("relative z-0 w-full", className)}
         {...props}
       >
-        <div ref={wrapperRef} className="relative h-[120svh] md:h-[185svh]">
-          <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden bg-background">
-            <div aria-hidden className="bg-blueprint absolute inset-0" />
-            <div aria-hidden className="mesh-glow-a absolute inset-0" />
-            <TractionLine className="pointer-events-none absolute left-[2%] top-[17%] z-[2] h-[58%] w-[96%] opacity-[0.55] md:top-[13%] lg:left-[4%] lg:top-[17%] lg:h-[62%] lg:w-[92%]" />
-            {/* La columna japonesa queda como señal editorial secundaria. */}
+        <div
+          ref={wrapperRef}
+          className={cn(
+            "relative",
+            reducedMotion ? "min-h-[100svh]" : "h-[168svh] md:h-[218svh]"
+          )}
+        >
+          <div
+            className={cn(
+              "flex min-h-[100svh] flex-col overflow-hidden bg-background",
+              reducedMotion ? "relative" : "sticky top-0 h-[100svh]"
+            )}
+          >
+            <div aria-hidden className="route-grid absolute inset-0 opacity-60" />
+            <div aria-hidden className="japan-halftone absolute inset-0 opacity-20" />
+            <div aria-hidden className="mesh-glow-a absolute inset-0 opacity-70" />
+            <HeroRoute reducedMotion={reducedMotion} />
+
             <VerticalLabel
-              jp="速さと精度"
-              romaji="hayasa to seido"
+              jp="走り"
+              romaji={
+                locale === "ja"
+                  ? "hashiri"
+                  : `hashiri · ${t.experience.driving}`
+              }
               tone="primary"
-              className="right-4 top-1/2 z-[1] hidden -translate-y-1/2 xl:flex"
+              className="right-4 top-1/2 z-20 hidden -translate-y-1/2 xl:flex"
             />
-            <div className="container relative z-10 flex flex-1 flex-col justify-center gap-10 pb-10 pt-28 lg:grid lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-6">
-              {/* Copy */}
-              <div className="flex flex-col items-start gap-6">
+
+            <div className="container relative z-10 flex flex-1 flex-col pb-8 pt-24 sm:pt-28 lg:grid lg:grid-cols-[minmax(0,0.86fr)_minmax(0,1.14fr)] lg:items-center lg:gap-0 lg:pb-10">
+              <div className="relative z-20 flex min-w-0 flex-col items-start gap-5 lg:py-14">
                 {eyebrow && (
                   <motion.span
                     initial={reducedMotion ? false : { y: 12, opacity: 0 }}
@@ -129,54 +191,57 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                       delay: reducedMotion ? 0 : 0.08,
                       duration: reducedMotion ? 0 : 0.48,
                     }}
-                    className="tech-label inline-flex items-center gap-3 text-muted-foreground"
+                    className="tech-label signal-kicker inline-flex items-center gap-3 text-muted-foreground"
                   >
                     <span className="h-1.5 w-1.5 bg-primary" />
                     {eyebrow}
                   </motion.span>
                 )}
+
                 <h1
                   className={cn(
-                    "hero-title max-w-full font-display text-[13vw] font-bold uppercase leading-[0.95] tracking-tight sm:text-6xl md:text-7xl xl:text-[5.4rem]",
+                    "hero-title max-w-[10ch] font-display text-[17vw] font-bold uppercase leading-[0.78] tracking-[-0.065em] text-foreground sm:text-[5.35rem] md:text-[6.3rem] lg:text-[6.7rem] xl:text-[8rem]",
                     titleClassName
                   )}
                 >
                   {title}
                 </h1>
+
                 {subtitle && (
                   <motion.p
                     initial={reducedMotion ? false : { y: 16, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{
                       ease: [0.2, 0, 0, 1],
-                      delay: reducedMotion ? 0 : 0.12,
+                      delay: reducedMotion ? 0 : 0.14,
                       duration: reducedMotion ? 0 : 0.55,
                     }}
                     className={cn(
-                      "max-w-xl text-pretty text-base text-muted-foreground md:text-lg",
+                      "max-w-[34rem] text-pretty text-base leading-relaxed text-muted-foreground md:text-lg",
                       subtitleClassName
                     )}
                   >
                     {subtitle}
                   </motion.p>
                 )}
+
                 {actions && actions.length > 0 && (
                   <motion.div
                     initial={reducedMotion ? false : { y: 16, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{
                       ease: [0.2, 0, 0, 1],
-                      delay: reducedMotion ? 0 : 0.18,
+                      delay: reducedMotion ? 0 : 0.2,
                       duration: reducedMotion ? 0 : 0.55,
                     }}
                     className={cn(
-                      "mt-2 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center",
+                      "mt-1 flex w-full flex-col gap-3 sm:w-auto sm:flex-row",
                       actionsClassName
                     )}
                   >
-                    {actions.map((action, index) => (
+                    {actions.map((action) => (
                       <Button
-                        key={index}
+                        key={`${action.href}-${action.label}`}
                         size="lg"
                         variant={action.variant || "default"}
                         asChild
@@ -187,37 +252,134 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                     ))}
                   </motion.div>
                 )}
+
+                <div className="mt-3 hidden w-full max-w-[35rem] grid-cols-3 border-y border-border/80 sm:grid">
+                  <HeroPhase
+                    jp="設計"
+                    label={locale === "ja" ? "SEKKEI" : t.experience.phaseDesign}
+                  />
+                  <HeroPhase
+                    jp="実装"
+                    label={
+                      locale === "ja"
+                        ? "JISSŌ"
+                        : t.experience.phaseDevelopment
+                    }
+                  />
+                  <HeroPhase
+                    jp="始動"
+                    label={locale === "ja" ? "SHIDŌ" : t.experience.phaseLaunch}
+                    signal
+                  />
+                </div>
               </div>
 
-              {/* Laptop 3D */}
               <motion.div
-                initial={reducedMotion ? false : { opacity: 0 }}
-                animate={{ opacity: 1 }}
+                initial={reducedMotion ? false : { opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
                 transition={{
-                  delay: reducedMotion ? 0 : 0.32,
-                  duration: reducedMotion ? 0 : 0.72,
+                  delay: reducedMotion ? 0 : 0.2,
+                  duration: reducedMotion ? 0 : 0.7,
+                  ease: [0.2, 0, 0, 1],
                 }}
-                className="corner-ticks relative h-[34svh] min-h-[220px] w-full sm:h-[40svh] lg:h-[56svh] lg:min-h-[380px]"
+                className="relative -mx-6 mt-1 min-h-[42svh] min-w-0 flex-1 sm:mx-0 sm:min-h-[50svh] lg:-ml-[15%] lg:mt-0 lg:h-[72svh] lg:min-h-[560px]"
               >
-                {interactiveLaptop ? (
-                  <LaptopScene progressRef={progressRef} className="absolute inset-0" />
-                ) : (
-                  <StaticLaptop />
-                )}
-                {interactiveLaptop && scrollHint && (
-                  <span className="tech-label pointer-events-none absolute bottom-0 left-1/2 hidden -translate-x-1/2 items-center gap-2 whitespace-nowrap text-muted-foreground sm:flex">
-                    <ScrollArrow />
+                <div className="absolute inset-x-4 inset-y-0 overflow-hidden sm:inset-x-0">
+                  <CivicFallback
+                    ready={modelReady}
+                    reducedMotion={reducedMotion}
+                  />
+
+                  {start3d && !modelFailed && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: modelReady ? 1 : 0 }}
+                      transition={{ duration: reducedMotion ? 0 : 0.6 }}
+                      className="absolute inset-0"
+                    >
+                      <CivicScene
+                        progressRef={progressRef}
+                        className="absolute inset-0"
+                        ariaLabel={t.experience.civicAria}
+                        onReady={() => setModelReady(true)}
+                        onError={() => setModelFailed(true)}
+                      />
+                    </motion.div>
+                  )}
+
+                  <div className="pointer-events-none absolute inset-x-4 top-4 flex items-start justify-between gap-4 sm:inset-x-6">
+                    <div className="glass-dark border-l-2 border-primary px-3 py-2">
+                      <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-foreground/45 sm:text-[10px]">
+                        {t.experience.modelStudy}
+                      </p>
+                      <p className="mt-1 font-display text-sm font-semibold uppercase tracking-[0.08em] text-foreground sm:text-base">
+                        Civic Type R · 2023
+                      </p>
+                    </div>
+                    <span className="hidden rounded-full border border-signal/50 bg-background/80 px-3 py-1 font-mono text-[9px] uppercase tracking-[0.18em] text-signal sm:inline-flex">
+                      Type R
+                    </span>
+                  </div>
+
+                  {!modelReady && start3d && !modelFailed && (
+                    <div className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/55">
+                      {t.experience.modelLoading}
+                      <span aria-hidden className="ml-2 inline-flex gap-1">
+                        <span className="h-1 w-1 animate-pulse rounded-full bg-primary motion-reduce:animate-none" />
+                        <span className="h-1 w-1 animate-pulse rounded-full bg-primary [animation-delay:160ms] motion-reduce:animate-none" />
+                        <span className="h-1 w-1 animate-pulse rounded-full bg-primary [animation-delay:320ms] motion-reduce:animate-none" />
+                      </span>
+                    </div>
+                  )}
+
+                  {deferred3d && !start3d && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDeferred3d(false);
+                        setStart3d(true);
+                      }}
+                      className="absolute bottom-8 left-1/2 min-h-11 -translate-x-1/2 whitespace-nowrap border border-primary/50 bg-background/85 px-4 font-mono text-[10px] uppercase tracking-[0.2em] text-primary backdrop-blur-sm transition-colors hover:bg-primary hover:text-primary-foreground"
+                    >
+                      {t.experience.activateModel}
+                    </button>
+                  )}
+
+                  {modelFailed && (
+                    <p className="absolute bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.18em] text-foreground/55">
+                      {t.experience.lightweightView}
+                    </p>
+                  )}
+                </div>
+
+                <div className="pointer-events-none absolute inset-x-0 bottom-1 flex items-center justify-between px-5 sm:px-8">
+                  <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-foreground/45 sm:text-[10px]">
                     {scrollHint}
                   </span>
-                )}
+                  <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-primary sm:text-[10px]">
+                    {locale === "ja" ? (
+                      t.experience.dragRotate
+                    ) : (
+                      <>
+                        {t.experience.dragRotate} ↔ <span lang="ja">回転</span>
+                      </>
+                    )}
+                  </span>
+                </div>
               </motion.div>
             </div>
 
-            {/* Pie técnico: datos reales, sin simular un tablero de auto. */}
-            <div className="relative z-10 hidden border-t border-border md:block">
-              <div className="container flex items-center justify-between py-3 pl-20 pr-52 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground lg:pl-6">
-                <span>19.4326° N — 99.1332° O · CDMX</span>
-                <span className="text-primary">EST. 2020</span>
+            <div className="relative z-20 border-t border-border/80 bg-background/60">
+              <div className="container grid grid-cols-[1fr_auto] items-center gap-4 py-3 font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground sm:text-[10px] md:grid-cols-3">
+                <span>19.4326° N · CDMX / MX</span>
+                <span className="hidden text-center md:block">
+                  <span lang="ja">精度</span> / SEIDO
+                  {locale === "ja" ? null : ` / ${t.experience.precision}`}
+                </span>
+                <span className="inline-flex items-center justify-end gap-2 text-primary">
+                  <span className="size-1.5 rounded-full bg-signal shadow-[0_0_12px_hsl(var(--signal)/0.75)]" />
+                  {t.experience.systemOnline}
+                </span>
               </div>
             </div>
           </div>
@@ -228,35 +390,115 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
 );
 Hero.displayName = "Hero";
 
-function StaticLaptop() {
+function HeroPhase({
+  jp,
+  label,
+  signal = false,
+}: {
+  jp: string;
+  label: string;
+  signal?: boolean;
+}) {
   return (
-    <div aria-hidden className="absolute inset-0 flex items-center justify-center">
-      <div className="relative w-[92%] max-w-[520px]">
-        <div className="relative mx-auto aspect-[16/9] w-[82%] origin-bottom -skew-y-2 overflow-hidden rounded-t-md border border-primary/25 bg-card shadow-[0_0_55px_hsl(var(--primary)/0.1)]">
-          <div className="absolute inset-[5%] overflow-hidden border border-border bg-background">
-            <span className="absolute inset-x-0 top-0 h-[12%] border-b border-border bg-secondary/70" />
-            <span className="absolute left-[7%] top-[24%] h-2 w-[38%] bg-primary/25" />
-            <span className="absolute left-[7%] top-[35%] h-4 w-[56%] bg-foreground/[0.08]" />
-            <span className="absolute left-[7%] top-[52%] h-px w-[66%] bg-primary/45" />
-            <span className="absolute bottom-[12%] left-[7%] h-[14%] w-[28%] rounded-sm bg-primary" />
-            <span className="absolute right-[7%] top-[24%] h-[54%] w-[28%] border border-primary/20 bg-primary/[0.035]" />
-          </div>
-        </div>
-        <div className="relative -mt-px h-8 w-full [clip-path:polygon(8%_0%,92%_0%,100%_72%,96%_100%,4%_100%,0%_72%)] bg-gradient-to-b from-secondary to-background shadow-[0_18px_35px_hsl(var(--background)/0.8)]">
-          <span className="absolute left-1/2 top-1 h-px w-10 -translate-x-1/2 bg-primary/80" />
-        </div>
-      </div>
+    <div className="border-r border-border/80 px-3 py-3 last:border-r-0">
+      <span
+        lang="ja"
+        className={cn(
+          "font-jp text-lg",
+          signal ? "text-signal" : "text-primary"
+        )}
+      >
+        {jp}
+      </span>
+      <span className="ml-2 font-mono text-[9px] uppercase tracking-[0.18em] text-foreground/50">
+        {label}
+      </span>
     </div>
   );
 }
 
-function ScrollArrow() {
+function CivicFallback({
+  ready,
+  reducedMotion,
+}: {
+  ready: boolean;
+  reducedMotion: boolean;
+}) {
   return (
-    <span aria-hidden className="inline-block text-primary">
-      ↓
-    </span>
+    <motion.div
+      aria-hidden
+      animate={{ opacity: ready ? 0 : 1 }}
+      transition={{ duration: reducedMotion ? 0 : 0.5 }}
+      className="absolute inset-0 grid place-items-center"
+    >
+      <div className="absolute inset-[12%] bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.11),transparent_64%)]" />
+      <svg
+        viewBox="0 0 760 390"
+        className="relative w-[112%] max-w-[820px] overflow-visible text-primary/45"
+      >
+        <defs>
+          <linearGradient id="civic-fallback-line" x1="0" x2="1">
+            <stop offset="0" stopColor="currentColor" stopOpacity="0" />
+            <stop offset=".2" stopColor="currentColor" stopOpacity=".75" />
+            <stop offset=".82" stopColor="currentColor" stopOpacity=".75" />
+            <stop offset="1" stopColor="currentColor" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path
+          d="M44 291C127 283 169 270 212 235L288 166C306 150 326 141 351 138L477 126C507 123 533 133 554 154L602 202C639 213 667 227 688 252L716 291"
+          fill="none"
+          stroke="url(#civic-fallback-line)"
+          strokeWidth="2"
+        />
+        <path
+          d="M203 238H579M256 205H557M310 165L341 223M473 134L520 209"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1"
+          strokeDasharray="5 10"
+          opacity=".42"
+        />
+        <ellipse cx="226" cy="289" rx="54" ry="54" fill="none" stroke="currentColor" />
+        <ellipse cx="587" cy="289" rx="54" ry="54" fill="none" stroke="currentColor" />
+        <ellipse cx="226" cy="289" rx="31" ry="31" fill="none" stroke="currentColor" opacity=".5" />
+        <ellipse cx="587" cy="289" rx="31" ry="31" fill="none" stroke="currentColor" opacity=".5" />
+        <path d="M60 318H710" stroke="currentColor" strokeWidth="1" opacity=".28" />
+      </svg>
+    </motion.div>
+  );
+}
+
+function HeroRoute({ reducedMotion }: { reducedMotion: boolean }) {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 1600 900"
+      preserveAspectRatio="none"
+      className="pointer-events-none absolute inset-0 h-full w-full"
+    >
+      <motion.path
+        d="M-120 760C160 715 273 530 504 542C704 554 697 777 925 684C1112 608 1166 286 1710 300"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        pathLength="1"
+        initial={reducedMotion ? false : { pathLength: 0, opacity: 0 }}
+        animate={{ pathLength: 1, opacity: 0.52 }}
+        transition={{ duration: reducedMotion ? 0 : 1.35, delay: 0.25, ease: [0.2, 0, 0, 1] }}
+        className="text-primary"
+      />
+      <path
+        d="M-130 786C176 741 280 560 505 568C729 576 711 804 938 708C1147 620 1195 315 1710 327"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1"
+        strokeDasharray="7 13"
+        className="text-foreground/15"
+      />
+      <circle cx="924" cy="684" r="5" fill="currentColor" className="text-signal" />
+      <circle cx="924" cy="684" r="18" fill="none" stroke="currentColor" className="text-signal/40" />
+    </svg>
   );
 }
 
 export { Hero };
-export type { HeroProps, HeroAction };

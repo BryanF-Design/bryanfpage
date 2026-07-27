@@ -52,6 +52,7 @@ export function LuminaJourney() {
       className="relative overflow-hidden border-t border-border py-20 md:py-28"
     >
       <div aria-hidden className="mesh-glow-c opacity-40" />
+      <div aria-hidden className="route-grid absolute inset-0 opacity-20" />
       <div className="container relative">
         <SectionHeading
           eyebrow={t.luminaJourney.eyebrow}
@@ -83,7 +84,7 @@ export function LuminaJourney() {
               >
                 {/* Nodo: avatar de Lumina en su ánimo del paso, sobre el riel. */}
                 <div className="relative flex justify-center">
-                  <span className="relative z-10 flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-background ring-1 ring-primary/45">
+                  <span className="relative z-10 flex h-12 w-12 items-center justify-center overflow-hidden border border-primary/45 bg-background">
                     <Image
                       src={STEP_MOODS[i % STEP_MOODS.length]}
                       alt=""
@@ -94,7 +95,7 @@ export function LuminaJourney() {
                   </span>
                 </div>
 
-                <div className="glass elevate corner-ticks rounded-lg p-5 md:p-6">
+                <div className="editorial-panel elevate corner-ticks p-5 md:p-6">
                   <span className="tech-label text-primary">
                     {String(i + 1).padStart(2, "0")} · {step.title}
                   </span>

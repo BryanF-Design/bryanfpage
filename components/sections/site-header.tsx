@@ -104,8 +104,12 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
     <>
     <header
       ref={headerRef}
-      className="glass-nav fixed inset-x-0 top-0 z-[100] border-b border-border"
+      className="glass-nav fixed inset-x-0 top-0 z-[100] isolate border-b border-border"
     >
+      <span
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/45 to-signal/65"
+      />
       <div className="container grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-2 md:grid-cols-[1fr_auto_1fr]">
         <Link
           href="/"
@@ -133,7 +137,7 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
             <Link
               key={l.href}
               href={l.href}
-              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="group relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-none font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground transition-colors after:absolute after:inset-x-1 after:bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-primary after:transition-transform hover:text-primary hover:after:scale-x-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               {l.label}
             </Link>
@@ -191,7 +195,8 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
             transition={{ duration: 0.25 }}
             className="fixed inset-x-0 bottom-0 top-[61px] z-[99] flex flex-col overflow-y-auto bg-background/95 backdrop-blur-xl md:hidden"
           >
-            <div aria-hidden className="bg-blueprint absolute inset-0 opacity-60" />
+            <div aria-hidden className="route-grid absolute inset-0 opacity-70" />
+            <div aria-hidden className="japan-halftone absolute inset-0 opacity-20" />
             <div aria-hidden className="mesh-glow-a absolute inset-0 opacity-70" />
 
             <nav
@@ -264,7 +269,7 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={label}
-                      className="glass flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground transition-[color,transform] hover:text-primary active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                      className="editorial-panel flex h-11 w-11 items-center justify-center text-muted-foreground transition-[color,transform] hover:text-primary active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                     >
                       <Icon className="h-4 w-4" />
                     </Link>

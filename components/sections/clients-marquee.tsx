@@ -25,6 +25,7 @@ export function ClientsMarquee() {
       aria-label={t.clients.label}
       className="relative overflow-hidden border-t border-border py-16"
     >
+      <div aria-hidden className="japan-halftone absolute inset-0 opacity-10" />
       <div className="container relative">
         <p className="tech-label mb-10 text-center text-muted-foreground">
           {t.clients.label}
@@ -41,7 +42,7 @@ export function ClientsMarquee() {
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: 0.5, delay: (i % 5) * 0.06, ease: [0.2, 0, 0, 1] }}
-              className="elevate glass flex aspect-[3/2] items-center justify-center rounded-lg p-4 md:p-5"
+              className="editorial-panel elevate flex aspect-[3/2] items-center justify-center p-4 hover:border-primary/45 md:p-5"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
