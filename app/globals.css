@@ -121,14 +121,17 @@
     background-size: 3px 3px;
   }
 
-  /* Retícula vial. Las divisiones se leen como carriles que avanzan hacia
-     un punto de fuga, no como otro dashboard tecnológico. */
+  /* Retícula de registro.
+     Antes esta clase pintaba una vertical dura al 50% del ancho, y como la
+     usan once secciones, esa misma línea reaparecía en el centro de casi toda
+     la página sin describir nada. Es la «línea porque sí» más repetida del
+     sitio. Queda solo la retícula fina, que sí pertenece al mundo impreso de
+     la referencia: la trama de registro de una hoja, no un eje inventado. */
   .route-grid {
     background-image:
-      linear-gradient(90deg, transparent 49.8%, hsl(var(--border) / 0.7) 50%, transparent 50.2%),
-      linear-gradient(hsl(var(--border) / 0.36) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--border) / 0.32) 1px, transparent 1px);
-    background-size: 100% 100%, 100% 72px, 72px 100%;
+      linear-gradient(hsl(var(--border) / 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.26) 1px, transparent 1px);
+    background-size: 100% 72px, 72px 100%;
     mask-image: linear-gradient(to bottom, black, transparent 92%);
     -webkit-mask-image: linear-gradient(to bottom, black, transparent 92%);
   }
@@ -251,15 +254,20 @@
   html[data-ignition-seen="1"] .ignition-loader {
     display: none;
   }
+  /* Antes había aquí una diagonal bermellón a 112° y un resplandor lima al
+     75%/55%: dos gestos que no describían nada y cruzaban la composición sin
+     motivo. El disco ya ancla la escena; el fondo solo tiene que ser tinta. */
   .ignition-loader::after {
     content: "";
     position: absolute;
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background:
-      radial-gradient(circle at 75% 55%, hsl(var(--primary) / 0.13), transparent 30%),
-      linear-gradient(112deg, transparent 54%, hsl(var(--signal) / 0.045) 54.2%, transparent 55%);
+    background: radial-gradient(
+      ellipse 80% 60% at 50% 50%,
+      hsl(158 22% 7% / 0.9),
+      transparent 70%
+    );
   }
 
   @media (max-height: 560px) and (orientation: landscape) {
@@ -442,6 +450,305 @@
     background-image:
       radial-gradient(ellipse 900px 700px at 50% 100%, hsl(var(--primary) / 0.07), transparent 60%),
       radial-gradient(ellipse 600px 600px at 8% 0%, hsl(160 60% 28% / 0.1), transparent 60%);
+  }
+
+  /* ——— 版面 HANMEN · SISTEMA DE PÁGINA ———————————————————————————
+     Las once referencias de la carpeta comparten una sola cosa antes que el
+     color o el kanji: todas están enmarcadas. El contenido vive dentro de una
+     hoja. Este bloque construye esa hoja y los recursos que la habitan. */
+
+  :root {
+    --frame-inset: 0.75rem;
+    --header-h: 61px;
+    --frame-tick: 12px;
+  }
+  @media (min-width: 640px) {
+    :root {
+      --frame-inset: 1.125rem;
+      --frame-tick: 16px;
+    }
+  }
+
+  /* El marco. Se dibuja una vez, es fijo, y el preloader lo hereda: la
+     secuencia de entrada traza este mismo rectángulo antes de levantar el
+     telón, así que lo que ves nacer es lo que te acompaña toda la página. */
+  .page-frame {
+    position: fixed;
+    top: calc(var(--header-h) + var(--frame-inset));
+    right: var(--frame-inset);
+    bottom: var(--frame-inset);
+    left: var(--frame-inset);
+    z-index: 105;
+    pointer-events: none;
+    border: 1px solid hsl(var(--foreground) / 0.12);
+    /* Doble hairline —hueso dentro, tinta fuera— para que el marco siga
+       existiendo cuando pasa por delante de la sección de papel. Con un solo
+       borde hueso al 12% desaparecía justo ahí. */
+    box-shadow: 0 0 0 1px hsl(160 30% 4% / 0.16);
+  }
+  /* Ticks de registro en las cuatro esquinas, como marca de corte de imprenta. */
+  .page-frame::before,
+  .page-frame::after {
+    content: "";
+    position: absolute;
+    width: var(--frame-tick);
+    height: var(--frame-tick);
+    border: 0 solid hsl(var(--primary) / 0.55);
+  }
+  .page-frame::before {
+    top: -1px;
+    left: -1px;
+    border-top-width: 1px;
+    border-left-width: 1px;
+  }
+  .page-frame::after {
+    right: -1px;
+    bottom: -1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+  }
+  /* Por debajo de 480 px el borde del teléfono ya es el marco. El del
+     preloader se retira con él: si trazara un rectángulo que después no está,
+     se rompería la continuidad que da sentido a la secuencia. */
+  @media (max-width: 479px) {
+    .page-frame,
+    .ignition-frame {
+      display: none;
+    }
+  }
+
+  /* Etiqueta corriendo por el canto del marco (縦組み de servicio). */
+  .frame-edge {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: hsl(var(--foreground) / 0.28);
+    white-space: nowrap;
+  }
+  .frame-edge-left {
+    left: -1px;
+    bottom: 2.5rem;
+    transform-origin: 0 0;
+    transform: rotate(-90deg) translateX(0);
+  }
+  .frame-edge-right {
+    right: -1px;
+    top: 2.5rem;
+    transform-origin: 100% 0;
+    transform: rotate(90deg);
+  }
+
+  /* ——— 日の丸 HINOMARU · El disco ————————————————————————————————
+     Ancla circular detrás del sujeto. Sustituye a las curvas sueltas que
+     cruzaban el hero sin describir nada. En la página es tinta elevada con un
+     arco bermellón de 1 px: la silueta del hinomaru sin gastar el presupuesto
+     de rojo, que sigue por debajo del 5%. */
+  .hinomaru {
+    position: absolute;
+    border-radius: 9999px;
+    pointer-events: none;
+    /* Disco lleno, no anillo: el relleno tiene que leerse como una masa que
+       sostiene al sujeto. Con el degradado anterior solo sobrevivía el borde
+       y la composición volvía a ser una línea suelta. */
+    background: radial-gradient(
+      circle at 50% 46%,
+      hsl(150 16% 15% / 0.92) 0%,
+      hsl(155 18% 11% / 0.78) 46%,
+      hsl(158 20% 8% / 0.34) 66%,
+      transparent 73%
+    );
+  }
+  .hinomaru::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1px solid hsl(var(--signal) / 0.3);
+    /* El arco no cierra: se desvanece en el cuarto inferior izquierdo, como
+       el disco recortado por el marco en los pósters. */
+    mask-image: conic-gradient(from 190deg, black 0deg, black 165deg, transparent 235deg);
+    -webkit-mask-image: conic-gradient(from 190deg, black 0deg, black 165deg, transparent 235deg);
+  }
+  /* Variante de campo: el disco lima tenue que da peso a una sección. */
+  .hinomaru-field {
+    position: absolute;
+    border-radius: 9999px;
+    pointer-events: none;
+    background: radial-gradient(
+      circle at 50% 50%,
+      hsl(var(--primary) / 0.055) 0%,
+      hsl(var(--primary) / 0.022) 55%,
+      transparent 70%
+    );
+  }
+
+  /* ——— 縦組み TATEGAKI · Columna vertical ————————————————————————
+     Tipografía vertical a escala de página, no la etiqueta de 11 px que
+     había antes. Es un elemento de arquitectura: baja por el margen y marca
+     el borde de la composición. */
+  .tategaki-display {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-family: var(--font-jp);
+    line-height: 1;
+    letter-spacing: 0.18em;
+    user-select: none;
+  }
+  /* Latín vertical rotado, como el `JAPAN` de los pósters. */
+  .tategaki-latin {
+    writing-mode: vertical-rl;
+    text-orientation: sideways;
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 0.92;
+    letter-spacing: 0.02em;
+    user-select: none;
+  }
+
+  /* ——— データ帯 · Tira de datos ——————————————————————————————————
+     Coordenadas, hora y lectura japonesa corriendo por un canto. Reemplaza a
+     los paneles que explicaban por qué un elemento estaba en pantalla. Los
+     pósters de la carpeta nunca explican: solo declaran el dato. */
+  .data-strip {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: hsl(var(--foreground) / 0.42);
+  }
+  @media (min-width: 640px) {
+    .data-strip {
+      font-size: 10px;
+      gap: 1.5rem;
+    }
+  }
+  .data-strip > * {
+    white-space: nowrap;
+  }
+  .data-strip .sep {
+    flex: 1 1 auto;
+    height: 1px;
+    min-width: 1rem;
+    background: hsl(var(--foreground) / 0.12);
+  }
+
+  /* ——— 落款 RAKKAN · Sello de capítulo ————————————————————————————
+     Sello bermellón con el kanji de la sección. Sustituye al cuadrito lima
+     genérico que abría cada eyebrow. */
+  .chapter-seal {
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    flex: none;
+    border: 1px solid hsl(var(--signal) / 0.5);
+    color: hsl(var(--signal) / 0.85);
+    font-family: var(--font-jp);
+    font-size: 0.8125rem;
+    line-height: 1;
+    background: hsl(var(--signal) / 0.06);
+  }
+
+  /* ——— 網点 AMITEN · Halftone sobre imagen ————————————————————————
+     Trama de impresión real sobre fotografía, al modo del dithering de la
+     portada de Toyota. Hace que las capturas de proyecto pertenezcan al mismo
+     mundo de tinta que la interfaz en vez de flotar a color pleno. */
+  .amiten {
+    position: relative;
+    isolation: isolate;
+  }
+  .amiten::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    /* Velo, no máscara. A 0.55 de alfa y 3 px de paso la trama convertía las
+       capturas claras en una mancha de puntos y se perdía la pieza: el
+       objetivo es que la fotografía pertenezca al mundo de tinta, no que deje
+       de leerse. */
+    background-image: radial-gradient(
+      circle,
+      hsl(160 30% 4% / 0.3) 0.85px,
+      transparent 1px
+    );
+    background-size: 4px 4px;
+    opacity: 0.7;
+    transition: opacity 420ms var(--ease-material);
+  }
+  /* Descendiente, no hijo directo: next/image envuelve el <img> y las
+     capturas viven dentro de un LazyMount. */
+  .amiten img {
+    filter: saturate(0.68) contrast(1.06) brightness(0.95);
+    transition: filter 420ms var(--ease-material);
+  }
+  /* Al enfocar o pasar el puntero la trama se retira y la captura vuelve a
+     color pleno: la pieza se revela cuando de verdad la estás mirando. */
+  .amiten:hover::after,
+  .amiten:focus-within::after,
+  .group:hover .amiten::after,
+  .group:focus-within .amiten::after {
+    opacity: 0.2;
+  }
+  .amiten:hover img,
+  .amiten:focus-within img,
+  .group:hover .amiten img,
+  .group:focus-within .amiten img {
+    filter: saturate(1) contrast(1) brightness(1);
+  }
+
+  /* ——— 青海波 SEIGAIHA · Banda de olas ————————————————————————————
+     El patrón de olas que cierra la composición en los pósters. Aquí separa
+     secciones: reemplaza los huecos de negro muerto que había entre bloques.
+     Es CSS puro — dos radiales desfasados sobre una retícula. */
+  .seigaiha {
+    --wave: hsl(var(--foreground) / 0.09);
+    background-image:
+      radial-gradient(circle at 50% 100%, transparent 9px, var(--wave) 9px, var(--wave) 10px, transparent 10px),
+      radial-gradient(circle at 50% 100%, transparent 16px, var(--wave) 16px, var(--wave) 17px, transparent 17px),
+      radial-gradient(circle at 50% 100%, transparent 23px, var(--wave) 23px, var(--wave) 24px, transparent 24px);
+    background-size: 48px 26px;
+    background-position: 0 0, 0 0, 0 0;
+    background-repeat: repeat-x;
+  }
+  .seigaiha-signal {
+    --wave: hsl(var(--signal) / 0.16);
+  }
+
+  /* ——— 章 SHŌ · Numeración de capítulo ————————————————————————————
+     `章 03 / 08` en el margen. Es la columna vertebral que le faltaba a un
+     scroll de 18 000 px: antes cada sección aparecía sin lugar en la serie. */
+  .chapter-index {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: hsl(var(--foreground) / 0.3);
+  }
+  .chapter-index b {
+    color: hsl(var(--primary) / 0.9);
+    font-weight: 500;
+  }
+
+  /* Regla de sección: hairline con el peso a la izquierda, como la línea que
+     flanquea la fecha en la portada de Toyota. */
+  .rule-flank {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      hsl(var(--primary) / 0.7) 0,
+      hsl(var(--border)) 12%,
+      hsl(var(--border)) 100%
+    );
   }
 
   /* Ripple material (componente Button). Decorativo, se dispara en

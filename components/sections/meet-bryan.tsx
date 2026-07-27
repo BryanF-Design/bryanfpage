@@ -74,8 +74,19 @@ export function MeetBryan() {
       <div className="container relative z-10 pb-20 pt-16 md:pb-28 md:pt-20">
         <div className="mb-10 flex flex-wrap items-center justify-between gap-3 border-y border-[#07110d]/25 py-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[#07110d]/65 md:mb-16">
           <span className="inline-flex items-center gap-3">
-            <span aria-hidden className="h-1.5 w-1.5 bg-[#e8342a]" />
+            <span
+              aria-hidden
+              className="grid size-6 place-items-center border border-[#e8342a]/60 font-jp text-[11px] leading-none text-[#e8342a]"
+            >
+              作
+            </span>
             {t.about.eyebrow}
+            <span aria-hidden className="opacity-45">
+              <span lang="ja" className="font-jp">
+                章
+              </span>{" "}
+              03 / 10
+            </span>
           </span>
           <span
             aria-label={
@@ -100,7 +111,10 @@ export function MeetBryan() {
           >
             <div aria-hidden className="absolute -bottom-3 -left-3 h-full w-full border border-[#07110d]/30 bg-primary md:-bottom-4 md:-left-4" />
             <figure className="relative border border-[#07110d]/45 bg-[#07110d]">
-              <div className="relative aspect-[4/5] w-full overflow-hidden sm:aspect-[3/4] lg:h-[68svh] lg:min-h-[36rem] lg:aspect-auto">
+              {/* 網点 sobre el retrato: la misma trama de impresión que llevan
+                  las capturas de proyecto, para que la fotografía pertenezca al
+                  sistema y no sea una imagen pegada encima. */}
+              <div className="amiten relative aspect-[4/5] w-full overflow-hidden sm:aspect-[3/4] lg:h-[68svh] lg:min-h-[36rem] lg:aspect-auto">
                 <motion.div
                   style={
                     reducedMotion

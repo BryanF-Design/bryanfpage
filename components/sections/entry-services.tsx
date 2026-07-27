@@ -30,6 +30,7 @@ export function EntryServices() {
           eyebrow={t.entryServices.eyebrow}
           title={t.entryServices.title}
           subtitle={t.entryServices.subtitle}
+          chapter={{ kanji: "品書", romaji: "shinagaki", index: 7 }}
         />
 
         <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

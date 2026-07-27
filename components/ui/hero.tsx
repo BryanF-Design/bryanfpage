@@ -8,7 +8,6 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { Button } from "@/components/ui/button";
-import { VerticalLabel } from "@/components/ui/vertical-label";
 import { useLanguage } from "@/lib/i18n/context";
 
 const CivicScene = dynamic(
@@ -50,12 +49,22 @@ type NetworkNavigator = Navigator & {
 };
 
 /**
- * Hero "Ruta de arranque".
+ * Hero — 走り.
  *
- * El Civic proporcionado es la demostración principal de 3D del sitio. El
- * scroll cambia su ángulo y el arrastre permite inspeccionarlo sin bloquear
- * el gesto vertical en touch. El modelo pesado arranca en idle; el H1, el
- * copy, los CTA y el fallback se pintan antes.
+ * La versión anterior cruzaba el bloque con dos curvas verdes que no
+ * enmarcaban, no separaban y no dirigían la mirada: pasaban por detrás del
+ * auto y salían por la esquina. Aquí las sustituye el recurso que repiten los
+ * pósters de la carpeta —el disco (日の丸) como ancla y una sola horizontal
+ * como horizonte— y el auto pasa a apoyarse en una composición en vez de
+ * flotar sobre líneas sueltas.
+ *
+ * El Civic tampoco lleva ficha. Antes venía con un panel explicando que era
+ * «una obsesión personal, llevada a 3D» y un chip «TYPE R»: la imagen ya lo
+ * dice. Lo que queda es la tira de datos del canto inferior, que declara
+ * coordenadas y lectura sin justificar nada, como los pies de los pósters.
+ *
+ * El modelo pesado arranca en idle; el H1, el copy, los CTA y el fallback se
+ * pintan antes.
  */
 const Hero = React.forwardRef<HTMLElement, HeroProps>(
   (
@@ -164,21 +173,28 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
               reducedMotion ? "relative" : "sticky top-0 h-[100svh]"
             )}
           >
-            <div aria-hidden className="route-grid absolute inset-0 opacity-60" />
-            <div aria-hidden className="japan-halftone absolute inset-0 opacity-20" />
-            <div aria-hidden className="mesh-glow-a absolute inset-0 opacity-70" />
-            <HeroRoute reducedMotion={reducedMotion} />
+            <div aria-hidden className="japan-halftone absolute inset-0 opacity-[0.13]" />
+            <div aria-hidden className="mesh-glow-a absolute inset-0 opacity-40" />
 
-            <VerticalLabel
-              jp="走り"
-              romaji={
-                locale === "ja"
-                  ? "hashiri"
-                  : `hashiri · ${t.experience.driving}`
-              }
-              tone="primary"
-              className="right-4 top-1/2 z-20 hidden -translate-y-1/2 xl:flex"
-            />
+            {/* 縦組み a escala de página. Antes esto era una etiqueta de 11 px
+                al 60% de opacidad: decoración. Ahora marca el borde derecho de
+                la composición, que es un trabajo de arquitectura. */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute right-14 top-1/2 z-20 hidden -translate-y-1/2 select-none flex-col items-center gap-4 xl:flex"
+            >
+              <span className="h-16 w-px bg-gradient-to-b from-transparent to-primary/30" />
+              <span
+                lang="ja"
+                className="tategaki-display text-[clamp(2.25rem,3.6vw,3.25rem)] text-primary/25"
+              >
+                走り
+              </span>
+              <span className="vertical-jp font-mono text-[9px] uppercase tracking-[0.34em] text-foreground/25">
+                {locale === "ja" ? "hashiri" : `hashiri · ${t.experience.driving}`}
+              </span>
+              <span className="h-16 w-px bg-gradient-to-t from-transparent to-primary/30" />
+            </div>
 
             <div className="container relative z-10 flex flex-1 flex-col pb-8 pt-24 sm:pt-28 lg:grid lg:grid-cols-[minmax(0,0.86fr)_minmax(0,1.14fr)] lg:items-center lg:gap-0 lg:pb-10">
               <div className="relative z-20 flex min-w-0 flex-col items-start gap-5 lg:py-14">
@@ -198,9 +214,12 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                   </motion.span>
                 )}
 
+                {/* Bajó de 17vw / 8rem. Antes el titular competía con el auto
+                    por el mismo espacio; ahora conviven y el disco es lo que
+                    sostiene el peso del lado derecho. */}
                 <h1
                   className={cn(
-                    "hero-title max-w-[10ch] font-display text-[17vw] font-bold uppercase leading-[0.78] tracking-[-0.065em] text-foreground sm:text-[5.35rem] md:text-[6.3rem] lg:text-[6.7rem] xl:text-[8rem]",
+                    "hero-title max-w-[10ch] font-display text-[13vw] font-bold uppercase leading-[0.82] tracking-[-0.055em] text-foreground sm:text-[4.15rem] md:text-[4.85rem] lg:text-[5.15rem] xl:text-[6.15rem]",
                     titleClassName
                   )}
                 >
@@ -284,7 +303,28 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                 }}
                 className="relative -mx-6 mt-1 min-h-[42svh] min-w-0 flex-1 sm:mx-0 sm:min-h-[50svh] lg:-ml-[15%] lg:mt-0 lg:h-[72svh] lg:min-h-[560px]"
               >
-                <div className="absolute inset-x-4 inset-y-0 overflow-hidden sm:inset-x-0">
+                <div className="absolute inset-x-4 inset-y-0 sm:inset-x-0">
+                  {/* 日の丸. El ancla de la composición: el auto se apoya en un
+                      disco, no en una curva que pasaba de largo. Es tinta
+                      elevada con un arco bermellón de 1 px — la silueta del
+                      hinomaru sin gastar el presupuesto de rojo. */}
+                  <div
+                    aria-hidden
+                    className="hinomaru left-1/2 top-[46%] aspect-square w-[min(78%,30rem)] -translate-x-1/2 -translate-y-1/2"
+                  />
+
+                  {/* El horizonte. Una línea, y carga peso: marca el suelo
+                      donde el Civic apoya y alinea el bloque 3D con el
+                      titular de la izquierda. */}
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-x-0 top-[70%] flex items-center gap-3"
+                  >
+                    <span className="h-px flex-1 bg-gradient-to-r from-transparent via-foreground/20 to-foreground/10" />
+                    <span className="size-1 rotate-45 bg-primary/70" />
+                    <span className="h-px w-16 bg-foreground/10" />
+                  </div>
+
                   <CivicFallback
                     ready={modelReady}
                     reducedMotion={reducedMotion}
@@ -296,6 +336,15 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                       animate={{ opacity: modelReady ? 1 : 0 }}
                       transition={{ duration: reducedMotion ? 0 : 0.6 }}
                       className="absolute inset-0"
+                      // El canvas dejaba un borde recto visible donde terminaba
+                      // el viewport WebGL. La máscara lo funde con la tinta del
+                      // fondo para que el auto no viva dentro de una caja.
+                      style={{
+                        maskImage:
+                          "radial-gradient(ellipse 78% 82% at 50% 52%, black 58%, transparent 100%)",
+                        WebkitMaskImage:
+                          "radial-gradient(ellipse 78% 82% at 50% 52%, black 58%, transparent 100%)",
+                      }}
                     >
                       <CivicScene
                         progressRef={progressRef}
@@ -307,19 +356,11 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                     </motion.div>
                   )}
 
-                  <div className="pointer-events-none absolute inset-x-4 top-4 flex items-start justify-between gap-4 sm:inset-x-6">
-                    <div className="glass-dark border-l-2 border-primary px-3 py-2">
-                      <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-foreground/45 sm:text-[10px]">
-                        {t.experience.modelStudy}
-                      </p>
-                      <p className="mt-1 font-display text-sm font-semibold uppercase tracking-[0.08em] text-foreground sm:text-base">
-                        Civic Type R · 2023
-                      </p>
-                    </div>
-                    <span className="hidden rounded-full border border-signal/50 bg-background/80 px-3 py-1 font-mono text-[9px] uppercase tracking-[0.18em] text-signal sm:inline-flex">
-                      Type R
-                    </span>
-                  </div>
+                  {/* Aquí vivían el panel «Una obsesión personal, llevada a 3D»
+                      y el chip «TYPE R». Los dos explicaban lo que la imagen ya
+                      dice. Los pósters de la carpeta nunca justifican un
+                      elemento: solo declaran el dato, y eso pasó a la tira del
+                      canto inferior. */}
 
                   {!modelReady && start3d && !modelFailed && (
                     <div className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/55">
@@ -353,7 +394,11 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                 </div>
 
                 <div className="pointer-events-none absolute inset-x-0 bottom-1 flex items-center justify-between px-5 sm:px-8">
-                  <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-foreground/45 sm:text-[10px]">
+                  {/* En 390 px las dos pistas no caben en la misma línea y se
+                      encimaban entre ellas y con los botones flotantes. En
+                      teléfono el scroll vertical no necesita anuncio: se queda
+                      solo el gesto que no es obvio, el arrastre. */}
+                  <span className="hidden font-mono text-[9px] uppercase tracking-[0.2em] text-foreground/45 sm:inline sm:text-[10px]">
                     {scrollHint}
                   </span>
                   <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-primary sm:text-[10px]">
@@ -369,16 +414,27 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
               </motion.div>
             </div>
 
+            {/* データ帯. El pie de los pósters de la carpeta declara
+                coordenadas, lugar y temperatura sin explicar por qué. Esta tira
+                hace lo mismo y es la que reemplaza a la ficha que llevaba el
+                auto encima. */}
             <div className="relative z-20 border-t border-border/80 bg-background/60">
-              <div className="container grid grid-cols-[1fr_auto] items-center gap-4 py-3 font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground sm:text-[10px] md:grid-cols-3">
-                <span>19.4326° N · CDMX / MX</span>
-                <span className="hidden text-center md:block">
-                  <span lang="ja">精度</span> / SEIDO
-                  {locale === "ja" ? null : ` / ${t.experience.precision}`}
+              <div className="container data-strip py-3">
+                <span>19.4326° N · 99.1332° W</span>
+                <span aria-hidden className="sep" />
+                <span className="hidden sm:inline">
+                  <span lang="ja" className="font-jp tracking-[0.2em]">
+                    走り
+                  </span>
+                  <span className="mx-2 opacity-40">/</span>
+                  {locale === "ja" ? "HASHIRI" : `HASHIRI / ${t.experience.driving}`}
                 </span>
-                <span className="inline-flex items-center justify-end gap-2 text-primary">
-                  <span className="size-1.5 rounded-full bg-signal shadow-[0_0_12px_hsl(var(--signal)/0.75)]" />
-                  {t.experience.systemOnline}
+                <span aria-hidden className="sep hidden sm:block" />
+                <span className="inline-flex items-center gap-2">
+                  <span aria-hidden className="size-1 bg-signal" />
+                  <span lang="ja" className="font-jp tracking-[0.2em]">
+                    始動
+                  </span>
                 </span>
               </div>
             </div>
@@ -465,39 +521,6 @@ function CivicFallback({
         <path d="M60 318H710" stroke="currentColor" strokeWidth="1" opacity=".28" />
       </svg>
     </motion.div>
-  );
-}
-
-function HeroRoute({ reducedMotion }: { reducedMotion: boolean }) {
-  return (
-    <svg
-      aria-hidden
-      viewBox="0 0 1600 900"
-      preserveAspectRatio="none"
-      className="pointer-events-none absolute inset-0 h-full w-full"
-    >
-      <motion.path
-        d="M-120 760C160 715 273 530 504 542C704 554 697 777 925 684C1112 608 1166 286 1710 300"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.25"
-        pathLength="1"
-        initial={reducedMotion ? false : { pathLength: 0, opacity: 0 }}
-        animate={{ pathLength: 1, opacity: 0.52 }}
-        transition={{ duration: reducedMotion ? 0 : 1.35, delay: 0.25, ease: [0.2, 0, 0, 1] }}
-        className="text-primary"
-      />
-      <path
-        d="M-130 786C176 741 280 560 505 568C729 576 711 804 938 708C1147 620 1195 315 1710 327"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1"
-        strokeDasharray="7 13"
-        className="text-foreground/15"
-      />
-      <circle cx="924" cy="684" r="5" fill="currentColor" className="text-signal" />
-      <circle cx="924" cy="684" r="18" fill="none" stroke="currentColor" className="text-signal/40" />
-    </svg>
   );
 }
 
