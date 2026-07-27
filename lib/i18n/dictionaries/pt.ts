@@ -46,6 +46,7 @@ const pt: Dictionary = {
     activateModel: "Ativar modelo 3D",
     lightweightView: "Visualização leve ativa",
     dragRotate: "Arraste para girar",
+    tapBoost: "Toque para acelerar",
     driving: "condução",
     precision: "Precisão",
     systemOnline: "Sistema pronto",
@@ -179,7 +180,7 @@ const pt: Dictionary = {
       mexico: "México",
       spain: "Espanha",
       france: "França",
-      japan: "Japão · conexão cultural",
+      japan: "Japão",
     },
   },
   clients: {

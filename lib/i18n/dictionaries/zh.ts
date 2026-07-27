@@ -45,6 +45,7 @@ const zh: Dictionary = {
     activateModel: "启用3D模型",
     lightweightView: "轻量视图已启用",
     dragRotate: "拖动旋转",
+    tapBoost: "点按加速",
     driving: "驾驶",
     precision: "精度",
     systemOnline: "系统已就绪",
@@ -164,7 +165,7 @@ const zh: Dictionary = {
       mexico: "墨西哥",
       spain: "西班牙",
       france: "法国",
-      japan: "日本 · 文化连接",
+      japan: "日本",
     },
   },
   clients: {
