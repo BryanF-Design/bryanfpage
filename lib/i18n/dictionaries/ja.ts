@@ -178,7 +178,7 @@ const ja: Dictionary = {
       mexico: "メキシコ",
       spain: "スペイン",
       france: "フランス",
-      japan: "日本 · 文化的なつながり",
+      japan: "日本",
     },
   },
   clients: {

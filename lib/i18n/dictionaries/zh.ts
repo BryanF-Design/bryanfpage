@@ -165,7 +165,7 @@ const zh: Dictionary = {
       mexico: "墨西哥",
       spain: "西班牙",
       france: "法国",
-      japan: "日本 · 文化连接",
+      japan: "日本",
     },
   },
   clients: {

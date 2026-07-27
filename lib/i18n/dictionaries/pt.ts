@@ -180,7 +180,7 @@ const pt: Dictionary = {
       mexico: "México",
       spain: "Espanha",
       france: "França",
-      japan: "Japão · conexão cultural",
+      japan: "Japão",
     },
   },
   clients: {

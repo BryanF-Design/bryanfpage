@@ -187,7 +187,7 @@ const es = {
       mexico: "México",
       spain: "España",
       france: "Francia",
-      japan: "Japón · conexión cultural",
+      japan: "Japón",
     },
   },
   clients: {
