@@ -307,7 +307,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
     <section
       id="precios"
       aria-label={t.configurator.title}
-      className="relative overflow-hidden border-t border-border py-20 md:py-28"
+      className="relative overflow-hidden border-b border-border py-16 md:py-24"
     >
       <div aria-hidden className="mesh-glow-a opacity-50" />
       <div aria-hidden className="route-grid absolute inset-0 opacity-20" />
@@ -318,11 +318,11 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
             eyebrow={t.configurator.eyebrow}
             title={t.configurator.title}
             subtitle={t.configurator.subtitle}
-            chapter={{ kanji: "見積", romaji: "mitsumori", index: 8 }}
+            chapter={{ kanji: "見積", romaji: "mitsumori", index: 5 }}
           />
         )}
 
-        <div className="mt-14 grid gap-8 lg:grid-cols-[1.3fr_1fr]">
+        <div className="mt-10 grid gap-8 lg:grid-cols-[1.3fr_1fr] md:mt-12">
           {/* LEFT: configuration */}
           <div className="editorial-panel flex flex-col gap-8 p-4 sm:p-6 md:p-8">
             {/* Plans */}

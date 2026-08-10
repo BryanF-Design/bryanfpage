@@ -26,7 +26,7 @@ interface SectionHeadingProps {
 }
 
 /** Total de capítulos del recorrido principal. */
-export const CHAPTER_TOTAL = 10;
+export const CHAPTER_TOTAL = 7;
 
 /**
  * Cabecera de sección.
