@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import {
   Check,
   Copy,
@@ -307,29 +307,39 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
     <section
       id="precios"
       aria-label={t.configurator.title}
-      className="relative overflow-hidden border-t border-border py-20 md:py-28"
+      className="relative flex flex-col gap-gutter"
     >
-      <div aria-hidden className="mesh-glow-a opacity-50" />
-      <div aria-hidden className="route-grid absolute inset-0 opacity-20" />
-      <div aria-hidden className="japan-halftone absolute inset-y-0 right-0 w-2/3 opacity-10" />
-      <div className="container relative">
         {!hideHeading && (
-          <SectionHeading
-            eyebrow={t.configurator.eyebrow}
-            title={t.configurator.title}
-            subtitle={t.configurator.subtitle}
-            chapter={{ kanji: "見積", romaji: "mitsumori", index: 8 }}
-          />
+          <div data-fx="panel">
+            <div className="panel panel-lime relative overflow-hidden p-6 md:p-10 lg:p-12">
+              <span
+                aria-hidden
+                lang="ja"
+                className="drift-y pointer-events-none absolute -right-4 -top-8 select-none font-jp text-[11rem] leading-none text-[hsl(150_42%_6%/0.08)] md:text-[15rem]"
+              >
+                見積
+              </span>
+              <SectionHeading
+                eyebrow={t.configurator.eyebrow}
+                title={t.configurator.title}
+                subtitle={t.configurator.subtitle}
+                chapter={{ kanji: "見積", romaji: "mitsumori", index: 8 }}
+                size="xl"
+                className="relative"
+              />
+            </div>
+          </div>
         )}
 
-        <div className="mt-14 grid gap-8 lg:grid-cols-[1.3fr_1fr]">
+        <div className="grid gap-gutter lg:grid-cols-[1.3fr_1fr]">
           {/* LEFT: configuration */}
-          <div className="editorial-panel flex flex-col gap-8 p-4 sm:p-6 md:p-8">
+          <div data-fx="left" className="min-w-0">
+          <div className="panel flex h-full flex-col gap-9 p-4 sm:p-6 md:p-9">
             {/* Plans */}
             <div>
               <p
                 id="configurator-plan-label"
-                className="tech-label mb-3 text-muted-foreground"
+                className="mb-4 font-display text-[1.6rem] font-black uppercase leading-none text-foreground"
               >
                 {t.configurator.step1}
               </p>
@@ -347,19 +357,35 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                       aria-pressed={active}
                       onClick={() => setPlanId(p.id)}
                       className={cn(
-                        "elevate flex min-h-11 flex-col rounded-none p-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                        "group relative flex min-h-11 flex-col rounded-[1.25rem] p-4 text-left transition-[background-color,box-shadow,transform] duration-300 [transition-timing-function:var(--ease-material)] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                         active
-                          ? "glass-tint corner-ticks"
-                          : "editorial-panel hover:border-primary/40"
+                          ? "bg-primary text-primary-foreground shadow-[0_18px_40px_-20px_hsl(var(--primary)/0.9)]"
+                          : "bg-secondary text-foreground ring-1 ring-foreground/10 hover:ring-primary/50"
                       )}
                     >
-                      <span className="text-sm font-semibold text-foreground">
+                      <span
+                        aria-hidden
+                        className={cn(
+                          "absolute right-3 top-3 grid size-6 place-items-center rounded-full transition-all duration-300",
+                          active
+                            ? "scale-100 bg-[hsl(150_42%_6%)] text-[hsl(76_76%_58%)]"
+                            : "scale-75 bg-foreground/10 text-transparent"
+                        )}
+                      >
+                        <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                      </span>
+                      <span className="pr-7 text-sm font-semibold">
                         {p.name}
                       </span>
-                      <span className="mt-1 font-mono text-xl font-medium text-foreground">
+                      <span className="mt-2 font-display text-[2rem] font-black leading-none">
                         {display(p.price)}
                       </span>
-                      <span className="mt-1 text-xs text-muted-foreground">
+                      <span
+                        className={cn(
+                          "mt-2 text-xs",
+                          active ? "text-primary-foreground/75" : "text-muted-foreground"
+                        )}
+                      >
                         {p.desc}
                       </span>
                     </button>
@@ -372,7 +398,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
             <div>
               <p
                 id="configurator-modules-label"
-                className="tech-label mb-3 text-muted-foreground"
+                className="mb-4 font-display text-[1.6rem] font-black uppercase leading-none text-foreground"
               >
                 {t.configurator.step2}
               </p>
@@ -384,7 +410,12 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                 {MODULES.map((m) => (
                   <label
                     key={m.id}
-                    className="editorial-panel elevate flex min-h-11 cursor-pointer items-center justify-between px-4 py-3 hover:border-primary/40 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background"
+                    className={cn(
+                      "flex min-h-12 cursor-pointer items-center justify-between gap-3 rounded-full px-5 py-3 transition-colors duration-300 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background",
+                      mods[m.id]
+                        ? "bg-primary/15 ring-1 ring-primary/60"
+                        : "bg-secondary ring-1 ring-foreground/10 hover:ring-primary/40"
+                    )}
                   >
                     <span className="flex items-center gap-3">
                       <input
@@ -397,14 +428,14 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                       />
                       <span className="text-sm text-foreground">{m.label}</span>
                     </span>
-                    <span className="font-mono text-sm text-muted-foreground">
+                    <span className="shrink-0 font-mono text-sm text-primary">
                       +{display(m.price)}
                     </span>
                   </label>
                 ))}
 
                 {/* Sections counter */}
-                <div className="editorial-panel flex items-center justify-between px-4 py-3">
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.5rem] bg-secondary py-2 pl-5 pr-2 ring-1 ring-foreground/10">
                   <span className="text-sm text-foreground">
                     {t.configurator.extraSections}
                     <span className="ml-1 font-mono text-xs text-muted-foreground">
@@ -415,13 +446,13 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                     <button
                       type="button"
                       onClick={() => setSections((n) => Math.max(0, n - 1))}
-                      className="flex h-11 w-11 items-center justify-center border border-border text-foreground transition-colors hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                      className="flex h-11 w-11 items-center justify-center rounded-full bg-background text-lg text-foreground transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                       aria-label={t.configurator.removeSection}
                     >
                       −
                     </button>
                     <span
-                      className="w-5 text-center font-mono text-sm"
+                      className="w-7 text-center font-display text-2xl font-black"
                       aria-live="polite"
                       aria-atomic="true"
                     >
@@ -430,7 +461,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                     <button
                       type="button"
                       onClick={() => setSections((n) => n + 1)}
-                      className="flex h-11 w-11 items-center justify-center border border-border text-foreground transition-colors hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                      className="flex h-11 w-11 items-center justify-center rounded-full bg-background text-lg text-foreground transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                       aria-label={t.configurator.addSection}
                     >
                       +
@@ -441,9 +472,9 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
             </div>
 
             {/* Payment mode + currency + coupon */}
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-5 rounded-[1.5rem] bg-secondary/60 p-4 ring-1 ring-foreground/10 sm:grid-cols-3 sm:p-5">
               <fieldset>
-                <legend className="tech-label mb-2 text-muted-foreground">
+                <legend className="tech-label mb-2 text-primary">
                   {t.configurator.step3}
                 </legend>
                 <div className="flex flex-col gap-2">
@@ -469,13 +500,13 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                 </div>
               </fieldset>
               <div>
-                <p className="tech-label mb-2 text-muted-foreground">
+                <p className="tech-label mb-2 text-primary">
                   {t.configurator.currencyLabel}
                 </p>
                 <div
                   role="group"
                   aria-label={t.configurator.currencyLabel}
-                  className="inline-flex overflow-hidden border border-border"
+                  className="inline-flex overflow-hidden rounded-full bg-background p-1 ring-1 ring-foreground/10"
                 >
                   {(["MXN", "USD"] as Currency[]).map((c) => (
                     <button
@@ -484,7 +515,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                       aria-pressed={currency === c}
                       onClick={() => setCurrency(c)}
                       className={cn(
-                        "min-h-11 min-w-11 px-4 py-2 font-mono text-xs font-medium tracking-[0.12em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary",
+                        "min-h-11 min-w-11 rounded-full px-4 py-2 font-mono text-xs font-medium tracking-[0.12em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary",
                         currency === c
                           ? "bg-primary text-primary-foreground"
                           : "bg-transparent text-muted-foreground hover:text-foreground"
@@ -503,7 +534,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
               <div>
                 <label
                   htmlFor="configurator-coupon"
-                  className="tech-label mb-2 block text-muted-foreground"
+                  className="tech-label mb-2 block text-primary"
                 >
                   {t.configurator.couponLabel}
                 </label>
@@ -516,7 +547,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                     placeholder={t.configurator.couponPlaceholder}
                     aria-describedby={couponMsg ? "configurator-coupon-status" : undefined}
                     autoComplete="off"
-                    className="min-h-11 min-w-0 flex-1 border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    className="min-h-11 min-w-0 flex-1 rounded-full border border-input bg-background px-4 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   />
                   <Button
                     type="button"
@@ -540,25 +571,36 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
             </div>
           </div>
 
+          </div>
+
           {/* RIGHT: summary + pay */}
-          <div className="lg:sticky lg:top-24">
-            <div className="editorial-panel corner-ticks flex flex-col gap-4 border-primary/35 p-6 shadow-[0_24px_80px_-40px_hsl(var(--primary)/0.35)]">
-              <p className="tech-label text-muted-foreground">{t.configurator.summary}</p>
-              <div className="flex flex-col gap-2">
+          <div data-fx="right" className="min-w-0" style={{ "--fx-delay": "120ms" } as CSSProperties}>
+          <div className="lg:sticky lg:top-[calc(var(--header-h)+var(--gutter))]">
+            <div className="panel panel-moss relative flex flex-col gap-4 overflow-hidden p-6 md:p-8">
+              <div aria-hidden className="dot-grid absolute inset-0 rounded-[inherit] opacity-30 [mask-image:linear-gradient(to_bottom,black,transparent_50%)]" />
+              <p className="relative flex items-center justify-between gap-3">
+                <span className="font-display text-[1.6rem] font-black uppercase leading-none text-foreground">
+                  {t.configurator.summary}
+                </span>
+                <span aria-hidden lang="ja" className="grid size-9 place-items-center rounded-full bg-primary font-jp text-xs text-primary-foreground">
+                  見
+                </span>
+              </p>
+              <div className="relative flex flex-col gap-2 rounded-[1.25rem] bg-background/55 p-4">
                 {items.map((it, i) => (
                   <div
                     key={i}
-                    className="flex items-center justify-between text-sm"
+                    className="flex items-center justify-between gap-3 text-sm"
                   >
-                    <span className="text-muted-foreground">{it.source}</span>
+                    <span className="text-foreground/70">{it.source}</span>
                     <span className="font-mono text-foreground">
                       {display(it.price)}
                     </span>
                   </div>
                 ))}
               </div>
-              <div className="border-t border-border pt-4">
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <div className="relative border-t border-dashed border-foreground/20 pt-4">
+                <div className="flex items-center justify-between text-sm text-foreground/70">
                   <span>{t.configurator.totalProject}</span>
                   <span className="font-mono">{formatMoney(projectTotal, currency)}</span>
                 </div>
@@ -566,7 +608,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                   <span className="text-sm font-medium text-foreground">
                     {t.configurator.payNow}
                   </span>
-                  <span className="font-mono text-3xl font-medium text-primary">
+                  <span className="font-display text-[3.25rem] font-black leading-none text-primary md:text-[3.75rem]">
                     {formatMoney(payableNow, currency)}
                   </span>
                 </div>
@@ -578,7 +620,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
               </div>
 
               {/* Pay buttons */}
-              <div className="flex flex-col gap-2 pt-2">
+              <div className="relative flex flex-col gap-2 pt-2">
                 <Button
                   onClick={() => pay("/api/stripe-checkout", "Stripe")}
                   disabled={!!loading || projectTotal <= 0}
@@ -634,7 +676,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
               </div>
 
               {status && (
-                <p className="text-xs text-muted-foreground" role="status">
+                <p className="relative rounded-2xl bg-background/60 px-4 py-3 text-xs text-foreground/80" role="status">
                   {status}
                 </p>
               )}
@@ -643,7 +685,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
               {transfer && (
                 <div
                   id="bank-transfer-details"
-                  className="editorial-panel mt-1 flex flex-col gap-2 p-4"
+                  className="relative mt-1 flex flex-col gap-2 rounded-[1.25rem] bg-background/70 p-4"
                 >
                   <p className="text-xs text-muted-foreground">
                     {t.configurator.transferInstructions(formatMXN(payableNowMxn))}
@@ -705,7 +747,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                 </div>
               )}
 
-              <p className="pt-1 text-center text-[11px] text-muted-foreground">
+              <p className="relative pt-1 text-center text-[11px] text-foreground/65">
                 {t.configurator.securePaymentPrefix}{" "}
                 <a
                   href="/terminos"
@@ -724,8 +766,8 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
               </p>
             </div>
           </div>
+          </div>
         </div>
-      </div>
     </section>
   );
 }

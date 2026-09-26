@@ -55,14 +55,25 @@ const config: Config = {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
+        sheet: "hsl(var(--sheet))",
+        moss: {
+          DEFAULT: "hsl(var(--moss))",
+          deep: "hsl(var(--moss-deep))",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
       },
       borderRadius: {
+        panel: "var(--r-panel)",
+        inner: "calc(var(--r-panel) - var(--gutter))",
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      spacing: {
+        gutter: "var(--gutter)",
+        header: "var(--header-h)",
       },
       backgroundImage: {
         "gradient-conic":

@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { MapPin } from "lucide-react";
@@ -15,7 +16,6 @@ import { DICTIONARIES } from "@/lib/i18n/dictionaries";
 import { trackEvent } from "@/lib/analytics";
 import { HankoSeal } from "@/components/ui/hanko-seal";
 import { TractionLine } from "@/components/ui/traction-line";
-import { SeigaihaRule } from "@/components/japan/seigaiha-rule";
 
 const GOOGLE_MAPS_REVIEW = "https://maps.app.goo.gl/CWNcgPfAZt31K3ey6";
 
@@ -53,31 +53,28 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
   ];
 
   return (
-    <footer id="site-footer" className="relative overflow-hidden border-t border-border bg-background" aria-label={t.footer.legalLabel}>
-      <div aria-hidden className="mesh-glow-b opacity-40" />
-      <div aria-hidden className="route-grid absolute inset-0 opacity-15" />
-      {/* 青海波 cerrando la hoja, como el pie de los pósters de la carpeta. */}
-      <SeigaihaRule className="absolute inset-x-0 top-0 opacity-60" />
-      {/* La TractionLine se queda aquí: en el cierre, una firma es una firma.
-          Donde dejó de tener sentido fue como ruido de fondo en Proyectos. */}
-      <TractionLine className="pointer-events-none absolute -bottom-10 right-0 hidden h-52 w-[min(760px,85vw)] opacity-[0.07] md:block" />
-      <div className="container relative grid gap-10 py-14 md:grid-cols-[1.3fr_0.85fr_1fr_1fr]">
-        {/* Brand */}
-        <div className="flex flex-col gap-5">
+    <footer
+      id="site-footer"
+      className="relative grid gap-gutter px-[var(--gutter)] pb-[var(--gutter)] md:grid-cols-2 lg:grid-cols-12"
+      aria-label={t.footer.legalLabel}
+    >
+      {/* Marca */}
+      <div data-fx="up" className="min-w-0 md:col-span-2 lg:col-span-4">
+        <div className="panel flex h-full flex-col gap-6 overflow-hidden p-6 md:p-8">
           <Image
             src="/img/logotipo-blanco.png"
             alt="BryanF Design"
             width={2904}
             height={1016}
-            sizes="132px"
-            style={{ height: 46, width: "auto" }}
-            className="object-contain"
+            sizes="140px"
+            style={{ height: 44, width: "auto" }}
+            className="self-start object-contain"
           />
           <p className="max-w-xs text-sm text-muted-foreground">
             <span className="font-medium text-foreground">{t.footer.tagline}</span>
             {t.footer.taglineRest}
           </p>
-          <div className="flex gap-3">
+          <div className="mt-auto flex flex-wrap gap-2">
             {social.map(({ Icon, href, label }) => (
               <Link
                 key={label}
@@ -85,19 +82,19 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="editorial-panel elevate flex size-11 items-center justify-center text-muted-foreground hover:border-primary/60 hover:text-primary hover:shadow-[0_0_16px_hsl(var(--primary)/0.2)]"
+                className="flex size-11 items-center justify-center rounded-full bg-secondary text-foreground/75 transition-[background-color,color,transform] duration-300 [transition-timing-function:var(--ease-pop)] hover:-translate-y-1 hover:bg-primary hover:text-primary-foreground"
               >
                 <Icon className="h-4 w-4" />
               </Link>
             ))}
           </div>
         </div>
+      </div>
 
-        {/* Nav */}
-        <nav aria-label={t.footer.navLabel}>
-          <p className="tech-label mb-4 text-muted-foreground">
-            {t.footer.navLabel}
-          </p>
+      {/* Navegación */}
+      <div data-fx="up" className="min-w-0 lg:col-span-2" style={{ "--fx-delay": "60ms" } as CSSProperties}>
+        <nav aria-label={t.footer.navLabel} className="panel h-full p-6 md:p-7">
+          <p className="tech-label mb-4 text-primary">{t.footer.navLabel}</p>
           <ul className="flex flex-col text-sm">
             {nav.map((l) => (
               <li key={l.href}>
@@ -121,11 +118,12 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
             </li>
           </ul>
         </nav>
+      </div>
 
-        <nav aria-label={t.footer.servicesLabel}>
-          <p className="tech-label mb-4 text-muted-foreground">
-            {t.footer.servicesLabel}
-          </p>
+      {/* Servicios */}
+      <div data-fx="up" className="min-w-0 lg:col-span-3" style={{ "--fx-delay": "120ms" } as CSSProperties}>
+        <nav aria-label={t.footer.servicesLabel} className="panel h-full p-6 md:p-7">
+          <p className="tech-label mb-4 text-primary">{t.footer.servicesLabel}</p>
           <ul className="flex flex-col text-sm">
             {services.map((l) => (
               <li key={l.href}>
@@ -139,12 +137,12 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
             ))}
           </ul>
         </nav>
+      </div>
 
-        {/* Legal + contacto */}
-        <div>
-          <p className="tech-label mb-4 text-muted-foreground">
-            {t.footer.legalLabel}
-          </p>
+      {/* Legal + contacto */}
+      <div data-fx="up" className="min-w-0 md:col-span-2 lg:col-span-3" style={{ "--fx-delay": "180ms" } as CSSProperties}>
+        <div className="panel panel-moss h-full p-6 md:p-7">
+          <p className="tech-label mb-4 text-primary">{t.footer.legalLabel}</p>
           <ul className="flex flex-col text-sm">
             <li>
               <Link href="/privacidad" className="inline-flex min-h-11 min-w-11 items-center text-foreground/80 transition-colors hover:text-primary">
@@ -162,7 +160,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
               </a>
             </li>
             <li>
-              <a href="mailto:bryanf@bryanfdesign.com.mx" className="inline-flex min-h-11 min-w-11 items-center text-foreground/80 transition-colors hover:text-primary">
+              <a href="mailto:bryanf@bryanfdesign.com.mx" className="inline-flex min-h-11 min-w-11 items-center break-all text-foreground/80 transition-colors hover:text-primary">
                 bryanf@bryanfdesign.com.mx
               </a>
             </li>
@@ -192,28 +190,37 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
         </div>
       </div>
 
-      <div className="border-t border-border">
-        <div className="container grid items-center gap-4 py-6 text-xs text-muted-foreground sm:grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr]">
-          {/* El sello firma el trabajo, como en un grabado. */}
-          <span className="flex items-center gap-4">
-            <HankoSeal label={t.footer.signatureLabel} />
-            {t.footer.copyright(new Date().getFullYear())}
-          </span>
-          <span className="hidden text-center font-mono text-[9px] uppercase tracking-[0.2em] text-primary lg:block">
-            <span lang="ja">精度</span> / SEIDO
-            {activeLocale === "ja" ? null : ` / ${t.experience.precision}`}
-          </span>
-          <span className="sm:text-right">
-            {t.footer.acceptPrefix}{" "}
-            <Link href="/privacidad" className="inline-flex min-h-11 items-center underline underline-offset-2 hover:text-primary">
-              {t.footer.privacy}
-            </Link>{" "}
-            {t.footer.and}{" "}
-            <Link href="/terminos" className="inline-flex min-h-11 items-center underline underline-offset-2 hover:text-primary">
-              {t.footer.terms}
-            </Link>
-            .
-          </span>
+      {/* Firma: el nombre a lo ancho de la hoja y la barra legal. */}
+      <div data-fx="panel" className="min-w-0 md:col-span-2 lg:col-span-12">
+        <div className="panel relative overflow-hidden">
+          <TractionLine className="pointer-events-none absolute -bottom-10 right-0 hidden h-52 w-[min(760px,85vw)] opacity-[0.12] md:block" />
+          <p
+            aria-hidden
+            className="display-xl drift-x-rev select-none whitespace-nowrap px-4 pt-6 text-[19vw] leading-[0.78] text-foreground/[0.07] md:pt-8"
+          >
+            BryanF Design
+          </p>
+          <div className="relative grid items-center gap-4 border-t border-foreground/10 px-6 py-5 text-xs text-muted-foreground sm:grid-cols-[1fr_auto] md:px-8 lg:grid-cols-[1fr_auto_1fr]">
+            <span className="flex items-center gap-4">
+              <HankoSeal label={t.footer.signatureLabel} />
+              {t.footer.copyright(new Date().getFullYear())}
+            </span>
+            <span className="hidden text-center font-mono text-[9px] uppercase tracking-[0.2em] text-primary lg:block">
+              <span lang="ja">精度</span> / SEIDO
+              {activeLocale === "ja" ? null : ` / ${t.experience.precision}`}
+            </span>
+            <span className="sm:text-right">
+              {t.footer.acceptPrefix}{" "}
+              <Link href="/privacidad" className="inline-flex min-h-11 items-center underline underline-offset-2 hover:text-primary">
+                {t.footer.privacy}
+              </Link>{" "}
+              {t.footer.and}{" "}
+              <Link href="/terminos" className="inline-flex min-h-11 items-center underline underline-offset-2 hover:text-primary">
+                {t.footer.terms}
+              </Link>
+              .
+            </span>
+          </div>
         </div>
       </div>
     </footer>

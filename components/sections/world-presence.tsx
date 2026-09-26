@@ -1,7 +1,7 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import dynamic from "next/dynamic";
-import { motion } from "framer-motion";
 
 import { SectionHeading } from "@/components/sections/section-heading";
 import { LazyMount } from "@/components/three/lazy-mount";
@@ -44,7 +44,7 @@ function StaticGlobe() {
 export function WorldPresence() {
   const { t } = useLanguage();
   const decorative3dEnabled = useDecorative3dEnabled();
-  const globeClassName = "corner-ticks relative mx-auto aspect-square w-full max-w-[560px]";
+  const globeClassName = "relative mx-auto aspect-square w-full max-w-[560px]";
   const locations = [
     {
       lat: 19.4326,
@@ -77,59 +77,73 @@ export function WorldPresence() {
     <section
       id="presencia"
       aria-label={t.world.title}
-      className="relative overflow-hidden py-20 md:py-28"
+      className="relative grid gap-gutter lg:grid-cols-12"
     >
-      <div aria-hidden className="mesh-glow-c opacity-50" />
-      <div className="container relative">
-        <SectionHeading
-          eyebrow={t.world.eyebrow}
-          title={t.world.title}
-          subtitle={t.world.subtitle}
-          chapter={{ kanji: "世界", romaji: "sekai", index: 9 }}
-        />
+      <div data-fx="left" className="min-w-0 lg:col-span-5">
+        <div className="panel panel-moss flex h-full flex-col gap-8 overflow-hidden p-6 md:p-10">
+          <SectionHeading
+            eyebrow={t.world.eyebrow}
+            title={t.world.title}
+            subtitle={t.world.subtitle}
+            chapter={{ kanji: "世界", romaji: "sekai", index: 9 }}
+          />
 
-        <div className="mt-12 grid items-center gap-10 lg:grid-cols-[0.85fr_1.15fr]">
           {/* Bitácora de ubicaciones */}
-          <ol className="order-2 flex flex-col divide-y divide-border border-y border-border lg:order-1">
+          <ol className="mt-auto flex flex-col gap-2">
             {locations.map((l, i) => (
-              <motion.li
+              <li
                 key={l.label}
-                initial={{ opacity: 0, x: -24 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.55, delay: i * 0.1, ease: [0.2, 0, 0, 1] }}
-                className="flex items-baseline justify-between gap-4 py-5"
+                data-fx="left"
+                style={{ "--fx-delay": `${140 + i * 90}ms` } as CSSProperties}
+                className="min-w-0"
               >
-                <span className="flex items-center gap-3">
-                  <span
-                    className={
-                      l.accent === "signal"
-                        ? "h-1.5 w-1.5 shrink-0 rounded-full bg-signal shadow-[0_0_12px_hsl(var(--signal)/0.7)]"
-                        : "h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
-                    }
-                    aria-hidden
-                  />
-                  <span className="font-display text-xl font-bold text-foreground md:text-2xl">
-                    {l.label}
+                <div className="group flex items-center justify-between gap-4 rounded-full bg-background/60 py-2 pl-2 pr-5 ring-1 ring-foreground/10 transition-colors hover:bg-background">
+                  <span className="flex items-center gap-3">
+                    <span
+                      className={
+                        l.accent === "signal"
+                          ? "grid size-9 shrink-0 place-items-center rounded-full bg-signal/15 text-signal"
+                          : "grid size-9 shrink-0 place-items-center rounded-full bg-primary/15 text-primary"
+                      }
+                      aria-hidden
+                    >
+                      <span className="size-2 rounded-full bg-current shadow-[0_0_12px_currentColor]" />
+                    </span>
+                    <span className="display-xl text-[1.7rem] leading-none text-foreground md:text-[2rem]">
+                      {l.label}
+                    </span>
                   </span>
-                </span>
-                <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-                  {l.coords}
-                </span>
-              </motion.li>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                    {l.coords}
+                  </span>
+                </div>
+              </li>
             ))}
           </ol>
+        </div>
+      </div>
 
-          {/* Globo interactivo, ahora dentro del disco.
-              El globo flotaba solo en medio de la columna y las esquinas del
-              marco HUD quedaban colgando en el vacío. El hinomaru le da el
-              mismo ancla circular que sostiene al Civic en el hero, así que
-              las dos escenas 3D del sitio comparten encuadre. */}
-          <div className="relative order-1 lg:order-2">
-            <div
-              aria-hidden
-              className="hinomaru left-1/2 top-1/2 aspect-square w-[min(92%,34rem)] -translate-x-1/2 -translate-y-1/2"
-            />
+      {/* Globo interactivo dentro del disco de trama. */}
+      <div data-fx="right" className="min-w-0 lg:col-span-7" style={{ "--fx-delay": "100ms" } as CSSProperties}>
+        <div className="panel relative flex h-full min-h-[26rem] flex-col items-center justify-center overflow-hidden p-4 md:p-8">
+          <div aria-hidden className="dot-grid absolute inset-0 rounded-[inherit] opacity-25" />
+          <div
+            aria-hidden
+            className="hinomaru-dots left-1/2 top-1/2 aspect-square w-[min(92%,36rem)] -translate-x-1/2 -translate-y-1/2 opacity-40"
+          />
+          <div
+            aria-hidden
+            className="hinomaru-ring left-1/2 top-1/2 aspect-square w-[min(98%,39rem)] -translate-x-1/2 -translate-y-1/2 [mask-image:conic-gradient(from_20deg,black_0deg,black_220deg,transparent_280deg)]"
+          />
+          <div className="notch notch-tl">
+            <span className="tag-pill">
+              <span aria-hidden lang="ja" className="seal">
+                世
+              </span>
+              {t.world.eyebrow} · {String(locations.length).padStart(2, "0")}
+            </span>
+          </div>
+          <div data-fx="pop" className="relative w-full" style={{ "--fx-delay": "220ms" } as CSSProperties}>
             {decorative3dEnabled ? (
               <LazyMount className={globeClassName} fallback={<StaticGlobe />}>
                 <GlobeScene
@@ -143,12 +157,12 @@ export function WorldPresence() {
                 <StaticGlobe />
               </div>
             )}
-            {decorative3dEnabled && (
-              <p className="tech-label mt-3 text-center text-muted-foreground">
-                {t.world.dragHint}
-              </p>
-            )}
           </div>
+          {decorative3dEnabled && (
+            <p className="tech-label relative mt-3 rounded-full bg-secondary/80 px-4 py-2 text-center text-muted-foreground">
+              {t.world.dragHint}
+            </p>
+          )}
         </div>
       </div>
     </section>

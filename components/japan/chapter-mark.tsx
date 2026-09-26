@@ -17,13 +17,10 @@ interface ChapterMarkProps {
 /**
  * 章 — marca de capítulo.
  *
- * Un scroll de 18 000 px no tenía columna vertebral: cada sección aparecía
- * sin lugar dentro de una serie. Los pósters de la carpeta sí lo resuelven —
- * `Poster No. 001/182`, código de barras, sello — y esa es exactamente la
- * pieza que faltaba.
- *
- * El sello lleva el kanji; la lectura y la traducción viajan al lado, nunca
- * sueltas. El bermellón vive aquí y en el preloader: nunca en una acción.
+ * Una píldora de tinta con el kanji en un sello lima: es la etiqueta que
+ * ocupa el recorte superior de cada panel. La numeración de serie viaja al
+ * lado, como el `No. 001/182` de los pósters; la lectura en romaji acompaña
+ * siempre al kanji.
  */
 export function ChapterMark({
   kanji,
@@ -36,30 +33,30 @@ export function ChapterMark({
   const pad = (n: number) => String(n).padStart(2, "0");
 
   return (
-    <div className={cn("flex items-center gap-4", className)}>
-      <span aria-hidden className="chapter-seal">
-        <span lang="ja">{kanji}</span>
+    <div className={cn("flex flex-wrap items-center gap-3", className)}>
+      <span className="tag-pill">
+        <span aria-hidden lang="ja" className="seal">
+          {kanji.slice(0, 1)}
+        </span>
+        <span>{label}</span>
       </span>
-
-      <span className="flex min-w-0 flex-col gap-1">
-        <span className="tech-label text-primary">{label}</span>
-        <span className="chapter-index flex items-center gap-2">
-          <span aria-hidden lang="ja" className="font-jp tracking-[0.2em]">
-            章
-          </span>
-          <span>
-            <b>{pad(index)}</b> / {pad(total)}
-          </span>
-          <span aria-hidden className="opacity-50">
-            ·
-          </span>
-          <span aria-hidden className="uppercase">
-            {romaji}
-          </span>
+      <span className="chapter-index flex items-center gap-2">
+        <span aria-hidden lang="ja" className="font-jp tracking-[0.2em]">
+          章
+        </span>
+        <span>
+          <b>{pad(index)}</b> / {pad(total)}
+        </span>
+        <span aria-hidden className="opacity-50">
+          ·
+        </span>
+        <span aria-hidden className="uppercase">
+          <span lang="ja" className="font-jp normal-case tracking-[0.2em]">
+            {kanji}
+          </span>{" "}
+          {romaji}
         </span>
       </span>
-
-      <span aria-hidden className="rule-flank hidden min-w-0 flex-1 sm:block" />
     </div>
   );
 }

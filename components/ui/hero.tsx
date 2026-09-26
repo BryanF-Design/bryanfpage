@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
+import { ArrowUpRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useReducedMotionPreference } from "@/lib/motion-preference";
@@ -51,20 +52,16 @@ type NetworkNavigator = Navigator & {
 /**
  * Hero — 走り.
  *
- * La versión anterior cruzaba el bloque con dos curvas verdes que no
- * enmarcaban, no separaban y no dirigían la mirada: pasaban por detrás del
- * auto y salían por la esquina. Aquí las sustituye el recurso que repiten los
- * pósters de la carpeta —el disco (日の丸) como ancla y una sola horizontal
- * como horizonte— y el auto pasa a apoyarse en una composición en vez de
- * flotar sobre líneas sueltas.
+ * Bento de tres piezas recortado en la hoja: el panel musgo sostiene el
+ * titular, el panel de tinta es el escenario del Civic y una píldora larga
+ * lleva la tira de datos. El auto no se queda dentro de su tarjeta: el lienzo
+ * rebasa el panel y cruza la costura, que es el gesto de los personajes que
+ * desbordan su marco en las referencias. Un sello giratorio muerde la costura
+ * entre los dos paneles y lleva al cotizador.
  *
- * El Civic tampoco lleva ficha. Antes venía con un panel explicando que era
- * «una obsesión personal, llevada a 3D» y un chip «TYPE R»: la imagen ya lo
- * dice. Lo que queda es la tira de datos del canto inferior, que declara
- * coordenadas y lectura sin justificar nada, como los pies de los pósters.
- *
- * El modelo pesado arranca en idle; el H1, el copy, los CTA y el fallback se
- * pintan antes.
+ * Toda la entrada es CSS (`.hero-in-*`): corre en cuanto se pinta, sin
+ * esperar a la hidratación, y en la primera visita espera al telón del
+ * preloader. El modelo pesado sigue arrancando en idle.
  */
 const Hero = React.forwardRef<HTMLElement, HeroProps>(
   (
@@ -163,6 +160,8 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
       };
     }, [reducedMotion]);
 
+    const badgeText = `${t.hero.titlePrefix} ${t.hero.titleHighlight} · ${t.nav.armaTuWeb} · `;
+
     return (
       <section
         ref={ref}
@@ -173,62 +172,50 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
           ref={wrapperRef}
           className={cn(
             "relative",
-            reducedMotion ? "min-h-[100svh]" : "h-[168svh] md:h-[218svh]"
+            reducedMotion
+              ? "min-h-[calc(100svh-var(--gutter)*2)]"
+              : "h-[168svh] md:h-[218svh]"
           )}
         >
           <div
             className={cn(
-              "flex min-h-[100svh] flex-col overflow-hidden bg-background",
-              reducedMotion ? "relative" : "sticky top-0 h-[100svh]"
+              "relative grid min-h-[calc(100svh-var(--gutter)*2)] grid-cols-1 grid-rows-[auto_minmax(0,1fr)_auto] gap-gutter",
+              "lg:grid-cols-[calc(47%-var(--gutter)/2)_calc(53%-var(--gutter)/2)] lg:grid-rows-[minmax(0,1fr)_auto]",
+              reducedMotion
+                ? ""
+                : "sticky top-[var(--gutter)] h-[calc(100svh-var(--gutter)*2)]"
             )}
           >
-            <div aria-hidden className="japan-halftone absolute inset-0 opacity-[0.13]" />
-            <div aria-hidden className="mesh-glow-a absolute inset-0 opacity-40" />
-
-            {/* 縦組み a escala de página. Antes esto era una etiqueta de 11 px
-                al 60% de opacidad: decoración. Ahora marca el borde derecho de
-                la composición, que es un trabajo de arquitectura. */}
+            {/* A · Panel musgo: el titular. La pestaña de la marca queda
+                recortada en su esquina superior izquierda. */}
             <div
-              aria-hidden
-              className="pointer-events-none absolute right-14 top-1/2 z-20 hidden -translate-y-1/2 select-none flex-col items-center gap-4 xl:flex"
+              className="hero-in hero-in-left panel panel-moss relative z-10 flex min-w-0 flex-col justify-end overflow-hidden px-5 pb-6 pt-[calc(var(--header-h)+1.25rem)] sm:px-8 sm:pb-8 lg:px-12 lg:pb-12 xl:px-14"
+              style={{ "--hd": "60ms" } as React.CSSProperties}
             >
-              <span className="h-16 w-px bg-gradient-to-b from-transparent to-primary/30" />
+              <div aria-hidden className="dot-grid absolute inset-0 rounded-[inherit] opacity-50 [mask-image:radial-gradient(ellipse_at_85%_15%,black,transparent_60%)]" />
               <span
-                lang="ja"
-                className="tategaki-display text-[clamp(2.25rem,3.6vw,3.25rem)] text-primary/25"
+                aria-hidden
+                className="ghost-word drift-x pointer-events-none absolute -bottom-[0.12em] left-0 text-[38vw] lg:text-[21vw]"
               >
-                走り
+                {t.hero.titleHighlight}
               </span>
-              <span className="vertical-jp font-mono text-[9px] uppercase tracking-[0.34em] text-foreground/25">
-                {locale === "ja" ? "hashiri" : `hashiri · ${t.experience.driving}`}
-              </span>
-              <span className="h-16 w-px bg-gradient-to-t from-transparent to-primary/30" />
-            </div>
 
-            <div className="container relative z-10 flex flex-1 flex-col pb-8 pt-24 sm:pt-28 lg:grid lg:grid-cols-[minmax(0,0.86fr)_minmax(0,1.14fr)] lg:items-center lg:gap-0 lg:pb-10">
-              <div className="relative z-20 flex min-w-0 flex-col items-start gap-5 lg:py-14">
+              <div className="relative z-10 flex flex-col items-start gap-5 lg:gap-6">
                 {eyebrow && (
-                  <motion.span
-                    initial={reducedMotion ? false : { y: 12, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{
-                      ease: [0.2, 0, 0, 1],
-                      delay: reducedMotion ? 0 : 0.08,
-                      duration: reducedMotion ? 0 : 0.48,
-                    }}
-                    className="tech-label signal-kicker inline-flex items-center gap-3 text-muted-foreground"
+                  <span
+                    className="hero-in hero-in-fade tag-pill"
+                    style={{ "--hd": "380ms" } as React.CSSProperties}
                   >
-                    <span className="h-1.5 w-1.5 bg-primary" />
-                    {eyebrow}
-                  </motion.span>
+                    <span aria-hidden lang="ja" className="seal">
+                      走
+                    </span>
+                    <span className="whitespace-normal leading-snug">{eyebrow}</span>
+                  </span>
                 )}
 
-                {/* Bajó de 17vw / 8rem. Antes el titular competía con el auto
-                    por el mismo espacio; ahora conviven y el disco es lo que
-                    sostiene el peso del lado derecho. */}
                 <h1
                   className={cn(
-                    "hero-title max-w-[10ch] font-display text-[13vw] font-bold uppercase leading-[0.82] tracking-[-0.055em] text-foreground sm:text-[4.15rem] md:text-[4.85rem] lg:text-[5.15rem] xl:text-[6.15rem]",
+                    "hero-title display-xl max-w-full text-[clamp(4rem,20.5vw,8rem)] text-foreground sm:text-[clamp(5rem,14vw,8.5rem)] lg:text-[min(11vw,20svh)]",
                     titleClassName
                   )}
                 >
@@ -236,36 +223,24 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                 </h1>
 
                 {subtitle && (
-                  <motion.p
-                    initial={reducedMotion ? false : { y: 16, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{
-                      ease: [0.2, 0, 0, 1],
-                      delay: reducedMotion ? 0 : 0.14,
-                      duration: reducedMotion ? 0 : 0.55,
-                    }}
+                  <p
                     className={cn(
-                      "max-w-[34rem] text-pretty text-base leading-relaxed text-muted-foreground md:text-lg",
+                      "hero-in hero-in-fade max-w-[33rem] text-pretty text-[0.95rem] leading-relaxed text-foreground/75 sm:text-base md:text-lg",
                       subtitleClassName
                     )}
+                    style={{ "--hd": "520ms" } as React.CSSProperties}
                   >
                     {subtitle}
-                  </motion.p>
+                  </p>
                 )}
 
                 {actions && actions.length > 0 && (
-                  <motion.div
-                    initial={reducedMotion ? false : { y: 16, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{
-                      ease: [0.2, 0, 0, 1],
-                      delay: reducedMotion ? 0 : 0.2,
-                      duration: reducedMotion ? 0 : 0.55,
-                    }}
+                  <div
                     className={cn(
-                      "mt-1 flex w-full flex-col gap-3 sm:w-auto sm:flex-row",
+                      "hero-in hero-in-up mt-1 grid w-full grid-cols-2 gap-2.5 sm:flex sm:w-auto sm:gap-3",
                       actionsClassName
                     )}
+                    style={{ "--hd": "600ms" } as React.CSSProperties}
                   >
                     {actions.map((action) => (
                       <Button
@@ -273,220 +248,193 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                         size="lg"
                         variant={action.variant || "default"}
                         asChild
-                        className="w-full sm:w-auto"
+                        className="w-full px-3 sm:w-auto sm:px-7"
                       >
-                        <Link href={action.href}>{action.label}</Link>
+                        <Link href={action.href}>
+                          {action.label}
+                          {(action.variant ?? "default") === "default" && (
+                            <ArrowUpRight className="h-4 w-4" />
+                          )}
+                        </Link>
                       </Button>
                     ))}
-                  </motion.div>
+                  </div>
                 )}
+              </div>
 
-                <div className="mt-3 hidden w-full max-w-[35rem] grid-cols-3 border-y border-border/80 sm:grid">
-                  <HeroPhase
-                    jp="設計"
-                    label={locale === "ja" ? "SEKKEI" : t.experience.phaseDesign}
-                  />
-                  <HeroPhase
-                    jp="実装"
-                    label={
-                      locale === "ja"
-                        ? "JISSŌ"
-                        : t.experience.phaseDevelopment
-                    }
-                  />
-                  <HeroPhase
-                    jp="始動"
-                    label={locale === "ja" ? "SHIDŌ" : t.experience.phaseLaunch}
-                    signal
-                  />
+            </div>
+
+            {/* B · Panel de tinta: el escenario del Civic. */}
+            <div
+              className="hero-in hero-in-right panel relative z-20 min-h-[30svh] min-w-0 overflow-visible lg:row-span-2 lg:min-h-0"
+              style={{ "--hd": "160ms" } as React.CSSProperties}
+            >
+              <div aria-hidden className="absolute inset-0 overflow-hidden rounded-[inherit]">
+                <div className="japan-halftone absolute inset-0 opacity-20" />
+                <div className="mesh-glow-a opacity-60" />
+                {/* 日の丸 en trama: el disco de la referencia, impreso. */}
+                <div className="hinomaru-dots left-1/2 top-[47%] aspect-square w-[min(88%,34rem)] -translate-x-1/2 -translate-y-1/2 opacity-80" />
+                <div className="hinomaru-ring left-1/2 top-[47%] aspect-square w-[min(96%,37rem)] -translate-x-1/2 -translate-y-1/2 [mask-image:conic-gradient(from_200deg,black_0deg,black_200deg,transparent_260deg)]" />
+                {/* 縦組み a escala de panel. */}
+                <div className="pointer-events-none absolute right-5 top-[calc(var(--header-h)+1rem)] hidden select-none flex-col items-center gap-3 md:flex lg:right-7">
+                  <span
+                    lang="ja"
+                    className="tategaki-display text-[clamp(2rem,3.2vw,3rem)] text-foreground/[0.14]"
+                  >
+                    走り
+                  </span>
+                  <span className="vertical-jp font-mono text-[9px] uppercase tracking-[0.34em] text-foreground/35">
+                    {locale === "ja" ? "hashiri" : `hashiri · ${t.experience.driving}`}
+                  </span>
+                </div>
+                {/* El horizonte: una sola línea donde apoya el auto. */}
+                <div className="absolute inset-x-6 top-[72%] flex items-center gap-3">
+                  <span className="h-px flex-1 bg-gradient-to-r from-transparent via-foreground/20 to-foreground/5" />
+                  <span className="size-1.5 rotate-45 bg-primary/80" />
                 </div>
               </div>
 
-              <motion.div
-                initial={reducedMotion ? false : { opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{
-                  delay: reducedMotion ? 0 : 0.2,
-                  duration: reducedMotion ? 0 : 0.7,
-                  ease: [0.2, 0, 0, 1],
-                }}
-                className="relative -mx-6 mt-1 min-h-[42svh] min-w-0 flex-1 sm:mx-0 sm:min-h-[50svh] lg:-ml-[15%] lg:mt-0 lg:h-[72svh] lg:min-h-[560px]"
-              >
-                <div className="absolute inset-x-4 inset-y-0 sm:inset-x-0">
-                  {/* 日の丸. El ancla de la composición: el auto se apoya en un
-                      disco, no en una curva que pasaba de largo. Es tinta
-                      elevada con un arco bermellón de 1 px — la silueta del
-                      hinomaru sin gastar el presupuesto de rojo. */}
-                  <div
-                    aria-hidden
-                    className="hinomaru left-1/2 top-[46%] aspect-square w-[min(94%,37rem)] -translate-x-1/2 -translate-y-1/2"
+              {/* Sello giratorio en teléfono: vive en el recorte superior
+                  izquierdo del escenario. En escritorio sube a la costura. */}
+              <div className="notch notch-tl lg:hidden">
+                <HeroBadge text={badgeText} label={t.nav.armaTuWeb} size="sm" />
+              </div>
+
+              <CivicFallback ready={modelReady} reducedMotion={reducedMotion} />
+
+              {start3d && !modelFailed && (
+                // El lienzo rebasa el panel por la izquierda: el Civic se sale
+                // de su marco y cruza la costura, como los personajes de las
+                // referencias que desbordan su tarjeta.
+                <div
+                  className={cn(
+                    "absolute inset-0 transition-opacity duration-700 lg:-left-[16%]",
+                    modelReady ? "opacity-100" : "opacity-0",
+                    modelReady && !reducedMotion && "civic-drive-in"
+                  )}
+                  style={{
+                    maskImage:
+                      "radial-gradient(ellipse 96% 92% at 55% 52%, black 70%, transparent 100%)",
+                    WebkitMaskImage:
+                      "radial-gradient(ellipse 96% 92% at 55% 52%, black 70%, transparent 100%)",
+                  }}
+                >
+                  <CivicScene
+                    progressRef={progressRef}
+                    className="absolute inset-0"
+                    ariaLabel={t.experience.civicAria}
+                    onReady={() => setModelReady(true)}
+                    onError={() => setModelFailed(true)}
+                    onSpeed={handleSpeed}
                   />
-
-                  {/* El horizonte. Una línea, y carga peso: marca el suelo
-                      donde el Civic apoya y alinea el bloque 3D con el
-                      titular de la izquierda. */}
-                  <div
-                    aria-hidden
-                    className="pointer-events-none absolute inset-x-0 top-[70%] flex items-center gap-3"
-                  >
-                    <span className="h-px flex-1 bg-gradient-to-r from-transparent via-foreground/20 to-foreground/10" />
-                    <span className="size-1 rotate-45 bg-primary/70" />
-                    <span className="h-px w-16 bg-foreground/10" />
-                  </div>
-
-                  <CivicFallback
-                    ready={modelReady}
-                    reducedMotion={reducedMotion}
-                  />
-
-                  {start3d && !modelFailed && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: modelReady ? 1 : 0 }}
-                      transition={{ duration: reducedMotion ? 0 : 0.6 }}
-                      className="absolute inset-0"
-                      // El canvas dejaba un borde recto visible donde terminaba
-                      // el viewport WebGL. La máscara lo funde con la tinta del
-                      // fondo para que el auto no viva dentro de una caja. Se
-                      // abrió al crecer el Civic: con la elipse anterior el
-                      // morro y el alerón entraban en la zona de desvanecido.
-                      style={{
-                        maskImage:
-                          "radial-gradient(ellipse 94% 90% at 50% 52%, black 68%, transparent 100%)",
-                        WebkitMaskImage:
-                          "radial-gradient(ellipse 94% 90% at 50% 52%, black 68%, transparent 100%)",
-                      }}
-                    >
-                      <CivicScene
-                        progressRef={progressRef}
-                        className="absolute inset-0"
-                        ariaLabel={t.experience.civicAria}
-                        onReady={() => setModelReady(true)}
-                        onError={() => setModelFailed(true)}
-                        onSpeed={handleSpeed}
-                      />
-                    </motion.div>
-                  )}
-
-                  {/* Aquí vivían el panel «Una obsesión personal, llevada a 3D»
-                      y el chip «TYPE R». Los dos explicaban lo que la imagen ya
-                      dice. Los pósters de la carpeta nunca justifican un
-                      elemento: solo declaran el dato, y eso pasó a la tira del
-                      canto inferior. */}
-
-                  {!modelReady && start3d && !modelFailed && (
-                    <div className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/55">
-                      {t.experience.modelLoading}
-                      <span aria-hidden className="ml-2 inline-flex gap-1">
-                        <span className="h-1 w-1 animate-pulse rounded-full bg-primary motion-reduce:animate-none" />
-                        <span className="h-1 w-1 animate-pulse rounded-full bg-primary [animation-delay:160ms] motion-reduce:animate-none" />
-                        <span className="h-1 w-1 animate-pulse rounded-full bg-primary [animation-delay:320ms] motion-reduce:animate-none" />
-                      </span>
-                    </div>
-                  )}
-
-                  {deferred3d && !start3d && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setDeferred3d(false);
-                        setStart3d(true);
-                      }}
-                      className="absolute bottom-8 left-1/2 min-h-11 -translate-x-1/2 whitespace-nowrap border border-primary/50 bg-background/85 px-4 font-mono text-[10px] uppercase tracking-[0.2em] text-primary backdrop-blur-sm transition-colors hover:bg-primary hover:text-primary-foreground"
-                    >
-                      {t.experience.activateModel}
-                    </button>
-                  )}
-
-                  {modelFailed && (
-                    <p className="absolute bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.18em] text-foreground/55">
-                      {t.experience.lightweightView}
-                    </p>
-                  )}
                 </div>
+              )}
 
-                {/* En teléfono esta fila caía justo sobre los botones
-                    flotantes de accesibilidad y chat, que son fijos al borde
-                    inferior. Sube por encima de ellos y vuelve al canto en
-                    cuanto hay ancho para las dos pistas. */}
-                <div className="pointer-events-none absolute inset-x-0 bottom-10 flex items-center justify-between px-5 sm:bottom-1 sm:px-8">
-                  {/* En 390 px las dos pistas no caben en la misma línea y se
-                      encimaban entre ellas y con los botones flotantes. En
-                      teléfono el scroll vertical no necesita anuncio: se queda
-                      solo el gesto que no es obvio, el arrastre. */}
-                  <span className="hidden font-mono text-[9px] uppercase tracking-[0.2em] text-foreground/45 sm:inline sm:text-[10px]">
-                    {scrollHint}
+              {!modelReady && start3d && !modelFailed && (
+                <div className="pointer-events-none absolute bottom-16 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-background/80 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/65">
+                  {t.experience.modelLoading}
+                  <span aria-hidden className="ml-2 inline-flex gap-1">
+                    <span className="h-1 w-1 animate-pulse rounded-full bg-primary motion-reduce:animate-none" />
+                    <span className="h-1 w-1 animate-pulse rounded-full bg-primary [animation-delay:160ms] motion-reduce:animate-none" />
+                    <span className="h-1 w-1 animate-pulse rounded-full bg-primary [animation-delay:320ms] motion-reduce:animate-none" />
                   </span>
-                  {/* Dos gestos, dos renglones. El giro ya estaba; el acelerón
-                      es nuevo y no se adivina, así que se declara igual que el
-                      resto de las instrucciones del hero. */}
-                  <span className="flex flex-col items-end gap-1 text-right">
-                    <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-primary sm:text-[10px]">
+                </div>
+              )}
+
+              {deferred3d && !start3d && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDeferred3d(false);
+                    setStart3d(true);
+                  }}
+                  className="absolute bottom-16 left-1/2 min-h-11 -translate-x-1/2 whitespace-nowrap rounded-full border border-primary/50 bg-background/85 px-5 font-mono text-[10px] uppercase tracking-[0.2em] text-primary backdrop-blur-sm transition-colors hover:bg-primary hover:text-primary-foreground"
+                >
+                  {t.experience.activateModel}
+                </button>
+              )}
+
+              {modelFailed && (
+                <p className="absolute bottom-16 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.18em] text-foreground/55">
+                  {t.experience.lightweightView}
+                </p>
+              )}
+
+              {/* Gestos. */}
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-3 p-4 sm:p-5">
+                <span className="hidden rounded-full bg-background/70 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.2em] text-foreground/55 backdrop-blur-sm sm:inline sm:text-[10px]">
+                  {scrollHint}
+                </span>
+                <span className="ml-auto flex flex-col items-end gap-1.5 text-right">
+                  <span className="rounded-full bg-primary px-3 py-1.5 font-mono text-[9px] font-medium uppercase tracking-[0.2em] text-primary-foreground sm:text-[10px]">
+                    {locale === "ja" ? (
+                      t.experience.dragRotate
+                    ) : (
+                      <>
+                        {t.experience.dragRotate} ↔ <span lang="ja">回転</span>
+                      </>
+                    )}
+                  </span>
+                  {!reducedMotion && (
+                    <span className="rounded-full bg-background/70 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.2em] text-foreground/60 backdrop-blur-sm sm:text-[10px]">
                       {locale === "ja" ? (
-                        t.experience.dragRotate
+                        t.experience.tapBoost
                       ) : (
                         <>
-                          {t.experience.dragRotate} ↔ <span lang="ja">回転</span>
+                          {t.experience.tapBoost} ↑ <span lang="ja">加速</span>
                         </>
                       )}
                     </span>
-                    {!reducedMotion && (
-                      <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-foreground/45 sm:text-[10px]">
-                        {locale === "ja" ? (
-                          t.experience.tapBoost
-                        ) : (
-                          <>
-                            {t.experience.tapBoost} ↑ <span lang="ja">加速</span>
-                          </>
-                        )}
-                      </span>
-                    )}
-                  </span>
-                </div>
-              </motion.div>
+                  )}
+                </span>
+              </div>
             </div>
 
-            {/* データ帯. El pie de los pósters de la carpeta declara
-                coordenadas, lugar y temperatura sin explicar por qué. Esta tira
-                hace lo mismo y es la que reemplaza a la ficha que llevaba el
-                auto encima. */}
-            <div className="relative z-20 border-t border-border/80 bg-background/60">
-              <div className="container data-strip py-3">
-                <span>19.4326° N · 99.1332° W</span>
+            {/* C · Tira de datos + fases: una píldora larga bajo el titular. */}
+            <div
+              className="hero-in hero-in-up panel relative z-10 flex min-w-0 items-center gap-3 overflow-hidden rounded-full px-4 py-2.5 sm:px-6"
+              style={{ "--hd": "300ms" } as React.CSSProperties}
+            >
+              <div className="data-strip min-w-0 flex-1">
+                <span className="hidden xl:inline">19.4326° N · 99.1332° W</span>
+                <span aria-hidden className="sep hidden xl:block" />
+                <span className="flex items-center gap-2">
+                  <HeroPhase jp="設計" label={locale === "ja" ? "SEKKEI" : t.experience.phaseDesign} />
+                  <HeroPhase jp="実装" label={locale === "ja" ? "JISSŌ" : t.experience.phaseDevelopment} />
+                  <HeroPhase jp="始動" label={locale === "ja" ? "SHIDŌ" : t.experience.phaseLaunch} signal />
+                </span>
                 <span aria-hidden className="sep" />
-                <span className="hidden sm:inline">
-                  <span lang="ja" className="font-jp tracking-[0.2em]">
-                    走り
-                  </span>
-                  <span className="mx-2 opacity-40">/</span>
-                  {locale === "ja" ? "HASHIRI" : `HASHIRI / ${t.experience.driving}`}
-                </span>
-                <span aria-hidden className="sep hidden sm:block" />
-                {/* 速度計. La tira ya declaraba coordenadas y lectura; ahora
-                    declara también a qué velocidad va el Civic. Es telemetría
-                    de la escena, no contenido: por eso queda fuera del árbol
-                    de accesibilidad en vez de anunciar un número que cambia
-                    diez veces por segundo. */}
-                {modelReady && !modelFailed && !reducedMotion && (
-                  <>
+                {/* 速度計: telemetría de la escena, fuera del árbol accesible. */}
+                {modelReady && !modelFailed && !reducedMotion ? (
+                  <span aria-hidden className="inline-flex items-baseline gap-1.5 tabular-nums">
                     <span
-                      aria-hidden
-                      className="inline-flex items-baseline gap-1.5 tabular-nums"
+                      ref={speedRef}
+                      className="font-display text-lg font-black tracking-normal text-primary"
                     >
-                      <span ref={speedRef} className="text-primary/85">
-                        000
-                      </span>
-                      <span className="opacity-55">km/h</span>
+                      000
                     </span>
-                    <span aria-hidden className="sep hidden sm:block" />
-                  </>
-                )}
-                <span className="inline-flex items-center gap-2">
-                  <span aria-hidden className="size-1 bg-signal" />
-                  <span lang="ja" className="font-jp tracking-[0.2em]">
-                    始動
+                    <span className="opacity-55">km/h</span>
                   </span>
-                </span>
+                ) : (
+                  <span className="inline-flex items-center gap-2">
+                    <span aria-hidden className="size-1.5 rounded-full bg-signal" />
+                    <span lang="ja" className="font-jp tracking-[0.2em]">
+                      始動
+                    </span>
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Sello giratorio de escritorio, montado sobre la costura entre el
+                titular y el Civic: muerde los dos paneles, como el círculo de
+                la referencia entre imagen y contenido. */}
+            <div
+              className="hero-in hero-in-pop pointer-events-none absolute bottom-[calc(3.5rem+var(--gutter)*2)] left-[47%] z-30 hidden lg:block"
+              style={{ "--hd": "760ms", marginLeft: "calc(var(--gutter) / 2)" } as React.CSSProperties}
+            >
+              <div className="pointer-events-auto -translate-x-1/2 rounded-full bg-sheet p-[var(--gutter)]">
+                <HeroBadge text={badgeText} label={t.nav.armaTuWeb} size="lg" />
               </div>
             </div>
           </div>
@@ -507,20 +455,81 @@ function HeroPhase({
   signal?: boolean;
 }) {
   return (
-    <div className="border-r border-border/80 px-3 py-3 last:border-r-0">
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-foreground/10 px-2.5 py-1">
       <span
         lang="ja"
         className={cn(
-          "font-jp text-lg",
+          "font-jp text-xs tracking-normal",
           signal ? "text-signal" : "text-primary"
         )}
       >
         {jp}
       </span>
-      <span className="ml-2 font-mono text-[9px] uppercase tracking-[0.18em] text-foreground/50">
-        {label}
+      <span className="hidden text-foreground/55 md:inline">{label}</span>
+    </span>
+  );
+}
+
+/**
+ * El sello giratorio de la referencia: un anillo de texto que rueda alrededor
+ * de un botón lima. Es un enlace real al cotizador; el texto del anillo es
+ * ornamento y queda fuera del árbol accesible.
+ */
+function HeroBadge({
+  text,
+  label,
+  size,
+}: {
+  text: string;
+  label: string;
+  size: "sm" | "lg";
+}) {
+  const id = React.useId().replace(/:/g, "");
+  return (
+    <Link
+      href="#precios"
+      aria-label={label}
+      className={cn(
+        "group relative grid place-items-center rounded-full bg-background text-foreground transition-transform duration-500 [transition-timing-function:var(--ease-pop)] hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--sheet))]",
+        size === "lg" ? "size-36 xl:size-40" : "size-24"
+      )}
+    >
+      <svg
+        aria-hidden
+        viewBox="0 0 200 200"
+        className="spin-slow absolute inset-0 h-full w-full"
+      >
+        <defs>
+          <path
+            id={`badge-circle-${id}`}
+            d="M100,100 m-76,0 a76,76 0 1,1 152,0 a76,76 0 1,1 -152,0"
+          />
+        </defs>
+        <text
+          fill="currentColor"
+          className="font-display font-extrabold uppercase opacity-85"
+          style={{ fontSize: 20, letterSpacing: "0.12em" }}
+        >
+          <textPath
+            href={`#badge-circle-${id}`}
+            textLength="470"
+            lengthAdjust="spacingAndGlyphs"
+          >
+            {text}
+            {text}
+          </textPath>
+        </text>
+      </svg>
+      <span
+        aria-hidden
+        className={cn(
+          "relative grid place-items-center rounded-full bg-primary text-primary-foreground transition-transform duration-500 group-hover:rotate-45",
+          size === "lg" ? "size-14 xl:size-16" : "size-10"
+        )}
+      >
+        <ArrowUpRight className={size === "lg" ? "h-6 w-6" : "h-4 w-4"} />
       </span>
-    </div>
+    </Link>
   );
 }
 

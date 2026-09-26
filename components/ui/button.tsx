@@ -6,25 +6,28 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
+// Píldoras, como en toda la hoja: rótulo condensado en mayúsculas, apretón
+// al pulsar y un salto corto al pasar el puntero.
 const buttonVariants = cva(
-  "relative inline-flex items-center justify-center overflow-hidden whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors [transition-timing-function:var(--ease-material)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
+  "relative inline-flex items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap rounded-full font-display text-[1.02rem] font-extrabold uppercase leading-none tracking-[0.045em] ring-offset-background transition-[background-color,color,border-color,box-shadow,transform] duration-300 [transition-timing-function:var(--ease-material)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default:
+          "bg-primary text-primary-foreground shadow-[0_10px_30px_-14px_hsl(var(--primary)/0.9)] hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-[0_18px_40px_-14px_hsl(var(--primary)/0.95)]",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border border-foreground/25 bg-transparent text-foreground hover:-translate-y-0.5 hover:border-primary hover:text-primary",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+          "bg-secondary text-secondary-foreground hover:-translate-y-0.5 hover:bg-secondary/80",
+        ghost: "text-foreground/85 hover:bg-foreground/10 hover:text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-11 px-4 py-2",
-        sm: "h-11 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
+        default: "h-11 px-5 py-2",
+        sm: "h-11 px-4",
+        lg: "h-12 px-7 text-[1.1rem]",
         icon: "h-11 w-11",
       },
     },

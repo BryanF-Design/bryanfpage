@@ -17,10 +17,11 @@ interface SectionHeadingProps {
   subtitle?: React.ReactNode;
   align?: "center" | "left";
   className?: string;
+  /** Tamaño del rótulo: `xl` para cabeceras que ocupan su propio panel. */
+  size?: "lg" | "xl";
   /**
-   * Marca de capítulo. Cuando se pasa, el eyebrow se convierte en sello +
-   * numeración de serie. Sin ella la cabecera se comporta como antes, que es
-   * lo que necesitan las landings de servicio.
+   * Marca de capítulo. Cuando se pasa, el eyebrow se convierte en píldora con
+   * sello + numeración de serie. Sin ella, eyebrow simple.
    */
   chapter?: SectionChapter;
 }
@@ -29,15 +30,9 @@ interface SectionHeadingProps {
 export const CHAPTER_TOTAL = 10;
 
 /**
- * Cabecera de sección.
- *
- * El eyebrow abría con un cuadrito lima genérico, igual en las diez
- * secciones: no situaba nada. Con `chapter` pasa a ser un sello con el kanji
- * de la sección y su lugar en la serie —`章 04 / 10`—, que es el recurso con
- * el que los pósters de la carpeta numeran sus láminas.
- *
- * Sin `chapter` el comportamiento es el de antes, para no alterar las
- * landings de servicio.
+ * Cabecera de sección: píldora de capítulo, rótulo condensado XXL y bajada.
+ * El rótulo se compone como los de las referencias — alto, apretado, en
+ * mayúsculas — y entra con una máscara que sube desde abajo.
  */
 export function SectionHeading({
   eyebrow,
@@ -45,14 +40,15 @@ export function SectionHeading({
   subtitle,
   align = "left",
   className,
+  size = "lg",
   chapter,
 }: SectionHeadingProps) {
   return (
     <Reveal>
       <div
         className={cn(
-          "flex flex-col gap-5 border-t border-border pt-6",
-          align === "center" ? "mx-auto max-w-2xl items-center text-center" : "items-start",
+          "flex flex-col gap-5 md:gap-6",
+          align === "center" ? "mx-auto max-w-3xl items-center text-center" : "items-start",
           className
         )}
       >
@@ -63,21 +59,30 @@ export function SectionHeading({
             label={eyebrow}
             index={chapter.index}
             total={CHAPTER_TOTAL}
-            className={align === "center" ? "justify-center" : "w-full"}
+            className={align === "center" ? "justify-center" : undefined}
           />
         ) : (
           eyebrow && (
-            <span className="tech-label inline-flex items-center gap-3 text-primary">
-              <span className="h-1.5 w-1.5 bg-primary" />
+            <span className="tag-pill pl-4">
+              <span aria-hidden className="size-1.5 rounded-full bg-primary" />
               {eyebrow}
             </span>
           )
         )}
-        <h2 className="max-w-3xl font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
-          {title}
-        </h2>
+        <div data-fx="up" className="max-w-full">
+          <h2
+            className={cn(
+              "display-xl max-w-4xl text-balance text-foreground",
+              size === "xl"
+                ? "text-[clamp(3.25rem,9vw,8rem)]"
+                : "text-[clamp(2.9rem,6.4vw,5.75rem)]"
+            )}
+          >
+            {title}
+          </h2>
+        </div>
         {subtitle && (
-          <p className="max-w-2xl text-pretty text-base text-muted-foreground md:text-lg">
+          <p className="max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
             {subtitle}
           </p>
         )}

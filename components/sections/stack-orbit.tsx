@@ -1,7 +1,7 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import type { IconType } from "react-icons";
 import {
   SiCss,
@@ -19,9 +19,11 @@ import {
   SiVercel,
   SiWordpress,
 } from "react-icons/si";
+import { ArrowUpRight } from "lucide-react";
 
 import { SectionHeading } from "@/components/sections/section-heading";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 import { useReducedMotionPreference } from "@/lib/motion-preference";
 
@@ -42,6 +44,14 @@ const stack: { Icon: IconType; label: string }[] = [
   { Icon: SiGithub, label: "GitHub" },
 ];
 
+/**
+ * 道具 — las herramientas, girando.
+ *
+ * Las catorce fichas forman un carrusel 3D que rueda solo (CSS puro,
+ * `preserve-3d`), como el coverflow de la referencia de viajes: la del frente
+ * se lee grande y las del fondo se van. Pasar el puntero lo detiene. Con
+ * movimiento reducido el anillo se desarma en una retícula quieta.
+ */
 export function StackOrbit() {
   const { t } = useLanguage();
   const reducedMotion = useReducedMotionPreference();
@@ -50,84 +60,109 @@ export function StackOrbit() {
     <section
       id="stack"
       aria-label={t.stack.title}
-      className="relative overflow-hidden border-t border-border py-20 md:py-28"
+      className="relative grid gap-gutter lg:grid-cols-12"
     >
-      <div
-        aria-hidden
-        className="route-grid pointer-events-none absolute inset-0 opacity-25"
-      />
+      <div data-fx="left" className="min-w-0 lg:col-span-5">
+        <div className="panel panel-moss flex h-full flex-col justify-between gap-10 overflow-hidden p-6 md:p-10">
+          <SectionHeading
+            eyebrow={t.stack.eyebrow}
+            title={t.stack.title}
+            subtitle={t.stack.subtitle}
+            chapter={{ kanji: "道具", romaji: "dōgu", index: 5 }}
+          />
 
-      <div className="container relative">
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
-          <div className="lg:col-span-4">
-            <SectionHeading
-              eyebrow={t.stack.eyebrow}
-              title={t.stack.title}
-              subtitle={t.stack.subtitle}
-              chapter={{ kanji: "道具", romaji: "dōgu", index: 5 }}
-            />
-
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
-              <Button asChild>
-                <Link href="#projects">{t.stack.ctaPrimary}</Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link
-                  href="https://wa.me/525663012505"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t.stack.ctaSecondary}
-                </Link>
-              </Button>
-            </div>
-          </div>
-
-          <div className="editorial-panel overflow-hidden lg:col-span-8">
-            <div className="flex items-center justify-between border-b border-border px-5 py-4 md:px-7">
-              <span className="tech-label text-primary">{t.stack.eyebrow}</span>
-              <span
-                aria-hidden
-                className="h-2 w-2 bg-[#E8342A] shadow-[0_0_18px_rgba(232,52,42,0.45)]"
-              />
-            </div>
-
-            <ul className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4">
-              {stack.map(({ Icon, label }, index) => (
-                <motion.li
-                  key={label}
-                  initial={reducedMotion ? false : { opacity: 0, y: 14 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-40px" }}
-                  transition={{
-                    duration: reducedMotion ? 0 : 0.38,
-                    delay: reducedMotion ? 0 : (index % 7) * 0.035,
-                    ease: [0.2, 0, 0, 1],
-                  }}
-                  className="group relative min-h-32 border-b border-r border-border bg-background/20 p-4 transition-colors duration-200 hover:bg-primary/[0.045] sm:min-h-36 md:p-5"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="font-mono text-[0.65rem] tracking-[0.18em] text-muted-foreground">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <Icon
-                      aria-hidden="true"
-                      className="h-6 w-6 text-foreground/65 transition-colors duration-200 group-hover:text-primary md:h-7 md:w-7"
-                    />
-                  </div>
-                  <p className="absolute bottom-4 left-4 right-4 font-display text-sm font-semibold text-foreground md:bottom-5 md:left-5 md:right-5 md:text-base">
-                    {label}
-                  </p>
-                  <span
-                    aria-hidden
-                    className="absolute bottom-0 left-0 h-px w-0 bg-primary transition-[width] duration-300 group-hover:w-full"
-                  />
-                </motion.li>
-              ))}
-            </ul>
+          <div className="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
+            <Button asChild>
+              <Link href="#projects">
+                {t.stack.ctaPrimary}
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link
+                href="https://wa.me/525663012505"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t.stack.ctaSecondary}
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
+
+      <div data-fx="right" className="min-w-0 lg:col-span-7" style={{ "--fx-delay": "100ms" } as CSSProperties}>
+        <div className="panel relative h-full min-h-[27rem] overflow-hidden md:min-h-[34rem]">
+          <div aria-hidden className="dot-grid absolute inset-0 rounded-[inherit] opacity-30" />
+          <div
+            aria-hidden
+            className="hinomaru-dots bottom-0 left-1/2 aspect-square w-[78%] opacity-35"
+            style={{ transform: "translate(-50%, 58%) perspective(900px) rotateX(70deg)" }}
+          />
+
+          <div className="notch notch-tl">
+            <span className="tag-pill">
+              <span aria-hidden lang="ja" className="seal">
+                道
+              </span>
+              {t.stack.eyebrow} · {String(stack.length).padStart(2, "0")}
+            </span>
+          </div>
+
+          {reducedMotion ? (
+            <ul className="relative grid grid-cols-2 gap-2 p-5 pt-20 sm:grid-cols-3 md:grid-cols-4 md:p-8 md:pt-24">
+              {stack.map(({ Icon, label }) => (
+                <li key={label}>
+                  <StackTile Icon={Icon} label={label} />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="ring-stage absolute inset-0 grid place-items-center pt-10">
+              <ul
+                className="ring size-px [--rz:13.5rem] [--tile:6rem] sm:[--rz:17rem] sm:[--tile:7rem] md:[--rz:19rem] md:[--tile:7.75rem]"
+                style={{ "--n": stack.length } as CSSProperties}
+              >
+                {stack.map(({ Icon, label }, index) => (
+                  <li key={label} style={{ "--i": index } as CSSProperties}>
+                    <StackTile Icon={Icon} label={label} ring index={index} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
     </section>
+  );
+}
+
+function StackTile({
+  Icon,
+  label,
+  ring = false,
+  index = 0,
+}: {
+  Icon: IconType;
+  label: string;
+  ring?: boolean;
+  index?: number;
+}) {
+  return (
+    <div
+      className={cn(
+        "flex h-full min-h-28 flex-col justify-between rounded-[1.25rem] p-3.5 md:p-4",
+        ring
+          ? index % 3 === 0
+            ? "bg-primary text-primary-foreground"
+            : "bg-secondary text-foreground ring-1 ring-foreground/10"
+          : "bg-secondary text-foreground"
+      )}
+    >
+      <Icon aria-hidden="true" className="h-7 w-7 md:h-8 md:w-8" />
+      <p className="font-display text-base font-extrabold uppercase leading-none tracking-[0.03em] md:text-lg">
+        {label}
+      </p>
+    </div>
   );
 }

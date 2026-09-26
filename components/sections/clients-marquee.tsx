@@ -1,7 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
+import type { CSSProperties } from "react";
 
+import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 
 const logos = [
@@ -17,43 +18,58 @@ const logos = [
   { src: "/img/clients/partum-design.png", alt: "Partum Design" },
 ];
 
+/**
+ * Marcas que han confiado. Retícula pareja, no marquee: cada logo recibe la
+ * misma caja y se escala dentro (object-contain), así una insignia cuadrada y
+ * un logotipo ancho se leen del mismo tamaño. Las fichas caen en cascada.
+ */
 export function ClientsMarquee() {
   const { t } = useLanguage();
 
   return (
     <section
       aria-label={t.clients.label}
-      className="relative overflow-hidden border-t border-border py-16"
+      className="panel relative overflow-hidden px-4 pb-6 pt-20 md:px-8 md:pb-8 md:pt-24"
     >
-      <div aria-hidden className="japan-halftone absolute inset-0 opacity-10" />
-      <div className="container relative">
-        <p className="tech-label mb-10 text-center text-muted-foreground">
+      <div className="notch notch-tl">
+        <span className="tag-pill">
+          <span aria-hidden lang="ja" className="seal">
+            信
+          </span>
           {t.clients.label}
-        </p>
+        </span>
+      </div>
+      <div aria-hidden className="dot-grid absolute inset-0 rounded-[inherit] opacity-20" />
 
-        {/* Even grid, not a marquee — every logo gets the same box and scales
-            to fit it (object-contain), so a square badge and a wide wordmark
-            read as the same visual size instead of fighting for height. */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5 md:gap-4">
-          {logos.map((logo, i) => (
-            <motion.div
-              key={logo.alt}
-              initial={{ opacity: 0, y: 20, scale: 0.96 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.5, delay: (i % 5) * 0.06, ease: [0.2, 0, 0, 1] }}
-              className="editorial-panel elevate flex aspect-[3/2] items-center justify-center p-4 hover:border-primary/45 md:p-5"
+      <div className="relative grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5 md:gap-3">
+        {logos.map((logo, i) => (
+          <div
+            key={logo.alt}
+            data-fx="drop"
+            style={{ "--fx-delay": `${(i % 5) * 70 + Math.floor(i / 5) * 140}ms` } as CSSProperties}
+            className="min-w-0"
+          >
+            <div
+              className={cn(
+                "group flex aspect-[3/2] items-center justify-center rounded-[1.25rem] p-5 ring-1 ring-foreground/10 transition-[background-color,transform] duration-300 hover:-translate-y-1 md:p-6",
+                i === 4 ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-moss"
+              )}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={logo.src}
                 alt={logo.alt}
-                className="h-full max-h-14 w-full max-w-full object-contain opacity-60 transition-opacity duration-300 hover:opacity-100 [filter:brightness(0)_invert(1)] md:max-h-16"
+                className={cn(
+                  "h-full max-h-14 w-full max-w-full object-contain transition-opacity duration-300 md:max-h-16",
+                  i === 4
+                    ? "opacity-80 [filter:brightness(0)] group-hover:opacity-100"
+                    : "opacity-60 [filter:brightness(0)_invert(1)] group-hover:opacity-100"
+                )}
                 loading="lazy"
               />
-            </motion.div>
-          ))}
-        </div>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );

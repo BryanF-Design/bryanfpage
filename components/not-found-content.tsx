@@ -36,54 +36,63 @@ export function NotFoundContent() {
     <main
       id="main-content"
       tabIndex={-1}
-      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background bg-grain px-6 text-center"
+      className="flex min-h-screen flex-col p-[var(--gutter)]"
     >
-      <div className="pointer-events-none absolute inset-auto top-1/2 z-0 h-72 w-72 -translate-y-1/2 rounded-full bg-primary/20 opacity-70 blur-3xl" />
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="relative z-10 flex flex-col items-center gap-6"
-      >
-        <motion.div
-          animate={prefersReducedMotion ? undefined : { rotate: 12 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="flex h-20 w-20 items-center justify-center rounded-full border border-primary/40 bg-primary/10"
-          aria-hidden="true"
+      <div className="panel panel-moss relative flex flex-1 flex-col items-center justify-center overflow-hidden px-6 py-16 text-center">
+        <div
+          aria-hidden
+          className="hinomaru-dots left-1/2 top-1/2 aspect-square w-[min(90vw,40rem)] -translate-x-1/2 -translate-y-1/2 opacity-30"
+        />
+        <span
+          aria-hidden
+          className="ghost-word absolute bottom-[-0.1em] left-1/2 -translate-x-1/2 text-[42vw] md:text-[30vw]"
         >
-          <Compass className="h-10 w-10 text-primary" />
-        </motion.div>
-
-        <span className="font-mono text-sm uppercase tracking-[0.3em] text-muted-foreground">
-          Error 404
+          404
         </span>
 
-        <h1 className="font-display text-5xl font-semibold tracking-tight text-foreground sm:text-6xl">
-          ¿Te <span className="text-primary">perdiste?</span>
-        </h1>
+        <motion.div
+          initial={prefersReducedMotion ? false : { opacity: 0, y: 60, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ type: "spring", stiffness: 200, damping: 20 }}
+          className="relative z-10 flex flex-col items-center gap-6"
+        >
+          <motion.div
+            animate={prefersReducedMotion ? undefined : { rotate: 360 }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            className="flex h-20 w-20 items-center justify-center rounded-full bg-primary text-primary-foreground"
+            aria-hidden="true"
+          >
+            <Compass className="h-10 w-10" />
+          </motion.div>
 
-        <p className="max-w-md text-balance text-base text-muted-foreground md:text-lg">
-          Esta página no existe o cambió de lugar. Tranquilo, nos pasa hasta a
-          nosotros — te regresamos al inicio en unos segundos.
-        </p>
+          <span className="tag-pill pl-4">Error 404</span>
 
-        <div className="flex flex-col items-center gap-3">
-          <Button asChild size="lg">
-            <Link href="/">Volver al inicio ahora</Link>
-          </Button>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <div className="h-1 w-32 overflow-hidden rounded-full bg-border">
-              <motion.div
-                className="h-full bg-primary"
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.3, ease: "linear" }}
-              />
+          <h1 className="display-xl text-[clamp(4rem,14vw,10rem)] text-foreground">
+            ¿Te <span className="text-primary">perdiste?</span>
+          </h1>
+
+          <p className="max-w-md text-balance text-base text-foreground/75 md:text-lg">
+            Esta página no existe o cambió de lugar. Tranquilo, nos pasa hasta a
+            nosotros — te regresamos al inicio en unos segundos.
+          </p>
+
+          <div className="flex flex-col items-center gap-3">
+            <Button asChild size="lg">
+              <Link href="/">Volver al inicio ahora</Link>
+            </Button>
+            <div className="flex items-center gap-3 rounded-full bg-background/60 px-4 py-2 text-xs text-foreground/75">
+              <div className="h-1.5 w-32 overflow-hidden rounded-full bg-foreground/10">
+                <motion.div
+                  className="h-full rounded-full bg-primary"
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.3, ease: "linear" }}
+                />
+              </div>
+              <span aria-live="polite">Redirigiendo en {secondsLeft}s</span>
             </div>
-            <span aria-live="polite">Redirigiendo en {secondsLeft}s</span>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </main>
   );
 }

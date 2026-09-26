@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Sans, IBM_Plex_Mono } from "next/font/google";
-import localFont from "next/font/local";
+import {
+  Instrument_Sans,
+  IBM_Plex_Mono,
+  Sofia_Sans_Extra_Condensed,
+} from "next/font/google";
 import dynamic from "next/dynamic";
 import "./globals.css";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
@@ -26,14 +29,14 @@ const instrumentSans = Instrument_Sans({
   display: "swap",
 });
 
-// Display: instancia latina expandida de Archivo con peso variable. Conserva
-// la geometría de marca sin descargar el eje de anchura completo en el LCP.
-const archivo = localFont({
-  src: "../public/fonts/archivo-expanded-latin.woff2",
+// Display: grotesca extra condensada de peso variable. Los titulares se
+// componen como rótulos de carrera — altos, apretados y en mayúsculas — para
+// que la hoja bento se lea a distancia, igual que los pósters de referencia.
+const sofiaCondensed = Sofia_Sans_Extra_Condensed({
+  subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
-  weight: "100 900",
-  style: "normal",
+  weight: "variable",
 });
 
 // Voz técnica: etiquetas, precios, coordenadas.
@@ -97,7 +100,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   colorScheme: "dark",
-  themeColor: "#070d0b",
+  // El color de la hoja washi: la barra del navegador continúa el marco.
+  themeColor: "#e6e9de",
 };
 
 const jsonLd = {
@@ -134,6 +138,56 @@ const a11yBootstrap = `
   } catch (_) {}
 `;
 
+// Entradas de escena. Un solo IntersectionObserver para todo el sitio marca
+// con `data-fx-in` cada elemento `[data-fx]` que entra en pantalla; el CSS hace
+// el resto. Vive fuera de React a propósito: no depende de la hidratación, no
+// re-renderiza nada y, si el script no corre, `fx-on` nunca se activa y todo
+// el contenido queda visible desde el HTML inicial.
+// El envoltorio observado nunca se desplaza (viajan sus hijos, ver
+// globals.css); `data-fx-done` retira la transición de entrada al terminar.
+const fxBootstrap = `
+  (function () {
+    try {
+      var d = document.documentElement;
+      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+        d.classList.contains("a11y-reduce-motion");
+      if (reduce || !("IntersectionObserver" in window)) return;
+      d.classList.add("fx-on");
+      var io = new IntersectionObserver(function (entries) {
+        for (var i = 0; i < entries.length; i++) {
+          var e = entries[i];
+          if (e.isIntersecting) {
+            var el = e.target;
+            el.setAttribute("data-fx-in", "");
+            io.unobserve(el);
+            var delay = parseFloat(getComputedStyle(el).getPropertyValue("--fx-delay")) || 0;
+            setTimeout(function (node) { node.setAttribute("data-fx-done", ""); }, delay + 1300, el);
+          }
+        }
+      }, { rootMargin: "0px 0px -6% 0px", threshold: 0.01 });
+      var watch = function (root) {
+        if (root.nodeType !== 1) return;
+        if (root.hasAttribute("data-fx") && !root.hasAttribute("data-fx-in")) io.observe(root);
+        var list = root.querySelectorAll("[data-fx]:not([data-fx-in])");
+        for (var j = 0; j < list.length; j++) io.observe(list[j]);
+      };
+      var boot = function () {
+        watch(document.body);
+        new MutationObserver(function (records) {
+          for (var r = 0; r < records.length; r++) {
+            var added = records[r].addedNodes;
+            for (var k = 0; k < added.length; k++) watch(added[k]);
+          }
+        }).observe(document.body, { childList: true, subtree: true });
+      };
+      if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+      else boot();
+    } catch (_) {
+      document.documentElement.classList.remove("fx-on");
+    }
+  })();
+`;
+
 export default function RootLayout({
   children,
 }: {
@@ -142,11 +196,12 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`dark ${instrumentSans.variable} ${archivo.variable} ${plexMono.variable}`}
+      className={`dark ${instrumentSans.variable} ${sofiaCondensed.variable} ${plexMono.variable}`}
       suppressHydrationWarning
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: a11yBootstrap }} />
+        <script dangerouslySetInnerHTML={{ __html: fxBootstrap }} />
       </head>
       <body className="font-sans">
         <GoogleAnalytics />

@@ -3,36 +3,31 @@
 import { useLanguage } from "@/lib/i18n/context";
 
 /**
- * 版面 — el marco de página.
+ * 版面 — la hoja.
  *
- * Las once referencias de la carpeta comparten esto antes que el color o el
- * kanji: todas están enmarcadas. El contenido vive dentro de una hoja, no en
- * un lienzo negro infinito.
+ * Un paspartú de washi fijo alrededor del viewport, con las esquinas
+ * interiores redondas. Los paneles del sitio se deslizan por debajo, así que
+ * la página se lee como una sola lámina recortada — el recurso central de
+ * las referencias bento — y no como bloques sueltos en un lienzo infinito.
  *
- * El marco es fijo, no intercepta punteros y arranca por debajo del header
- * para no cruzarle la marca. El preloader traza este mismo rectángulo antes
- * de levantarse, así que la secuencia de entrada no es una animación previa a
- * la página: es la página construyéndose.
+ * En los cantos laterales corre la misma tira de datos de los pósters:
+ * coordenadas y lectura, en vertical, sin explicar nada. Solo cuando el
+ * canto es lo bastante ancho para leerse.
  */
 export function PageFrame() {
   const { t } = useLanguage();
 
   return (
-    <div aria-hidden className="page-frame">
-      <span className="frame-edge frame-edge-left">
-        <span>BryanF Design</span>
-        <span className="h-px w-8 bg-current opacity-40" />
-        <span lang="ja" className="font-jp tracking-[0.2em]">
-          精度
+    <div aria-hidden className="sheet-frame">
+      <span />
+      <p className="absolute bottom-[18%] left-0 hidden w-[var(--gutter)] justify-center font-mono text-[8px] uppercase leading-none tracking-[0.42em] text-[hsl(160_36%_6%/0.45)] xl:flex">
+        <span className="vertical-jp whitespace-nowrap [transform:rotate(180deg)]">
+          BryanF Design · <span className="font-jp">精度</span> · {t.experience.precision}
         </span>
-        <span>{t.experience.precision}</span>
-      </span>
-
-      <span className="frame-edge frame-edge-right">
-        <span>19.4326° N · 99.1332° W</span>
-        <span className="h-px w-8 bg-current opacity-40" />
-        <span>CDMX / MX</span>
-      </span>
+      </p>
+      <p className="absolute right-0 top-[22%] hidden w-[var(--gutter)] justify-center font-mono text-[8px] uppercase leading-none tracking-[0.42em] text-[hsl(160_36%_6%/0.45)] xl:flex">
+        <span className="vertical-jp whitespace-nowrap">19.4326° N · 99.1332° W · CDMX / MX</span>
+      </p>
     </div>
   );
 }

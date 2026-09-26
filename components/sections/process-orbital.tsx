@@ -1,17 +1,23 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ClipboardList, Code2, FileSpreadsheet, LifeBuoy, Rocket } from "lucide-react";
+import type { CSSProperties } from "react";
+import { ArrowRight, ClipboardList, Code2, FileSpreadsheet, LifeBuoy, Rocket } from "lucide-react";
 
 import { SectionHeading } from "@/components/sections/section-heading";
+import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
-import { useReducedMotionPreference } from "@/lib/motion-preference";
 
 const ICONS = [FileSpreadsheet, ClipboardList, Code2, Rocket, LifeBuoy];
 
+/**
+ * 工程 — el proceso.
+ *
+ * Los cinco pasos son una secuencia de verdad, así que entran como un tren:
+ * uno detrás de otro desde fuera del lienzo, en el orden en que ocurren. Entre
+ * ficha y ficha, un nodo washi cruza la costura y marca el paso siguiente.
+ */
 export function ProcessOrbital() {
   const { t } = useLanguage();
-  const reducedMotion = useReducedMotionPreference();
   const steps = t.process.steps.map((step, index) => ({
     ...step,
     icon: ICONS[index],
@@ -21,98 +27,98 @@ export function ProcessOrbital() {
     <section
       id="proceso"
       aria-label={t.process.title}
-      className="relative overflow-hidden border-t border-border py-20 md:py-28"
+      className="relative flex flex-col gap-gutter"
     >
-      <div
-        aria-hidden
-        className="route-grid pointer-events-none absolute inset-0 opacity-35"
-      />
-      <div
-        aria-hidden
-        className="japan-halftone pointer-events-none absolute inset-y-0 right-0 w-2/3 opacity-20"
-      />
-
-      <div className="container relative">
-        <SectionHeading
-          eyebrow={t.process.eyebrow}
-          title={t.process.title}
-          subtitle={t.process.subtitle}
-          chapter={{ kanji: "工程", romaji: "kōtei", index: 4 }}
-        />
-
-        <div className="editorial-panel relative mt-14 overflow-hidden md:mt-20">
-          <div
-            aria-hidden
-            className="absolute left-0 top-0 hidden h-px w-full bg-gradient-to-r from-primary via-primary/70 to-[#E8342A] md:block"
+      <div data-fx="panel">
+        <div className="panel relative grid gap-10 overflow-hidden p-6 pb-20 md:p-10 md:pb-20 lg:grid-cols-12 lg:items-end lg:p-12">
+          <div aria-hidden className="dot-grid absolute inset-0 rounded-[inherit] opacity-30 [mask-image:linear-gradient(90deg,transparent,black)]" />
+          <SectionHeading
+            eyebrow={t.process.eyebrow}
+            title={t.process.title}
+            subtitle={t.process.subtitle}
+            chapter={{ kanji: "工程", romaji: "kōtei", index: 4 }}
+            size="xl"
+            className="relative lg:col-span-9"
           />
+          <span
+            aria-hidden
+            lang="ja"
+            className="drift-y pointer-events-none relative hidden select-none justify-self-end font-jp text-[9rem] leading-none text-primary/15 lg:col-span-3 lg:block"
+          >
+            工程
+          </span>
+          <div className="notch notch-br">
+            <span className="tag-pill pl-4">
+              01
+              <ArrowRight aria-hidden className="h-3.5 w-3.5 text-primary" />
+              {String(steps.length).padStart(2, "0")}
+            </span>
+          </div>
+        </div>
+      </div>
 
-          <ol className="relative grid md:grid-cols-5">
-            {steps.map((step, index) => {
-              const Icon = step.icon;
-              const isLast = index === steps.length - 1;
+      <ol className="relative grid gap-gutter sm:grid-cols-2 lg:grid-cols-5">
+        {steps.map((step, index) => {
+          const Icon = step.icon;
+          const isLast = index === steps.length - 1;
 
-              return (
-                <motion.li
-                  key={step.title}
-                  initial={reducedMotion ? false : { opacity: 0, y: 22 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-60px" }}
-                  transition={{
-                    duration: reducedMotion ? 0 : 0.5,
-                    delay: reducedMotion ? 0 : index * 0.07,
-                    ease: [0.2, 0, 0, 1],
-                  }}
-                  className="group relative min-h-0 border-l border-border px-6 pb-9 pt-8 md:min-h-[20rem] md:border-l-0 md:border-r md:px-5 md:pb-8 md:pt-10 md:last:border-r-0 lg:px-7"
-                >
+          return (
+            <li
+              key={step.title}
+              data-fx="right"
+              style={{ "--fx-delay": `${index * 95}ms` } as CSSProperties}
+              className={cn("relative min-w-0", isLast && "sm:col-span-2 lg:col-span-1")}
+            >
+              <div
+                className={cn(
+                  "panel group relative flex h-full min-h-[19rem] flex-col overflow-hidden p-6 transition-transform duration-500 [transition-timing-function:var(--ease-material)] hover:-translate-y-1.5 md:min-h-[23rem] md:p-7",
+                  isLast ? "panel-lime" : index % 2 === 1 ? "panel-moss" : ""
+                )}
+              >
+                <div className="flex items-start justify-between gap-4">
                   <span
-                    aria-hidden
-                    className={[
-                      "absolute -left-[5px] top-10 h-[9px] w-[9px] border border-background md:-top-[5px] md:left-6",
-                      isLast ? "bg-[#E8342A]" : "bg-primary",
-                    ].join(" ")}
-                  />
-
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="font-mono text-xs tracking-[0.2em] text-primary">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <span className="flex h-10 w-10 items-center justify-center border border-border bg-background/45 text-foreground/70 transition-colors duration-200 group-hover:border-primary/55 group-hover:text-primary">
-                      <Icon aria-hidden="true" className="h-4 w-4" />
-                    </span>
-                  </div>
-
-                  <h3 className="mt-10 max-w-[13rem] font-display text-xl font-bold text-foreground md:mt-12 md:text-2xl">
-                    {step.title}
-                  </h3>
-                  <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
-                    {step.content}
-                  </p>
-
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute bottom-2 right-4 font-display text-6xl font-bold leading-none text-foreground/[0.025] md:text-7xl"
+                    className={cn(
+                      "display-xl text-[5.5rem] leading-[0.78] transition-colors duration-300 md:text-[6.5rem]",
+                      isLast ? "text-foreground" : "text-foreground/15 group-hover:text-primary"
+                    )}
                   >
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                </motion.li>
-              );
-            })}
-          </ol>
+                  <span
+                    className={cn(
+                      "grid size-12 place-items-center rounded-full transition-transform duration-500 [transition-timing-function:var(--ease-pop)] group-hover:rotate-12 group-hover:scale-110",
+                      isLast
+                        ? "bg-[hsl(150_42%_6%)] text-[hsl(76_76%_58%)]"
+                        : "bg-primary text-primary-foreground"
+                    )}
+                  >
+                    <Icon aria-hidden="true" className="h-5 w-5" />
+                  </span>
+                </div>
 
-          <motion.div
-            aria-hidden
-            className="absolute bottom-0 left-0 h-0.5 w-full origin-left bg-gradient-to-r from-primary/90 via-primary/35 to-[#E8342A]"
-            initial={reducedMotion ? false : { scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{
-              duration: reducedMotion ? 0 : 1,
-              delay: reducedMotion ? 0 : 0.18,
-              ease: [0.2, 0, 0, 1],
-            }}
-          />
-        </div>
-      </div>
+                <h3 className="display-xl mt-auto pt-10 text-[2.3rem] text-foreground md:text-[2.6rem]">
+                  {step.title}
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  {step.content}
+                </p>
+              </div>
+
+              {/* Nodo de paso: cruza la costura hacia la ficha siguiente. */}
+              {!isLast && (
+                <span
+                  aria-hidden
+                  className="absolute -right-[calc(var(--gutter)/2)] top-1/2 z-20 hidden size-9 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full bg-sheet p-1 lg:grid"
+                >
+                  <span className="grid size-full place-items-center rounded-full bg-background text-primary">
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ol>
     </section>
   );
 }

@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, CheckCircle2, MessageCircle } from "lucide-react";
 
@@ -6,6 +7,7 @@ import { Reveal } from "@/components/ui/reveal";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { Floating3d } from "@/components/three/floating-3d";
 import { MarqueeBand } from "@/components/sections/marquee-band";
+import { PageFrame } from "@/components/japan/page-frame";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { SiteHeader } from "@/components/sections/site-header";
 import { SpanishPageLanguage } from "@/components/seo/spanish-page-language";
@@ -96,35 +98,34 @@ function buildFaqSchema(page: ServicePage) {
   };
 }
 
-/** Cabecera de sección compartida por todas las landings (mismo plano de obra). */
+/** Cabecera de sección compartida por todas las landings. */
 function LandingHeading({
   eyebrow,
   title,
-  delay = 0,
 }: {
   eyebrow: string;
   title: string;
   delay?: number;
 }) {
   return (
-    <Reveal delay={delay}>
-      <div className="flex flex-col gap-4 border-t border-border pt-6">
-        <p className="tech-label inline-flex items-center gap-3 text-primary">
-          <span
-            aria-hidden
-            className="relative inline-flex h-2 w-10 shrink-0 items-center"
-          >
-            <span className="h-px w-full bg-primary/55" />
-            <span className="absolute right-0 h-2 w-2 rounded-full border border-primary bg-background" />
-          </span>
+    <Reveal>
+      <div className="flex flex-col items-start gap-5">
+        <p className="tag-pill pl-4">
+          <span aria-hidden className="size-1.5 rounded-full bg-primary" />
           {eyebrow}
         </p>
-        <h2 className="max-w-2xl font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-          {title}
-        </h2>
+        <div data-fx="up">
+          <h2 className="display-xl max-w-2xl text-[clamp(2.6rem,5.5vw,4.75rem)] text-foreground">
+            {title}
+          </h2>
+        </div>
       </div>
     </Reveal>
   );
+}
+
+function delay(ms: number) {
+  return { "--fx-delay": `${ms}ms` } as CSSProperties;
 }
 
 export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
@@ -137,298 +138,205 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
       <JsonLd data={buildFaqSchema(page)} />
       <SpanishPageLanguage />
 
+      <PageFrame />
       <ScrollProgress />
       <SiteHeader spanishOnly />
 
-      <main
-        id="main-content"
-        tabIndex={-1}
-        className="bg-background"
-        data-language="es-only"
-      >
-        {/* Hero con el mismo lenguaje del home: retícula, glow y display XXL */}
-        <section className="relative isolate overflow-hidden border-b border-border bg-grain pb-16 pt-32 md:pb-24 md:pt-40">
-          <div aria-hidden className="bg-blueprint absolute inset-0" />
-          <div aria-hidden className="mesh-glow-a absolute inset-0" />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-0 bottom-0 top-20 hidden opacity-55 lg:block"
-          >
-            <svg
-              className="h-full w-full"
-              viewBox="0 0 1440 620"
-              preserveAspectRatio="none"
-              fill="none"
-              focusable="false"
-            >
-              <path
-                d="M-80 610C190 610 330 570 610 570C820 570 850 250 1040 250C1190 250 1280 334 1520 112"
-                stroke="hsl(var(--border))"
-                strokeWidth="1"
-                vectorEffect="non-scaling-stroke"
-              />
-              <path
-                d="M610 570C820 570 850 250 1040 250"
-                stroke="hsl(var(--primary) / 0.72)"
-                strokeWidth="1.5"
-                vectorEffect="non-scaling-stroke"
-              />
-              <path
-                d="M1040 250C1110 250 1146 286 1204 306M1040 250C1118 228 1160 196 1232 180"
-                stroke="hsl(var(--border))"
-                strokeWidth="1"
-                vectorEffect="non-scaling-stroke"
-              />
-              <circle
-                cx="610"
-                cy="570"
-                r="4"
-                fill="hsl(var(--background))"
-                stroke="hsl(var(--primary) / 0.72)"
-                vectorEffect="non-scaling-stroke"
-              />
-              <circle
-                cx="1040"
-                cy="250"
-                r="6"
-                fill="hsl(var(--background))"
-                stroke="hsl(var(--primary))"
-                strokeWidth="1.5"
-                vectorEffect="non-scaling-stroke"
-              />
-              <circle
-                cx="1204"
-                cy="306"
-                r="3"
-                fill="hsl(var(--background))"
-                stroke="hsl(var(--border))"
-                vectorEffect="non-scaling-stroke"
-              />
-              <circle
-                cx="1232"
-                cy="180"
-                r="3"
-                fill="hsl(var(--background))"
-                stroke="hsl(var(--border))"
-                vectorEffect="non-scaling-stroke"
-              />
-            </svg>
-          </div>
-
-          <div className="container relative z-10 grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
-            <div className="max-w-3xl">
-              <Reveal blur={0} y={16}>
-                <nav
-                  aria-label="Breadcrumb"
-                  className="mb-8 flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
+      <main id="main-content" tabIndex={-1} className="sheet-main" data-language="es-only">
+        {/* Hero en bento: titular en musgo, enfoque del servicio en tinta. */}
+        <section className="grid gap-gutter lg:grid-cols-[minmax(0,1.35fr)_minmax(0,0.65fr)]">
+          <div className="hero-in hero-in-left panel panel-moss relative overflow-hidden px-6 pb-10 pt-[calc(var(--header-h)+2rem)] md:px-12 md:pb-14 lg:px-14">
+            <div aria-hidden className="dot-grid absolute inset-0 rounded-[inherit] opacity-40 [mask-image:radial-gradient(ellipse_at_90%_10%,black,transparent_60%)]" />
+            <div className="relative max-w-3xl">
+              <nav
+                aria-label="Breadcrumb"
+                className="mb-8 inline-flex items-center gap-2 rounded-full bg-background/60 px-4 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
+              >
+                <Link
+                  href="/"
+                  className="inline-flex min-h-11 min-w-11 items-center transition-colors hover:text-primary"
                 >
-                  <Link
-                    href="/"
-                    className="inline-flex min-h-11 min-w-11 items-center transition-colors hover:text-primary"
-                  >
-                    Inicio
+                  Inicio
+                </Link>
+                <span className="text-primary">/</span>
+                <span className="text-foreground">{page.serviceType}</span>
+              </nav>
+
+              <p className="tag-pill mb-5 pl-4">
+                <span aria-hidden className="size-1.5 rounded-full bg-primary" />
+                {page.eyebrow}
+              </p>
+              <h1 className="display-xl text-[clamp(3rem,7vw,6.5rem)] text-foreground">
+                {page.title}
+              </h1>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-foreground/75">
+                {page.intro}
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Button asChild size="lg" className="w-full sm:w-auto">
+                  <TrackedWhatsAppLink href={WHATSAPP_URL} service={page.slug}>
+                    <MessageCircle className="h-4 w-4" />
+                    Cotizar por WhatsApp
+                  </TrackedWhatsAppLink>
+                </Button>
+                <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
+                  <Link href="/#projects">
+                    Ver proyectos
+                    <ArrowRight className="h-4 w-4" />
                   </Link>
-                  <span className="text-primary">/</span>
-                  <span className="text-foreground">{page.serviceType}</span>
-                </nav>
-              </Reveal>
+                </Button>
+              </div>
+            </div>
+          </div>
 
-              <Reveal delay={0.05}>
-                <p className="tech-label mb-4 inline-flex items-center gap-3 text-primary">
-                  <span
-                    aria-hidden
-                    className="h-2 w-2 rounded-full border border-primary bg-background"
-                  />
-                  {page.eyebrow}
-                </p>
-              </Reveal>
-              <Reveal delay={0.1}>
-                <h1 className="font-display text-4xl font-bold leading-[1.02] tracking-tight text-foreground md:text-5xl xl:text-6xl">
-                  {page.title}
-                </h1>
-              </Reveal>
-              <Reveal delay={0.16}>
-                <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
-                  {page.intro}
-                </p>
-              </Reveal>
-              <Reveal delay={0.22}>
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                  <Button asChild size="lg" className="w-full sm:w-auto">
-                    <TrackedWhatsAppLink
-                      href={WHATSAPP_URL}
-                      service={page.slug}
-                    >
-                      <MessageCircle className="mr-2 h-4 w-4" />
-                      Cotizar por WhatsApp
-                    </TrackedWhatsAppLink>
-                  </Button>
-                  <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
-                    <Link href="/#projects">
-                      Ver proyectos
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
+          <aside
+            className="hero-in hero-in-right panel relative flex flex-col justify-end overflow-hidden p-6 md:p-8"
+            style={{ "--hd": "140ms" } as CSSProperties}
+          >
+            <div aria-hidden className="hinomaru-dots left-1/2 top-[34%] aspect-square w-[80%] -translate-x-1/2 -translate-y-1/2 opacity-30" />
+            <Floating3d variant="icosahedron" className="relative mx-auto h-44 w-44" />
+            <p className="tech-label relative mt-4 text-primary">Enfoque del servicio</p>
+            <p className="display-xl relative mt-2 text-[2.4rem] text-foreground">
+              {page.serviceType}
+            </p>
+            <p className="relative mt-4 text-sm leading-6 text-muted-foreground">{page.solution}</p>
+          </aside>
+        </section>
+
+        <section className="grid gap-gutter lg:grid-cols-[0.8fr_1.2fr]">
+          <div data-fx="left" className="min-w-0">
+            <div className="panel h-full p-6 md:p-10">
+              <LandingHeading eyebrow="Problemas reales" title="Lo que esta página ayuda a resolver" />
+            </div>
+          </div>
+          <div className="grid gap-gutter md:grid-cols-3">
+            {page.problems.map((problem, i) => (
+              <div key={problem} data-fx="drop" style={delay(i * 90)} className="min-w-0">
+                <div className="panel flex h-full flex-col gap-5 p-6">
+                  <span className="grid size-10 place-items-center rounded-full bg-primary text-primary-foreground">
+                    <CheckCircle2 className="h-5 w-5" />
+                  </span>
+                  <p className="text-sm leading-6 text-muted-foreground">{problem}</p>
                 </div>
-              </Reveal>
-            </div>
-
-            <Reveal delay={0.2}>
-              <aside className="glass corner-ticks rounded-sm border-primary/20 bg-card/90 p-6">
-                <Floating3d
-                  variant="icosahedron"
-                  className="relative mx-auto -mt-2 h-44 w-44"
-                />
-                <p className="tech-label text-primary">Enfoque del servicio</p>
-                <p className="mt-2 font-display text-2xl font-semibold text-foreground">
-                  {page.serviceType}
-                </p>
-                <p className="mt-4 text-sm leading-6 text-muted-foreground">
-                  {page.solution}
-                </p>
-              </aside>
-            </Reveal>
+              </div>
+            ))}
           </div>
         </section>
 
-        <section className="border-b border-border py-16 md:py-24">
-          <div className="container grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-            <LandingHeading eyebrow="Problemas reales" title="Lo que esta página ayuda a resolver" />
-            <div className="grid gap-4 md:grid-cols-3">
-              {page.problems.map((problem, i) => (
-                <Reveal key={problem} delay={i * 0.08} className="h-full">
-                  <div className="glass elevate corner-ticks h-full rounded-sm p-5">
-                    <CheckCircle2 className="mb-4 h-5 w-5 text-primary" />
-                    <p className="text-sm leading-6 text-muted-foreground">
-                      {problem}
-                    </p>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="relative overflow-hidden border-b border-border py-16 md:py-24">
-          <div aria-hidden className="mesh-glow-b opacity-50" />
-          <div className="container relative grid gap-10 lg:grid-cols-2">
-            <div>
+        <section className="grid gap-gutter lg:grid-cols-2">
+          <div data-fx="left" className="min-w-0">
+            <div className="panel panel-moss h-full p-6 md:p-10">
               <LandingHeading eyebrow="Solución" title="Una ejecución completa, no una pieza suelta" />
-              <Reveal delay={0.1}>
-                <p className="mt-5 text-base leading-8 text-muted-foreground">
-                  {page.solution}
-                </p>
-              </Reveal>
+              <p className="mt-6 text-base leading-8 text-foreground/75">{page.solution}</p>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {page.deliverables.map((item, i) => (
-                <Reveal key={item} delay={i * 0.06} className="h-full">
-                  <div className="elevate h-full rounded-sm border border-border bg-card/35 p-5 hover:border-primary/40">
-                    <p className="text-sm leading-6 text-foreground">{item}</p>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
+          </div>
+          <div className="grid gap-gutter sm:grid-cols-2">
+            {page.deliverables.map((item, i) => (
+              <div key={item} data-fx="right" style={delay(i * 70)} className="min-w-0">
+                <div className="panel h-full p-6 transition-transform duration-500 hover:-translate-y-1">
+                  <span aria-hidden className="display-xl mb-4 block text-3xl text-foreground/20">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <p className="text-sm leading-6 text-foreground">{item}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
-        {/* Créditos de taller: misma banda ligada al scroll que el home */}
-        <MarqueeBand words={MARQUEE_WORDS} />
+        {/* Cinta de la hoja: la misma que en el home. */}
+        <MarqueeBand words={MARQUEE_WORDS} angle={-2} />
 
-        <section className="border-b border-border py-16 md:py-24">
-          <div className="container grid gap-10 lg:grid-cols-[1fr_1fr]">
-            <LandingHeading eyebrow="Proceso" title="Cómo avanzamos sin improvisar" />
-            <ol className="relative grid gap-6 before:absolute before:bottom-5 before:left-5 before:top-5 before:w-px before:bg-border before:content-['']">
-              {page.process.map((step, index) => (
-                <li
-                  key={step}
-                  className="grid grid-cols-[2.5rem_1fr] items-start gap-4"
-                >
-                  <span className="glass corner-ticks relative z-10 flex h-10 w-10 items-center justify-center rounded-sm font-mono text-xs tracking-[0.14em] text-primary">
+        <section className="grid gap-gutter lg:grid-cols-2">
+          <div data-fx="left" className="min-w-0">
+            <div className="panel h-full p-6 md:p-10">
+              <LandingHeading eyebrow="Proceso" title="Cómo avanzamos sin improvisar" />
+            </div>
+          </div>
+          <ol className="grid gap-gutter">
+            {page.process.map((step, index) => (
+              <li key={step} data-fx="right" style={delay(index * 80)} className="min-w-0">
+                <div className="panel flex items-start gap-5 p-5 md:p-6">
+                  <span className="grid size-12 shrink-0 place-items-center rounded-full bg-primary font-display text-xl font-black text-primary-foreground">
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <p className="pt-2 text-base leading-7 text-muted-foreground">
-                    {step}
-                  </p>
-                </li>
-              ))}
-            </ol>
-          </div>
+                  <p className="pt-2.5 text-base leading-7 text-muted-foreground">{step}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </section>
 
-        <section className="border-b border-border py-16 md:py-24">
-          <div className="container">
-            <LandingHeading eyebrow="Diferenciadores" title={`Por qué construirlo con ${BRAND_NAME}`} />
-            <div className="mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
-              {page.differentiators.map((item, i) => (
-                <Reveal key={item} delay={i * 0.07} className="h-full">
-                  <div className="glass elevate corner-ticks h-full rounded-sm p-5 hover:border-primary/40">
-                    <span className="mb-3 block font-mono text-xs tracking-[0.18em] text-primary">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <p className="text-sm leading-6 text-muted-foreground">
-                      {item}
-                    </p>
-                  </div>
-                </Reveal>
-              ))}
+        <section className="flex flex-col gap-gutter">
+          <div data-fx="panel">
+            <div className="panel panel-moss p-6 md:p-10">
+              <LandingHeading eyebrow="Diferenciadores" title={`Por qué construirlo con ${BRAND_NAME}`} />
             </div>
           </div>
-        </section>
-
-        <section className="relative overflow-hidden border-b border-border py-16 md:py-24">
-          <div aria-hidden className="mesh-glow-c opacity-50" />
-          <div className="container relative grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
-            <LandingHeading eyebrow="Preguntas frecuentes" title="Respuestas antes de cotizar" />
-            <div className="grid gap-4">
-              {page.faqs.map((faq, i) => (
-                <Reveal key={faq.question} delay={i * 0.06}>
-                  <article className="elevate rounded-sm border border-border bg-card/35 p-5 hover:border-primary/40">
-                    <h3 className="font-medium text-foreground">{faq.question}</h3>
-                    <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                      {faq.answer}
-                    </p>
-                  </article>
-                </Reveal>
-              ))}
-            </div>
+          <div className="grid gap-gutter sm:grid-cols-2 md:grid-cols-4">
+            {page.differentiators.map((item, i) => (
+              <div key={item} data-fx="rise" style={delay(i * 80)} className="min-w-0">
+                <div className={i === 0 ? "panel panel-lime h-full p-6" : "panel h-full p-6"}>
+                  <span className="display-xl mb-4 block text-4xl text-foreground/30">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <p className="text-sm leading-6 text-muted-foreground">{item}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
-        <section className="border-b border-border py-16 md:py-24">
-          <div className="container grid gap-12 lg:grid-cols-2">
-            <div>
+        <section className="grid gap-gutter lg:grid-cols-[0.85fr_1.15fr]">
+          <div data-fx="left" className="min-w-0">
+            <div className="panel h-full p-6 md:p-10">
+              <LandingHeading eyebrow="Preguntas frecuentes" title="Respuestas antes de cotizar" />
+            </div>
+          </div>
+          <div className="panel grid gap-2 p-[var(--gutter)] md:p-4">
+            {page.faqs.map((faq, i) => (
+              <div key={faq.question} data-fx="up" style={delay(i * 60)}>
+                <article className="rounded-inner bg-secondary/70 p-5 ring-1 ring-foreground/5 md:p-6">
+                  <h3 className="font-display text-[1.35rem] font-extrabold uppercase leading-tight text-foreground">
+                    {faq.question}
+                  </h3>
+                  <p className="mt-3 text-sm leading-6 text-muted-foreground">{faq.answer}</p>
+                </article>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="grid gap-gutter lg:grid-cols-2">
+          <div data-fx="left" className="min-w-0">
+            <div className="panel h-full p-6 md:p-10">
               <LandingHeading eyebrow="Enlaces relacionados" title="Servicios que suelen conectarse" />
-              <div className="mt-8 grid gap-3">
-                {relatedPages.map((related, i) => (
-                  <Reveal key={related.slug} delay={i * 0.06}>
-                    <Link
-                      href={`/${related.slug}`}
-                      className="elevate group flex items-center justify-between rounded-sm border border-border px-4 py-3.5 text-sm text-foreground transition-colors hover:border-primary hover:text-primary"
-                    >
-                      {related.serviceType}
-                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                    </Link>
-                  </Reveal>
+              <div className="mt-8 grid gap-2">
+                {relatedPages.map((related) => (
+                  <Link
+                    key={related.slug}
+                    href={`/${related.slug}`}
+                    className="group flex min-h-12 items-center justify-between rounded-full bg-secondary px-5 py-3 text-sm text-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
+                  >
+                    {related.serviceType}
+                    <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </Link>
                 ))}
               </div>
             </div>
+          </div>
 
-            <div>
+          <div data-fx="right" className="min-w-0">
+            <div className="panel panel-moss h-full p-6 md:p-10">
               <LandingHeading eyebrow="Casos como referencia" title="Evidencia disponible sin inventar métricas" />
-              <Reveal delay={0.1}>
-                <p className="mt-5 text-base leading-8 text-muted-foreground">
-                  Estos proyectos existen en el portafolio del sitio y sirven como
-                  referencia visual. No se agregan resultados, rankings ni métricas
-                  que no estén documentadas.
-                </p>
-              </Reveal>
-              <ul className="mt-6 grid gap-3 text-sm text-muted-foreground">
+              <p className="mt-6 text-base leading-8 text-foreground/75">
+                Estos proyectos existen en el portafolio del sitio y sirven como
+                referencia visual. No se agregan resultados, rankings ni métricas
+                que no estén documentadas.
+              </p>
+              <ul className="mt-6 flex flex-wrap gap-2 text-sm text-foreground/85">
                 {page.relatedCases.map((name) => (
-                  <li
-                    key={name}
-                    className="rounded-sm border border-border bg-card/35 px-4 py-3"
-                  >
+                  <li key={name} className="rounded-full bg-background/60 px-4 py-2.5">
                     {name}
                   </li>
                 ))}
@@ -437,36 +345,34 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
           </div>
         </section>
 
-        {/* Cierre con el mismo 3D de ambiente que el CTA del home */}
-        <section className="relative overflow-hidden py-20 md:py-28">
-          <Floating3d
-            variant="torusKnot"
-            opacity={0.2}
-            className="pointer-events-none absolute inset-0 -z-10"
-          />
-          <div className="container relative flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
-            <div className="max-w-2xl">
-              <LandingHeading eyebrow="Siguiente paso" title="Cuéntanos qué necesitas construir o mejorar" />
-              <Reveal delay={0.1}>
-                <p className="mt-4 text-base leading-8 text-muted-foreground">
+        {/* Cierre en lima, como el del home. */}
+        <section data-fx="panel">
+          <div className="panel panel-lime relative overflow-hidden px-6 py-12 md:px-12 md:py-16">
+            <Floating3d
+              variant="torusKnot"
+              opacity={0.2}
+              className="pointer-events-none absolute inset-0"
+            />
+            <div className="relative flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
+              <div className="max-w-2xl">
+                <LandingHeading eyebrow="Siguiente paso" title="Cuéntanos qué necesitas construir o mejorar" />
+                <p className="mt-5 text-base leading-8 text-foreground/80">
                   Te respondemos con una ruta clara: alcance recomendado,
                   prioridades, tiempos aproximados y datos que necesitamos para
                   cotizar sin inflar el proyecto.
                 </p>
-              </Reveal>
-            </div>
-            <Reveal delay={0.18} className="w-full md:w-auto">
-              <div className="flex flex-col gap-3 sm:flex-row">
+              </div>
+              <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto">
                 <Button asChild size="lg" className="w-full sm:w-auto">
                   <Link href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
                     Hablar por WhatsApp
                   </Link>
                 </Button>
-                <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
+                <Button asChild size="lg" variant="outline" className="w-full border-foreground/40 sm:w-auto">
                   <Link href="/#precios">Armar cotización</Link>
                 </Button>
               </div>
-            </Reveal>
+            </div>
           </div>
         </section>
       </main>

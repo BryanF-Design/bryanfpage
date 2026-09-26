@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import Image from "next/image";
 import { ArrowUpRight, ChevronDown } from "lucide-react";
 
@@ -8,7 +8,6 @@ import { projects, desktopShot, mobileShot } from "@/lib/projects";
 import { Tilt } from "@/components/ui/tilt";
 import { Button } from "@/components/ui/button";
 import { LazyMount } from "@/components/three/lazy-mount";
-import { SeigaihaRule } from "@/components/japan/seigaiha-rule";
 import { ChapterMark } from "@/components/japan/chapter-mark";
 import { CHAPTER_TOTAL } from "@/components/sections/section-heading";
 import { cn } from "@/lib/utils";
@@ -38,6 +37,15 @@ const orderedProjects = [
 const hostname = (url: string) => new URL(url).hostname.replace(/^www\./, "");
 const CASE_FIELDS = ["problem", "decision", "result"] as const;
 
+/**
+ * 作品 — el trabajo, en bento.
+ *
+ * Cabecera en dos paneles (rótulo gigante + bajada con contador) y debajo
+ * una retícula de fichas que entran volando desde fuera del lienzo,
+ * alternando lado. Cada ficha enmarca su captura en una ventana redondeada
+ * con una pestaña recortada donde vive el dominio — el mismo recurso de la
+ * hoja, ahora dentro de la tarjeta.
+ */
 export function ProjectsShowcase() {
   const { t } = useLanguage();
   const [showAll, setShowAll] = useState(false);
@@ -47,106 +55,99 @@ export function ProjectsShowcase() {
     <section
       id="projects"
       aria-label={t.projects.eyebrow}
-      className="relative isolate overflow-hidden border-t border-border py-20 md:py-28"
+      className="relative flex scroll-mt-[calc(var(--header-h)+1rem)] flex-col gap-gutter"
     >
       {/* Legacy anchor: keep older internal links (#portafolio) landing here. */}
       <span id="portafolio" className="absolute -top-24" aria-hidden />
-      <div aria-hidden className="route-grid absolute inset-0 -z-20 opacity-30" />
-      <div aria-hidden className="japan-halftone absolute inset-0 -z-10 opacity-25" />
-      {/* Aquí flotaba la TractionLine a 13% de opacidad, desbordada un 18% por
-          la derecha: la firma de marca convertida en ruido de fondo. Sigue
-          existiendo donde una firma tiene sentido —el cierre del footer— y su
-          lugar aquí lo toma la banda de olas, que sí separa dos bloques. */}
-      <SeigaihaRule className="absolute inset-x-0 top-0 -z-10 opacity-70" />
 
-      <div className="container relative">
-        <div className="grid gap-8 border-y border-border py-7 lg:grid-cols-12 lg:items-end lg:gap-10 md:py-9">
-          <div className="lg:col-span-8">
+      <div className="grid gap-gutter lg:grid-cols-12">
+        <div data-fx="panel" className="min-w-0 lg:col-span-8">
+          <div className="panel panel-moss relative flex h-full min-h-[22rem] flex-col justify-between gap-10 overflow-hidden p-6 md:p-10 lg:p-12">
+            <div aria-hidden className="dot-grid absolute inset-0 rounded-[inherit] opacity-40 [mask-image:radial-gradient(ellipse_at_100%_0%,black,transparent_65%)]" />
+            <span
+              aria-hidden
+              className="ghost-word drift-x absolute -right-[0.05em] bottom-[-0.1em] text-[34vw] lg:text-[22vw]"
+            >
+              {t.projects.rotatingWords[0]}
+            </span>
             <ChapterMark
               kanji="作品"
               romaji="sakuhin"
               label={t.projects.eyebrow}
               index={2}
               total={CHAPTER_TOTAL}
-              className="mb-6"
+              className="relative"
             />
-            <h2 className="max-w-4xl font-display text-[clamp(2.65rem,7vw,6.8rem)] font-semibold uppercase leading-[0.84] tracking-[-0.055em]">
-              <span className="block">{t.projects.titlePrefix}</span>
-              <span className="block text-primary">
-                {t.projects.rotatingWords[0]}
-              </span>
-            </h2>
-          </div>
-
-          <div className="flex flex-col gap-6 lg:col-span-4 lg:items-end">
-            <p className="max-w-md text-pretty text-base leading-relaxed text-muted-foreground lg:text-right md:text-lg">
-              {t.projects.subtitle}
-            </p>
-            <div
-              aria-hidden
-              className="flex w-full items-center gap-3 font-mono text-[10px] tracking-[0.24em] text-foreground/55 lg:max-w-xs"
-            >
-              <span>01</span>
-              <span className="h-px flex-1 bg-border" />
-              <span>{String(visibleProjects.length).padStart(2, "0")}</span>
-              <span className="h-1.5 w-1.5 bg-signal" />
+            <div data-fx="up" className="relative">
+              <h2 className="display-xl text-[clamp(3.6rem,11vw,10rem)] text-foreground">
+                <span className="block">{t.projects.titlePrefix}</span>
+                <span className="block text-primary">{t.projects.rotatingWords[0]}</span>
+              </h2>
             </div>
           </div>
         </div>
 
-        {/* Cada pieza se presenta como un dossier: evidencia grande, ficha
-            breve y datos del caso. Sin marcos de navegador ni utilería. */}
-        <div className="mt-10 grid grid-cols-1 gap-5 md:mt-14 md:grid-cols-12 md:gap-6">
-          {visibleProjects.map((p, idx) => {
-            const projectCase = isFeaturedSlug(p.slug) ? t.projects.cases[p.slug] : undefined;
-            const wide = idx === 0 || idx === 3;
+        <div data-fx="right" className="min-w-0 lg:col-span-4" style={{ "--fx-delay": "120ms" } as CSSProperties}>
+          <div className="panel relative flex h-full flex-col justify-between gap-10 overflow-hidden p-6 md:p-8">
+            <span aria-hidden lang="ja" className="pointer-events-none absolute -right-4 -top-6 select-none font-jp text-[9rem] leading-none text-foreground/[0.04]">
+              作
+            </span>
+            <p className="relative max-w-md text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
+              {t.projects.subtitle}
+            </p>
+            <div aria-hidden className="relative flex items-end justify-between gap-4">
+              <span className="display-xl text-[5.5rem] leading-[0.8] text-foreground md:text-[7rem]">
+                {String(visibleProjects.length).padStart(2, "0")}
+              </span>
+              <span className="flex flex-col items-end gap-2 pb-2 font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+                <span className="size-2.5 rounded-full bg-signal shadow-[0_0_14px_hsl(var(--signal)/0.7)]" />
+                01 — {String(orderedProjects.length).padStart(2, "0")}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            return (
-              <Tilt
-                key={p.slug}
-                reveal
-                max={1.5}
-                revealDelay={(idx % 2) * 0.08}
-                className={cn(
-                  "min-w-0 md:col-span-6",
-                  idx === 0 && "lg:col-span-8",
-                  idx === 1 && "lg:col-span-4",
-                  idx === 2 && "lg:col-span-5",
-                  idx === 3 && "lg:col-span-7",
-                  idx >= 4 && "lg:col-span-6"
-                )}
-              >
+      <div className="grid grid-cols-1 gap-gutter md:grid-cols-12">
+        {visibleProjects.map((p, idx) => {
+          const projectCase = isFeaturedSlug(p.slug) ? t.projects.cases[p.slug] : undefined;
+          const wide = idx === 0 || idx === 3;
+          // Entran desde el lado donde viven en la retícula.
+          const fromLeft = idx % 2 === 0;
+
+          return (
+            <div
+              key={p.slug}
+              data-fx={fromLeft ? "left" : "right"}
+              style={{ "--fx-delay": `${(idx % 2) * 90}ms` } as CSSProperties}
+              className={cn(
+                "min-w-0 md:col-span-6",
+                idx === 0 && "lg:col-span-8",
+                idx === 1 && "lg:col-span-4",
+                idx === 2 && "lg:col-span-5",
+                idx === 3 && "lg:col-span-7",
+                idx >= 4 && "lg:col-span-6"
+              )}
+            >
+              <Tilt max={2.2} className="h-full">
                 <a
                   href={p.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="editorial-panel group flex h-full flex-col overflow-hidden transition-colors duration-300 hover:border-primary/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  className="panel group flex h-full flex-col overflow-hidden p-[var(--gutter)] transition-[box-shadow] duration-500 hover:shadow-[0_30px_70px_-35px_hsl(var(--primary)/0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--sheet))]"
                 >
-                  <div className="flex min-h-12 items-center gap-4 border-b border-border px-4 py-3 sm:px-5">
-                    <span className="font-display text-2xl font-semibold tabular-nums text-foreground/25 transition-colors group-hover:text-primary/70">
-                      {String(idx + 1).padStart(2, "0")}
-                    </span>
-                    <span className="h-px min-w-4 flex-1 bg-border transition-colors group-hover:bg-primary/40" />
-                    <span className="min-w-0 truncate font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-                      {hostname(p.url)}
-                    </span>
-                    <ArrowUpRight className="h-4 w-4 shrink-0 text-foreground/55 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
-                  </div>
-
-                  {/* 網点. Las capturas entraban a color pleno y no
-                      pertenecían al mismo mundo de tinta que la interfaz. La
-                      trama las integra y se retira al pasar el puntero, que es
-                      cuando de verdad estás mirando la pieza. */}
+                  {/* Ventana de la captura, con pestaña recortada. */}
                   <div
                     className={cn(
-                      "amiten relative aspect-[4/3] overflow-hidden bg-secondary/20",
+                      "amiten relative aspect-[4/3] overflow-hidden rounded-inner bg-secondary/30",
                       wide && "lg:aspect-[16/9]"
                     )}
+                    style={{ "--notch-bg": "var(--background)" } as CSSProperties}
                   >
                     <LazyMount
                       rootMargin="320px"
                       className="absolute inset-0"
-                      fallback={<div aria-hidden className="route-grid h-full w-full opacity-40" />}
+                      fallback={<div aria-hidden className="dot-grid h-full w-full opacity-40" />}
                     >
                       <Image
                         src={mobileShot(p.slug)}
@@ -155,7 +156,7 @@ export function ProjectsShowcase() {
                         sizes="(max-width: 767px) calc(100vw - 3rem), 50vw"
                         quality={60}
                         loading="lazy"
-                        className="object-cover object-top transition-transform duration-700 [transition-timing-function:var(--ease-material)] group-hover:scale-[1.025] motion-reduce:transform-none motion-reduce:transition-none md:hidden"
+                        className="object-cover object-top group-hover:scale-[1.04] motion-reduce:transform-none md:hidden"
                       />
                       <Image
                         src={desktopShot(p.slug)}
@@ -164,34 +165,50 @@ export function ProjectsShowcase() {
                         sizes="(min-width: 1280px) 60vw, (min-width: 768px) 50vw, 100vw"
                         quality={60}
                         loading="lazy"
-                        className="hidden object-cover object-top transition-transform duration-700 [transition-timing-function:var(--ease-material)] group-hover:scale-[1.025] motion-reduce:transform-none motion-reduce:transition-none md:block"
+                        className="hidden object-cover object-top group-hover:scale-[1.04] motion-reduce:transform-none md:block"
                       />
                     </LazyMount>
                     <div
                       aria-hidden
-                      className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-background/50 to-transparent"
+                      className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-16 bg-gradient-to-t from-background/60 to-transparent"
                     />
+                    <div className="notch notch-tr z-[4]">
+                      <span className="inline-flex min-h-9 max-w-[12rem] items-center truncate rounded-full bg-secondary px-3 font-mono text-[10px] uppercase tracking-[0.14em] text-foreground/80 sm:max-w-none">
+                        {hostname(p.url)}
+                      </span>
+                      <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-transform duration-500 [transition-timing-function:var(--ease-pop)] group-hover:rotate-45 group-hover:scale-110">
+                        <ArrowUpRight className="h-4 w-4" />
+                      </span>
+                    </div>
+                    <span
+                      aria-hidden
+                      className="absolute bottom-3 left-4 z-[4] display-xl text-[3.5rem] leading-none text-foreground/90 drop-shadow-[0_4px_18px_rgba(0,0,0,0.5)] md:text-[4.5rem]"
+                    >
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
                   </div>
 
-                  <div className="flex flex-1 flex-col p-5 sm:p-6">
-                    <h3 className="font-display text-[clamp(1.45rem,3vw,2.35rem)] font-semibold leading-[1.02] tracking-tight text-foreground">
-                      {p.name}
-                    </h3>
-                    <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-                      {t.projects.descs[p.slug] ?? p.desc}
-                    </p>
+                  <div className="flex flex-1 flex-col px-3 pb-3 pt-5 sm:px-4 sm:pt-6">
+                    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                      <h3 className="display-xl text-[clamp(2rem,3.4vw,3rem)] leading-[0.9] text-foreground transition-colors group-hover:text-primary">
+                        {p.name}
+                      </h3>
+                      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                        {t.projects.descs[p.slug] ?? p.desc}
+                      </p>
+                    </div>
 
                     {projectCase && (
-                      <dl className="mt-5 divide-y divide-border/80 border-y border-border/80">
+                      <dl className="mt-5 grid gap-2">
                         {CASE_FIELDS.map((field) => (
                           <div
                             key={field}
-                            className="grid grid-cols-[4.75rem_minmax(0,1fr)] gap-3 py-3 sm:grid-cols-[5.75rem_minmax(0,1fr)]"
+                            className="grid grid-cols-[5.25rem_minmax(0,1fr)] items-start gap-3 rounded-2xl bg-secondary/60 px-3.5 py-3 sm:grid-cols-[6.25rem_minmax(0,1fr)]"
                           >
-                            <dt className="pt-0.5 font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-primary sm:text-[10px]">
+                            <dt className="inline-flex w-fit items-center rounded-full bg-primary/15 px-2 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-primary sm:text-[10px]">
                               {t.projects.caseLabels[field]}
                             </dt>
-                            <dd className="text-[13px] leading-relaxed text-foreground/75">
+                            <dd className="text-[13px] leading-relaxed text-foreground/80">
                               {projectCase[field]}
                             </dd>
                           </div>
@@ -199,33 +216,31 @@ export function ProjectsShowcase() {
                       </dl>
                     )}
 
-                    <span className="mt-auto inline-flex min-h-11 items-center gap-2 self-start pt-4 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-foreground/80 transition-colors group-hover:text-primary">
-                      <span className="h-px w-7 bg-primary transition-all duration-300 group-hover:w-10" />
+                    <span className="mt-auto inline-flex min-h-11 items-center gap-2 self-start pt-5 font-display text-base font-bold uppercase tracking-[0.06em] text-foreground/85 transition-colors group-hover:text-primary">
+                      <span className="h-[2px] w-7 rounded-full bg-primary transition-all duration-500 group-hover:w-12" />
                       {t.projects.visitSite}
                     </span>
                   </div>
                 </a>
               </Tilt>
-            );
-          })}
-        </div>
-
-        {!showAll && orderedProjects.length > visibleProjects.length && (
-          <div className="mt-12 flex items-center gap-5 md:mt-16">
-            <span aria-hidden className="h-px flex-1 bg-border" />
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => setShowAll(true)}
-              className="rounded-none border-border bg-background/70 font-mono text-[10px] uppercase tracking-[0.15em] hover:border-primary/60"
-            >
-              {t.projects.showMore}
-              <ChevronDown className="ml-1.5 h-4 w-4" />
-            </Button>
-            <span aria-hidden className="h-px flex-1 bg-border" />
-          </div>
-        )}
+            </div>
+          );
+        })}
       </div>
+
+      {!showAll && orderedProjects.length > visibleProjects.length && (
+        <div data-fx="pop" className="flex justify-center py-2">
+          <Button
+            variant="default"
+            size="lg"
+            onClick={() => setShowAll(true)}
+            className="focus-visible:ring-offset-[hsl(var(--sheet))]"
+          >
+            {t.projects.showMore}
+            <ChevronDown className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
     </section>
   );
 }

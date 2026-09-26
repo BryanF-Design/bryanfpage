@@ -17,7 +17,6 @@ export function ScrollProgress() {
         aria-hidden
         className="pointer-events-none fixed inset-x-0 top-0 z-[130] h-[3px]"
       >
-        <div className="absolute inset-x-0 top-0 h-px bg-border/60" />
       </div>
     );
   }
@@ -39,14 +38,14 @@ function AnimatedScrollProgress() {
       aria-hidden
       className="pointer-events-none fixed inset-x-0 top-0 z-[130] h-[3px]"
     >
-      <div className="absolute inset-x-0 top-0 h-px bg-border/60" />
+      {/* Tinta sobre el canto washi de la hoja: la regla que se va llenando. */}
       <motion.div
         style={{ scaleX: progress }}
-        className="absolute inset-x-0 top-0 h-[2px] origin-left bg-primary shadow-[0_0_12px_hsl(var(--primary)/0.45)]"
+        className="absolute inset-x-0 top-0 h-[3px] origin-left rounded-r-full bg-[hsl(160_36%_6%/0.85)]"
       />
       <motion.span
         style={{ left: nodePosition }}
-        className="absolute top-px size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary bg-background shadow-[0_0_10px_hsl(var(--primary)/0.65)]"
+        className="absolute top-[1.5px] size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary ring-2 ring-[hsl(160_36%_6%)]"
       />
     </div>
   );

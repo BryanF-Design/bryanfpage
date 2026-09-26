@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useLanguage } from "@/lib/i18n/context";
 import { DICTIONARIES } from "@/lib/i18n/dictionaries";
+import { useReducedMotionPreference } from "@/lib/motion-preference";
 
 const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
 
@@ -29,15 +30,20 @@ const social = [
 ];
 
 /**
- * Barra técnica de borde a borde: hairline inferior, navegación en mono
- * mayúsculas — la primera línea del "plano de obra" en todas las páginas.
- * En móvil abre un menú de pantalla completa con los enlaces en display
- * gigante (antes el teléfono no tenía navegación alguna).
+ * La cabecera no flota sobre la página: está recortada en ella. Tres
+ * pestañas de washi cuelgan del canto superior de la hoja y cada una sostiene
+ * sus píldoras de tinta — la marca, la navegación y las acciones. Lo que
+ * pasa por debajo (el hero, los paneles) se lee como cortado alrededor.
+ *
+ * Por debajo de 1024 px la navegación se muda a un panel que entra desde
+ * fuera del lienzo, con los enlaces en rótulo gigante.
  */
 export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
   const { t: localizedT } = useLanguage();
   const t = spanishOnly ? DICTIONARIES.es : localizedT;
+  const reducedMotion = useReducedMotionPreference();
   const [open, setOpen] = useState(false);
+  const [hovered, setHovered] = useState<number | null>(null);
   const headerRef = useRef<HTMLElement>(null);
   const menuPanelRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -52,7 +58,7 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
   ];
 
   // Bloquea el scroll de fondo mientras el menú está abierto y ciérralo
-  // con Escape — el overlay se comporta como un diálogo de verdad.
+  // con Escape — el panel se comporta como un diálogo de verdad.
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -85,7 +91,7 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
         }
       }
     };
-    const desktopQuery = window.matchMedia("(min-width: 768px)");
+    const desktopQuery = window.matchMedia("(min-width: 1024px)");
     const onDesktop = (event: MediaQueryListEvent) => {
       if (event.matches) setOpen(false);
     };
@@ -102,70 +108,91 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
 
   return (
     <>
-    <header
-      ref={headerRef}
-      className="glass-nav fixed inset-x-0 top-0 z-[100] isolate border-b border-border"
-    >
-      <span
-        aria-hidden
-        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/45 to-signal/65"
-      />
-      <div className="container grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-2 md:grid-cols-[1fr_auto_1fr]">
-        <Link
-          href="/"
-          onClick={() => setOpen(false)}
-          className="flex min-h-11 min-w-0 items-center justify-self-start rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          aria-label="BryanF Design — inicio"
-        >
-          <Image
-            src="/img/logotipo-blanco.png"
-            alt="BryanF Design"
-            width={2904}
-            height={1016}
-            priority
-            sizes="(max-width: 767px) 104px, 140px"
-            style={{ height: 36, width: "auto" }}
-            className="object-contain"
-          />
-        </Link>
+      <header
+        ref={headerRef}
+        className="pointer-events-none fixed inset-x-0 top-0 z-[100] grid grid-cols-[minmax(0,1fr)_auto] items-start lg:grid-cols-[1fr_auto_1fr]"
+      >
+        {/* Pestaña izquierda: la marca. */}
+        <div className="tab tab-l justify-self-start">
+          <Link
+            href="/"
+            onClick={() => setOpen(false)}
+            className="nav-pill group gap-2.5 px-4 transition-transform duration-300 hover:-translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--sheet))]"
+            aria-label="BryanF Design — inicio"
+          >
+            <span
+              aria-hidden
+              className="size-2 rounded-full bg-primary shadow-[0_0_10px_hsl(var(--primary)/0.8)] transition-transform duration-500 group-hover:scale-150"
+            />
+            <Image
+              src="/img/logotipo-blanco.png"
+              alt="BryanF Design"
+              width={2904}
+              height={1016}
+              priority
+              sizes="(max-width: 767px) 80px, 92px"
+              style={{ height: 26, width: "auto" }}
+              className="object-contain"
+            />
+          </Link>
+        </div>
 
-        <nav
-          aria-label={t.nav.menu}
-          className="hidden items-center justify-center gap-5 md:flex xl:gap-8"
-        >
-          {links.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className="group relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-none font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground transition-colors after:absolute after:inset-x-1 after:bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-primary after:transition-transform hover:text-primary hover:after:scale-x-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            >
-              {l.label}
-            </Link>
-          ))}
-        </nav>
+        {/* Pestaña central: la navegación, con una píldora que sigue al puntero. */}
+        <div className="tab tab-c hidden justify-self-center lg:flex">
+          <nav
+            aria-label={t.nav.menu}
+            className="nav-pill gap-0.5 px-1"
+            onMouseLeave={() => setHovered(null)}
+          >
+            {links.map((l, i) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                onMouseEnter={() => setHovered(i)}
+                onFocus={() => setHovered(i)}
+                onBlur={() => setHovered(null)}
+                className="relative inline-flex min-h-9 min-w-11 items-center justify-center rounded-full px-3.5 font-display text-[0.98rem] font-bold uppercase tracking-[0.06em] text-foreground/75 transition-colors hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary xl:px-4"
+              >
+                {hovered === i && (
+                  <motion.span
+                    layoutId={reducedMotion ? undefined : "nav-hover-pill"}
+                    aria-hidden
+                    className="absolute inset-0 -z-0 rounded-full bg-primary"
+                    transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                  />
+                )}
+                <span className="relative z-10">{l.label}</span>
+              </Link>
+            ))}
+          </nav>
+        </div>
 
-        <div className="flex items-center justify-self-end gap-1 sm:gap-2">
+        {/* Pestaña derecha: idioma y acciones. */}
+        <div className="tab tab-r justify-self-end">
           {!spanishOnly && (
-            <div className="[&_button]:min-h-11 [&_button]:min-w-11 [&_button]:focus-visible:outline-none [&_button]:focus-visible:ring-2 [&_button]:focus-visible:ring-primary">
+            <div className="nav-pill px-1 [&_button]:min-h-11 [&_button]:min-w-11 [&_button]:focus-visible:outline-none [&_button]:focus-visible:ring-2 [&_button]:focus-visible:ring-primary">
               <LanguageSwitcher />
             </div>
           )}
+          <Link
+            href={CLIENT_PORTAL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-pill hidden gap-2 px-4 font-display text-[0.98rem] font-bold uppercase tracking-[0.05em] transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary xl:inline-flex"
+          >
+            <LogIn className="h-3.5 w-3.5 text-primary" />
+            {t.nav.cliente}
+          </Link>
           <Button
             asChild
-            size="sm"
-            variant="ghost"
-            className="hidden min-h-11 lg:inline-flex"
+            className="hidden min-h-11 sm:inline-flex focus-visible:ring-offset-[hsl(var(--sheet))]"
           >
-            <Link href={CLIENT_PORTAL} target="_blank" rel="noopener noreferrer">
-              <LogIn className="mr-1.5 h-3.5 w-3.5" />
-              {t.nav.cliente}
+            <Link href="/#precios">
+              {t.nav.armaTuWeb}
+              <ArrowUpRight className="h-4 w-4" />
             </Link>
           </Button>
-          <Button asChild size="sm" className="hidden min-h-11 sm:inline-flex">
-            <Link href="/#precios">{t.nav.armaTuWeb}</Link>
-          </Button>
 
-          {/* Disparador del menú móvil */}
           <button
             ref={menuButtonRef}
             type="button"
@@ -173,90 +200,99 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
             aria-label={open ? t.nav.closeMenu : t.nav.menu}
             aria-controls="mobile-site-menu"
             aria-expanded={open}
-            className="flex h-11 w-11 items-center justify-center rounded-md border border-border text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background md:hidden"
+            className="nav-pill w-11 justify-center text-primary transition-transform duration-300 hover:rotate-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary lg:hidden"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
-      </div>
-    </header>
+      </header>
 
-    {/* Menú móvil de pantalla completa. Vive FUERA del <header>: su
-        backdrop-filter lo volvería containing block y encerraría este
-        panel fixed dentro de la barra. */}
-    <AnimatePresence>
+      {/* Panel del menú. Vive FUERA del <header>: el header es un grid fijo y
+          encerraría este panel dentro de su caja. Empieza en el canto de la
+          hoja, así que las pestañas quedan recortadas también sobre él. */}
+      <AnimatePresence>
         {open && (
           <motion.div
             ref={menuPanelRef}
             id="mobile-site-menu"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="fixed inset-x-0 bottom-0 top-[61px] z-[99] flex flex-col overflow-y-auto bg-background/95 backdrop-blur-xl md:hidden"
+            initial={reducedMotion ? { opacity: 0 } : { x: "110%", rotate: 4 }}
+            animate={reducedMotion ? { opacity: 1 } : { x: 0, rotate: 0 }}
+            exit={reducedMotion ? { opacity: 0 } : { x: "110%", rotate: 3 }}
+            transition={{ type: "spring", stiffness: 260, damping: 30 }}
+            style={{ transformOrigin: "100% 0%" }}
+            className="panel panel-moss fixed inset-[var(--gutter)] z-[99] flex flex-col overflow-y-auto pt-[var(--header-h)] lg:hidden"
           >
-            <div aria-hidden className="route-grid absolute inset-0 opacity-70" />
-            <div aria-hidden className="japan-halftone absolute inset-0 opacity-20" />
-            <div aria-hidden className="mesh-glow-a absolute inset-0 opacity-70" />
+            <span
+              aria-hidden
+              lang="ja"
+              className="pointer-events-none absolute -bottom-6 -right-4 select-none font-jp text-[46vw] leading-none text-foreground/[0.04]"
+            >
+              道
+            </span>
+            <div aria-hidden className="dot-grid absolute inset-0 rounded-[inherit] opacity-40 [mask-image:linear-gradient(to_bottom,transparent,black_40%,transparent)]" />
 
             <nav
               aria-label={t.nav.menu}
-              className="container relative z-10 flex flex-1 flex-col justify-center gap-1 py-10"
+              className="relative z-10 flex flex-1 flex-col justify-center gap-1 px-5 py-8 sm:px-8"
             >
               {links.map((l, i) => (
                 <motion.div
                   key={l.href}
-                  initial={{ opacity: 0, x: -24 }}
+                  initial={reducedMotion ? false : { opacity: 0, x: 90 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -12 }}
-                  transition={{ delay: 0.06 + i * 0.06, duration: 0.4, ease: [0.2, 0, 0, 1] }}
+                  exit={{ opacity: 0, x: 40 }}
+                  transition={{
+                    delay: reducedMotion ? 0 : 0.12 + i * 0.06,
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 26,
+                  }}
                 >
                   <Link
                     ref={i === 0 ? firstMenuLinkRef : undefined}
                     href={l.href}
                     onClick={() => setOpen(false)}
-                    className="group flex min-h-11 items-baseline justify-between rounded-sm border-b border-border py-4 active:bg-secondary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+                    className="group flex min-h-11 items-center justify-between gap-4 rounded-2xl px-2 py-2 transition-colors active:bg-foreground/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
                   >
-                    <span className="font-display text-4xl font-bold uppercase tracking-tight text-foreground transition-colors group-hover:text-primary">
+                    <span className="display-xl text-[clamp(3rem,15vw,5.5rem)] text-foreground transition-colors group-hover:text-primary">
                       {l.label}
                     </span>
-                    <span className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                      {String(i + 1).padStart(2, "0")}
-                      <ArrowUpRight className="h-4 w-4 text-primary" />
+                    <span className="grid size-11 shrink-0 place-items-center rounded-full border border-foreground/20 text-primary transition-all group-hover:rotate-45 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
+                      <ArrowUpRight className="h-5 w-5" />
                     </span>
                   </Link>
                 </motion.div>
               ))}
 
               <motion.div
-                initial={{ opacity: 0, y: 16 }}
+                initial={reducedMotion ? false : { opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                transition={{ delay: 0.32, duration: 0.4, ease: [0.2, 0, 0, 1] }}
-                className="mt-8 flex flex-col gap-3"
+                transition={{ delay: reducedMotion ? 0 : 0.44, type: "spring", stiffness: 260, damping: 26 }}
+                className="mt-8 flex flex-col gap-3 sm:flex-row"
               >
-                <Button asChild size="lg" className="w-full" onClick={() => setOpen(false)}>
+                <Button asChild size="lg" className="w-full sm:flex-1" onClick={() => setOpen(false)}>
                   <Link href="/#precios">{t.nav.armaTuWeb}</Link>
                 </Button>
-                <Button asChild size="lg" variant="outline" className="w-full">
+                <Button asChild size="lg" variant="outline" className="w-full sm:flex-1">
                   <Link
                     href={CLIENT_PORTAL}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setOpen(false)}
                   >
-                    <LogIn className="mr-2 h-4 w-4" />
+                    <LogIn className="h-4 w-4" />
                     {t.nav.cliente}
                   </Link>
                 </Button>
               </motion.div>
 
               <motion.div
-                initial={{ opacity: 0 }}
+                initial={reducedMotion ? false : { opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ delay: 0.4, duration: 0.4 }}
-                className="mt-8 flex items-center justify-between border-t border-border pt-6"
+                transition={{ delay: reducedMotion ? 0 : 0.52, duration: 0.4 }}
+                className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-foreground/10 pt-6"
               >
                 <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
                   CDMX · MX — EST. 2020
@@ -269,7 +305,7 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={label}
-                      className="editorial-panel flex h-11 w-11 items-center justify-center text-muted-foreground transition-[color,transform] hover:text-primary active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                      className="flex h-11 w-11 items-center justify-center rounded-full bg-background/60 text-muted-foreground transition-[color,transform,background-color] hover:bg-primary hover:text-primary-foreground active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     >
                       <Icon className="h-4 w-4" />
                     </Link>
