@@ -228,7 +228,7 @@ const ja: Dictionary = {
     title: "フルサイトを作らずにプロフェッショナルな存在感を",
     subtitle:
       "まだ本格的なウェブサイトが必要なければ、ここから始めましょう。数日で完成する、同じ品質のコンタクトアイデンティティです。",
-    cta: "このサービスについて問い合わせる",
+    cta: "このサービスを相談する",
     note: "価格はメキシコペソ(MXN)です。もっと大きなプロジェクトをお考えなら、フルサイトと組み合わせることもできます — Luminaにご相談ください。",
     fromPrice: (price: string) => `${price}から`,
     items: [
@@ -591,6 +591,33 @@ const ja: Dictionary = {
   languageNotice: {
     text: "言語を自動的に検出し、サイト全体で記憶できるようクッキーに選択内容を保存します。いつでも変更できます。",
     dismiss: "了解しました",
+  },
+  a11y: {
+    title: "アクセシビリティ",
+    textSize: "文字サイズ",
+    decrease: "文字を小さくする",
+    increase: "文字を大きくする",
+    contrast: "ハイコントラスト",
+    reduceMotion: "動きを減らす",
+    underlineLinks: "リンクに下線を表示",
+    readableSpacing: "読みやすい行間",
+    visibleFocus: "キーボードフォーカスを表示",
+    reset: "リセット",
+    open: "アクセシビリティ設定を開く",
+    close: "アクセシビリティ設定を閉じる",
+    closePanel: "アクセシビリティパネルを閉じる",
+  },
+  notFound: {
+    badge: "エラー 404",
+    titleLead: "ページが",
+    titleWord: "迷子？",
+    body: "このページは存在しないか、移動しました。ご安心ください。数秒後にホームへご案内します。",
+    homeNow: "今すぐホームへ",
+    redirecting: (s: number) => `${s}秒後に移動します`,
+    paused: "自動移動を停止しました",
+    stay: "このページに残る",
+    shortcutsLabel: "または、こちらへ：",
+    shortcutsAria: "ショートカット",
   },
   languageSwitcher: {
     label: "言語",

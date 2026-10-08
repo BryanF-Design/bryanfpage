@@ -445,7 +445,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                 eyebrow={t.configurator.eyebrow}
                 title={t.configurator.title}
                 subtitle={t.configurator.subtitle}
-                chapter={{ index: 8 }}
+                chapter={{ index: 7 }}
                 className="relative px-1 sm:px-0 [&_p]:text-[0.975rem] md:[&_p]:text-base"
               />
             </>
@@ -596,7 +596,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                     {t.configurator.extraSections}
                   </span>
                   <span className="block text-sm tabular-nums text-muted-foreground">
-                    +{display(SECTION_PRICE)} {t.configurator.perUnit}
+                    +{display(SECTION_PRICE)} · {t.configurator.perUnit}
                   </span>
                 </span>
                 <span className="ml-auto flex items-center gap-1 rounded-full bg-mint p-1 ring-1 ring-inset ring-ink/[0.06]">

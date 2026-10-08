@@ -2,6 +2,7 @@ import type { CSSProperties, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
+  ArrowDown,
   ArrowRight,
   ArrowUpRight,
   Check,
@@ -20,7 +21,7 @@ import { SiteFooter } from "@/components/sections/site-footer";
 import { SiteHeader } from "@/components/sections/site-header";
 import { SpanishPageLanguage } from "@/components/seo/spanish-page-language";
 import { TrackedWhatsAppLink } from "@/components/analytics/tracked-whatsapp-link";
-import { desktopShot, mobileShot, projects, type Project } from "@/lib/projects";
+import { desktopShot, mobileShot, projects, tabletShot, type Project } from "@/lib/projects";
 import {
   BRAND_NAME,
   SITE_URL,
@@ -130,6 +131,22 @@ function findCases(names: string[]) {
     name,
     project: projects.find((p) => p.name === name && p.shots !== false) as Project | undefined,
   }));
+}
+
+/**
+ * Captura de cada caso. Por defecto la de escritorio desde arriba; Koi abre
+ * con una página crema casi vacía, así que usa la de tableta recortada a la
+ * altura del titular y la foto de la casa.
+ */
+const SHOT_OVERRIDES: Record<string, { src: (slug: string) => string; position: string }> = {
+  "koi-arquitectura-vercel-app": { src: tabletShot, position: "object-[50%_62%]" },
+};
+
+function caseShot(project: Project) {
+  const override = SHOT_OVERRIDES[project.slug];
+  return override
+    ? { src: override.src(project.slug), position: override.position }
+    : { src: desktopShot(project.slug), position: "object-top" };
 }
 
 function pad(n: number) {
@@ -277,7 +294,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
               </p>
 
               <div
-                className="hero-in hero-in-up flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row"
+                className="hero-in hero-in-up flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:flex-wrap"
                 style={hd(240)}
               >
                 <Button asChild size="lg" variant="ink" className="pr-2.5">
@@ -325,13 +342,15 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
             </div>
 
             {/* Panel lima: Bryan sale por arriba; el recorte de los costados
-                y la base lo hace el clip, así la cabeza cruza el canto. */}
+                y la base lo hace el clip, así la cabeza cruza el canto. En lg
+                (columna angosta) el panel es más bajo y Bryan más chico para
+                que su silueta quepa completa; el tamaño grande vuelve en xl. */}
             <div
               className="hero-in hero-in-up relative mt-14 min-w-0 sm:mt-20 lg:col-span-6 lg:mt-0 lg:self-end"
               style={hd(160)}
             >
-              <Orbit className="float-y absolute -top-11 left-[3%] w-[94%] text-ink/25 sm:-top-16 sm:left-[14%] sm:w-[72%] lg:-top-24 lg:left-[24%] lg:w-[80%]" />
-              <div className="panel-lime relative h-[23rem] rounded-[calc(var(--r-panel)-0.5rem)] sm:h-[30rem] lg:h-[28rem]">
+              <Orbit className="float-y absolute -top-11 left-[3%] w-[94%] text-ink/25 sm:-top-16 sm:left-[14%] sm:w-[72%] lg:left-[8%] lg:w-[84%] xl:-top-24 xl:left-[24%] xl:w-[80%]" />
+              <div className="panel-lime relative h-[23rem] rounded-[calc(var(--r-panel)-0.5rem)] sm:h-[30rem] lg:h-[26rem] xl:h-[28rem]">
                 <span className="notch notch-tl hidden sm:flex" style={NOTCH_ON_WHITE}>
                   <span className="eyebrow pl-3">
                     <span aria-hidden className="size-2 rounded-full bg-lime-deep" />
@@ -347,11 +366,11 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                   <Image
                     src="/img/brand/bryan-cutout.webp"
                     alt=""
-                    width={623}
-                    height={558}
+                    width={1122}
+                    height={1114}
                     priority
-                    sizes="(min-width: 1024px) 36rem, 34rem"
-                    className="absolute bottom-0 left-1/2 h-[calc(100%+2.75rem)] w-auto max-w-none -translate-x-[45%] sm:left-auto sm:right-[-8%] sm:h-[calc(100%+3.5rem)] sm:translate-x-0 lg:right-[-12%] lg:h-[calc(100%+5rem)]"
+                    sizes="(min-width: 1280px) 36rem, (min-width: 1024px) 30rem, 34rem"
+                    className="absolute bottom-0 left-1/2 h-[calc(100%+2.75rem)] w-auto max-w-none -translate-x-[45%] sm:left-auto sm:right-[-8%] sm:h-[calc(100%+3.5rem)] sm:translate-x-0 lg:right-[-2%] lg:h-[calc(100%+3rem)] xl:right-[-12%] xl:h-[calc(100%+5rem)]"
                   />
                 </div>
                 <Sparkle
@@ -364,23 +383,30 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                     href={featured.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group card-pop absolute inset-x-3 bottom-3 z-10 flex gap-3 p-2.5 transition-transform duration-300 hover:-translate-y-1 sm:inset-x-auto sm:bottom-4 sm:left-4 sm:w-[15rem] sm:flex-col lg:bottom-5 lg:left-5"
+                    className="group card-pop absolute inset-x-3 bottom-3 z-10 flex items-center gap-3 p-2.5 transition-transform duration-300 hover:-translate-y-1 sm:inset-x-auto sm:bottom-4 sm:left-4 sm:w-[15rem] sm:flex-col sm:items-stretch lg:right-4 lg:w-auto lg:flex-row lg:items-center xl:bottom-5 xl:left-5 xl:right-auto xl:w-[15rem] xl:flex-col xl:items-stretch"
                   >
-                    <span className="relative aspect-[4/3] w-28 shrink-0 overflow-hidden rounded-inner bg-mint sm:w-full">
+                    <span className="relative aspect-[4/3] w-20 shrink-0 overflow-hidden rounded-inner bg-mint sm:w-full lg:w-28 xl:w-full">
                       <Image
-                        src={desktopShot(featured.slug)}
+                        src={caseShot(featured).src}
                         alt={`${featured.name} — captura del sitio`}
                         fill
-                        sizes="(min-width: 640px) 15rem, 7rem"
-                        className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
+                        sizes="(min-width: 1280px) 15rem, (min-width: 1024px) 7rem, (min-width: 640px) 15rem, 5rem"
+                        className={cn(
+                          "object-cover transition-transform duration-700 group-hover:scale-[1.04]",
+                          caseShot(featured).position
+                        )}
                       />
                     </span>
-                    <span className="flex min-w-0 flex-1 items-center justify-between gap-2 sm:px-1 sm:pb-0.5">
+                    <span className="flex min-w-0 flex-1 items-center justify-between gap-2 sm:px-1 sm:pb-0.5 lg:px-0 lg:pb-0 xl:px-1 xl:pb-0.5">
                       <span className="min-w-0">
                         <span className="block text-xs font-semibold text-ink/55">Caso de referencia</span>
-                        <span className="block truncate text-base font-bold text-ink">{featured.name}</span>
+                        <span className="line-clamp-2 text-[0.9375rem] font-bold leading-snug text-ink sm:text-base">
+                          {featured.name}
+                        </span>
                         {featured.desc && (
-                          <span className="block truncate text-xs text-ink/60">{featured.desc}</span>
+                          <span className="mt-0.5 line-clamp-2 text-xs leading-snug text-ink/60 sm:line-clamp-1">
+                            {featured.desc}
+                          </span>
                         )}
                       </span>
                       <span className="grid size-10 shrink-0 place-items-center rounded-full bg-ink text-lime">
@@ -402,32 +428,38 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
         >
           <div suppressHydrationWarning data-fx="left" className="min-w-0 lg:col-span-5">
             <div className="panel flex h-full flex-col overflow-hidden px-5 pt-6 shadow-soft sm:px-7 sm:pt-7 lg:px-10 lg:pt-10">
-              <LandingHeading
-                id="problemas-title"
-                index={1}
-                eyebrow="Problemas reales"
-                title="Lo que esta página ayuda a resolver"
-              />
-              {/* Lumina duda sobre un disco lima, con su globo de diálogo. */}
-              <div className="relative mt-4 flex justify-end lg:mt-auto lg:pt-6">
-                <div className="relative mr-1 w-[9.5rem] sm:w-[11.5rem] lg:mr-2 lg:w-[14rem]">
-                  <span
-                    aria-hidden
-                    className="absolute bottom-0 left-1/2 aspect-square w-[92%] -translate-x-1/2 rounded-full bg-lime"
-                  />
-                  <span className="absolute right-[86%] top-[16%] z-[1] inline-flex items-center gap-2 whitespace-nowrap rounded-full rounded-br-md bg-ink px-4 py-2.5 text-sm font-semibold text-white shadow-pop">
-                    <Sparkle aria-hidden className="h-3.5 w-3.5 fill-lime text-lime" />
-                    ¿Te suena?
-                  </span>
-                  <Image
-                    src="/img/brand/lumina-duda.webp"
-                    alt=""
-                    aria-hidden
-                    width={900}
-                    height={968}
-                    sizes="(min-width: 1024px) 14rem, 12rem"
-                    className="relative h-auto w-full"
-                  />
+              {/* Hasta lg, Lumina va al lado del titular (sentada en el canto
+                  inferior) para no dejar un panel alto y vacío; desde lg baja
+                  a su rincón con el globo a la izquierda. */}
+              <div className="grid flex-1 grid-cols-[minmax(0,1fr)_6.5rem] gap-x-3 sm:grid-cols-[minmax(0,1fr)_10rem] lg:flex lg:flex-col">
+                <LandingHeading
+                  id="problemas-title"
+                  index={1}
+                  eyebrow="Problemas reales"
+                  title="Lo que esta página ayuda a resolver"
+                  className="pb-6 sm:pb-7 lg:pb-0"
+                />
+                {/* Lumina duda sobre un disco lima, con su globo de diálogo. */}
+                <div className="relative self-end lg:mt-auto lg:flex lg:justify-end lg:self-auto lg:pt-6">
+                  <div className="relative w-full lg:mr-2 lg:w-[12.5rem]">
+                    <span
+                      aria-hidden
+                      className="absolute bottom-0 left-1/2 aspect-square w-[92%] -translate-x-1/2 rounded-full bg-lime"
+                    />
+                    <span className="absolute bottom-full right-0 z-[1] mb-1.5 inline-flex items-center gap-1.5 whitespace-nowrap rounded-full rounded-br-md bg-ink px-3 py-2 text-xs font-semibold text-white shadow-pop sm:bottom-auto sm:right-[86%] sm:top-[16%] sm:mb-0 sm:gap-2 sm:px-4 sm:py-2.5 sm:text-sm">
+                      <Sparkle aria-hidden className="h-3.5 w-3.5 fill-lime text-lime" />
+                      ¿Te suena?
+                    </span>
+                    <Image
+                      src="/img/brand/lumina-duda.webp"
+                      alt=""
+                      aria-hidden
+                      width={900}
+                      height={968}
+                      sizes="(min-width: 1024px) 12.5rem, (min-width: 640px) 10rem, 6.5rem"
+                      className="relative h-auto w-full"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -441,27 +473,35 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                   {page.problems.length}
                 </span>
               </div>
-              <ul className="flex flex-1 flex-col gap-1.5">
+              {/* Filas a su medida (sin palomitas: son problemas, no logros),
+                  centradas en el alto que marque el panel vecino. */}
+              <ul className="flex flex-1 flex-col justify-center gap-1.5">
                 {page.problems.map((problem, i) => (
                   <li
                     key={problem}
-                    className="flex flex-1 items-center gap-4 rounded-card bg-mint px-4 py-5 ring-1 ring-ink/[0.04] sm:gap-5 sm:px-5 lg:px-6"
+                    className="flex items-center gap-4 rounded-card bg-mint px-4 py-4 ring-1 ring-ink/[0.04] sm:gap-5 sm:px-5 sm:py-5 lg:px-6"
                   >
-                    <span className="grid size-12 shrink-0 place-items-center rounded-full bg-ink font-display text-[0.95rem] font-bold text-lime">
+                    <span className="grid size-11 shrink-0 place-items-center rounded-full bg-ink font-display text-[0.95rem] font-bold text-lime sm:size-12">
                       {pad(i + 1)}
                     </span>
                     <p className="min-w-0 flex-1 text-pretty text-base font-semibold leading-snug text-ink sm:text-lg">
                       {problem}
                     </p>
-                    <span
-                      aria-hidden
-                      className="hidden size-10 shrink-0 place-items-center rounded-full bg-lime text-ink sm:grid"
-                    >
-                      <Check className="h-4 w-4" strokeWidth={2.5} />
-                    </span>
                   </li>
                 ))}
               </ul>
+              <a
+                href="#solucion"
+                className="group mt-1 flex min-h-12 items-center justify-between gap-3 rounded-full py-1 pl-3 pr-1 text-sm font-semibold text-ink transition-colors hover:bg-ink/[0.04] sm:pl-4"
+              >
+                Así lo resolvemos
+                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-ink text-lime">
+                  <ArrowDown
+                    aria-hidden
+                    className="h-4 w-4 transition-transform duration-300 group-hover:translate-y-0.5"
+                  />
+                </span>
+              </a>
             </div>
           </div>
         </section>
@@ -629,8 +669,8 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                   <Image
                     src="/img/brand/bryan-cutout.webp"
                     alt=""
-                    width={623}
-                    height={558}
+                    width={1122}
+                    height={1114}
                     sizes="96px"
                     className="absolute left-[-30%] top-[-2%] w-[170%] max-w-none"
                   />
@@ -760,20 +800,25 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                     >
                       <span className="relative aspect-[16/11] overflow-hidden rounded-inner bg-white">
                         <Image
-                          src={desktopShot(project.slug)}
+                          src={caseShot(project).src}
                           alt={`${project.name} — captura del sitio`}
                           fill
                           sizes="(min-width: 1024px) 28rem, (min-width: 640px) 31vw, 78vw"
-                          className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
+                          className={cn(
+                            "object-cover transition-transform duration-700 group-hover:scale-[1.04]",
+                            caseShot(project).position
+                          )}
                         />
-                        <span className="absolute left-2.5 top-2.5 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-ink shadow-sm">
-                          {pad(i + 1)}
-                        </span>
                       </span>
+                      {/* El número vive en el pie (sobre la captura tapaba el logo). */}
                       <span className="flex items-center justify-between gap-2 px-2 pb-2 lg:px-3 lg:pb-3">
                         <span className="min-w-0">
-                          <span className="block truncate text-lg font-bold text-ink">{project.name}</span>
-                          <span className="block truncate text-sm text-muted-foreground">
+                          <span className="line-clamp-2 text-base font-bold leading-snug text-ink lg:text-lg">
+                            {project.name}
+                          </span>
+                          <span className="mt-0.5 line-clamp-2 text-sm text-muted-foreground">
+                            <span className="font-bold tabular-nums text-ink/70">{pad(i + 1)}</span>
+                            <span aria-hidden className="mx-1.5 text-ink/25">/</span>
                             {project.desc || new URL(project.url).hostname.replace(/^www\./, "")}
                           </span>
                         </span>

@@ -121,8 +121,8 @@ export function MeetBryan() {
             <Image
               src="/img/brand/bryan-cutout.webp"
               alt={`Bryan F. — ${t.about.role}`}
-              width={623}
-              height={558}
+              width={1122}
+              height={1114}
               sizes="(min-width: 1280px) 34rem, (min-width: 768px) 40vw, (min-width: 640px) 36rem, 92vw"
               className="relative z-10 mx-auto h-auto w-[94%] drop-shadow-[0_24px_30px_hsl(160_40%_8%/0.35)]"
             />

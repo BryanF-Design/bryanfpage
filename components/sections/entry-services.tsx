@@ -205,7 +205,7 @@ export function EntryServices() {
             eyebrow={t.entryServices.eyebrow}
             title={t.entryServices.title}
             subtitle={t.entryServices.subtitle}
-            chapter={{ index: 7 }}
+            chapter={{ index: 6 }}
             className="relative [&_h2]:text-[clamp(2.1rem,3.4vw,3.35rem)] [&_p]:text-[0.975rem] md:[&_p]:text-base"
           />
 

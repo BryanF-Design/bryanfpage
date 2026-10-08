@@ -354,10 +354,16 @@ export function LuminaChat() {
 
   useEffect(() => {
     if (!teaserDue || hasTeasedRef.current || open || configuratorInView) return;
-    if (isPhone && !pastHero) return;
+    // Nunca encima del hero (ahí taparía la tarjeta destacada o los CTA).
+    if (!pastHero) return;
     markTeased();
     setTeaser(true);
   }, [teaserDue, open, configuratorInView, isPhone, pastHero]);
+
+  // El botón se aparta con el footer, dentro del cotizador y, en teléfono,
+  // mientras el hero ocupa la pantalla (taparía el CTA principal).
+  const hideFab =
+    !open && (footerInView || configuratorInView || (isPhone && !pastHero));
 
   // Se retira sola a los 7 s.
   useEffect(() => {
@@ -669,7 +675,7 @@ export function LuminaChat() {
           que el chat esté abierto. La etiqueta solo aparece desde escritorio. */}
       <div
         className="fab-slot fixed bottom-[var(--fab-edge)] right-3 z-[120] sm:right-6"
-        data-hidden={footerInView || (configuratorInView && !open)}
+        data-hidden={hideFab}
       >
         <button
           ref={fabRef}
@@ -678,8 +684,8 @@ export function LuminaChat() {
           aria-label={open ? t.lumina.close : t.lumina.open}
           aria-controls="lumina-chat-panel"
           aria-expanded={open}
-          aria-hidden={footerInView || (configuratorInView && !open)}
-          tabIndex={footerInView || (configuratorInView && !open) ? -1 : 0}
+          aria-hidden={hideFab}
+          tabIndex={hideFab ? -1 : 0}
           className={cn("fab justify-start px-1.5 text-left", open && "fab-ink")}
         >
           <span className="relative size-10 shrink-0 sm:size-11">

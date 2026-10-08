@@ -176,7 +176,7 @@ export default function HomePage() {
 
         <ProjectsShowcase withCases={false} />
 
-        <MarqueeBand words={t.marquee.words} />
+        <MarqueeBand words={t.marquee.words} outline />
 
         {/* Casos de estudio: después de la cinta, para que el portafolio no
             sea un solo bloque de tres pantallas. */}

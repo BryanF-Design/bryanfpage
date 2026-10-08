@@ -64,7 +64,9 @@ export function FloatingDock() {
   // cerca del inicio) vuelven. No se guardan con un panel flotante abierto.
   useEffect(() => {
     const root = document.documentElement;
-    const phone = window.matchMedia("(max-width: 639px)");
+    // Teléfono, tableta y cualquier pantalla táctil: los flotantes se guardan
+    // al bajar. En escritorio ancho con mouse se quedan fijos.
+    const phone = window.matchMedia("(max-width: 1279px), (pointer: coarse)");
     let lastY = window.scrollY;
     let frame = 0;
     const update = () => {

@@ -72,7 +72,7 @@ export function LuminaJourney() {
             eyebrow={t.luminaJourney.eyebrow}
             title={t.luminaJourney.title}
             subtitle={t.luminaJourney.subtitle}
-            chapter={{ index: 6 }}
+            chapter={{ index: 8 }}
             className="relative px-1 pt-1 sm:px-0 sm:pt-0 lg:col-span-5 lg:col-start-8 lg:row-start-1"
           />
 

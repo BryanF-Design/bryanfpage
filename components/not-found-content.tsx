@@ -5,32 +5,33 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowUpRight, Sparkle } from "lucide-react";
+import { ArrowUpRight, Check, Pause, Sparkle } from "lucide-react";
 
 import { Button, ButtonArrow } from "@/components/ui/button";
+import { useLanguage } from "@/lib/i18n/context";
 import { useReducedMotionPreference } from "@/lib/motion-preference";
+import { cn } from "@/lib/utils";
 
-const REDIRECT_SECONDS = 5;
-
-/** Atajos por si el visitante prefiere elegir antes de que corra la cuenta. */
-const SHORTCUTS = [
-  { label: "Proyectos", href: "/#projects" },
-  { label: "Servicios", href: "/#servicios-entrada" },
-  { label: "Precios", href: "/#precios" },
-  { label: "Preguntas", href: "/#faq" },
-];
+const REDIRECT_SECONDS = 10;
+/** Interacciones que pausan la redirección (WCAG 2.2.1: tiempo ajustable). */
+const PAUSE_EVENTS = ["keydown", "pointerdown", "touchstart", "wheel", "focusin"] as const;
 
 /**
  * 404 en el lenguaje del sitio: marco blanco, panel lima con un "404"
  * enorme y Lumina sorprendida asomándose por encima del canto. La cuenta
- * regresiva devuelve al inicio a los cinco segundos.
+ * regresiva devuelve al inicio a los diez segundos, pero se pausa en cuanto
+ * el visitante hace algo (bajar, tocar, teclear) o pulsa "Quedarme aquí".
  */
 export function NotFoundContent() {
   const router = useRouter();
+  const { t } = useLanguage();
+  const copy = t.notFound;
   const prefersReducedMotion = useReducedMotionPreference();
   const [secondsLeft, setSecondsLeft] = useState(REDIRECT_SECONDS);
+  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
+    if (paused) return;
     const tick = window.setInterval(() => {
       setSecondsLeft((s) => Math.max(0, s - 1));
     }, 1000);
@@ -38,13 +39,33 @@ export function NotFoundContent() {
       router.push("/");
     }, REDIRECT_SECONDS * 1000);
 
+    // Cualquier gesto del visitante detiene la cuenta: quien baja a elegir
+    // un atajo no debe salir disparado al inicio a medio gesto. El scroll
+    // cuenta solo si es real (el salto al tope de una navegación no).
+    const pause = () => setPaused(true);
+    const onScroll = () => {
+      if (window.scrollY > 24) pause();
+    };
+    PAUSE_EVENTS.forEach((type) => window.addEventListener(type, pause, { passive: true }));
+    window.addEventListener("scroll", onScroll, { passive: true });
+
     return () => {
       window.clearInterval(tick);
       window.clearTimeout(redirect);
+      PAUSE_EVENTS.forEach((type) => window.removeEventListener(type, pause));
+      window.removeEventListener("scroll", onScroll);
     };
-  }, [router]);
+  }, [router, paused]);
 
   const progress = ((REDIRECT_SECONDS - secondsLeft) / REDIRECT_SECONDS) * 100;
+
+  /** Atajos por si el visitante prefiere elegir antes de que corra la cuenta. */
+  const shortcuts = [
+    { label: t.nav.proyectos, href: "/#projects" },
+    { label: t.nav.servicios, href: "/#servicios-entrada" },
+    { label: t.nav.precios, href: "/#precios" },
+    { label: t.nav.faq, href: "/#faq" },
+  ];
 
   return (
     <main
@@ -55,7 +76,7 @@ export function NotFoundContent() {
       <div className="panel relative flex flex-1 flex-col gap-5 p-4 shadow-soft sm:p-6 lg:gap-8 lg:p-10">
         {/* Barra superior: la marca regresa al inicio. */}
         <div className="flex items-center justify-between gap-3">
-          <Link href="/" aria-label="BryanF Design — inicio" className="flex shrink-0 items-center rounded-full">
+          <Link href="/" aria-label={`BryanF Design — ${t.nav.inicio}`} className="flex shrink-0 items-center rounded-full">
             <Image
               src="/img/brand/logo-dark.png"
               alt="BryanF Design"
@@ -68,7 +89,7 @@ export function NotFoundContent() {
           </Link>
           <span className="eyebrow pl-3">
             <span aria-hidden className="size-2 rounded-full bg-signal" />
-            Error 404
+            {copy.badge}
           </span>
         </div>
 
@@ -128,41 +149,64 @@ export function NotFoundContent() {
           >
             <h1 className="text-ink">
               <span className="display-italic block text-[clamp(2.25rem,4.4vw,4.25rem)] leading-none">
-                ¿Te
+                {copy.titleLead}
               </span>{" "}
               <span className="display-xl block text-[clamp(4.25rem,10vw,9.5rem)] text-forest">
-                perdiste?
+                {copy.titleWord}
               </span>
             </h1>
 
             <p className="max-w-md text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
-              Esta página no existe o cambió de lugar. Tranquilo, nos pasa hasta a
-              nosotros — te regresamos al inicio en unos segundos.
+              {copy.body}
             </p>
 
-            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
-              <Button asChild size="lg" variant="ink" className="pr-2.5">
+            {/* En teléfono la fila se "disuelve" (contents) para ordenar:
+                botón, atajos y, al final, la cuenta regresiva. */}
+            <div className="contents sm:flex sm:w-auto sm:flex-row sm:items-center sm:gap-3">
+              <Button asChild size="lg" variant="ink" className="order-1 w-full pr-2.5 sm:order-none sm:w-auto">
                 <Link href="/">
-                  Volver al inicio ahora
+                  {copy.homeNow}
                   <ButtonArrow tone="lime" className="ml-auto -mr-0.5 sm:ml-2" />
                 </Link>
               </Button>
-              <div className="flex h-12 items-center gap-3 self-start rounded-full bg-ink/[0.05] px-4 text-sm font-semibold text-ink/75 sm:self-auto">
-                <div className="h-2 w-24 overflow-hidden rounded-full bg-ink/10">
-                  <motion.div
-                    className="h-full rounded-full bg-lime-deep"
-                    animate={{ width: `${progress}%` }}
-                    transition={{ duration: 0.3, ease: "linear" }}
-                  />
-                </div>
-                <span aria-live="polite">Redirigiendo en {secondsLeft}s</span>
+              <div className="order-3 flex h-12 max-w-full items-center gap-2.5 rounded-full bg-ink/[0.05] pl-3.5 pr-1.5 text-[0.8125rem] font-semibold text-ink/75 sm:order-none sm:gap-3 sm:pl-4 sm:text-sm">
+                {paused ? (
+                  <Pause aria-hidden className="h-4 w-4 shrink-0 fill-ink/60 text-ink/60" />
+                ) : (
+                  <div aria-hidden className="h-2 w-9 shrink-0 overflow-hidden rounded-full bg-ink/10 max-[379px]:hidden sm:w-20">
+                    <motion.div
+                      className="h-full rounded-full bg-lime-deep"
+                      animate={{ width: `${progress}%` }}
+                      transition={{ duration: 0.3, ease: "linear" }}
+                    />
+                  </div>
+                )}
+                <span aria-live="polite" className="min-w-0 truncate">
+                  {paused ? copy.paused : copy.redirecting(secondsLeft)}
+                </span>
+                {/* Siempre montado (no pierde el foco del teclado): al pausar
+                    se queda como confirmación redonda con palomita. */}
+                <button
+                  type="button"
+                  onClick={() => setPaused(true)}
+                  aria-pressed={paused}
+                  aria-label={paused ? copy.stay : undefined}
+                  className={cn(
+                    "grid h-9 shrink-0 place-items-center rounded-full text-[0.8125rem] font-semibold transition-colors",
+                    paused
+                      ? "w-9 bg-ink text-lime"
+                      : "bg-white px-3 text-ink shadow-[0_4px_14px_-8px_hsl(var(--ink)/0.45)] hover:bg-ink hover:text-white"
+                  )}
+                >
+                  {paused ? <Check aria-hidden className="h-4 w-4" strokeWidth={2.5} /> : copy.stay}
+                </button>
               </div>
             </div>
 
-            <nav aria-label="Atajos" className="mt-1 flex flex-col gap-3 lg:mt-4">
-              <span className="text-sm font-semibold text-muted-foreground">O ve directo a:</span>
+            <nav aria-label={copy.shortcutsAria} className="order-2 flex flex-col gap-3 sm:order-none lg:mt-4">
+              <span className="text-sm font-semibold text-muted-foreground">{copy.shortcutsLabel}</span>
               <ul className="flex flex-wrap gap-2">
-                {SHORTCUTS.map((item) => (
+                {shortcuts.map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}
