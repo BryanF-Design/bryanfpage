@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type FocusEvent,
   type KeyboardEvent,
   type ReactNode,
 } from "react";
@@ -24,11 +25,14 @@ import { projects, desktopShot, mobileShot, type Project } from "@/lib/projects"
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { SectionHeading } from "@/components/sections/section-heading";
 import { useLanguage } from "@/lib/i18n/context";
+import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { cn } from "@/lib/utils";
 
 /**
  * Recientes: seis lanzamientos con captura (dos filas en escritorio). Gecomex
  * ya vive en el hero y CEAH es el destacado, así que no se repiten aquí.
+ * Van en su propia lista: mantener un múltiplo de seis para que llenen filas
+ * completas de dos y de tres columnas.
  */
 const RECENT_SLUGS = [
   "efficientplasticolors-com",
@@ -88,11 +92,12 @@ const COUNT_AVATARS = ["mielyabejas-mx", "bravologix-com-mx", "gruposum-com"];
 /** La pila de "+N": tres del resto con cabecera oscura (se leen en el lima). */
 const MORE_AVATARS = ["grupocosma-com", "nezga-arquitectos-vercel-app", "distribuidorajemar-com"];
 
-// Cierre de "Todos": ocupa justo los huecos que deja la última fila
-// (dos columnas en teléfono y tableta, tres en escritorio).
-const allTileCells = recentGrid.length + restTiles.length;
-const closerSpan = (allTileCells + (launching.length > 0 ? 2 : 0)) % 2 ? "col-span-1" : "col-span-2";
-const closerDeskCells = (allTileCells + (launching.length > 0 ? 1 : 0)) % 3;
+// Cierre de "Todos": ocupa justo los huecos que deja la última fila de su
+// retícula (dos columnas en teléfono y tableta, tres en escritorio). Los
+// recientes van en su propia lista, así que solo cuenta el resto.
+const restCells = restTiles.length;
+const closerSpan = (restCells + (launching.length > 0 ? 2 : 0)) % 2 ? "col-span-1" : "col-span-2";
+const closerDeskCells = (restCells + (launching.length > 0 ? 1 : 0)) % 3;
 const closerWide = closerDeskCells === 0;
 const closerLgSpan = ["lg:col-span-3", "lg:col-span-2", "lg:col-span-1"][closerDeskCells];
 
@@ -130,9 +135,17 @@ function LiveDot({ className }: { className?: string }) {
 }
 
 /** Pila de avatares redondos con capturas móviles. */
-function ShotStack({ slugs, ring = "ring-lime" }: { slugs: string[]; ring?: string }) {
+function ShotStack({
+  slugs,
+  ring = "ring-lime",
+  className,
+}: {
+  slugs: string[];
+  ring?: string;
+  className?: string;
+}) {
   return (
-    <span aria-hidden className="flex -space-x-3">
+    <span aria-hidden className={cn("flex -space-x-3", className)}>
       {slugs.map((slug) => (
         <span
           key={slug}
@@ -216,20 +229,35 @@ function PhoneMock({
 /**
  * Ficha del catálogo: en escritorio, la misma barra de navegador sobre la
  * captura en todas las fichas (la URL se ilumina al pasar el puntero); en
- * teléfono, la captura móvil. Debajo, el nombre y su giro.
+ * teléfono, la captura móvil. Debajo, el nombre y su giro. Con `rail`, en
+ * teléfono es una tarjeta ancha del carrusel (captura apaisada y el pie en
+ * una fila); de md en adelante es idéntica.
  */
 function ProjectTile({
   project,
   isNew,
   linkRef,
+  rail = false,
 }: {
   project: Project;
   isNew: boolean;
   linkRef?: (node: HTMLAnchorElement | null) => void;
+  rail?: boolean;
 }) {
   const { t } = useLanguage();
   const host = hostname(project.url);
   const desc = t.projects.descs[project.slug] || project.desc || host;
+  const badge = (className?: string) => (
+    <span
+      className={cn(
+        "inline-flex h-7 w-fit shrink-0 items-center gap-1 rounded-full bg-lime-soft px-2.5 text-xs font-bold text-ink sm:h-8 sm:px-3",
+        className
+      )}
+    >
+      <Sparkle aria-hidden className="h-3 w-3 fill-lime-deep text-lime-deep" />
+      {t.projects.newBadge}
+    </span>
+  );
 
   return (
     <a
@@ -245,14 +273,17 @@ function ProjectTile({
         pillClassName="transition-colors duration-300 group-hover:bg-lime-soft group-hover:text-ink"
       />
       <div
-        className="relative aspect-[4/5] overflow-hidden rounded-inner bg-mint md:aspect-[1440/1000]"
+        className={cn(
+          "relative overflow-hidden rounded-inner bg-mint md:aspect-[1440/1000]",
+          rail ? "aspect-[4/3]" : "aspect-[4/5]"
+        )}
         style={{ "--notch-bg": "var(--card)" } as CSSProperties}
       >
         <Image
           src={mobileShot(project.slug)}
           alt={`${project.name} — versión móvil del sitio`}
           fill
-          sizes="(max-width: 767px) 50vw, 1px"
+          sizes={rail ? "(max-width: 639px) 80vw, (max-width: 767px) 46vw, 1px" : "(max-width: 767px) 50vw, 1px"}
           quality={70}
           className="object-cover object-top transition-transform duration-700 [transition-timing-function:var(--ease-out)] group-hover:scale-[1.04] md:hidden"
         />
@@ -264,6 +295,9 @@ function ProjectTile({
           quality={70}
           className="hidden object-cover object-top transition-transform duration-700 [transition-timing-function:var(--ease-out)] group-hover:scale-[1.04] md:block"
         />
+        {/* En el carrusel el "Nuevo" flota sobre la captura para que el
+            nombre tenga todo el ancho; de md en adelante va en el pie. */}
+        {rail && isNew && badge("absolute right-2 top-2 z-10 shadow-soft md:hidden")}
         <span className="notch notch-br">
           <span className="grid size-9 place-items-center rounded-full bg-ink text-lime transition-transform duration-500 [transition-timing-function:var(--ease-pop)] group-hover:rotate-45 sm:size-11">
             <ArrowUpRight aria-hidden className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -271,21 +305,29 @@ function ProjectTile({
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col gap-2 px-1.5 pb-2 pt-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4 sm:px-3 sm:pb-2.5 sm:pt-4">
+      <div
+        className={cn(
+          "flex flex-1 pb-2 pt-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4 sm:px-3 sm:pb-2.5 sm:pt-4",
+          rail ? "flex-row items-end justify-between gap-3 px-2" : "flex-col gap-2 px-1.5"
+        )}
+      >
         <div className="min-w-0">
-          <h3 className="display-title text-[1.0625rem] leading-[1.08] text-foreground sm:text-[1.5rem]">
+          <h3
+            // El tamaño va antes del interlineado: cn() quita un `leading-*`
+            // que quede antes de un `text-*`.
+            className={cn(
+              "display-title",
+              rail ? "text-[1.25rem]" : "text-[1.0625rem]",
+              "leading-[1.08] text-foreground sm:text-[1.5rem]"
+            )}
+          >
             {project.name}
           </h3>
-          <p className="mt-1 line-clamp-2 text-[0.8125rem] leading-snug text-muted-foreground sm:text-sm">
+          <p className="mt-1 line-clamp-2 text-[0.9375rem] leading-snug text-muted-foreground sm:text-sm">
             {desc}
           </p>
         </div>
-        {isNew && (
-          <span className="inline-flex h-7 w-fit shrink-0 items-center gap-1 rounded-full bg-lime-soft px-2.5 text-xs font-bold text-ink sm:h-8 sm:px-3">
-            <Sparkle aria-hidden className="h-3 w-3 fill-lime-deep text-lime-deep" />
-            {t.projects.newBadge}
-          </span>
-        )}
+        {isNew && badge(rail ? "hidden md:inline-flex" : undefined)}
       </div>
     </a>
   );
@@ -365,7 +407,7 @@ function FeaturedProject({ project }: { project: Project }) {
   const host = hostname(project.url);
 
   return (
-    <article className="panel panel-forest relative grid items-center gap-8 overflow-hidden p-4 pt-[4.25rem] sm:p-7 sm:pt-20 lg:grid-cols-12 lg:gap-6 lg:p-10 lg:pt-10">
+    <article className="panel panel-forest relative grid items-center gap-6 overflow-hidden p-4 pt-[4.25rem] sm:p-7 sm:pt-20 md:gap-8 lg:grid-cols-12 lg:gap-6 lg:p-10 lg:pt-10">
       {/* Fondo: un parche de puntos lima. */}
       <span
         aria-hidden
@@ -381,7 +423,7 @@ function FeaturedProject({ project }: { project: Project }) {
         </span>
       </div>
 
-      <div className="relative z-[1] flex flex-col items-start gap-5 lg:col-span-5 lg:gap-6 lg:pt-16">
+      <div className="relative z-[1] flex flex-col items-start gap-4 md:gap-5 lg:col-span-5 lg:gap-6 lg:pt-16">
         <h3 className="text-white">
           <span className="display-xl block text-[clamp(4.25rem,10.5vw,9.5rem)]">{lead}</span>
           {tail.length > 0 && (
@@ -411,8 +453,10 @@ function FeaturedProject({ project }: { project: Project }) {
         </Button>
       </div>
 
-      {/* Dispositivos: navegador de escritorio y el teléfono encima. */}
-      <div className="relative lg:col-span-7">
+      {/* Dispositivos: navegador de escritorio y el teléfono encima. En
+          teléfono la franja es más baja y ambos suben desde el borde
+          inferior del panel, que los recorta. */}
+      <div className="relative -mb-4 h-[12rem] sm:-mb-7 sm:h-[15rem] md:mb-0 md:h-auto lg:col-span-7">
         <div className="relative pb-12 pl-[17%] sm:pb-16 lg:pb-10 lg:pl-[13%]">
           <div className="surface-white rounded-card p-1.5 shadow-float sm:p-2">
             <BrowserBar host={host} />
@@ -431,7 +475,7 @@ function FeaturedProject({ project }: { project: Project }) {
             slug={project.slug}
             alt={`${project.name} — captura del sitio en móvil`}
             sizes="(min-width: 1024px) 15rem, 36vw"
-            className="absolute bottom-0 left-0 w-[34%] max-w-[15rem] lg:w-[30%]"
+            className="absolute left-0 top-10 w-[30%] max-w-[15rem] md:bottom-0 md:top-auto md:w-[34%] lg:w-[30%]"
           />
           <Sparkle
             aria-hidden
@@ -632,8 +676,9 @@ export function ProjectCases() {
  * Cabecera en bento (titular + contador lima), el lanzamiento destacado en
  * un panel bosque con navegador y teléfono, y la retícula: seis recientes con
  * captura y la tarjeta "+N"; en "Todos", el resto, los recién lanzados sin
- * captura en una lista y el cierre hacia el configurador. En teléfono las
- * fichas van a dos columnas con la captura móvil, como una tienda.
+ * captura en una lista y el cierre hacia el configurador. En teléfono los
+ * recientes son un carrusel con imán y el resto va a dos columnas con la
+ * captura móvil, como una tienda.
  *
  * Los casos de estudio son su propia sección (`ProjectCases`). Mientras la
  * página no la monte aparte, el portafolio la incluye al final (`withCases`).
@@ -655,6 +700,23 @@ export function ProjectsShowcase({ withCases = true }: { withCases?: boolean } =
     setFocusRest(false);
   }, [focusRest, showAll]);
 
+  // Carrusel de teléfono: al tabular, la ficha enfocada se alinea completa
+  // (el navegador deja a medias la que asoma). En la retícula no hay
+  // desplazamiento horizontal y no hace nada.
+  const reducedMotion = useReducedMotionPreference();
+  const onRailFocus = (event: FocusEvent<HTMLUListElement>) => {
+    const rail = event.currentTarget;
+    if (rail.scrollWidth <= rail.clientWidth) return;
+    const item = (event.target as HTMLElement).closest("li");
+    if (!item || item.parentElement !== rail) return;
+    const offset =
+      item.getBoundingClientRect().left -
+      rail.getBoundingClientRect().left -
+      (parseFloat(getComputedStyle(rail).paddingLeft) || 0);
+    if (Math.abs(offset) < 2) return;
+    rail.scrollTo({ left: rail.scrollLeft + offset, behavior: reducedMotion ? "auto" : "smooth" });
+  };
+
   const filters = [
     { label: t.projects.recent, count: RECENT_COUNT, pressed: !showAll, all: false },
     { label: t.projects.all, count: projects.length, pressed: showAll, all: true },
@@ -668,7 +730,7 @@ export function ProjectsShowcase({ withCases = true }: { withCases?: boolean } =
       {/* Cabecera en bento: titular + contador. */}
       <div className="grid gap-gutter lg:grid-cols-12">
         <div data-fx="panel" className="min-w-0 lg:col-span-7">
-          <div className="panel relative flex h-full flex-col justify-between gap-8 overflow-hidden p-5 shadow-soft sm:p-7 lg:p-10">
+          <div className="panel relative flex h-full flex-col justify-between gap-6 overflow-hidden p-5 shadow-soft sm:p-7 md:gap-8 lg:p-10">
             <SectionHeading
               eyebrow={t.projects.eyebrow}
               chapter={{ index: 2 }}
@@ -703,40 +765,42 @@ export function ProjectsShowcase({ withCases = true }: { withCases?: boolean } =
         </div>
 
         {/* Contador lima: la cifra a la izquierda y un teléfono que sube
-            desde el borde inferior, como las tarjetas de las referencias. */}
+            desde el borde inferior, como las tarjetas de las referencias.
+            En teléfono es una franja: cifra y texto en una fila, el
+            teléfono asoma más bajo y la pila de avatares se guarda. */}
         <div data-fx="right" className="min-w-0 lg:col-span-5" style={fx(120)}>
-          <div className="panel panel-lime relative flex h-full min-h-[19rem] overflow-hidden p-5 sm:min-h-[22rem] sm:p-7 lg:p-8">
+          <div className="panel panel-lime relative flex h-full min-h-[10rem] overflow-hidden p-5 sm:p-7 md:min-h-[22rem] lg:p-8">
             <span
               aria-hidden
-              className="dot-cluster pointer-events-none absolute -bottom-4 left-[38%] h-40 w-48 opacity-90 [filter:brightness(0.62)] [mask-image:radial-gradient(circle_at_50%_70%,black,transparent_70%)]"
+              className="dot-cluster pointer-events-none absolute -top-2 left-[32%] h-24 w-40 opacity-90 [filter:brightness(0.62)] [mask-image:radial-gradient(circle_at_50%_30%,black,transparent_70%)] md:-bottom-4 md:top-auto md:left-[38%] md:h-40 md:w-48 md:[mask-image:radial-gradient(circle_at_50%_70%,black,transparent_70%)]"
             />
             <svg
               aria-hidden
               viewBox="0 0 400 140"
-              className="pointer-events-none absolute right-[-18%] top-[18%] w-[80%] text-ink/25"
+              className="pointer-events-none absolute right-[-18%] top-[18%] hidden w-[80%] text-ink/25 md:block"
             >
               <ellipse cx="200" cy="70" rx="190" ry="44" fill="none" stroke="currentColor" strokeWidth="1.25" transform="rotate(-12 200 70)" />
             </svg>
-            <div className="relative z-[1] flex w-[56%] flex-col justify-between gap-6 lg:w-[54%]">
+            <div className="relative z-[1] flex w-[66%] flex-col justify-between gap-4 md:w-[56%] md:gap-6 lg:w-[54%]">
               <span className="eyebrow w-fit bg-white/60 pl-3">
                 <LiveDot className="text-forest" />
                 {t.projects.live}
               </span>
-              <div>
-                <p className="display-xl text-[clamp(5.5rem,9vw,8.5rem)] leading-[0.8] text-ink">
+              <div className="flex items-end gap-3 md:block">
+                <p className="display-xl shrink-0 text-[5rem] leading-[0.8] text-ink md:text-[clamp(5.5rem,9vw,8.5rem)]">
                   {projects.length}
                 </p>
-                <p className="mt-3 max-w-[14rem] text-[0.95rem] font-semibold leading-snug text-ink">
+                <p className="max-w-[14rem] text-[0.95rem] font-semibold leading-snug text-ink md:mt-3">
                   {t.projects.countLabel}
                 </p>
               </div>
-              <ShotStack slugs={COUNT_AVATARS} />
+              <ShotStack slugs={COUNT_AVATARS} className="hidden md:flex" />
             </div>
             <PhoneMock
               slug={COUNT_PHONE}
               alt=""
               sizes="(min-width: 1024px) 13rem, 9.5rem"
-              className="absolute bottom-0 right-4 w-[40%] max-w-[13rem] translate-y-[18%] sm:right-8 lg:right-5 lg:w-[38%] xl:right-7"
+              className="absolute bottom-0 right-4 w-[30%] max-w-[8rem] translate-y-[48%] sm:right-8 md:w-[40%] md:max-w-[13rem] md:translate-y-[18%] lg:right-5 lg:w-[38%] xl:right-7"
             />
             <Sparkle
               aria-hidden
@@ -751,63 +815,51 @@ export function ProjectsShowcase({ withCases = true }: { withCases?: boolean } =
         <FeaturedProject project={featuredProject} />
       </div>
 
-      {/* Catálogo: recientes primero; el resto detrás de "Mostrar más". */}
-      <ul role="list" className="grid grid-cols-2 gap-2.5 sm:gap-gutter lg:grid-cols-3">
+      {/* Recientes. De md en adelante, retícula (seis fichas: filas completas
+          de dos y de tres columnas). En teléfono, un carrusel con imán que
+          deja asomar la siguiente ficha; cada enlace sigue en el orden de
+          tabulación y el navegador desplaza el carrusel al enfocarlo. */}
+      <ul
+        role="list"
+        aria-label={t.projects.recent}
+        onFocus={onRailFocus}
+        className="-mx-[var(--gutter)] -my-2 flex snap-x snap-mandatory scroll-px-[var(--gutter)] gap-3 overflow-x-auto px-[var(--gutter)] pb-4 pt-2 [scrollbar-width:none] md:mx-0 md:my-0 md:grid md:grid-cols-2 md:gap-gutter md:overflow-visible md:p-0 lg:grid-cols-3 [&::-webkit-scrollbar]:hidden"
+      >
         {recentGrid.map((project, index) => (
-          <li key={project.slug} data-fx="up" className="min-w-0" style={fx((index % 3) * 80)}>
-            <ProjectTile project={project} isNew={NEW_SLUGS.has(project.slug)} />
+          <li
+            key={project.slug}
+            data-fx="up"
+            // En el carrusel las fichas fuera de pantalla no deben esperar a
+            // "entrar" para verse: se muestran fijas por debajo de md.
+            className="w-[80%] min-w-0 shrink-0 snap-start sm:w-[46%] max-md:[&>*]:!transform-none max-md:[&>*]:!opacity-100 md:w-auto"
+            style={fx((index % 3) * 80)}
+          >
+            <ProjectTile project={project} isNew={NEW_SLUGS.has(project.slug)} rail />
           </li>
         ))}
+      </ul>
 
-        {showAll && launching.length > 0 && (
-          <li data-fx="up" className="col-span-2 min-w-0 lg:col-span-1">
-            <LaunchList items={launching} firstLinkRef={setFirstRest} />
-          </li>
-        )}
-
-        {showAll &&
-          restTiles.map((project, index) => (
-            <li key={project.slug} data-fx="up" className="min-w-0" style={fx((index % 3) * 80)}>
-              <ProjectTile
-                project={project}
-                isNew={false}
-                linkRef={index === 0 && launching.length === 0 ? setFirstRest : undefined}
-              />
+      {/* El resto detrás de "Mostrar más": aparece justo debajo, donde
+          estaba la tarjeta "+N". */}
+      {showAll || restProjects.length === 0 ? (
+        <ul role="list" className="grid grid-cols-2 gap-2.5 sm:gap-gutter lg:grid-cols-3">
+          {showAll && launching.length > 0 && (
+            <li data-fx="up" className="col-span-2 min-w-0 lg:col-span-1">
+              <LaunchList items={launching} firstLinkRef={setFirstRest} />
             </li>
-          ))}
+          )}
 
-        {!showAll && restProjects.length > 0 ? (
-          <li data-fx="pop" className="col-span-2 min-w-0 lg:col-span-3" style={fx(120)}>
-            <div className="panel-lime relative flex flex-col gap-5 overflow-hidden rounded-card p-5 sm:p-7 lg:flex-row lg:items-center lg:justify-between lg:gap-10 lg:px-10 lg:py-7">
-              <span
-                aria-hidden
-                className="dot-cluster pointer-events-none absolute -right-2 -top-2 h-32 w-40 opacity-90 [filter:brightness(0.62)] [mask-image:radial-gradient(circle_at_85%_15%,black,transparent_70%)] lg:left-[38%] lg:right-auto lg:top-auto lg:-bottom-6 lg:h-32 lg:w-56 lg:[mask-image:radial-gradient(circle_at_50%_70%,black,transparent_70%)]"
-              />
-              <div className="relative flex items-center gap-4 sm:gap-6">
-                <p className="display-xl text-[clamp(4.25rem,8vw,6.5rem)] leading-[0.8] text-ink">
-                  +{restProjects.length}
-                </p>
-                <div className="flex flex-col gap-2.5">
-                  <ShotStack slugs={MORE_AVATARS} />
-                  <p className="text-base font-semibold leading-snug text-ink">{t.projects.moreLabel}</p>
-                </div>
-              </div>
-              <Button
-                size="lg"
-                onClick={() => {
-                  setShowAll(true);
-                  setFocusRest(true);
-                }}
-                className="relative w-full justify-between pr-2.5 lg:w-auto lg:min-w-[19rem]"
-              >
-                {t.projects.showMore}
-                <span aria-hidden className="grid size-9 place-items-center rounded-full bg-lime text-ink">
-                  <ChevronDown className="h-4 w-4" />
-                </span>
-              </Button>
-            </div>
-          </li>
-        ) : (
+          {showAll &&
+            restTiles.map((project, index) => (
+              <li key={project.slug} data-fx="up" className="min-w-0" style={fx((index % 3) * 80)}>
+                <ProjectTile
+                  project={project}
+                  isNew={false}
+                  linkRef={index === 0 && launching.length === 0 ? setFirstRest : undefined}
+                />
+              </li>
+            ))}
+
           <li data-fx="pop" className={cn("min-w-0", closerSpan, closerLgSpan)}>
             {/* Cierre del catálogo: toda la ficha lleva al configurador. */}
             <Link
@@ -849,8 +901,39 @@ export function ProjectsShowcase({ withCases = true }: { withCases?: boolean } =
               </span>
             </Link>
           </li>
-        )}
-      </ul>
+        </ul>
+      ) : (
+        <div data-fx="pop" className="min-w-0" style={fx(120)}>
+          <div className="panel-lime relative flex flex-col gap-4 overflow-hidden rounded-card p-4 sm:p-7 md:gap-5 lg:flex-row lg:items-center lg:justify-between lg:gap-10 lg:px-10 lg:py-7">
+            <span
+              aria-hidden
+              className="dot-cluster pointer-events-none absolute -right-2 -top-2 h-32 w-40 opacity-90 [filter:brightness(0.62)] [mask-image:radial-gradient(circle_at_85%_15%,black,transparent_70%)] lg:left-[38%] lg:right-auto lg:top-auto lg:-bottom-6 lg:h-32 lg:w-56 lg:[mask-image:radial-gradient(circle_at_50%_70%,black,transparent_70%)]"
+            />
+            <div className="relative flex items-center gap-4 sm:gap-6">
+              <p className="display-xl text-[clamp(4.25rem,8vw,6.5rem)] leading-[0.8] text-ink">
+                +{restProjects.length}
+              </p>
+              <div className="flex flex-col gap-2.5">
+                <ShotStack slugs={MORE_AVATARS} className="hidden md:flex" />
+                <p className="text-base font-semibold leading-snug text-ink">{t.projects.moreLabel}</p>
+              </div>
+            </div>
+            <Button
+              size="lg"
+              onClick={() => {
+                setShowAll(true);
+                setFocusRest(true);
+              }}
+              className="relative w-full justify-between pr-2.5 lg:w-auto lg:min-w-[19rem]"
+            >
+              {t.projects.showMore}
+              <span aria-hidden className="grid size-9 place-items-center rounded-full bg-lime text-ink">
+                <ChevronDown className="h-4 w-4" />
+              </span>
+            </Button>
+          </div>
+        </div>
+      )}
 
       {withCases && <ProjectCases />}
     </section>

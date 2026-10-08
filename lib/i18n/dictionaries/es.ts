@@ -80,6 +80,7 @@ const es = {
     title: "Un proceso claro, de la idea al lanzamiento",
     subtitle:
       "Te digo qué sigue, qué necesito y cuándo lo verás. Las entregas empiezan desde 3 días hábiles y sigo contigo después del lanzamiento.",
+    stepsLabel: "Pasos del proceso",
     steps: [
       {
         title: "Cotización",
@@ -560,6 +561,7 @@ const es = {
     privacy: "No pedimos datos sensibles en el chat. Tu conversación vive sólo en este dispositivo.",
     quotePresets: ["Cotiza tu sitio a medida", "Cotiza tu tienda en línea", "Cotiza tu mantenimiento"],
     presetsTitle: "Cotiza en un clic",
+    quickLabel: "Preguntas rápidas",
     moods: {
       normal: "Modo normal",
       enfocada: "Modo enfocada",

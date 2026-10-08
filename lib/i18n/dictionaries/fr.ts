@@ -77,6 +77,7 @@ const fr: Dictionary = {
     eyebrow: "Comment on travaille",
     title: "Un processus clair, de l'idée au lancement",
     subtitle: "Sans blabla : livraison dès 3 jours ouvrés, avec suivi après le lancement.",
+    stepsLabel: "Étapes du processus",
     steps: [
       {
         title: "Devis",
@@ -537,6 +538,7 @@ const fr: Dictionary = {
     privacy: "Aucune donnée sensible dans le chat. Ta conversation reste sur cet appareil.",
     quotePresets: ["Devis site sur mesure", "Devis boutique en ligne", "Devis maintenance"],
     presetsTitle: "Devis en un clic",
+    quickLabel: "Questions rapides",
     moods: {
       normal: "Mode normal",
       enfocada: "Mode concentrée",

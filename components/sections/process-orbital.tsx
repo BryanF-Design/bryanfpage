@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties, ReactNode } from "react";
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import {
   ArrowRight,
   ClipboardList,
@@ -37,18 +37,37 @@ function accentLastWord(title: string): ReactNode {
 }
 
 /**
+ * `true` por debajo de `md` (768px), donde el riel es un carrusel. Arranca en
+ * `false` para que el HTML del servidor y la hidratación coincidan.
+ */
+function useBelowMd() {
+  const [below, setBelow] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const sync = () => setBelow(!mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  return below;
+}
+
+/**
  * Proceso — cinco pasos en una línea de tiempo.
  *
  * Un solo panel blanco: cabecera arriba y, debajo, el riel. En escritorio los
  * pasos van en fila, unidos por una línea punteada que pasa por sus insignias
- * redondas; en teléfono el riel baja por la izquierda. El último paso (el
- * seguimiento, lo que sigue después del lanzamiento) va en lima.
+ * redondas; en tableta el riel baja por la izquierda; en teléfono vuelve a ir
+ * en fila, como carrusel con imán que deja asomar la siguiente ficha. El
+ * último paso (el seguimiento, lo que sigue después del lanzamiento) va en lima.
  */
 export function ProcessOrbital() {
   const { t } = useLanguage();
   const steps = t.process.steps;
   const total = steps.length;
   const highlight = total - 1;
+  // En teléfono el carrusel recibe foco para poder recorrerlo con flechas.
+  const isCarousel = useBelowMd();
 
   return (
     <section id="proceso" aria-label={t.process.title} className="relative">
@@ -91,8 +110,14 @@ export function ProcessOrbital() {
             </div>
           </div>
 
-          {/* La línea de tiempo: vertical hasta xl, en fila a partir de ahí. */}
-          <ol className="relative mt-9 grid gap-3 md:mt-12 md:gap-4 xl:mt-14 xl:grid-cols-5 xl:gap-gutter">
+          {/* La línea de tiempo: carrusel horizontal en teléfono (llega al
+              borde del panel), vertical en tableta y en fila desde xl. */}
+          <ol
+            role="list"
+            aria-label={t.process.stepsLabel}
+            tabIndex={isCarousel ? 0 : undefined}
+            className="relative mt-9 grid gap-3 md:mt-12 md:gap-4 xl:mt-14 xl:grid-cols-5 xl:gap-gutter max-md:mt-7 max-md:flex max-md:snap-x max-md:snap-mandatory max-md:overflow-x-auto max-md:overscroll-x-contain max-md:pb-2 max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden max-sm:-mx-5 max-sm:scroll-px-5 max-sm:px-5 sm:max-md:-mx-7 sm:max-md:scroll-px-7 sm:max-md:px-7 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ink"
+          >
             {steps.map((step, index) => {
               const Icon = ICONS[index] ?? Sparkle;
               const isHighlight = index === highlight;
@@ -103,18 +128,22 @@ export function ProcessOrbital() {
                   key={step.title}
                   data-fx="up"
                   style={{ "--fx-delay": `${index * 90}ms` } as CSSProperties}
-                  className="relative min-w-0"
+                  className={cn(
+                    "relative min-w-0 max-md:w-[82%] max-md:shrink-0 max-md:snap-start sm:max-md:w-[46%]",
+                    // Fuera de la vista inicial del carrusel: entra sin esperar al escalonado.
+                    index > 1 && "max-md:![--fx-delay:0ms]"
+                  )}
                 >
-                  <div className="relative grid h-full grid-cols-[3rem_minmax(0,1fr)] gap-3 sm:grid-cols-[3.5rem_minmax(0,1fr)] md:gap-5 xl:flex xl:flex-col xl:gap-5">
+                  <div className="relative grid h-full grid-cols-[3rem_minmax(0,1fr)] gap-3 sm:grid-cols-[3.5rem_minmax(0,1fr)] md:gap-5 xl:flex xl:flex-col xl:gap-5 max-md:flex max-md:flex-col max-md:gap-4">
                     {/* Tramo del riel hacia el siguiente paso (vertical en
-                        teléfono y tableta, horizontal en escritorio), con su flecha. */}
+                        tableta, horizontal en teléfono y escritorio), con su flecha. */}
                     {!isLast && (
                       <span
                         aria-hidden
-                        className="absolute left-6 top-6 z-0 h-[calc(100%+0.75rem)] sm:left-7 sm:top-7 w-0 border-l-2 border-dashed border-ink/20 md:h-[calc(100%+1rem)] xl:left-[2.25rem] xl:h-0 xl:w-[calc(100%+var(--gutter))] xl:border-l-0 xl:border-t-2"
+                        className="absolute left-6 top-6 z-0 h-[calc(100%+0.75rem)] sm:left-7 sm:top-7 w-0 border-l-2 border-dashed border-ink/20 md:h-[calc(100%+1rem)] xl:left-[2.25rem] xl:h-0 xl:w-[calc(100%+var(--gutter))] xl:border-l-0 xl:border-t-2 max-md:h-0 max-md:w-[calc(100%+0.75rem)] max-md:border-l-0 max-md:border-t-2"
                       >
-                        <span className="absolute left-1/2 top-1/2 grid size-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-ink/60 ring-1 ring-ink/10 xl:left-[55%]">
-                          <ArrowRight className="h-3.5 w-3.5 rotate-90 xl:rotate-0" />
+                        <span className="absolute left-1/2 top-1/2 grid size-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-ink/60 ring-1 ring-ink/10 xl:left-[55%] max-md:left-[55%]">
+                          <ArrowRight className="h-3.5 w-3.5 rotate-90 xl:rotate-0 max-md:rotate-0" />
                         </span>
                       </span>
                     )}

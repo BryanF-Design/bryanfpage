@@ -77,6 +77,7 @@ const pt: Dictionary = {
     eyebrow: "Como trabalhamos",
     title: "Um processo claro, da ideia ao lançamento",
     subtitle: "Sem enrolação: entregas a partir de 3 dias úteis, com acompanhamento após o lançamento.",
+    stepsLabel: "Etapas do processo",
     steps: [
       {
         title: "Orçamento",
@@ -537,6 +538,7 @@ const pt: Dictionary = {
     privacy: "Não pedimos dados sensíveis no chat. A tua conversa fica só neste dispositivo.",
     quotePresets: ["Orçar site sob medida", "Orçar loja online", "Orçar manutenção"],
     presetsTitle: "Orçamento em um clique",
+    quickLabel: "Perguntas rápidas",
     moods: {
       normal: "Modo normal",
       enfocada: "Modo focada",

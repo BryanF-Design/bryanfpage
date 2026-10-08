@@ -77,6 +77,7 @@ const en: Dictionary = {
     eyebrow: "How we work",
     title: "A clear process, from idea to launch",
     subtitle: "No smoke and mirrors: delivery starts at 3 business days, with support after launch.",
+    stepsLabel: "Process steps",
     steps: [
       {
         title: "Quote",
@@ -537,6 +538,7 @@ const en: Dictionary = {
     privacy: "No sensitive data in the chat. Your conversation stays on this device only.",
     quotePresets: ["Quote a custom site", "Quote an online store", "Quote maintenance"],
     presetsTitle: "Quote in one click",
+    quickLabel: "Quick questions",
     moods: {
       normal: "Normal mode",
       enfocada: "Focused mode",

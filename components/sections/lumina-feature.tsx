@@ -104,6 +104,15 @@ export function LuminaFeature() {
     if (wantedRef.current === index) setShown(index);
   }
 
+  // Con teclado, la pregunta enfocada se desliza completa a la vista: el
+  // navegador no mueve la fila si la ficha asoma a medias. Solo actúa cuando
+  // la fila de verdad se desliza (teléfono).
+  function revealQuick(el: HTMLElement) {
+    const row = el.parentElement;
+    if (!row || row.scrollWidth <= row.clientWidth || !el.matches(":focus-visible")) return;
+    el.scrollIntoView({ block: "nearest", inline: "nearest", behavior: reduced ? "auto" : "smooth" });
+  }
+
   return (
     <section
       id="lumina"
@@ -113,12 +122,12 @@ export function LuminaFeature() {
       {/* A · Escenario bosque: Lumina rompe el borde superior del panel. El
           relleno superior reserva exactamente lo que sube su cabeza, así nunca
           invade la sección anterior. */}
-      <div data-fx="panel" className="min-w-0 pt-16 sm:pt-20 md:col-span-12 md:pt-16 lg:pt-28 xl:col-span-8 xl:pt-[6.25rem] xl:row-start-1">
+      <div data-fx="panel" className="min-w-0 pt-12 sm:pt-20 md:col-span-12 md:pt-16 lg:pt-28 xl:col-span-8 xl:pt-[6.25rem] xl:row-start-1">
         <div className="panel panel-forest relative flex h-full flex-col md:min-h-[32rem] md:flex-row xl:min-h-[33rem]">
           {/* Fondo: brillo, disco lima detrás de su cabeza y puntos. */}
           <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_28%_30%,hsl(var(--lime)/0.18),transparent_65%)]" />
-            <div className="absolute left-[14%] top-2 aspect-square w-[74%] rounded-full bg-lime sm:left-[22%] sm:w-[56%] md:left-[7%] md:top-[-3.5rem] md:w-[43%]" />
+            <div className="absolute left-[19%] top-1 aspect-square w-[62%] rounded-full bg-lime sm:left-[22%] sm:top-2 sm:w-[56%] md:left-[7%] md:top-[-3.5rem] md:w-[43%]" />
             <div className="absolute -bottom-24 -right-24 size-80 rounded-full border border-white/10" />
             <div className="absolute -bottom-10 -right-10 size-48 rounded-full border border-white/10" />
             <div className="dot-cluster absolute right-9 top-[5.5rem] hidden h-[4.125rem] w-[6.875rem] opacity-60 min-[1400px]:block" />
@@ -139,15 +148,16 @@ export function LuminaFeature() {
               recorte solo corta la base (con la esquina redondeada del panel):
               arriba y a la derecha el pelo sale libre, sin cantos rectos.
               Cuánto sube = relleno superior del contenedor: alto extra − lo que
-              baja (4 · 5 · 4 · 7 · 6.25rem por breakpoint). */}
-          <div className="relative h-[21rem] shrink-0 [clip-path:inset(-6rem_0_0_0)] sm:h-[27rem] md:absolute md:inset-y-0 md:left-0 md:h-auto md:w-[54%] md:[clip-path:inset(-100%_-100%_0_0_round_0_0_0_var(--r-panel))]">
+              baja (3 · 5 · 4 · 7 · 6.25rem por breakpoint). En teléfono el escenario
+              y Lumina son más bajos para que la sección no se alargue. */}
+          <div className="relative h-[17rem] shrink-0 [clip-path:inset(-6rem_0_0_0)] sm:h-[27rem] md:absolute md:inset-y-0 md:left-0 md:h-auto md:w-[54%] md:[clip-path:inset(-100%_-100%_0_0_round_0_0_0_var(--r-panel))]">
             <button
               type="button"
               onClick={poke}
               onPointerEnter={primeNext}
               onFocus={primeNext}
               aria-label={`${t.luminaSection.hint} · ${moodLabel}`}
-              className="group absolute left-1/2 top-[-4rem] z-10 block w-[min(22rem,94%)] -translate-x-[52%] cursor-pointer rounded-[2rem] focus-visible:outline-offset-[-8px] sm:top-[-5rem] sm:w-[27rem] md:bottom-[-3.25rem] md:left-0 md:top-auto md:h-[calc(100%+7.25rem)] md:w-auto md:-translate-x-[18%] lg:h-[calc(100%+10.25rem)] lg:-translate-x-[12%] xl:h-[calc(100%+9.5rem)]"
+              className="group absolute left-1/2 top-[-3rem] z-10 block w-[min(18.5rem,82%)] -translate-x-[52%] cursor-pointer rounded-[2rem] focus-visible:outline-offset-[-8px] sm:top-[-5rem] sm:w-[27rem] md:bottom-[-3.25rem] md:left-0 md:top-auto md:h-[calc(100%+7.25rem)] md:w-auto md:-translate-x-[18%] lg:h-[calc(100%+10.25rem)] lg:-translate-x-[12%] xl:h-[calc(100%+9.5rem)]"
             >
               <motion.span
                 className="relative block aspect-[864/1121] origin-bottom md:h-full"
@@ -182,7 +192,7 @@ export function LuminaFeature() {
           {/* Ánimo actual + pista para tocarla: una ficha tipo app. En
               teléfono cabalga la unión entre Lumina y la hoja; en escritorio
               flota junto a su cabeza, fuera del panel, como un globo. */}
-          <div className="absolute right-3 top-[16rem] z-30 sm:right-6 sm:top-[22rem] md:left-[55%] md:right-auto md:top-[-4rem] lg:top-[-5.25rem]">
+          <div className="absolute right-3 top-[11.5rem] z-30 sm:right-6 sm:top-[22rem] md:left-[55%] md:right-auto md:top-[-4rem] lg:top-[-5.25rem]">
             <span aria-hidden className="absolute -bottom-1 left-7 hidden size-3.5 rotate-45 rounded-[3px] bg-white md:block" />
             <div className="relative flex items-center gap-2.5 rounded-[1.35rem] bg-white py-2 pl-2 pr-4 text-ink shadow-pop">
               <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-ink text-lime">
@@ -226,7 +236,7 @@ export function LuminaFeature() {
 
           {/* Relato. En teléfono es una hoja blanca que tapa la base del
               recorte (como una app); en escritorio vive sobre el bosque. */}
-          <div className="relative z-20 -mt-14 mx-2 mb-2 flex flex-col items-start gap-5 rounded-[calc(var(--r-panel)-0.375rem)] bg-white p-5 pt-11 text-ink sm:mx-3 sm:mb-3 sm:p-7 sm:pt-12 md:z-10 md:m-0 md:ml-auto md:w-[47%] md:justify-end md:rounded-none md:bg-transparent md:p-10 md:pl-0 md:pt-24 md:text-white">
+          <div className="relative z-20 -mt-14 mx-2 mb-2 flex flex-col items-start gap-4 rounded-[calc(var(--r-panel)-0.375rem)] bg-white p-5 pt-11 text-ink sm:mx-3 sm:mb-3 sm:gap-5 sm:p-7 sm:pt-12 md:z-10 md:m-0 md:ml-auto md:w-[47%] md:justify-end md:rounded-none md:bg-transparent md:p-10 md:pl-0 md:pt-24 md:text-white">
             <span className="eyebrow bg-ink/[0.06] pl-1.5 text-ink md:hidden">
               <b aria-hidden className="!bg-ink !text-lime">
                 <Sparkle className="h-3 w-3 fill-current" />
@@ -255,7 +265,8 @@ export function LuminaFeature() {
                 {t.luminaSection.cta}
                 <ButtonArrow tone="ink" className="ml-auto -mr-0.5 sm:ml-1" />
               </Button>
-              <span className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-mint px-4 text-sm font-semibold text-ink md:bg-white/10 md:text-white">
+              {/* En teléfono el estado ya lo dice la cabecera del chat, justo abajo. */}
+              <span className="hidden h-11 items-center justify-center gap-2 rounded-full bg-mint px-4 text-sm font-semibold text-ink sm:inline-flex md:bg-white/10 md:text-white">
                 <span aria-hidden className="relative flex size-2.5">
                   <span className="absolute inset-0 animate-ping rounded-full bg-forest/50 motion-reduce:animate-none md:bg-lime/60" />
                   <span className="relative size-2.5 rounded-full bg-forest md:bg-lime" />
@@ -273,7 +284,7 @@ export function LuminaFeature() {
         className="min-w-0 md:col-span-7 md:row-span-2 xl:col-span-4 xl:col-start-9 xl:row-span-1 xl:row-start-1"
         style={fxDelay(90)}
       >
-        <div className="panel flex h-full flex-col gap-4 p-3 shadow-soft sm:p-4 lg:p-5">
+        <div className="panel flex h-full flex-col gap-3 p-3 shadow-soft sm:gap-4 sm:p-4 lg:p-5">
           <div className="flex items-center gap-3 px-1 pt-1">
             <span className="relative size-12 shrink-0">
               <span className="absolute inset-0 overflow-hidden rounded-full bg-ink ring-[3px] ring-lime">
@@ -305,14 +316,21 @@ export function LuminaFeature() {
             />
             <TypedPhrases phrases={t.luminaSection.phrases} />
 
-            {/* Preguntas rápidas: tocar una abre el chat y la envía. */}
-            <div className="mt-auto flex flex-col items-end gap-2 pt-3">
+            {/* Preguntas rápidas: tocar una abre el chat y la envía. En
+                teléfono son una sola fila que se desliza (asoma la siguiente),
+                a sangre hasta el borde de la caja menta; desde md, columna. */}
+            <div
+              role="group"
+              aria-label={t.luminaSection.quickLabel}
+              className="-mx-3 mt-auto flex snap-x snap-mandatory scroll-px-3 gap-2 overflow-x-auto px-3 py-1.5 [scrollbar-width:none] sm:-mx-4 sm:scroll-px-4 sm:px-4 md:mx-0 md:snap-none md:flex-col md:items-end md:overflow-visible md:px-0 md:pb-0 md:pt-3 [&::-webkit-scrollbar]:hidden"
+            >
               {t.lumina.quick.map((q) => (
                 <button
                   key={q}
                   type="button"
                   onClick={() => openLuminaChat(q)}
-                  className="group inline-flex min-h-11 max-w-full items-center gap-2 rounded-full bg-white py-2 pl-4 pr-2 text-left text-sm font-semibold text-ink ring-1 ring-ink/10 transition-[background-color,color,transform] duration-200 hover:-translate-y-0.5 hover:bg-ink hover:text-white active:scale-[0.97]"
+                  onFocus={(e) => revealQuick(e.currentTarget)}
+                  className="group inline-flex min-h-11 max-w-none shrink-0 snap-start items-center gap-2 whitespace-nowrap rounded-full bg-white py-2 pl-4 pr-2 text-left text-sm font-semibold text-ink ring-1 ring-ink/10 transition-[background-color,color,transform] duration-200 hover:-translate-y-0.5 hover:bg-ink hover:text-white active:scale-[0.97] md:max-w-full md:shrink md:snap-align-none md:whitespace-normal"
                 >
                   {q}
                   <span className="grid size-7 shrink-0 place-items-center rounded-full bg-lime text-ink">
@@ -352,7 +370,7 @@ export function LuminaFeature() {
         className="min-w-0 md:col-span-5 xl:col-span-4 xl:col-start-9 xl:row-start-2"
         style={fxDelay(120)}
       >
-        <div className="panel panel-lime flex h-full flex-col gap-5 p-5 sm:p-7">
+        <div className="panel panel-lime flex h-full flex-col gap-4 p-5 sm:gap-5 sm:p-7">
           <div className="flex items-center justify-between gap-3">
             <h3 className="display-title text-[1.65rem] text-ink">{t.luminaSection.presetsTitle}</h3>
             <Sparkle aria-hidden className="h-7 w-7 shrink-0 fill-ink text-ink" />
@@ -381,8 +399,11 @@ export function LuminaFeature() {
         </div>
       </div>
 
-      {/* D · Lo que sabe hacer: tres capacidades reales, sin relleno. */}
-      <ul className="grid min-w-0 gap-gutter md:col-span-5 xl:col-span-8 xl:col-start-1 xl:row-start-2 xl:grid-cols-3">
+      {/* D · Lo que sabe hacer: tres capacidades reales, sin relleno. En
+          teléfono se omiten: el subtítulo del escenario ya dice las tres
+          (al instante · todo el catálogo · tu web armada) y el recorrido de
+          Lumina las desarrolla justo después. */}
+      <ul className="hidden min-w-0 gap-gutter sm:grid md:col-span-5 xl:col-span-8 xl:col-start-1 xl:row-start-2 xl:grid-cols-3">
         {t.luminaSection.badges.map((b, i) => {
           const Icon = BADGE_ICONS[i] ?? Zap;
           return (

@@ -77,6 +77,7 @@ const ja: Dictionary = {
     eyebrow: "進め方",
     title: "アイデアから公開まで、明確なプロセスで",
     subtitle: "余計なものは一切なし。最短3営業日から納品、公開後もサポートします。",
+    stepsLabel: "プロセスの各ステップ",
     steps: [
       {
         title: "お見積り",
@@ -530,6 +531,7 @@ const ja: Dictionary = {
     privacy: "チャットで機微な情報は尋ねません。会話はこの端末にのみ残ります。",
     quotePresets: ["オーダーメイドのサイトを見積", "オンラインストアを見積", "保守を見積"],
     presetsTitle: "ワンクリックで見積もり",
+    quickLabel: "クイック質問",
     moods: {
       normal: "ノーマルモード",
       enfocada: "集中モード",

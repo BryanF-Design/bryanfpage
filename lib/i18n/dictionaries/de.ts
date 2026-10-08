@@ -77,6 +77,7 @@ const de: Dictionary = {
     eyebrow: "So arbeiten wir",
     title: "Ein klarer Ablauf, von der Idee bis zum Launch",
     subtitle: "Ohne Nebelkerzen: Lieferung ab 3 Werktagen, mit Betreuung nach dem Launch.",
+    stepsLabel: "Schritte des Ablaufs",
     steps: [
       {
         title: "Angebot",
@@ -537,6 +538,7 @@ const de: Dictionary = {
     privacy: "Keine sensiblen Daten im Chat. Dein Gespräch bleibt nur auf diesem Gerät.",
     quotePresets: ["Website anfragen", "Onlineshop anfragen", "Wartung anfragen"],
     presetsTitle: "Angebot mit einem Klick",
+    quickLabel: "Schnelle Fragen",
     moods: {
       normal: "Normal-Modus",
       enfocada: "Fokus-Modus",

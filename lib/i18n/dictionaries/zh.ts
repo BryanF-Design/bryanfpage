@@ -76,6 +76,7 @@ const zh: Dictionary = {
     eyebrow: "我们的工作方式",
     title: "从创意到上线，流程清晰透明",
     subtitle: "没有虚假宣传：最快3个工作日开始交付，上线后持续跟进。",
+    stepsLabel: "流程步骤",
     steps: [
       { title: "报价", content: "我们会提供清晰的方案：范围、时间和价格，没有隐藏条款。" },
       { title: "需求梳理", content: "了解您的业务、目标和目标客户，确定策略与内容方向。" },
@@ -482,6 +483,7 @@ const zh: Dictionary = {
     privacy: "聊天中不会索取敏感信息。对话仅保存在本设备。",
     quotePresets: ["定制网站报价", "在线商店报价", "维护报价"],
     presetsTitle: "一键报价",
+    quickLabel: "快捷问题",
     moods: {
       normal: "正常模式",
       enfocada: "专注模式",

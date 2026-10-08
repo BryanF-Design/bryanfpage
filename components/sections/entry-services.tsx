@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import type { CSSProperties, FocusEvent } from "react";
 import Image from "next/image";
 import {
   AppWindowMac,
@@ -25,6 +25,7 @@ import { openLuminaChat } from "@/components/sections/lumina-feature";
 import { ENTRY_SERVICE_PRICES } from "@/lib/catalog";
 import { formatMoney } from "@/lib/currency";
 import { useLanguage } from "@/lib/i18n/context";
+import { isReducedMotionRequested } from "@/lib/motion-preference";
 
 /** Ícono de cada producto, por id del catálogo. */
 const ICONS: Record<string, LucideIcon> = {
@@ -42,6 +43,23 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
 function fxDelay(ms: number) {
   return { "--fx-delay": `${ms}ms` } as CSSProperties;
+}
+
+/**
+ * Teclado en el carrusel del teléfono: el navegador no desplaza hacia un
+ * botón que ya asoma por la orilla, así que la ficha que recibe el foco se
+ * trae completa. En la retícula (md+) la lista no se desplaza y no hace nada.
+ */
+function revealFocusedCard(e: FocusEvent<HTMLUListElement>) {
+  const list = e.currentTarget;
+  if (list.scrollWidth <= list.clientWidth + 1) return;
+  const card = (e.target as HTMLElement).closest("li");
+  if (!card || card.parentElement !== list) return;
+  const lr = list.getBoundingClientRect();
+  const cr = card.getBoundingClientRect();
+  if (cr.left >= lr.left - 1 && cr.right <= lr.right + 1) return;
+  const pad = parseFloat(getComputedStyle(list).paddingLeft) || 0;
+  list.scrollBy({ left: cr.left - lr.left - pad, behavior: isReducedMotionRequested() ? "auto" : "smooth" });
 }
 
 /**
@@ -157,13 +175,54 @@ function CardMock({ fromLabel }: { fromLabel: string }) {
 }
 
 /**
+ * La misma tarjeta, en el teléfono: una fila tipo pase de cartera (foto,
+ * nombre, QR) sobre la tarjeta de tinta, con la píldora del precio de entrada
+ * colgada de la esquina. Ocupa un tercio del alto del objeto completo.
+ */
+function MiniCardMock({ fromLabel }: { fromLabel: string }) {
+  return (
+    <div className="relative pb-8">
+      <Sparkle aria-hidden className="absolute -top-3 right-0 h-6 w-6 fill-lime text-lime" />
+      <div aria-hidden className="relative mr-6 select-none">
+        <div className="absolute inset-0 translate-x-2.5 translate-y-1 rotate-[5deg] rounded-[1.35rem] bg-ink shadow-float" />
+        <div className="relative flex -rotate-[2.5deg] items-center gap-3 rounded-[1.35rem] bg-white p-3 pr-3.5 text-ink shadow-float">
+          <span className="relative block size-12 shrink-0 overflow-hidden rounded-full bg-lime-soft ring-[3px] ring-lime">
+            <Image
+              src="/img/brand/bryan-cutout.webp"
+              alt=""
+              fill
+              sizes="128px"
+              className="origin-top scale-[1.35] object-cover object-top"
+            />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-base font-bold leading-tight tracking-[-0.01em]">Bryan F.</span>
+            <span className="block truncate text-xs font-medium text-ink/70">bryanfdesign.com</span>
+          </span>
+          <QrMark className="size-12 shrink-0 text-ink" />
+        </div>
+      </div>
+      <p className="absolute bottom-0 right-0 flex items-center gap-3 whitespace-nowrap rounded-full bg-ink py-1.5 pl-4 pr-1.5 text-white shadow-pop ring-1 ring-white/10">
+        <span className="text-[0.9375rem] font-bold tabular-nums">{fromLabel}</span>
+        <span aria-hidden className="grid size-8 place-items-center rounded-full bg-lime text-ink">
+          <ShoppingBag className="h-4 w-4" />
+        </span>
+      </p>
+    </div>
+  );
+}
+
+/**
  * Servicios de entrada — la vitrina de productos.
  *
  * Productos de bajo costo y entrega rápida para quien todavía no necesita el
  * sitio completo del Configurador. Un panel bosque presenta la carta con la
  * tarjeta digital dibujada como objeto; a su lado, las fichas tipo app (ícono
  * redondo, precio en píldora lima, lista con palomitas) y, abajo, la landing
- * como ficha destacada en lima. En el teléfono las fichas forman un carrusel.
+ * como ficha destacada en lima. En el teléfono (debajo de md) todo se compacta:
+ * la tarjeta dibujada pasa a una fila, las fichas forman un carrusel con el
+ * precio en la esquina y la landing entra como última ficha (lima) del mismo
+ * carrusel en vez de ocupar su propio panel.
  * Cada ficha abre el chat de Lumina con la pregunta ya escrita.
  */
 export function EntryServices() {
@@ -209,11 +268,14 @@ export function EntryServices() {
             className="relative [&_h2]:text-[clamp(2.1rem,3.4vw,3.35rem)] [&_p]:text-[0.975rem] md:[&_p]:text-base"
           />
 
-          <div className="relative mb-6 mt-10 flex flex-1 items-center justify-center sm:mt-12 md:col-start-2 md:row-span-2 md:row-start-1 md:my-6 xl:mb-8 xl:mt-12">
+          <div className="relative mb-6 mt-10 hidden flex-1 items-center justify-center sm:mt-12 md:col-start-2 md:flex md:row-span-2 md:row-start-1 md:my-6 xl:mb-8 xl:mt-12">
             <CardMock fromLabel={fromLabel} />
           </div>
+          <div className="relative mt-7 w-full max-w-[23rem] md:hidden">
+            <MiniCardMock fromLabel={fromLabel} />
+          </div>
 
-          <p className="relative mt-6 flex items-start gap-3 rounded-card bg-white/[0.08] p-3 pr-4 text-[0.9375rem] leading-relaxed text-white/85 ring-1 ring-white/10 sm:text-sm md:col-start-1 md:self-end">
+          <p className="relative mt-5 flex items-start gap-3 rounded-card md:mt-6 bg-white/[0.08] p-3 pr-4 text-[0.9375rem] leading-relaxed text-white/85 ring-1 ring-white/10 sm:text-sm md:col-start-1 md:self-end">
             <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-full bg-lime text-ink">
               <Info className="h-4 w-4" />
             </span>
@@ -222,10 +284,13 @@ export function EntryServices() {
         </div>
       </div>
 
-      {/* Fichas de producto: carrusel en el teléfono, retícula 2×2 después. */}
+      {/* Fichas de producto: carrusel en el teléfono (la siguiente ficha
+          asoma por la orilla), retícula 2×2 desde md. */}
       <ul
+        role="list"
         aria-label={t.entryServices.eyebrow}
-        className="-mx-[var(--gutter)] flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-[var(--gutter)] px-[var(--gutter)] pb-1 [scrollbar-width:none] md:mx-0 md:grid md:snap-none md:grid-cols-2 md:gap-gutter md:overflow-visible md:p-0 xl:col-span-8 [&::-webkit-scrollbar]:hidden"
+        onFocus={revealFocusedCard}
+        className="-mx-[var(--gutter)] flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-[var(--gutter)] px-[var(--gutter)] pb-2 [scrollbar-width:none] md:mx-0 md:grid md:snap-none md:grid-cols-2 md:gap-gutter md:overflow-visible md:p-0 xl:col-span-8 [&::-webkit-scrollbar]:hidden"
       >
         {regular.map((item, index) => {
           const Icon = ICONS[item.id] ?? Package;
@@ -234,32 +299,35 @@ export function EntryServices() {
               key={item.id}
               data-fx="up"
               style={fxDelay((index % 2) * 90 + Math.floor(index / 2) * 60)}
-              className="flex w-[84%] shrink-0 snap-start sm:w-[60%] md:w-auto"
+              className="flex w-[82%] shrink-0 snap-start sm:w-[56%] md:w-auto"
             >
-              <article className="panel group flex w-full flex-col p-5 shadow-soft transition-transform duration-500 [transition-timing-function:var(--ease-out)] hover:-translate-y-1 sm:p-6 xl:p-7">
+              {/* Debajo de md: el número (decorativo) se oculta y el precio sube
+                  a la esquina, a la altura del ícono; sigue después del
+                  título en el DOM, así que se lee en el mismo orden. */}
+              <article className="panel group flex w-full flex-col p-4 shadow-soft transition-transform duration-500 [transition-timing-function:var(--ease-out)] hover:-translate-y-1 sm:p-6 xl:p-7">
                 <div className="flex items-start justify-between gap-3">
-                  <span className="grid size-14 place-items-center rounded-full bg-ink text-lime transition-transform duration-500 [transition-timing-function:var(--ease-pop)] group-hover:-rotate-12 group-hover:scale-105">
-                    <Icon aria-hidden className="h-6 w-6" />
+                  <span className="grid size-12 place-items-center rounded-full bg-ink text-lime transition-transform duration-500 [transition-timing-function:var(--ease-pop)] group-hover:-rotate-12 group-hover:scale-105 md:size-14">
+                    <Icon aria-hidden className="h-5 w-5 md:h-6 md:w-6" />
                   </span>
                   <span
                     aria-hidden
-                    className="inline-grid h-8 min-w-[2.75rem] place-items-center rounded-full bg-mint px-2.5 text-xs font-bold tabular-nums text-ink ring-1 ring-ink/10"
+                    className="inline-grid h-8 min-w-[2.75rem] place-items-center rounded-full bg-mint px-2.5 text-xs font-bold tabular-nums text-ink ring-1 ring-ink/10 max-md:hidden"
                   >
                     {pad(index + 1)}
                   </span>
                 </div>
 
-                <h3 className="display-title mt-5 text-balance text-[1.6rem] leading-[1.02] md:min-h-[2.04em] xl:text-[1.75rem]">
+                <h3 className="display-title mt-4 text-balance text-[1.375rem] leading-[1.02] md:mt-5 md:min-h-[2.04em] md:text-[1.6rem] xl:text-[1.75rem]">
                   {item.name}
                 </h3>
-                <p className="mt-3 inline-flex h-10 w-fit items-center rounded-full bg-lime px-4 text-base font-bold tabular-nums text-ink">
+                <p className="mt-3 inline-flex h-10 w-fit items-center rounded-full bg-lime px-4 text-base font-bold tabular-nums text-ink max-md:absolute max-md:right-4 max-md:top-5 max-md:mt-0 sm:max-md:right-6 sm:max-md:top-7">
                   {item.price}
                 </p>
-                <p className="mt-4 text-pretty text-[0.9375rem] leading-relaxed text-muted-foreground">
+                <p className="mt-2 text-pretty text-[0.9375rem] leading-relaxed text-muted-foreground md:mt-4">
                   {item.desc}
                 </p>
 
-                <ul className="mt-4 flex flex-1 flex-col gap-2.5 border-t border-border pt-4">
+                <ul className="mt-3.5 flex flex-1 flex-col gap-2 border-t border-border pt-3.5 md:mt-4 md:gap-2.5 md:pt-4">
                   {item.features.map((f) => (
                     <li key={f} className="flex items-start gap-2.5 text-sm leading-snug text-foreground/85">
                       <span
@@ -276,7 +344,7 @@ export function EntryServices() {
                 <Button
                   variant="outline"
                   onClick={() => openLuminaChat(item.question)}
-                  className="mt-6 w-full justify-between whitespace-normal pl-5 pr-2 text-left leading-tight hover:border-ink hover:bg-ink hover:text-white"
+                  className="mt-4 w-full justify-between whitespace-normal pl-4 pr-2 text-left leading-tight hover:border-ink hover:bg-ink hover:text-white md:mt-6 md:pl-5"
                 >
                   <span>
                     {t.entryServices.cta}
@@ -288,12 +356,61 @@ export function EntryServices() {
             </li>
           );
         })}
+
+        {/* Teléfono: la landing cierra el carrusel como ficha lima (título con
+            su ícono, precio en píldora de tinta). Desde md vive en su panel
+            ancho de abajo, así que esta copia no existe para nadie ahí. */}
+        {featured && (
+          <li data-fx="up" style={fxDelay(120)} className="flex w-[82%] shrink-0 snap-start sm:w-[56%] md:hidden">
+            <article className="panel panel-lime group flex w-full flex-col p-4 sm:p-6">
+              <div className="flex items-start justify-between gap-3">
+                <h3 className="display-title min-w-0 text-balance text-[1.375rem] leading-[1.02] [overflow-wrap:anywhere]">
+                  {featured.name}
+                </h3>
+                <span className="grid size-12 shrink-0 place-items-center rounded-full bg-ink text-lime transition-transform duration-500 [transition-timing-function:var(--ease-pop)] group-hover:-rotate-12 group-hover:scale-105">
+                  {(() => {
+                    const Icon = ICONS[featured.id] ?? AppWindowMac;
+                    return <Icon aria-hidden className="h-5 w-5" />;
+                  })()}
+                </span>
+              </div>
+              <p className="mt-2 inline-flex h-10 w-fit items-center rounded-full bg-ink px-4 text-base font-bold tabular-nums text-lime">
+                {featured.price}
+              </p>
+              <p className="mt-2.5 text-pretty text-[0.9375rem] leading-relaxed text-ink/75">{featured.desc}</p>
+
+              <ul className="mt-3.5 flex flex-1 flex-col gap-2 border-t border-ink/15 pt-3.5">
+                {featured.features.map((f) => (
+                  <li key={f} className="flex items-start gap-2.5 text-sm font-medium leading-snug text-ink">
+                    <span aria-hidden className="mt-px grid size-5 shrink-0 place-items-center rounded-full bg-ink text-lime">
+                      <Check className="h-3 w-3" strokeWidth={3} />
+                    </span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+
+              <Button
+                variant="ink"
+                onClick={() => openLuminaChat(featured.question)}
+                className="mt-4 w-full justify-between whitespace-normal pl-4 pr-2 text-left leading-tight"
+              >
+                <span>
+                  {t.entryServices.cta}
+                  <span className="sr-only"> — {featured.name}</span>
+                </span>
+                <ButtonArrow tone="lime" className="mr-0 size-8" />
+              </Button>
+            </article>
+          </li>
+        )}
       </ul>
 
       {/* La ficha destacada: la landing, en lima y a todo lo ancho. Dos
-          columnas: la propuesta | lo que incluye + la acción. */}
+          columnas: la propuesta | lo que incluye + la acción. En el teléfono
+          vive en el carrusel (arriba). */}
       {featured && (
-        <div data-fx="up" className="min-w-0 xl:col-span-12">
+        <div data-fx="up" className="min-w-0 max-md:hidden xl:col-span-12">
           <article className="panel panel-lime group relative overflow-hidden p-5 pt-6 sm:p-7 lg:p-10">
             <span
               aria-hidden
