@@ -35,7 +35,7 @@ export function LanguageSwitcher() {
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={t.languageSwitcher.label}
-        className="flex h-9 items-center gap-1 px-2 text-base leading-none transition-colors hover:bg-white/5"
+        className="flex h-10 min-w-11 items-center justify-center gap-1 rounded-full px-3 text-base leading-none transition-colors hover:bg-ink/[0.05]"
       >
         <span aria-hidden>{LOCALE_META[locale].flag}</span>
         <ChevronDown className="h-3 w-3 text-muted-foreground" />
@@ -45,7 +45,7 @@ export function LanguageSwitcher() {
         <div
           role="listbox"
           aria-label={t.languageSwitcher.label}
-          className="px-window absolute right-0 top-full z-50 mt-2 w-48 overflow-hidden p-2"
+          className="px-window absolute right-0 top-full z-50 mt-3 w-52 overflow-hidden p-1.5"
         >
           {LOCALES.map((code) => (
             <button
@@ -58,11 +58,10 @@ export function LanguageSwitcher() {
                 setOpen(false);
               }}
               className={cn(
-                "flex min-h-11 w-full items-center gap-2.5 px-3 py-2 text-left font-mono text-[13px] uppercase tracking-[0.06em] transition-colors hover:bg-white/5",
-                code === locale ? "text-primary" : "text-foreground"
+                "flex min-h-11 w-full items-center gap-2.5 rounded-2xl px-3 py-2 text-left text-sm font-semibold transition-colors hover:bg-ink/[0.05]",
+                code === locale ? "bg-lime/30 text-ink" : "text-ink/80"
               )}
             >
-              <span aria-hidden className="w-3 text-primary">{code === locale ? "▶" : ""}</span>
               <span aria-hidden>{LOCALE_META[code].flag}</span>
               {LOCALE_META[code].name}
             </button>

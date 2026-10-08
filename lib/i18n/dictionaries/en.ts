@@ -28,6 +28,13 @@ const en: Dictionary = {
     subtitle:
       "I design and build fast, clear websites made to convert. You work with me from the first idea to launch.",
     scrollHint: "Scroll to orbit the Civic",
+    sideTop: "Websites that",
+    sideHighlight: "sell",
+    panelTitle: "Design and code that turn visits into clients",
+    available: "Now booking new projects",
+    proof: "100+ projects launched",
+    features: ["Delivery from 3 days", "Technical SEO included", "Secure online payment"],
+    featured: "Featured project",
   },
   experience: {
     startupSequence: "Startup sequence",

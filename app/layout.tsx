@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Sans, Jersey_15, DotGothic16 } from "next/font/google";
+import { Archivo, Instrument_Serif, Plus_Jakarta_Sans } from "next/font/google";
 import dynamic from "next/dynamic";
 import "./globals.css";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
@@ -24,32 +24,30 @@ const FloatingDock = dynamic(
   { ssr: false }
 );
 
-// Cuerpo: Instrument Sans (variable, un solo archivo). El texto de lectura se
-// queda nítido y moderno: el 8-bit vive en rótulos, botones y etiquetas.
-const instrumentSans = Instrument_Sans({
-  subsets: ["latin"],
+// Cuerpo e interfaz: Plus Jakarta Sans — redonda, clara y muy legible en
+// tamaños chicos (etiquetas, precios, chips).
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin", "latin-ext"],
   variable: "--font-sans",
   display: "swap",
 });
 
-// Display 8-bit: Jersey 15 es una pixel font condensada — se lee a distancia
-// como un rótulo de videojuego y conserva acentos y eñes en mayúsculas.
-const jersey = Jersey_15({
+// Rótulos: Archivo variable con eje de ancho. Pesado y apretado para los
+// titulares grandes; en itálica para la primera línea ("Haz que…").
+const archivo = Archivo({
   subsets: ["latin", "latin-ext"],
-  weight: "400",
   variable: "--font-display",
   display: "swap",
-  // Next no tiene métricas de respaldo para esta fuente; sin esto el build
-  // avisa en cada compilación. El respaldo condensado lo da --font-display.
-  adjustFontFallback: false,
+  style: ["normal", "italic"],
+  axes: ["wdth"],
 });
 
-// Voz técnica y japonés en píxel: DotGothic16 trae latín y kanji con la misma
-// retícula, así que las etiquetas y los sellos hablan el mismo idioma visual.
-const dotGothic = DotGothic16({
-  subsets: ["latin"],
+// Acento editorial: palabras sueltas en serif itálica.
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin", "latin-ext"],
   weight: "400",
-  variable: "--font-mono",
+  style: ["normal", "italic"],
+  variable: "--font-serif",
   display: "swap",
 });
 
@@ -127,9 +125,9 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  colorScheme: "dark",
-  // El color de la hoja washi: la barra del navegador continúa el marco.
-  themeColor: "#e6e9de",
+  colorScheme: "light",
+  // El lienzo claro del sitio: la barra del navegador continúa el fondo.
+  themeColor: "#eef2e6",
 };
 
 const ORG_ID = `${SITE_URL}/#organization`;
@@ -292,7 +290,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`dark ${instrumentSans.variable} ${jersey.variable} ${dotGothic.variable}`}
+      className={`${jakarta.variable} ${archivo.variable} ${instrumentSerif.variable}`}
       suppressHydrationWarning
     >
       <head>

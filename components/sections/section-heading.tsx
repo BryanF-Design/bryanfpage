@@ -1,37 +1,33 @@
+import type { ReactNode } from "react";
+
 import { cn } from "@/lib/utils";
 import { ChapterMark } from "@/components/japan/chapter-mark";
 
 interface SectionChapter {
-  /** Kanji de la sección. */
-  kanji: string;
-  /** Lectura en romaji — el japonés nunca viaja solo. */
-  romaji: string;
-  /** Posición dentro de la serie. */
+  /** Se conservan por compatibilidad con las llamadas existentes. */
+  kanji?: string;
+  romaji?: string;
+  /** Posición dentro del recorrido. */
   index: number;
 }
 
 interface SectionHeadingProps {
   eyebrow?: string;
-  title: React.ReactNode;
-  subtitle?: React.ReactNode;
+  title: ReactNode;
+  subtitle?: ReactNode;
   align?: "center" | "left";
   className?: string;
-  /** Tamaño del rótulo: `xl` para cabeceras que ocupan su propio panel. */
+  /** `xl` para cabeceras que ocupan su propio panel. */
   size?: "lg" | "xl";
-  /**
-   * Marca de capítulo. Cuando se pasa, el eyebrow se convierte en píldora con
-   * sello + numeración de serie. Sin ella, eyebrow simple.
-   */
   chapter?: SectionChapter;
 }
 
-/** Total de capítulos del recorrido principal. */
+/** Total de secciones del recorrido principal. */
 export const CHAPTER_TOTAL = 10;
 
 /**
- * Cabecera de sección: píldora de capítulo, rótulo condensado XXL y bajada.
- * El rótulo se compone como los de las referencias — alto, apretado, en
- * mayúsculas — y entra con una máscara que sube desde abajo.
+ * Cabecera de sección: chip numerado, titular en Archivo y bajada. La clase
+ * va en el elemento externo para que funcione como celda de una retícula.
  */
 export function SectionHeading({
   eyebrow,
@@ -42,30 +38,24 @@ export function SectionHeading({
   size = "lg",
   chapter,
 }: SectionHeadingProps) {
-  // La clase (col-span, orden…) va en el elemento más externo: antes la
-  // recibía un div interno y, dentro de una retícula, el envoltorio ocupaba
-  // una sola columna — el rótulo se partía palabra por palabra.
   return (
     <div
       className={cn(
-        "flex flex-col gap-5 md:gap-6",
+        "flex flex-col gap-4 md:gap-5",
         align === "center" ? "mx-auto max-w-3xl items-center text-center" : "items-start",
         className
       )}
     >
       {eyebrow && chapter ? (
         <ChapterMark
-          kanji={chapter.kanji}
-          romaji={chapter.romaji}
           label={eyebrow}
           index={chapter.index}
-          total={CHAPTER_TOTAL}
           className={align === "center" ? "justify-center" : undefined}
         />
       ) : (
         eyebrow && (
-          <span className="tag-pill pl-4">
-            <span aria-hidden className="size-1.5 rounded-full bg-primary" />
+          <span className="eyebrow pl-3">
+            <span aria-hidden className="size-2 rounded-full bg-lime" />
             {eyebrow}
           </span>
         )
@@ -73,10 +63,10 @@ export function SectionHeading({
       <div data-fx="up" className="max-w-full">
         <h2
           className={cn(
-            "display-xl max-w-4xl text-balance text-foreground",
+            "display-title max-w-4xl text-balance text-foreground",
             size === "xl"
-              ? "text-[clamp(3.25rem,9vw,8rem)]"
-              : "text-[clamp(2.9rem,6.4vw,5.75rem)]"
+              ? "text-[clamp(2.6rem,6.4vw,5.75rem)]"
+              : "text-[clamp(2.25rem,4.6vw,4.25rem)]"
           )}
         >
           {title}

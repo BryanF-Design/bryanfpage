@@ -39,7 +39,6 @@ export function GlobeScene({ locations, arcs, className }: GlobeSceneProps) {
   const { containerRef } = useThreeStage({
     fov: 34,
     cameraZ: 4.1,
-    pixelSize: 3,
     build: ({ scene, camera, container }) => {
       const globe = new THREE.Group();
       scene.add(globe);

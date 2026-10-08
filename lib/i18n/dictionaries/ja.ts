@@ -28,6 +28,13 @@ const ja: Dictionary = {
     subtitle:
       "速く、明快で、成果につながるサイトをデザイン・開発します。最初のアイデアから公開まで、私が直接担当します。",
     scrollHint: "スクロールしてCivicをめぐる",
+    sideTop: "売れる",
+    sideHighlight: "ウェブ",
+    panelTitle: "訪問者を顧客に変えるデザインとコード",
+    available: "新規プロジェクト受付中",
+    proof: "100件以上の公開実績",
+    features: ["最短3日で納品", "テクニカルSEO込み", "安全なオンライン決済"],
+    featured: "注目のプロジェクト",
   },
   experience: {
     startupSequence: "起動シーケンス",

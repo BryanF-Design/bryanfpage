@@ -29,6 +29,13 @@ const es = {
     subtitle:
       "Hago sitios que se entienden, responden rápido y llevan a una acción. De la primera conversación al lanzamiento, trabajas directamente conmigo.",
     scrollHint: "Desliza para recorrer el Civic",
+    sideTop: "Webs que",
+    sideHighlight: "venden",
+    panelTitle: "Diseño y código que convierten visitas en clientes",
+    available: "Agenda abierta para nuevos proyectos",
+    proof: "+100 proyectos lanzados",
+    features: ["Entrega desde 3 días", "SEO técnico incluido", "Pago en línea seguro"],
+    featured: "Proyecto destacado",
   },
   experience: {
     startupSequence: "Secuencia de arranque",

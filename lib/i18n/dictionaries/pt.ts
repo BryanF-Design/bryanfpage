@@ -28,6 +28,13 @@ const pt: Dictionary = {
     subtitle:
       "Eu projeto e construo sites rápidos, claros e feitos para converter. Você trabalha comigo da primeira ideia ao lançamento.",
     scrollHint: "Role para contornar o Civic",
+    sideTop: "Sites que",
+    sideHighlight: "vendem",
+    panelTitle: "Design e código que transformam visitas em clientes",
+    available: "Agenda aberta para novos projetos",
+    proof: "+100 projetos lançados",
+    features: ["Entrega a partir de 3 dias", "SEO técnico incluído", "Pagamento online seguro"],
+    featured: "Projeto em destaque",
   },
   experience: {
     startupSequence: "Sequência de partida",

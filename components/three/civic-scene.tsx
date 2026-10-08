@@ -87,7 +87,6 @@ export function CivicScene({
     // dibuja a resolución de pantalla completa. El tope de 1.5 dejaba los
     // cantos del capó y las letras del paragolpes con escalera.
     maxDpr: desktopViewport() ? 2 : 1.5,
-    pixelSize: 3,
     build: ({ scene, camera, renderer, container }) => {
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;

@@ -25,7 +25,6 @@ export function FloatingShape({ variant = "icosahedron", opacity = 0.55, classNa
     fov: 35,
     cameraZ: 4.4,
     maxDpr: 1.5,
-    pixelSize: 3,
     build: ({ scene, container }) => {
       const group = new THREE.Group();
       scene.add(group);

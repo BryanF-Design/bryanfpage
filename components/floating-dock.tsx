@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ArrowUp } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
-import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useLanguage } from "@/lib/i18n/context";
 import { useConfiguratorInView } from "@/lib/use-configurator-in-view";
 import { useFooterInView } from "@/lib/use-footer-in-view";
@@ -58,7 +58,7 @@ export function FloatingDock() {
   return (
     <>
       <div
-        className="fab-slot fab-shadow fixed bottom-[calc(var(--fab-edge)+var(--lumina-fab,0px))] right-3 z-[119] sm:right-6"
+        className="fab-slot fixed bottom-[calc(var(--fab-edge)+var(--lumina-fab,0px))] right-3 z-[119] sm:right-6"
         data-hidden={hideWhatsapp}
       >
         <a
@@ -70,12 +70,12 @@ export function FloatingDock() {
           className="fab fab-wa"
         >
           <FaWhatsapp aria-hidden className="h-6 w-6" />
-          <span className="fab-label hidden pr-1.5 xl:inline">WhatsApp</span>
+          <span className="fab-label hidden pr-2 xl:inline">WhatsApp</span>
         </a>
       </div>
 
       <div
-        className="fab-slot fab-shadow fixed bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] left-3 z-[119] hidden sm:left-6 sm:block"
+        className="fab-slot fixed bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] left-3 z-[119] hidden sm:left-6 sm:block"
         data-hidden={hideTop}
       >
         <button
@@ -85,7 +85,7 @@ export function FloatingDock() {
           tabIndex={hideTop ? -1 : 0}
           className="fab"
         >
-          <PixelIcon name="arrowUp" className="h-5 w-5 text-primary" />
+          <ArrowUp aria-hidden className="h-5 w-5" />
         </button>
       </div>
     </>

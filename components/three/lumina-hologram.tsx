@@ -43,7 +43,6 @@ export function LuminaHologram({ mood, onPoke, className }: LuminaHologramProps)
     fov: 38,
     cameraZ: 5.6,
     maxDpr: 1.75,
-    pixelSize: 2,
     build: ({ scene, container }) => {
       const rig = new THREE.Group(); // sigue al puntero
       const spin = new THREE.Group(); // gira con el arrastre

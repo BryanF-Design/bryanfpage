@@ -27,7 +27,6 @@ export function LaptopScene({ progressRef, className }: LaptopSceneProps) {
   const { containerRef } = useThreeStage({
     fov: 33,
     cameraZ: 5.4,
-    pixelSize: 3,
     build: ({ scene, camera, container }) => {
       camera.position.set(0, 1.55, 5.4);
       camera.lookAt(0, 0.32, 0);

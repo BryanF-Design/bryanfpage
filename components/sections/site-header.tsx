@@ -13,11 +13,12 @@ import {
   FaGithub,
 } from "react-icons/fa";
 
-import { Button } from "@/components/ui/button";
+import { Button, ButtonArrow } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useLanguage } from "@/lib/i18n/context";
 import { DICTIONARIES } from "@/lib/i18n/dictionaries";
 import { useReducedMotionPreference } from "@/lib/motion-preference";
+import { cn } from "@/lib/utils";
 
 const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
 
@@ -30,19 +31,17 @@ const social = [
 ];
 
 /**
- * La cabecera no flota sobre la página: está recortada en ella. Tres
- * pestañas de washi cuelgan del canto superior de la hoja y cada una sostiene
- * sus píldoras de tinta — la marca, la navegación y las acciones. Lo que
- * pasa por debajo (el hero, los paneles) se lee como cortado alrededor.
- *
- * Por debajo de 1024 px la navegación se muda a un panel que entra desde
- * fuera del lienzo, con los enlaces en rótulo gigante.
+ * Barra flotante: una píldora blanca con la marca, la navegación y las
+ * acciones, como la cabecera de las referencias. Gana sombra al hacer
+ * scroll. Por debajo de 1024 px la navegación vive en una hoja que baja
+ * desde la barra, con los enlaces en rótulo grande.
  */
 export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
   const { t: localizedT } = useLanguage();
   const t = spanishOnly ? DICTIONARIES.es : localizedT;
   const reducedMotion = useReducedMotionPreference();
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [hovered, setHovered] = useState<number | null>(null);
   const headerRef = useRef<HTMLElement>(null);
   const menuPanelRef = useRef<HTMLDivElement>(null);
@@ -50,20 +49,36 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
   const firstMenuLinkRef = useRef<HTMLAnchorElement>(null);
 
   const links = [
-    { label: t.nav.lumina, href: "/#lumina" },
-    { label: t.nav.servicios, href: "/#servicios-entrada" },
-    { label: t.nav.precios, href: "/#precios" },
     { label: t.nav.proyectos, href: "/#projects" },
+    { label: t.nav.servicios, href: "/#servicios-entrada" },
+    { label: t.nav.lumina, href: "/#lumina" },
+    { label: t.nav.precios, href: "/#precios" },
     { label: t.nav.faq, href: "/#faq" },
   ];
 
-  // Bloquea el scroll de fondo mientras el menú está abierto y ciérralo
-  // con Escape — el panel se comporta como un diálogo de verdad.
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      setScrolled(window.scrollY > 12);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  // El menú se comporta como un diálogo: bloquea el scroll de fondo, atrapa
+  // el foco, se cierra con Escape y aparta los botones flotantes.
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    // Los botones flotantes se apartan mientras el menú ocupa la pantalla.
     document.documentElement.classList.add("menu-open");
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -72,13 +87,10 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
         return;
       }
       if (e.key === "Tab") {
-        const selector =
-          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+        const selector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
         const focusable = [headerRef.current, menuPanelRef.current]
           .flatMap((region) =>
-            region
-              ? Array.from(region.querySelectorAll<HTMLElement>(selector))
-              : []
+            region ? Array.from(region.querySelectorAll<HTMLElement>(selector)) : []
           )
           .filter((element) => element.getClientRects().length > 0);
         const first = focusable[0];
@@ -113,38 +125,36 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
     <>
       <header
         ref={headerRef}
-        className="pointer-events-none fixed inset-x-0 top-0 z-[100] grid grid-cols-[minmax(0,1fr)_auto] items-start lg:grid-cols-[1fr_auto_1fr]"
+        className="pointer-events-none fixed inset-x-0 top-0 z-[100] px-[var(--gutter)] pt-[calc(var(--gutter)*0.75)] md:pt-[var(--gutter)]"
       >
-        {/* Pestaña izquierda: la marca. */}
-        <div className="tab tab-l justify-self-start">
+        <div
+          className={cn(
+            "pointer-events-auto mx-auto flex h-[3.75rem] max-w-[1488px] items-center justify-between gap-3 rounded-full bg-white/95 pl-4 pr-2 ring-1 ring-ink/[0.06] transition-shadow duration-300 md:h-16 md:pl-5",
+            scrolled || open
+              ? "shadow-[0_18px_40px_-22px_hsl(var(--ink)/0.45)]"
+              : "shadow-[0_8px_24px_-20px_hsl(var(--ink)/0.3)]"
+          )}
+        >
           <Link
             href="/"
             onClick={() => setOpen(false)}
-            className="nav-pill group gap-2.5 px-4 transition-transform duration-150 hover:-translate-y-0.5"
+            className="flex shrink-0 items-center rounded-full"
             aria-label="BryanF Design — inicio"
           >
-            <span
-              aria-hidden
-              className="px-blink size-2.5 bg-primary motion-reduce:animate-none"
-            />
             <Image
-              src="/img/logotipo-blanco.png"
+              src="/img/brand/logo-dark.png"
               alt="BryanF Design"
-              width={2904}
-              height={1016}
+              width={720}
+              height={253}
               priority
-              sizes="(max-width: 767px) 80px, 92px"
-              style={{ height: 26, width: "auto" }}
-              className="object-contain"
+              sizes="120px"
+              className="h-7 w-auto md:h-8"
             />
           </Link>
-        </div>
 
-        {/* Pestaña central: la navegación, con una píldora que sigue al puntero. */}
-        <div className="tab tab-c hidden justify-self-center lg:flex">
           <nav
             aria-label={t.nav.menu}
-            className="nav-pill gap-0.5 px-1"
+            className="hidden items-center gap-1 lg:flex"
             onMouseLeave={() => setHovered(null)}
           >
             {links.map((l, i) => (
@@ -154,127 +164,102 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
                 onMouseEnter={() => setHovered(i)}
                 onFocus={() => setHovered(i)}
                 onBlur={() => setHovered(null)}
-                className="relative inline-flex min-h-9 min-w-11 items-center justify-center px-3.5 pb-[2px] font-display text-[1.2rem] uppercase leading-none tracking-[0.05em] text-foreground/80 transition-colors hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary xl:px-4"
+                className="relative inline-flex h-10 items-center rounded-full px-4 text-[0.9375rem] font-semibold text-ink/75 transition-colors hover:text-ink xl:px-5"
               >
                 {hovered === i && (
                   <motion.span
                     layoutId={reducedMotion ? undefined : "nav-hover-pill"}
                     aria-hidden
-                    className="px-shape absolute inset-0 -z-0 bg-primary"
-                    transition={{ type: "spring", stiffness: 520, damping: 40 }}
+                    className="absolute inset-0 rounded-full bg-ink/[0.06]"
+                    transition={{ type: "spring", stiffness: 500, damping: 40 }}
                   />
                 )}
-                <span className="relative z-10">{l.label}</span>
+                <span className="relative">{l.label}</span>
               </Link>
             ))}
           </nav>
-        </div>
 
-        {/* Pestaña derecha: idioma y acciones. */}
-        <div className="tab tab-r justify-self-end">
-          {!spanishOnly && (
-            <div className="nav-pill px-free px-1 [&_button]:min-h-11 [&_button]:min-w-11">
-              <LanguageSwitcher />
-            </div>
-          )}
-          <Link
-            href={CLIENT_PORTAL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="nav-pill hidden gap-2 px-4 pb-[2px] font-display text-[1.2rem] uppercase leading-none tracking-[0.04em] transition-colors hover:text-primary xl:inline-flex"
-          >
-            <LogIn className="h-3.5 w-3.5 text-primary" />
-            {t.nav.cliente}
-          </Link>
-          <Button
-            asChild
-            className="hidden min-h-11 sm:inline-flex"
-          >
-            <Link href="/#precios">
-              {t.nav.armaTuWeb}
-              <ArrowUpRight className="h-4 w-4" />
+          <div className="flex items-center gap-1.5">
+            {!spanishOnly && <LanguageSwitcher />}
+            <Link
+              href={CLIENT_PORTAL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden h-10 items-center gap-2 rounded-full px-4 text-sm font-semibold text-ink/75 transition-colors hover:bg-ink/[0.05] hover:text-ink xl:inline-flex"
+            >
+              <LogIn className="h-4 w-4" />
+              {t.nav.cliente}
             </Link>
-          </Button>
-
-          <button
-            ref={menuButtonRef}
-            type="button"
-            onClick={() => setOpen((o) => !o)}
-            aria-label={open ? t.nav.closeMenu : t.nav.menu}
-            aria-controls="mobile-site-menu"
-            aria-expanded={open}
-            className="nav-pill w-11 justify-center text-primary active:translate-y-0.5 lg:hidden"
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+            <Button asChild variant="ink" className="hidden h-11 pl-5 pr-2 sm:inline-flex">
+              <Link href="/#precios">
+                {t.nav.armaTuWeb}
+                <ButtonArrow tone="lime" className="-mr-0.5" />
+              </Link>
+            </Button>
+            <button
+              ref={menuButtonRef}
+              type="button"
+              onClick={() => setOpen((o) => !o)}
+              aria-label={open ? t.nav.closeMenu : t.nav.menu}
+              aria-controls="mobile-site-menu"
+              aria-expanded={open}
+              className="grid size-11 place-items-center rounded-full bg-ink text-white transition-transform active:scale-95 lg:hidden"
+            >
+              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* Panel del menú. Vive FUERA del <header>: el header es un grid fijo y
-          encerraría este panel dentro de su caja. Empieza en el canto de la
-          hoja, así que las pestañas quedan recortadas también sobre él. */}
       <AnimatePresence>
         {open && (
           <motion.div
             ref={menuPanelRef}
             id="mobile-site-menu"
-            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -16 }}
-            animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -12 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="panel panel-moss fixed inset-[var(--gutter)] z-[99] flex flex-col overflow-y-auto pt-[var(--header-h)] lg:hidden"
+            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -12, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.98 }}
+            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+            style={{ transformOrigin: "50% 0%" }}
+            className="fixed inset-x-[var(--gutter)] bottom-[var(--gutter)] top-[calc(var(--gutter)*0.75+4.25rem)] z-[99] flex flex-col overflow-y-auto rounded-panel bg-white shadow-[0_30px_80px_-30px_hsl(var(--ink)/0.5)] lg:hidden"
           >
-            <span
-              aria-hidden
-              lang="ja"
-              className="pointer-events-none absolute -bottom-6 -right-4 select-none font-jp text-[46vw] leading-none text-foreground/[0.04]"
-            >
-              道
-            </span>
-            <div aria-hidden className="dot-grid absolute inset-0 rounded-[inherit] opacity-40 [mask-image:linear-gradient(to_bottom,transparent,black_40%,transparent)]" />
-
-            <nav
-              aria-label={t.nav.menu}
-              className="relative z-10 flex flex-1 flex-col justify-center gap-1 px-5 py-8 sm:px-8"
-            >
-              {links.map((l, i) => (
-                <motion.div
-                  key={l.href}
-                  initial={reducedMotion ? false : { opacity: 0, x: 24 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{
-                    delay: reducedMotion ? 0 : 0.06 + i * 0.04,
-                    duration: 0.28,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                >
-                  <Link
-                    ref={i === 0 ? firstMenuLinkRef : undefined}
-                    href={l.href}
-                    onClick={() => setOpen(false)}
-                    className="group flex min-h-11 items-center justify-between gap-4 px-2 py-2 transition-colors active:bg-foreground/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+            <nav aria-label={t.nav.menu} className="flex flex-1 flex-col px-5 pb-6 pt-4 sm:px-8">
+              <ul className="flex flex-col">
+                {links.map((l, i) => (
+                  <motion.li
+                    key={l.href}
+                    initial={reducedMotion ? false : { opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: reducedMotion ? 0 : 0.04 + i * 0.04,
+                      duration: 0.3,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                    className="border-b border-ink/[0.07]"
                   >
-                    <span className="display-xl flex items-center gap-3 text-[clamp(2.75rem,13vw,5rem)] text-foreground transition-colors group-hover:text-primary">
-                      <span aria-hidden className="text-[0.5em] text-primary opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">▶</span>
-                      {l.label}
-                    </span>
-                    <span className="btn-px btn-px-outline grid size-11 shrink-0 place-items-center text-primary group-hover:bg-primary group-hover:text-primary-foreground">
-                      <ArrowUpRight className="h-5 w-5" />
-                    </span>
-                  </Link>
-                </motion.div>
-              ))}
+                    <Link
+                      ref={i === 0 ? firstMenuLinkRef : undefined}
+                      href={l.href}
+                      onClick={() => setOpen(false)}
+                      className="group flex min-h-[4.25rem] items-center justify-between gap-4 py-2"
+                    >
+                      <span className="display-title text-[clamp(2rem,9vw,3.25rem)] text-ink">
+                        {l.label}
+                      </span>
+                      <span className="grid size-11 shrink-0 place-items-center rounded-full bg-ink/[0.05] text-ink transition-colors group-hover:bg-lime">
+                        <ArrowUpRight className="h-5 w-5" />
+                      </span>
+                    </Link>
+                  </motion.li>
+                ))}
+              </ul>
 
-              <motion.div
-                initial={reducedMotion ? false : { opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ delay: reducedMotion ? 0 : 0.26, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="mt-8 flex flex-col gap-3 sm:flex-row"
-              >
-                <Button asChild size="lg" className="w-full sm:flex-1" onClick={() => setOpen(false)}>
-                  <Link href="/#precios">{t.nav.armaTuWeb}</Link>
+              <div className="mt-auto flex flex-col gap-3 pt-8 sm:flex-row">
+                <Button asChild size="lg" variant="ink" className="w-full pr-2 sm:flex-1">
+                  <Link href="/#precios" onClick={() => setOpen(false)}>
+                    {t.nav.armaTuWeb}
+                    <ButtonArrow tone="lime" className="ml-auto -mr-0.5" />
+                  </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="w-full sm:flex-1">
                   <Link
@@ -287,18 +272,10 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
                     {t.nav.cliente}
                   </Link>
                 </Button>
-              </motion.div>
+              </div>
 
-              <motion.div
-                initial={reducedMotion ? false : { opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ delay: reducedMotion ? 0 : 0.32, duration: 0.3 }}
-                className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t-2 border-dashed border-foreground/15 pt-6"
-              >
-                <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-                  CDMX · MX — EST. 2020
-                </span>
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+                <span className="text-sm font-medium text-ink/55">CDMX · México</span>
                 <div className="flex gap-2">
                   {social.map(({ Icon, href, label }) => (
                     <Link
@@ -307,13 +284,13 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={label}
-                      className="btn-px flex h-11 w-11 items-center justify-center bg-background/70 text-muted-foreground hover:bg-primary hover:text-primary-foreground"
+                      className="grid size-11 place-items-center rounded-full bg-ink/[0.05] text-ink/70 transition-colors hover:bg-lime hover:text-ink"
                     >
                       <Icon className="h-4 w-4" />
                     </Link>
                   ))}
                 </div>
-              </motion.div>
+              </div>
             </nav>
           </motion.div>
         )}

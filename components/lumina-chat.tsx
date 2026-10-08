@@ -585,7 +585,7 @@ export function LuminaChat() {
       {/* FAB: mando de arcade con el avatar de Lumina. Mismo tamaño en todos
           los estados; en el cotizador solo esconde la etiqueta. */}
       <div
-        className="fab-slot fab-shadow fixed bottom-[var(--fab-edge)] right-3 z-[120] sm:right-6"
+        className="fab-slot fixed bottom-[var(--fab-edge)] right-3 z-[120] sm:right-6"
         data-hidden={footerInView}
       >
         <button
@@ -597,13 +597,13 @@ export function LuminaChat() {
           aria-expanded={open}
           aria-hidden={footerInView}
           tabIndex={footerInView ? -1 : 0}
-          className={cn("fab justify-start px-1.5 text-left", open && "fab-lime")}
+          className={cn("fab justify-start px-1.5 text-left", open && "fab-ink")}
         >
-          <span className="relative flex size-9 shrink-0 overflow-hidden bg-primary/15 ring-2 ring-primary/70 sm:size-10">
+          <span className="relative flex size-10 shrink-0 overflow-hidden rounded-full bg-ink sm:size-11">
             <Image src={MOOD_IMG.Normal} alt="" fill sizes="40px" className="object-cover" />
             <span
               className={cn(
-                "absolute bottom-0 right-0 h-2.5 w-2.5 border-2 border-background",
+                "absolute bottom-0.5 right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white",
                 mood === "Offline" ? "bg-muted-foreground" : "bg-primary"
               )}
             />
@@ -616,9 +616,9 @@ export function LuminaChat() {
           >
             <span className="fab-label flex items-center gap-1.5">
               {t.lumina.name}
-              <MessageCircle aria-hidden className={cn("h-3.5 w-3.5", open ? "" : "text-primary")} />
+              <MessageCircle aria-hidden className="h-3.5 w-3.5" />
             </span>
-            <span className="mt-1 block whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.08em] opacity-70">
+            <span className="mt-1 block whitespace-nowrap text-[11px] font-medium opacity-60">
               {mood === "Offline"
                 ? t.lumina.offline
                 : loading

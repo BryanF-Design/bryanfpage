@@ -3,8 +3,12 @@ export interface Project {
   slug: string;
   name: string;
   url: string;
-  /** Short, human description taken from the site's own content. */
+  /** Short, human description taken from the site's own content. Empty when
+   *  we don't have the site's copy yet — the UI shows the domain instead. */
   desc: string;
+  /** False until `node scripts/capture-portfolio.mjs <slug>` has saved the
+   *  desktop and mobile captures; the card then shows a branded preview. */
+  shots?: boolean;
 }
 
 /**
@@ -12,6 +16,13 @@ export interface Project {
  *   /public/img/portafolio/{escritorio,movil,tablet}/<slug>.png
  */
 export const projects: Project[] = [
+  // Lanzamientos recientes: van primero en el portafolio.
+  { slug: "urban-flip-com", name: "Urban Flip", url: "https://urban-flip.com/", desc: "", shots: false },
+  { slug: "gecomex-web-vercel-app", name: "Gecomex", url: "https://gecomex-web.vercel.app/", desc: "Logística y aduanas internacionales" },
+  { slug: "ceahestructural-com-mx", name: "CEAH Estructural", url: "https://www.ceahestructural.com.mx/", desc: "Soluciones estructurales FRP y PVC" },
+  { slug: "bioslaboratorios-com", name: "Bios Laboratorios", url: "https://www.bioslaboratorios.com/", desc: "", shots: false },
+  { slug: "haften-lyart-vercel-app", name: "Haften", url: "https://haften-lyart.vercel.app/", desc: "", shots: false },
+  { slug: "sermaqro-com", name: "Sermaqro", url: "https://www.sermaqro.com/", desc: "", shots: false },
   { slug: "goldenrepublic-com-mx", name: "Golden Republic", url: "https://goldenrepublic.com.mx/", desc: "Bienes raíces" },
   { slug: "serviciosecem-com-mx", name: "Servicios ECEM", url: "https://serviciosecem.com.mx/", desc: "Asesoría contable y fiscal" },
   { slug: "industriastritton-com", name: "Industrias Tritton", url: "https://industriastritton.com/", desc: "Mezclado y molienda industrial" },
@@ -29,7 +40,7 @@ export const projects: Project[] = [
   { slug: "distribuidorajemar-com", name: "Distribuidora Jemar", url: "https://distribuidorajemar.com/", desc: "Distribución de suministros" },
   { slug: "gruposum-com", name: "Grupo SUM", url: "https://gruposum.com/", desc: "Experiencias que conectan equipos" },
   { slug: "grupocosma-com", name: "Grupo Cosma", url: "https://grupocosma.com/", desc: "Construcción y servicios" },
-  { slug: "koi-arquitectura-vercel-app", name: "Koi Arquitectura", url: "https://koi-arquitectura.vercel.app", desc: "Arquitectura" },
+  { slug: "koi-arquitectura-vercel-app", name: "Koi Arquitectura", url: "https://www.koiarquitectura.com/", desc: "Arquitectura" },
   { slug: "repissa-vercel-app", name: "Repissa", url: "https://repissa.vercel.app/", desc: "Marca y sitio web" },
   { slug: "nezga-arquitectos-vercel-app", name: "Nezga Arquitectos", url: "https://nezga-arquitectos.vercel.app/", desc: "Arquitectura y construcción" },
   { slug: "epiko-vercel-app", name: "Epiko", url: "https://epiko.vercel.app/", desc: "Producción de eventos" },

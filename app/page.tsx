@@ -2,17 +2,12 @@
 
 import type { CSSProperties } from "react";
 import dynamic from "next/dynamic";
-import { Hero } from "@/components/ui/hero";
+import { Sparkle } from "lucide-react";
+import { HeroPop } from "@/components/sections/hero-pop";
 import { StatCounter } from "@/components/ui/stat-counter";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { SiteHeader } from "@/components/sections/site-header";
 import { MarqueeBand } from "@/components/sections/marquee-band";
-import {
-  IGNITION_STORAGE_KEY,
-  IgnitionPreloader,
-} from "@/components/japan/ignition-preloader";
-import { PageFrame } from "@/components/japan/page-frame";
-import { SeigaihaRule } from "@/components/japan/seigaiha-rule";
 import { useLanguage } from "@/lib/i18n/context";
 import { DICTIONARIES } from "@/lib/i18n/dictionaries";
 import { SITE_URL } from "@/lib/seo/service-pages";
@@ -82,142 +77,109 @@ const faqJsonLd = {
 
 export default function HomePage() {
   const { t } = useLanguage();
-  const ignitionBootstrap = `(function(){try{document.documentElement.dataset.ignitionSeen=sessionStorage.getItem(${JSON.stringify(
-    IGNITION_STORAGE_KEY
-  )})==="1"?"1":"0"}catch(e){document.documentElement.dataset.ignitionSeen="0"}})();`;
 
   return (
     <>
-      <script dangerouslySetInnerHTML={{ __html: ignitionBootstrap }} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
-      <noscript>
-        <style>{`.ignition-loader{display:none!important}`}</style>
-      </noscript>
-      <IgnitionPreloader />
-      {/* La hoja: el paspartú washi en el que se recortan paneles y cabecera. */}
-      <PageFrame />
       <ScrollProgress />
       <SiteHeader />
 
       <main id="main-content" tabIndex={-1} className="sheet-main">
-        <Hero
-          id="home"
-          eyebrow={t.hero.eyebrow}
-          title={
-            <>
-              <span className="hero-line" style={{ "--hd": "220ms" } as CSSProperties}>
-                <span>{t.hero.titlePrefix}</span>
-              </span>
-              <span className="hero-line" style={{ "--hd": "330ms" } as CSSProperties}>
-                <span className="text-primary">{t.hero.titleHighlight}</span>
-              </span>
-            </>
-          }
-          subtitle={t.hero.subtitle}
-          scrollHint={t.hero.scrollHint}
-          actions={[
-            { label: t.nav.armaTuWeb, href: "#precios", variant: "default" },
-            { label: t.nav.verProyectos, href: "#projects", variant: "outline" },
-          ]}
-        />
+        <HeroPop />
 
-        {/* Pit board con cifras reales, en tres fichas que entran de golpe.
-            Ningún dato automotriz inventado. */}
-        <section aria-label={t.experience.statsAria} className="relative">
-          <div className="grid gap-gutter sm:grid-cols-3">
-            <div data-fx="rise" className="min-w-0">
-              <div className="panel panel-lime group flex h-full min-h-[15rem] flex-col justify-between overflow-hidden p-6 sm:min-h-[18rem] md:p-8">
-                <div className="flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.2em]">
-                  <span>{t.experience.statsRecord}</span>
-                  <span className="rounded-full bg-[hsl(150_42%_6%)] px-2.5 py-1 text-[hsl(76_76%_58%)]">Est. 2020</span>
-                </div>
-                <dl className="flex flex-col-reverse gap-2">
-                  <dt className="font-mono text-[11px] uppercase tracking-[0.18em]">
-                    {t.trust.years} · {t.trust.yearsCaption}
-                  </dt>
-                  <dd className="display-xl text-[clamp(5rem,13vw,10rem)] leading-[0.8] transition-transform duration-500 group-hover:-translate-y-1">
-                    <StatCounter value={5} prefix="+" />
-                  </dd>
-                </dl>
+        {/* Cifras reales del estudio, en tarjetas tipo app. */}
+        <section aria-label={t.experience.statsAria} className="grid gap-gutter sm:grid-cols-3">
+          <div data-fx="up" className="min-w-0">
+            <div className="panel panel-lime flex h-full min-h-[13.5rem] flex-col justify-between gap-6 p-6 md:p-8">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm font-semibold">{t.experience.statsRecord}</span>
+                <span className="rounded-full bg-ink px-3 py-1 text-xs font-semibold text-lime">
+                  2020
+                </span>
+              </div>
+              <div>
+                <p className="display-xl text-[clamp(4.5rem,9vw,7.5rem)] leading-[0.82]">
+                  <StatCounter value={5} prefix="+" />
+                </p>
+                <p className="mt-2 text-sm font-semibold">
+                  {t.trust.years} {t.trust.yearsCaption}
+                </p>
+                <span aria-hidden className="mt-4 flex gap-1.5">
+                  {Array.from({ length: 10 }, (_, i) => (
+                    <span
+                      key={i}
+                      className={i < 7 ? "size-2.5 rounded-full bg-ink" : "size-2.5 rounded-full bg-ink/20"}
+                    />
+                  ))}
+                </span>
               </div>
             </div>
-            <div data-fx="rise" className="min-w-0" style={{ "--fx-delay": "110ms" } as CSSProperties}>
-              <div className="panel group flex h-full min-h-[15rem] flex-col justify-between overflow-hidden p-6 sm:min-h-[18rem] md:p-8">
-                <div aria-hidden className="dot-grid absolute inset-0 rounded-[inherit] opacity-40 [mask-image:linear-gradient(135deg,black,transparent_70%)]" />
-                <span aria-hidden lang="ja" className="relative self-end font-jp text-2xl text-primary/70">記録</span>
-                <dl className="relative flex flex-col-reverse gap-2">
-                  <dt className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                    {t.trust.projects} · {t.trust.projectsCaption}
-                  </dt>
-                  <dd className="display-xl text-[clamp(5rem,13vw,10rem)] leading-[0.8] text-foreground transition-transform duration-500 group-hover:-translate-y-1">
-                    <StatCounter value={100} prefix="+" />
-                  </dd>
-                </dl>
+          </div>
+          <div data-fx="up" className="min-w-0" style={{ "--fx-delay": "90ms" } as CSSProperties}>
+            <div className="panel panel-ink flex h-full min-h-[13.5rem] flex-col justify-between gap-6 overflow-hidden p-6 md:p-8">
+              <div aria-hidden className="mesh-glow-a opacity-70" />
+              <Sparkle aria-hidden className="relative h-7 w-7 self-end fill-lime text-lime" />
+              <div className="relative">
+                <p className="display-xl text-[clamp(4.5rem,9vw,7.5rem)] leading-[0.82] text-lime">
+                  <StatCounter value={100} prefix="+" />
+                </p>
+                <p className="mt-2 text-sm font-semibold text-white/80">
+                  {t.trust.projects} {t.trust.projectsCaption}
+                </p>
               </div>
             </div>
-            <div data-fx="rise" className="min-w-0" style={{ "--fx-delay": "220ms" } as CSSProperties}>
-              <div className="panel panel-moss group flex h-full min-h-[15rem] flex-col justify-between overflow-hidden p-6 sm:min-h-[18rem] md:p-8">
-                <span aria-hidden className="size-3 self-end rounded-full bg-signal shadow-[0_0_16px_hsl(var(--signal)/0.7)]" />
-                <dl className="flex flex-col-reverse gap-2">
-                  <dt className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                    {t.trust.deliveryPrefix} · {t.trust.deliveryCaption}
-                  </dt>
-                  <dd className="display-xl flex items-end gap-3 text-[clamp(5rem,13vw,10rem)] leading-[0.8] text-foreground transition-transform duration-500 group-hover:-translate-y-1">
-                    <StatCounter value={3} />
-                    <span className="pb-[0.08em] text-[0.42em] text-primary">{t.trust.days}</span>
-                  </dd>
-                </dl>
+          </div>
+          <div data-fx="up" className="min-w-0" style={{ "--fx-delay": "180ms" } as CSSProperties}>
+            <div className="panel flex h-full min-h-[13.5rem] flex-col justify-between gap-6 p-6 shadow-soft md:p-8">
+              <span aria-hidden className="flex h-16 items-end gap-2 self-end">
+                {[38, 62, 46, 84, 70, 100].map((h, i) => (
+                  <span
+                    key={i}
+                    style={{ height: `${h}%` }}
+                    className={i === 5 ? "w-3.5 rounded-full bg-lime" : "w-3.5 rounded-full bg-ink/10"}
+                  />
+                ))}
+              </span>
+              <div>
+                <p className="display-xl flex items-end gap-2 text-[clamp(4.5rem,9vw,7.5rem)] leading-[0.82]">
+                  <StatCounter value={3} />
+                  <span className="pb-[0.1em] text-[0.38em] text-forest">{t.trust.days}</span>
+                </p>
+                <p className="mt-2 text-sm font-semibold text-muted-foreground">
+                  {t.trust.deliveryPrefix} · {t.trust.deliveryCaption}
+                </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* El trabajo aparece antes que el relato: capacidad primero. */}
         <ProjectsShowcase />
 
-        <MarqueeBand words={t.marquee.words} angle={-2.2} />
+        <MarqueeBand words={t.marquee.words} />
 
-        {/* Puente de autor: una sola historia de precisión, ritmo y conexión. */}
         <MeetBryan />
 
-        {/* Tras demostrar capacidad y presentar al autor, explicamos el oficio. */}
         <ProcessOrbital />
 
         <StackOrbit />
 
-        {/* 青海波: la costura se ensancha y deja ver las olas de la hoja. */}
-        <SeigaihaRule />
-
-        {/* Lumina guía el tramo comercial sin desplazar el trabajo real. */}
         <LuminaFeature />
 
-        {/* Narrativa por pasos: cómo Lumina te lleva de la idea al proyecto. */}
         <LuminaJourney />
-
-        {/* Qué ofrecemos → cotiza y paga. Servicios y cotizador quedan juntos
-            para que descubrir la oferta y armar el proyecto sea un solo tramo. */}
-        <SeigaihaRule />
 
         <EntryServices />
 
         <Configurator />
 
-        {/* Alcance y confianza después de entender la oferta. */}
         <WorldPresence />
 
         <ClientsMarquee />
 
-        <MarqueeBand words={t.marquee.words} reverse outline angle={1.8} />
-
-        {/* Dudas y cierre. */}
         <Faq />
 
-        <SeigaihaRule signal />
-
-        {/* Después del cierre comercial solo queda la firma del footer. */}
         <ClosingCta />
       </main>
 

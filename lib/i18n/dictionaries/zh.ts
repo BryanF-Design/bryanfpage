@@ -27,6 +27,13 @@ const zh: Dictionary = {
     titleHighlight: "成真。",
     subtitle: "我设计并开发快速、清晰、以转化为目标的网站。从最初的想法到正式上线，您都直接与我合作。",
     scrollHint: "滚动浏览 Civic",
+    sideTop: "会带来订单的",
+    sideHighlight: "网站",
+    panelTitle: "把访客变成客户的设计与代码",
+    available: "现正接受新项目",
+    proof: "已上线 100+ 个项目",
+    features: ["最快 3 天交付", "包含技术 SEO", "安全的在线支付"],
+    featured: "精选项目",
   },
   experience: {
     startupSequence: "启动序列",

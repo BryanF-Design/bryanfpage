@@ -17,7 +17,8 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
         display: ["var(--font-display)", "ui-sans-serif", "system-ui", "sans-serif"],
-        mono: ["var(--font-mono)", "ui-monospace", "SF Mono", "Menlo", "monospace"],
+        mono: ["var(--font-mono)", "ui-sans-serif", "system-ui", "sans-serif"],
+        serif: ["var(--font-serif)", "ui-serif", "Georgia", "serif"],
         jp: ["var(--font-jp)", "sans-serif"],
       },
       colors: {
@@ -56,6 +57,23 @@ const config: Config = {
           foreground: "hsl(var(--destructive-foreground))",
         },
         sheet: "hsl(var(--sheet))",
+        canvas: "hsl(var(--canvas))",
+        ink: {
+          DEFAULT: "hsl(var(--ink))",
+          soft: "hsl(var(--ink-soft))",
+          foreground: "hsl(var(--ink-foreground))",
+        },
+        lime: {
+          DEFAULT: "hsl(var(--lime))",
+          soft: "hsl(var(--lime-soft))",
+          deep: "hsl(var(--lime-deep))",
+        },
+        forest: {
+          DEFAULT: "hsl(var(--forest))",
+          deep: "hsl(var(--forest-deep))",
+        },
+        mint: "hsl(var(--mint))",
+        cream: "hsl(var(--cream))",
         moss: {
           DEFAULT: "hsl(var(--moss))",
           deep: "hsl(var(--moss-deep))",
@@ -64,26 +82,20 @@ const config: Config = {
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
       },
-      // 8-bit: no hay curvas. Todo es retícula de píxeles; las esquinas
-      // escalonadas de paneles, píldoras y botones las dibuja globals.css
-      // (`clip-path`), así que cualquier `rounded-*` heredado queda recto.
-      // Lo único redondo que sobrevive usa `rounded-[50%]` a propósito.
+      // Bento pop: radios generosos. `panel` es el de los paneles grandes,
+      // `card` el de las tarjetas y `inner` el de lo que vive dentro de ellas.
       borderRadius: {
-        none: "0px",
-        sm: "0px",
-        DEFAULT: "0px",
-        md: "0px",
-        lg: "0px",
-        xl: "0px",
-        "2xl": "0px",
-        "3xl": "0px",
-        full: "0px",
-        panel: "0px",
-        inner: "0px",
+        panel: "var(--r-panel)",
+        card: "var(--r-card)",
+        inner: "var(--r-inner)",
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 4px)",
+        sm: "calc(var(--radius) - 8px)",
       },
-      // Trazo de píxel: el borde por defecto es de 2px, como en un sprite.
-      borderWidth: {
-        DEFAULT: "2px",
+      boxShadow: {
+        soft: "0 1px 0 hsl(var(--ink) / 0.04), 0 18px 40px -24px hsl(var(--ink) / 0.35)",
+        float: "0 2px 0 hsl(var(--ink) / 0.03), 0 30px 60px -28px hsl(var(--ink) / 0.45)",
+        pop: "0 14px 30px -12px hsl(var(--ink) / 0.45)",
       },
       spacing: {
         gutter: "var(--gutter)",

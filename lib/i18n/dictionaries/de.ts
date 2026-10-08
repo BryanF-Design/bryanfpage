@@ -28,6 +28,13 @@ const de: Dictionary = {
     subtitle:
       "Ich gestalte und entwickle schnelle, klare Websites, die konvertieren. Von der ersten Idee bis zum Launch arbeitest du direkt mit mir.",
     scrollHint: "Scrollen, um den Civic zu umrunden",
+    sideTop: "Websites, die",
+    sideHighlight: "verkaufen",
+    panelTitle: "Design und Code, die Besucher zu Kunden machen",
+    available: "Offen für neue Projekte",
+    proof: "100+ gelaunchte Projekte",
+    features: ["Lieferung ab 3 Tagen", "Technisches SEO inklusive", "Sichere Online-Zahlung"],
+    featured: "Ausgewähltes Projekt",
   },
   experience: {
     startupSequence: "Startsequenz",
