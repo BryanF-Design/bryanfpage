@@ -14,6 +14,8 @@ import {
 import { PageFrame } from "@/components/japan/page-frame";
 import { SeigaihaRule } from "@/components/japan/seigaiha-rule";
 import { useLanguage } from "@/lib/i18n/context";
+import { DICTIONARIES } from "@/lib/i18n/dictionaries";
+import { SITE_URL } from "@/lib/seo/service-pages";
 
 // Below-the-fold sections: code-split so the initial hydration bundle stays
 // small (main lever on mobile TBT). SSR stays on (default) for all of these
@@ -62,6 +64,22 @@ const LuminaChat = dynamic(
   { ssr: false }
 );
 
+// Las preguntas frecuentes del home como FAQPage. Se arman con el diccionario
+// en español porque el HTML del servidor siempre sale en español: el marcado
+// coincide palabra por palabra con lo que lee el rastreador.
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": `${SITE_URL}/#faq`,
+  url: `${SITE_URL}/`,
+  inLanguage: "es-MX",
+  mainEntity: DICTIONARIES.es.faq.items.map((item) => ({
+    "@type": "Question",
+    name: item.title,
+    acceptedAnswer: { "@type": "Answer", text: item.content },
+  })),
+};
+
 export default function HomePage() {
   const { t } = useLanguage();
   const ignitionBootstrap = `(function(){try{document.documentElement.dataset.ignitionSeen=sessionStorage.getItem(${JSON.stringify(
@@ -71,6 +89,10 @@ export default function HomePage() {
   return (
     <>
       <script dangerouslySetInnerHTML={{ __html: ignitionBootstrap }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <noscript>
         <style>{`.ignition-loader{display:none!important}`}</style>
       </noscript>

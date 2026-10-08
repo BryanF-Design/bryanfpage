@@ -13,6 +13,7 @@ const en: Dictionary = {
     menu: "Open menu",
     closeMenu: "Close menu",
     skipToContent: "Skip to content",
+    backToTop: "Back to top",
     serviciosEntrada: "Entry-level services",
     lumina: "Lumina",
     servicios: "Services",

@@ -13,7 +13,6 @@ import {
 } from "react-icons/fa";
 import { useLanguage } from "@/lib/i18n/context";
 import { DICTIONARIES } from "@/lib/i18n/dictionaries";
-import { trackEvent } from "@/lib/analytics";
 import { HankoSeal } from "@/components/ui/hanko-seal";
 import { TractionLine } from "@/components/ui/traction-line";
 
@@ -169,7 +168,6 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                 href="https://wa.me/525663012505"
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => trackEvent("generate_lead", { method: "whatsapp", location: "footer" })}
                 className="inline-flex min-h-11 min-w-11 items-center text-foreground/80 transition-colors hover:text-primary"
               >
                 {t.closingCta.ctaSecondary}

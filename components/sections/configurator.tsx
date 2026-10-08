@@ -357,7 +357,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                       aria-pressed={active}
                       onClick={() => setPlanId(p.id)}
                       className={cn(
-                        "group relative flex min-h-11 flex-col rounded-[1.25rem] p-4 text-left transition-[background-color,box-shadow,transform] duration-300 [transition-timing-function:var(--ease-material)] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                        "group relative flex min-h-11 flex-col px-shape p-4 text-left transition-[background-color,box-shadow,transform] duration-300 [transition-timing-function:var(--ease-material)] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                         active
                           ? "bg-primary text-primary-foreground shadow-[0_18px_40px_-20px_hsl(var(--primary)/0.9)]"
                           : "bg-secondary text-foreground ring-1 ring-foreground/10 hover:ring-primary/50"
@@ -428,14 +428,14 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                       />
                       <span className="text-sm text-foreground">{m.label}</span>
                     </span>
-                    <span className="shrink-0 font-mono text-sm text-primary">
+                    <span className="shrink-0 font-display text-[1.15rem] leading-none text-primary">
                       +{display(m.price)}
                     </span>
                   </label>
                 ))}
 
                 {/* Sections counter */}
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.5rem] bg-secondary py-2 pl-5 pr-2 ring-1 ring-foreground/10">
+                <div className="flex flex-wrap items-center justify-between gap-3 px-shape bg-secondary py-2 pl-5 pr-2 ring-1 ring-foreground/10">
                   <span className="text-sm text-foreground">
                     {t.configurator.extraSections}
                     <span className="ml-1 font-mono text-xs text-muted-foreground">
@@ -472,7 +472,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
             </div>
 
             {/* Payment mode + currency + coupon */}
-            <div className="grid gap-5 rounded-[1.5rem] bg-secondary/60 p-4 ring-1 ring-foreground/10 sm:grid-cols-3 sm:p-5">
+            <div className="grid gap-5 px-shape bg-secondary/60 p-4 ring-1 ring-foreground/10 sm:grid-cols-3 sm:p-5">
               <fieldset>
                 <legend className="tech-label mb-2 text-primary">
                   {t.configurator.step3}
@@ -586,14 +586,14 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                   見
                 </span>
               </p>
-              <div className="relative flex flex-col gap-2 rounded-[1.25rem] bg-background/55 p-4">
+              <div className="relative flex flex-col gap-2 px-shape bg-background/55 p-4">
                 {items.map((it, i) => (
                   <div
                     key={i}
                     className="flex items-center justify-between gap-3 text-sm"
                   >
                     <span className="text-foreground/70">{it.source}</span>
-                    <span className="font-mono text-foreground">
+                    <span className="font-display text-[1.15rem] leading-none text-foreground">
                       {display(it.price)}
                     </span>
                   </div>
@@ -602,7 +602,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
               <div className="relative border-t border-dashed border-foreground/20 pt-4">
                 <div className="flex items-center justify-between text-sm text-foreground/70">
                   <span>{t.configurator.totalProject}</span>
-                  <span className="font-mono">{formatMoney(projectTotal, currency)}</span>
+                  <span className="font-display text-[1.15rem] leading-none">{formatMoney(projectTotal, currency)}</span>
                 </div>
                 <div className="mt-1 flex items-baseline justify-between">
                   <span className="text-sm font-medium text-foreground">
@@ -685,7 +685,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
               {transfer && (
                 <div
                   id="bank-transfer-details"
-                  className="relative mt-1 flex flex-col gap-2 rounded-[1.25rem] bg-background/70 p-4"
+                  className="relative mt-1 flex flex-col gap-2 px-shape bg-background/70 p-4"
                 >
                   <p className="text-xs text-muted-foreground">
                     {t.configurator.transferInstructions(formatMXN(payableNowMxn))}
@@ -697,7 +697,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                     >
                       <span className="text-muted-foreground">{b.label}</span>
                       <span className="flex items-center gap-2">
-                        <span className="font-mono text-foreground">
+                        <span className="font-display text-[1.15rem] leading-none text-foreground">
                           {b.value}
                         </span>
                         <button

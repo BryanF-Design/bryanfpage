@@ -1,75 +1,31 @@
-"use client";
+import type { ReactNode } from "react";
 
-import { useRef, type ReactNode } from "react";
-import { motion } from "framer-motion";
-
-import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { cn } from "@/lib/utils";
 
 interface TiltProps {
   children: ReactNode;
   className?: string;
-  /** Grados máximos de inclinación. */
+  /** Se conservan por compatibilidad con las composiciones existentes. */
   max?: number;
-  /** Entra revelándose con el scroll (subida + fade). */
   reveal?: boolean;
   revealDelay?: number;
 }
 
 /**
- * Inclinación 3D que sigue al puntero (CSS transform, sin three.js): las
- * tarjetas se sienten físicas al pasar el mouse. Solo actúa en dispositivos
- * con hover real y se desactiva con reduced-motion — en touch no hace nada.
- * Con `reveal` la tarjeta además entra animada al cruzar el viewport.
+ * Antes inclinaba la tarjeta en 3D siguiendo al puntero: con capturas
+ * dentro, cada movimiento re-rasterizaba la imagen y el texto se veía
+ * borroso. En el sistema 8-bit la tarjeta sube un par de píxeles al pasar
+ * (CSS puro, solo transform) y las entradas las maneja `[data-fx]`.
  */
-export function Tilt({ children, className, max = 4, reveal = false, revealDelay = 0 }: TiltProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotionPreference();
-
-  function reset() {
-    const el = ref.current;
-    if (el) el.style.transform = "";
-  }
-
-  function onPointerMove(e: React.PointerEvent<HTMLDivElement>) {
-    const el = ref.current;
-    if (!el || e.pointerType !== "mouse") return;
-    if (reduced) return;
-    const rect = el.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width - 0.5;
-    const py = (e.clientY - rect.top) / rect.height - 0.5;
-    el.style.transform = `perspective(900px) rotateX(${(-py * max).toFixed(2)}deg) rotateY(${(px * max).toFixed(2)}deg)`;
-  }
-
-  const inner = (
+export function Tilt({ children, className }: TiltProps) {
+  return (
     <div
-      ref={ref}
-      onPointerMove={onPointerMove}
-      onPointerLeave={reset}
       className={cn(
-        "h-full transition-transform duration-200 will-change-transform [transform-style:preserve-3d]",
-        !reveal && className
+        "h-full transition-transform duration-200 [transition-timing-function:var(--ease-out)] [@media(hover:hover)]:hover:-translate-y-1",
+        className
       )}
     >
       {children}
     </div>
-  );
-
-  if (!reveal || reduced) {
-    return reveal ? <div className={className}>{inner}</div> : inner;
-  }
-
-  // El reveal vive en un wrapper aparte: su transform (y) no pelea con el
-  // transform del tilt, que se escribe inline sobre el div interno.
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 32 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.6, delay: revealDelay, ease: [0.2, 0, 0, 1] }}
-      className={className}
-    >
-      {inner}
-    </motion.div>
   );
 }

@@ -13,6 +13,7 @@ const zh: Dictionary = {
     menu: "打开菜单",
     closeMenu: "关闭菜单",
     skipToContent: "跳到内容",
+    backToTop: "返回顶部",
     serviciosEntrada: "入门服务",
     lumina: "Lumina",
     servicios: "服务",

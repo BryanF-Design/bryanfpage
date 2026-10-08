@@ -51,7 +51,7 @@ export function ClientsMarquee() {
           >
             <div
               className={cn(
-                "group flex aspect-[3/2] items-center justify-center rounded-[1.25rem] p-5 ring-1 ring-foreground/10 transition-[background-color,transform] duration-300 hover:-translate-y-1 md:p-6",
+                "group flex aspect-[3/2] items-center justify-center px-shape p-5 ring-1 ring-foreground/10 transition-[background-color,transform] duration-300 hover:-translate-y-1 md:p-6",
                 i === 4 ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-moss"
               )}
             >

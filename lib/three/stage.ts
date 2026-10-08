@@ -28,6 +28,13 @@ interface StageOptions {
   cameraZ?: number;
   /** Cap for devicePixelRatio. 3D here is ambience, not the LCP. */
   maxDpr?: number;
+  /**
+   * 8-bit mode: CSS pixels per rendered pixel. The scene renders at
+   * 1/pixelSize resolution without antialiasing and the canvas is upscaled
+   * with `image-rendering: pixelated` — real-time pixel art that also paints
+   * far fewer pixels per frame.
+   */
+  pixelSize?: number;
 }
 
 /**
@@ -41,7 +48,13 @@ interface StageOptions {
  *    one frame on mount/resize and whatever frames direct interaction
  *    requests, with no idle animation
  */
-export function useThreeStage({ build, fov = 40, cameraZ = 5, maxDpr = 1.75 }: StageOptions) {
+export function useThreeStage({
+  build,
+  fov = 40,
+  cameraZ = 5,
+  maxDpr = 1.75,
+  pixelSize,
+}: StageOptions) {
   const containerRef = useRef<HTMLDivElement>(null);
   const buildRef = useRef(build);
   buildRef.current = build;
@@ -52,16 +65,20 @@ export function useThreeStage({ build, fov = 40, cameraZ = 5, maxDpr = 1.75 }: S
 
     let reduced = isReducedMotionRequested();
 
+    const pixelated = typeof pixelSize === "number" && pixelSize > 1;
     const renderer = new THREE.WebGLRenderer({
-      antialias: true,
+      antialias: !pixelated,
       alpha: true,
       powerPreference: "high-performance",
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
+    renderer.setPixelRatio(
+      pixelated ? 1 / pixelSize : Math.min(window.devicePixelRatio || 1, maxDpr)
+    );
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.domElement.style.display = "block";
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
+    if (pixelated) renderer.domElement.style.imageRendering = "pixelated";
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();

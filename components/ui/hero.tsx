@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
@@ -49,6 +50,27 @@ type NetworkNavigator = Navigator & {
   };
 };
 
+const STAGE_3D_QUERY = "(min-width: 768px)";
+
+function subscribeStage3d(listener: () => void) {
+  const query = window.matchMedia(STAGE_3D_QUERY);
+  query.addEventListener("change", listener);
+  return () => query.removeEventListener("change", listener);
+}
+
+/**
+ * El Civic 3D (≈6 MB de modelo + WebGL) solo corre desde tableta. En el
+ * teléfono el escenario muestra el mismo auto como sprite pixel art: carga
+ * al instante, no consume batería y el scroll nunca se traba.
+ */
+function useStage3dViewport() {
+  return React.useSyncExternalStore(
+    subscribeStage3d,
+    () => window.matchMedia(STAGE_3D_QUERY).matches,
+    () => false
+  );
+}
+
 /**
  * Hero — 走り.
  *
@@ -84,12 +106,14 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
     const progressRef = React.useRef(0);
     const speedRef = React.useRef<HTMLSpanElement>(null);
     const reducedMotion = useReducedMotionPreference();
+    const stage3d = useStage3dViewport();
     const [start3d, setStart3d] = React.useState(false);
     const [deferred3d, setDeferred3d] = React.useState(false);
     const [modelReady, setModelReady] = React.useState(false);
     const [modelFailed, setModelFailed] = React.useState(false);
 
     React.useEffect(() => {
+      if (!stage3d) return;
       const connection = (navigator as NetworkNavigator).connection;
       const shouldDefer =
         connection?.saveData === true ||
@@ -116,7 +140,7 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
 
       const timer = window.setTimeout(() => setStart3d(true), 450);
       return () => window.clearTimeout(timer);
-    }, []);
+    }, [stage3d]);
 
     // La aguja de la tira de datos. La escena escribe aquí ~10 veces por
     // segundo: si esto fuera estado de React, el hero se re-renderizaría a esa
@@ -160,7 +184,6 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
       };
     }, [reducedMotion]);
 
-    const badgeText = `${t.hero.titlePrefix} ${t.hero.titleHighlight} · ${t.nav.armaTuWeb} · `;
 
     return (
       <section
@@ -172,9 +195,9 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
           ref={wrapperRef}
           className={cn(
             "relative",
-            reducedMotion
-              ? "min-h-[calc(100svh-var(--gutter)*2)]"
-              : "h-[168svh] md:h-[218svh]"
+            // El recorrido con el auto "pegado" solo existe en escritorio. En
+            // teléfono y tableta el hero mide una pantalla y el scroll fluye.
+            reducedMotion ? "" : "lg:h-[190svh]"
           )}
         >
           <div
@@ -183,7 +206,7 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
               "lg:grid-cols-[calc(47%-var(--gutter)/2)_calc(53%-var(--gutter)/2)] lg:grid-rows-[minmax(0,1fr)_auto]",
               reducedMotion
                 ? ""
-                : "sticky top-[var(--gutter)] h-[calc(100svh-var(--gutter)*2)]"
+                : "lg:sticky lg:top-[var(--gutter)] lg:h-[calc(100svh-var(--gutter)*2)]"
             )}
           >
             {/* A · Panel musgo: el titular. La pestaña de la marca queda
@@ -266,7 +289,7 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
 
             {/* B · Panel de tinta: el escenario del Civic. */}
             <div
-              className="hero-in hero-in-right panel relative z-20 min-h-[30svh] min-w-0 overflow-visible lg:row-span-2 lg:min-h-0"
+              className="hero-in hero-in-right panel relative z-20 min-h-[max(15rem,34svh)] min-w-0 overflow-visible lg:row-span-2 lg:min-h-0"
               style={{ "--hd": "160ms" } as React.CSSProperties}
             >
               <div aria-hidden className="absolute inset-0 overflow-hidden rounded-[inherit]">
@@ -297,12 +320,16 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
               {/* Sello giratorio en teléfono: vive en el recorte superior
                   izquierdo del escenario. En escritorio sube a la costura. */}
               <div className="notch notch-tl lg:hidden">
-                <HeroBadge text={badgeText} label={t.nav.armaTuWeb} size="sm" />
+                <HeroBadge label={t.nav.armaTuWeb} size="sm" />
               </div>
 
-              <CivicFallback ready={modelReady} reducedMotion={reducedMotion} />
+              {stage3d ? (
+                <CivicFallback ready={modelReady} reducedMotion={reducedMotion} />
+              ) : (
+                <CivicSprite />
+              )}
 
-              {start3d && !modelFailed && (
+              {start3d && stage3d && !modelFailed && (
                 // El lienzo rebasa el panel por la izquierda: el Civic se sale
                 // de su marco y cruza la costura, como los personajes de las
                 // referencias que desbordan su tarjeta.
@@ -330,8 +357,8 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                 </div>
               )}
 
-              {!modelReady && start3d && !modelFailed && (
-                <div className="pointer-events-none absolute bottom-16 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-background/80 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/65">
+              {!modelReady && start3d && stage3d && !modelFailed && (
+                <div className="px-shape pointer-events-none absolute bottom-16 left-1/2 -translate-x-1/2 whitespace-nowrap bg-background/90 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-foreground/75">
                   {t.experience.modelLoading}
                   <span aria-hidden className="ml-2 inline-flex gap-1">
                     <span className="h-1 w-1 animate-pulse rounded-full bg-primary motion-reduce:animate-none" />
@@ -341,32 +368,30 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                 </div>
               )}
 
-              {deferred3d && !start3d && (
+              {deferred3d && stage3d && !start3d && (
                 <button
                   type="button"
                   onClick={() => {
                     setDeferred3d(false);
                     setStart3d(true);
                   }}
-                  className="absolute bottom-16 left-1/2 min-h-11 -translate-x-1/2 whitespace-nowrap rounded-full border border-primary/50 bg-background/85 px-5 font-mono text-[10px] uppercase tracking-[0.2em] text-primary backdrop-blur-sm transition-colors hover:bg-primary hover:text-primary-foreground"
+                  className="btn-px btn-px-outline absolute bottom-16 left-1/2 min-h-11 -translate-x-1/2 whitespace-nowrap bg-background/90 px-5 font-mono text-[11px] uppercase tracking-[0.14em] text-primary hover:bg-primary hover:text-primary-foreground"
                 >
                   {t.experience.activateModel}
                 </button>
               )}
 
               {modelFailed && (
-                <p className="absolute bottom-16 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.18em] text-foreground/55">
+                <p className="absolute bottom-16 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.14em] text-foreground/60">
                   {t.experience.lightweightView}
                 </p>
               )}
 
-              {/* Gestos. */}
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-3 p-4 sm:p-5">
-                <span className="hidden rounded-full bg-background/70 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.2em] text-foreground/55 backdrop-blur-sm sm:inline sm:text-[10px]">
-                  {scrollHint}
-                </span>
-                <span className="ml-auto flex flex-col items-end gap-1.5 text-right">
-                  <span className="rounded-full bg-primary px-3 py-1.5 font-mono text-[9px] font-medium uppercase tracking-[0.2em] text-primary-foreground sm:text-[10px]">
+              {/* Gestos: solo cuando el Civic 3D está en escena. Viven a la
+                  izquierda: la esquina derecha es de los botones flotantes. */}
+              {stage3d && !modelFailed && (
+                <div className="pointer-events-none absolute bottom-0 left-0 z-10 flex flex-col items-start gap-1.5 p-4 sm:p-5 lg:pl-[7.5rem]">
+                  <span className="px-shape bg-primary px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-primary-foreground">
                     {locale === "ja" ? (
                       t.experience.dragRotate
                     ) : (
@@ -376,7 +401,7 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                     )}
                   </span>
                   {!reducedMotion && (
-                    <span className="rounded-full bg-background/70 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.2em] text-foreground/60 backdrop-blur-sm sm:text-[10px]">
+                    <span className="px-shape bg-background/90 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/75">
                       {locale === "ja" ? (
                         t.experience.tapBoost
                       ) : (
@@ -386,8 +411,11 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                       )}
                     </span>
                   )}
-                </span>
-              </div>
+                  <span className="px-shape hidden bg-background/90 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/65 lg:inline">
+                    {scrollHint}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* C · Tira de datos + fases: una píldora larga bajo el titular. */}
@@ -433,8 +461,8 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
               className="hero-in hero-in-pop pointer-events-none absolute bottom-[calc(3.5rem+var(--gutter)*2)] left-[47%] z-30 hidden lg:block"
               style={{ "--hd": "760ms", marginLeft: "calc(var(--gutter) / 2)" } as React.CSSProperties}
             >
-              <div className="pointer-events-auto -translate-x-1/2 rounded-full bg-sheet p-[var(--gutter)]">
-                <HeroBadge text={badgeText} label={t.nav.armaTuWeb} size="lg" />
+              <div className="px-shape pointer-events-auto -translate-x-1/2 bg-sheet p-[var(--gutter)]">
+                <HeroBadge label={t.nav.armaTuWeb} size="lg" />
               </div>
             </div>
           </div>
@@ -455,7 +483,7 @@ function HeroPhase({
   signal?: boolean;
 }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-foreground/10 px-2.5 py-1">
+    <span className="inline-flex items-center gap-1.5 border-2 border-foreground/15 px-2.5 py-1">
       <span
         lang="ja"
         className={cn(
@@ -465,71 +493,81 @@ function HeroPhase({
       >
         {jp}
       </span>
-      <span className="hidden text-foreground/55 md:inline">{label}</span>
+      <span className="hidden text-foreground/65 md:inline">{label}</span>
     </span>
   );
 }
 
 /**
- * El sello giratorio de la referencia: un anillo de texto que rueda alrededor
- * de un botón lima. Es un enlace real al cotizador; el texto del anillo es
+ * Botón de "PRESS START": la pantalla de título de un juego, llevada al
+ * hero. Es un enlace real al cotizador; el "▶ START" que parpadea es
  * ornamento y queda fuera del árbol accesible.
  */
 function HeroBadge({
-  text,
   label,
   size,
 }: {
-  text: string;
   label: string;
   size: "sm" | "lg";
 }) {
-  const id = React.useId().replace(/:/g, "");
   return (
     <Link
       href="#precios"
       aria-label={label}
       className={cn(
-        "group relative grid place-items-center rounded-full bg-background text-foreground transition-transform duration-500 [transition-timing-function:var(--ease-pop)] hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--sheet))]",
-        size === "lg" ? "size-36 xl:size-40" : "size-24"
+        "px-shape group relative flex flex-col items-center justify-center bg-background text-foreground shadow-[inset_0_-5px_0_0_hsl(0_0%_0%/0.4),inset_0_0_0_2px_hsl(var(--foreground)/0.12)] transition-transform duration-150 hover:-translate-y-1 active:translate-y-0.5",
+        size === "lg" ? "size-36 gap-2.5 xl:size-40" : "size-24 gap-1.5"
       )}
     >
-      <svg
-        aria-hidden
-        viewBox="0 0 200 200"
-        className="spin-slow absolute inset-0 h-full w-full"
-      >
-        <defs>
-          <path
-            id={`badge-circle-${id}`}
-            d="M100,100 m-76,0 a76,76 0 1,1 152,0 a76,76 0 1,1 -152,0"
-          />
-        </defs>
-        <text
-          fill="currentColor"
-          className="font-display font-extrabold uppercase opacity-85"
-          style={{ fontSize: 20, letterSpacing: "0.12em" }}
-        >
-          <textPath
-            href={`#badge-circle-${id}`}
-            textLength="470"
-            lengthAdjust="spacingAndGlyphs"
-          >
-            {text}
-            {text}
-          </textPath>
-        </text>
-      </svg>
       <span
         aria-hidden
         className={cn(
-          "relative grid place-items-center rounded-full bg-primary text-primary-foreground transition-transform duration-500 group-hover:rotate-45",
+          "font-mono uppercase tracking-[0.14em] text-primary",
+          size === "lg" ? "text-[12px]" : "text-[10px]"
+        )}
+      >
+        <span className="px-blink motion-reduce:animate-none">▶</span> Start
+      </span>
+      <span
+        aria-hidden
+        className={cn(
+          "btn-px grid place-items-center bg-primary text-primary-foreground transition-transform duration-150 group-hover:-translate-y-0.5",
           size === "lg" ? "size-14 xl:size-16" : "size-10"
         )}
       >
         <ArrowUpRight className={size === "lg" ? "h-6 w-6" : "h-4 w-4"} />
       </span>
+      <span
+        aria-hidden
+        className={cn(
+          "font-display uppercase leading-none tracking-[0.04em]",
+          size === "lg" ? "text-[1.2rem]" : "hidden"
+        )}
+      >
+        {label}
+      </span>
     </Link>
+  );
+}
+
+/**
+ * El Civic en sprite: un render real del modelo reducido a retícula de
+ * píxeles. Se escala con `image-rendering: pixelated`, así que se ve nítido
+ * a cualquier tamaño sin pesar más de unos KB.
+ */
+function CivicSprite() {
+  return (
+    <div aria-hidden className="absolute inset-0 flex items-end justify-center px-3 pb-6 pt-24">
+      <Image
+        src="/img/civic-pixel.png"
+        alt=""
+        width={320}
+        height={160}
+        unoptimized
+        priority
+        className="pixelated h-auto max-h-full w-full max-w-[520px] object-contain drop-shadow-[6px_8px_0_hsl(160_60%_2%/0.5)]"
+      />
+    </div>
   );
 }
 

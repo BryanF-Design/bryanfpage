@@ -1,11 +1,16 @@
 import type { MetadataRoute } from "next";
 
-const BASE = "https://www.bryanfdesign.com.mx";
+import { SITE_URL } from "@/lib/seo/service-pages";
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: { userAgent: "*", allow: "/" },
-    sitemap: `${BASE}/sitemap.xml`,
-    host: BASE,
+    rules: {
+      userAgent: "*",
+      allow: "/",
+      // Endpoints de pago, chat y webhooks: no son páginas.
+      disallow: ["/api/"],
+    },
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   };
 }

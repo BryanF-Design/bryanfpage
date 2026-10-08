@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-export const SITE_URL = "https://www.bryanfdesign.com.mx";
+export const SITE_URL = "https://www.bryanfdesign.com";
 export const BRAND_NAME = "BryanF Design";
 export const CONTACT_EMAIL = "bryanf@bryanfdesign.com.mx";
 export const WHATSAPP_URL = "https://wa.me/525663012505";

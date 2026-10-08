@@ -6,28 +6,25 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
-// Píldoras, como en toda la hoja: rótulo condensado en mayúsculas, apretón
-// al pulsar y un salto corto al pasar el puntero.
+// Botones de arcade: rótulo pixel en mayúsculas, esquinas escalonadas y un
+// bisel de dos tonos que se invierte al pulsar (ver `.btn-px` en globals.css).
+// Sin sombras externas ni ondas: todo el relieve vive dentro del recorte.
 const buttonVariants = cva(
-  "relative inline-flex items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap rounded-full font-display text-[1.02rem] font-extrabold uppercase leading-none tracking-[0.045em] ring-offset-background transition-[background-color,color,border-color,box-shadow,transform] duration-300 [transition-timing-function:var(--ease-material)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
+  "btn-px relative inline-flex select-none items-center justify-center gap-2 overflow-hidden whitespace-nowrap font-display text-[1.25rem] uppercase leading-none tracking-[0.04em] disabled:pointer-events-none disabled:opacity-50 cursor-pointer [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-primary-foreground shadow-[0_10px_30px_-14px_hsl(var(--primary)/0.9)] hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-[0_18px_40px_-14px_hsl(var(--primary)/0.95)]",
-        destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline:
-          "border border-foreground/25 bg-transparent text-foreground hover:-translate-y-0.5 hover:border-primary hover:text-primary",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:-translate-y-0.5 hover:bg-secondary/80",
-        ghost: "text-foreground/85 hover:bg-foreground/10 hover:text-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+        default: "bg-primary text-primary-foreground hover:brightness-110",
+        destructive: "bg-destructive text-destructive-foreground hover:brightness-110",
+        outline: "btn-px-outline text-foreground hover:text-primary",
+        secondary: "bg-secondary text-secondary-foreground hover:brightness-125",
+        ghost: "btn-px-ghost text-foreground/85 hover:bg-foreground/10 hover:text-foreground",
+        link: "btn-px-ghost text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-11 px-5 py-2",
-        sm: "h-11 px-4",
-        lg: "h-12 px-7 text-[1.1rem]",
+        default: "h-11 px-5 pb-[3px]",
+        sm: "h-11 px-4 pb-[3px]",
+        lg: "h-12 px-7 pb-[3px] text-[1.4rem]",
         icon: "h-11 w-11",
       },
     },
@@ -44,64 +41,15 @@ export interface ButtonProps
   asChild?: boolean;
 }
 
-interface Ripple {
-  id: number;
-  x: number;
-  y: number;
-  size: number;
-}
-
-let rippleId = 0;
-
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, onPointerDown, ...props }, ref) => {
-    const [ripples, setRipples] = React.useState<Ripple[]>([]);
-
-    // Material ripple. Purely additive: only spawns a decorative span and
-    // forwards to the caller's own onPointerDown — never touches onClick, so
-    // it can't interfere with the payment/pay-button flow.
-    const handlePointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
-      const el = e.currentTarget;
-      const rect = el.getBoundingClientRect();
-      const size = Math.max(rect.width, rect.height) * 2;
-      const id = ++rippleId;
-      setRipples((prev) => [
-        ...prev,
-        { id, x: e.clientX - rect.left - size / 2, y: e.clientY - rect.top - size / 2, size },
-      ]);
-      window.setTimeout(() => {
-        setRipples((prev) => prev.filter((r) => r.id !== id));
-      }, 650);
-      onPointerDown?.(e);
-    };
-
-    if (asChild) {
-      return (
-        <Slot
-          className={cn(buttonVariants({ variant, size, className }))}
-          ref={ref}
-          {...props}
-        />
-      );
-    }
-
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button";
     return (
-      <button
+      <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        onPointerDown={handlePointerDown}
         {...props}
-      >
-        {props.children}
-        {ripples.map((r) => (
-          <span
-            key={r.id}
-            aria-hidden
-            className="ripple-span"
-            style={{ left: r.x, top: r.y, width: r.size, height: r.size }}
-          />
-        ))}
-      </button>
+      />
     );
   }
 );

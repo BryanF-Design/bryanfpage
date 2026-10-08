@@ -25,9 +25,9 @@ const ARCS: [number, number][] = [
 function StaticGlobe() {
   return (
     <div aria-hidden className="absolute inset-6 grid place-items-center">
-      <div className="relative size-[82%] rounded-full border border-primary/35 bg-secondary/30 shadow-[0_0_70px_hsl(var(--primary)/0.08)]">
-        <span className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_34%_28%,hsl(var(--primary)/0.16),transparent_30%)]" />
-        <span className="absolute inset-[12%] rounded-full border border-primary/20" />
+      <div className="relative size-[82%] rounded-[50%] border-2 border-dashed border-primary/45 bg-secondary/30 shadow-[0_0_70px_hsl(var(--primary)/0.08)]">
+        <span className="absolute inset-0 rounded-[50%] bg-[radial-gradient(circle_at_34%_28%,hsl(var(--primary)/0.16),transparent_30%)]" />
+        <span className="absolute inset-[12%] rounded-[50%] border border-primary/20" />
         <span className="absolute left-1/2 top-[8%] h-[84%] w-[34%] -translate-x-1/2 rounded-[50%] border border-primary/20" />
         <span className="absolute left-[8%] top-1/2 h-[32%] w-[84%] -translate-y-1/2 rounded-[50%] border border-primary/20" />
         <span className="absolute left-[20%] top-[38%] size-2 rounded-full bg-primary shadow-[0_0_18px_hsl(var(--primary)/0.65)]" />

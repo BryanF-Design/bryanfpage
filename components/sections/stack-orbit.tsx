@@ -151,7 +151,7 @@ function StackTile({
   return (
     <div
       className={cn(
-        "flex h-full min-h-28 flex-col justify-between rounded-[1.25rem] p-3.5 md:p-4",
+        "flex h-full min-h-28 flex-col justify-between px-shape p-3.5 md:p-4",
         ring
           ? index % 3 === 0
             ? "bg-primary text-primary-foreground"

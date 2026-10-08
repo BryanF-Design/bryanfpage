@@ -41,11 +41,13 @@ export function IgnitionPreloader() {
   const previousOverflowRef = useRef("");
   const ownsScrollLockRef = useRef(false);
 
-  const duration = reducedMotion ? 460 : 1900;
+  // Corta a propósito: la primera visita no debe sentirse "trabada".
+  const duration = reducedMotion ? 420 : 1150;
+  // La barra se llena en 12 bloques, como la carga de un cartucho.
   const transition = useMemo(
     () => ({
       duration: duration / 1000,
-      ease: [0.2, 0, 0, 1] as const,
+      ease: (t: number) => Math.ceil(t * 12) / 12,
     }),
     [duration]
   );
@@ -79,7 +81,7 @@ export function IgnitionPreloader() {
 
     const phaseTimer = window.setTimeout(
       () => setPhase("始動"),
-      reducedMotion ? 180 : 1060
+      reducedMotion ? 160 : 600
     );
     const exitTimer = window.setTimeout(() => {
       try {
@@ -118,8 +120,8 @@ export function IgnitionPreloader() {
 
   const started = phase === "始動";
   const fly = !reducedMotion && !instantExit;
-  const spring = { type: "spring" as const, stiffness: 190, damping: 22, mass: 0.9 };
-  const out = { duration: 0.62, ease: [0.76, 0, 0.24, 1] as const };
+  const spring = { type: "spring" as const, stiffness: 320, damping: 30, mass: 0.8 };
+  const out = { duration: 0.32, ease: [0.76, 0, 0.24, 1] as const };
 
   return (
     <AnimatePresence onExitComplete={handleExitComplete}>
@@ -135,13 +137,13 @@ export function IgnitionPreloader() {
           exit={{ opacity: 0 }}
           transition={{
             duration: instantExit ? 0 : reducedMotion ? 0.12 : 0.34,
-            delay: fly ? 0.3 : 0,
+            delay: fly ? 0.16 : 0,
             ease: [0.76, 0, 0.24, 1],
           }}
           className="ignition-loader fixed inset-0 z-[300] isolate flex flex-col overflow-hidden bg-sheet p-[var(--gutter)] text-[hsl(160_36%_6%)]"
         >
           {/* Tira superior: firma y coordenadas, tinta sobre washi. */}
-          <div className="flex items-center justify-between gap-6 px-2 pb-3 pt-1 font-mono text-[10px] uppercase tracking-[0.28em] opacity-70 sm:text-[11px]">
+          <div className="flex items-center justify-between gap-6 px-2 pb-3 pt-1 font-mono text-[11px] uppercase tracking-[0.16em] opacity-75 sm:text-xs">
             <p>
               BryanF Design
               <span className="hidden sm:inline">
@@ -158,9 +160,9 @@ export function IgnitionPreloader() {
           {/* El bento se arma: tres paneles llegan desde fuera del lienzo. */}
           <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(0,1.5fr)_minmax(0,0.6fr)_minmax(0,0.6fr)] gap-[var(--gutter)] sm:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] sm:grid-rows-2">
             <motion.div
-              initial={fly ? { x: "-110vw", rotate: -9 } : false}
-              animate={{ x: 0, rotate: 0 }}
-              exit={fly ? { x: "-110vw", rotate: -6, transition: out } : undefined}
+              initial={fly ? { x: -48, opacity: 0 } : false}
+              animate={{ x: 0, opacity: 1 }}
+              exit={fly ? { x: -32, opacity: 0, transition: out } : undefined}
               transition={spring}
               className="panel relative grid place-items-center overflow-hidden sm:row-span-2"
             >
@@ -185,10 +187,10 @@ export function IgnitionPreloader() {
             </motion.div>
 
             <motion.div
-              initial={fly ? { y: "-110vh", rotate: 7 } : false}
-              animate={{ y: 0, rotate: 0 }}
-              exit={fly ? { y: "-110vh", rotate: 5, transition: out } : undefined}
-              transition={{ ...spring, delay: fly ? 0.12 : 0 }}
+              initial={fly ? { y: -40, opacity: 0 } : false}
+              animate={{ y: 0, opacity: 1 }}
+              exit={fly ? { y: -28, opacity: 0, transition: out } : undefined}
+              transition={{ ...spring, delay: fly ? 0.06 : 0 }}
               className="panel panel-lime flex flex-col justify-between overflow-hidden p-5 sm:p-7"
             >
               <p className="font-mono text-[11px] uppercase tracking-[0.3em] sm:text-xs">
@@ -207,10 +209,10 @@ export function IgnitionPreloader() {
             </motion.div>
 
             <motion.div
-              initial={fly ? { x: "110vw", rotate: 9 } : false}
-              animate={{ x: 0, rotate: 0 }}
-              exit={fly ? { x: "110vw", rotate: 6, transition: out } : undefined}
-              transition={{ ...spring, delay: fly ? 0.22 : 0 }}
+              initial={fly ? { x: 48, opacity: 0 } : false}
+              animate={{ x: 0, opacity: 1 }}
+              exit={fly ? { x: 32, opacity: 0, transition: out } : undefined}
+              transition={{ ...spring, delay: fly ? 0.12 : 0 }}
               className="panel panel-moss flex flex-col justify-between gap-4 overflow-hidden p-5 sm:p-7"
             >
               <p className="max-w-[18rem] text-xs leading-relaxed text-foreground/70 sm:text-sm">
@@ -222,11 +224,12 @@ export function IgnitionPreloader() {
                     {started ? t.experience.routeReady : t.experience.aligning}
                   </span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-background/60">
+                {/* Barra de carga de cartucho: se llena por bloques. */}
+                <div className="h-4 overflow-hidden bg-background/70 p-[3px]">
                   <motion.div
-                    className="h-full origin-left rounded-full bg-primary"
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
+                    className="h-full bg-primary [background-image:repeating-linear-gradient(90deg,transparent_0_10px,hsl(var(--background))_10px_12px)]"
+                    initial={{ clipPath: "inset(0 100% 0 0)" }}
+                    animate={{ clipPath: "inset(0 0% 0 0)" }}
                     transition={transition}
                   />
                 </div>
@@ -236,13 +239,13 @@ export function IgnitionPreloader() {
 
           {/* Firma decodificándose y salida. */}
           <motion.div
-            initial={fly ? { y: 80, opacity: 0 } : false}
+            initial={fly ? { y: 32, opacity: 0 } : false}
             animate={{ y: 0, opacity: 1 }}
-            exit={fly ? { y: 80, opacity: 0, transition: out } : undefined}
-            transition={{ ...spring, delay: fly ? 0.3 : 0 }}
+            exit={fly ? { y: 24, opacity: 0, transition: out } : undefined}
+            transition={{ ...spring, delay: fly ? 0.18 : 0 }}
             className="mt-[var(--gutter)] flex items-center gap-3"
           >
-            <div className="panel flex min-h-12 min-w-0 flex-1 items-center rounded-full px-5">
+            <div className="panel flex min-h-12 min-w-0 flex-1 items-center px-5">
               <Decoder
                 target={SIGNATURE}
                 active={started}
@@ -252,7 +255,7 @@ export function IgnitionPreloader() {
             <button
               type="button"
               onClick={skip}
-              className="min-h-12 shrink-0 rounded-full bg-[hsl(160_36%_6%)] px-5 font-mono text-[10px] uppercase tracking-[0.24em] text-[hsl(72_24%_94%/0.7)] transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="btn-px min-h-12 shrink-0 bg-[hsl(160_36%_6%)] px-5 font-mono text-[11px] uppercase tracking-[0.14em] text-[hsl(72_24%_94%/0.8)] hover:bg-primary hover:text-primary-foreground"
             >
               {t.experience.skip}
             </button>
@@ -288,7 +291,7 @@ function Hinomaru({
           opacity: active ? 1 : 0.7,
         }}
         transition={{
-          duration: reducedMotion ? 0 : 1.15,
+          duration: reducedMotion ? 0 : 0.7,
           ease: [0.16, 1, 0.3, 1],
         }}
         className="hinomaru-dots relative block aspect-square w-[min(62vw,24rem)]"
@@ -297,7 +300,7 @@ function Hinomaru({
         initial={reducedMotion ? false : { scale: 0.4, opacity: 0 }}
         animate={{ scale: 1, opacity: 0.6, rotate: active ? 90 : 0 }}
         transition={{
-          duration: reducedMotion ? 0 : 1.3,
+          duration: reducedMotion ? 0 : 0.8,
           delay: reducedMotion ? 0 : 0.12,
           ease: [0.16, 1, 0.3, 1],
         }}
@@ -335,7 +338,7 @@ function Decoder({
 
     let frame = 0;
     let raf = 0;
-    const total = 34;
+    const total = 26;
 
     const step = () => {
       frame += 1;

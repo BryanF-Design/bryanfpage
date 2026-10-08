@@ -167,6 +167,15 @@ export function LuminaChat() {
     window.dispatchEvent(new CustomEvent("lumina:visibility", { detail: { open } }));
   }, [open]);
 
+  // El dock flotante (WhatsApp) se apila encima de este botón mientras exista.
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--lumina-fab", "calc(var(--fab-size) + var(--fab-gap))");
+    return () => {
+      root.style.removeProperty("--lumina-fab");
+    };
+  }, []);
+
   // Restore only after hydration so the server and first client render match.
   useEffect(() => {
     const stored = readStoredMessages();
@@ -298,7 +307,7 @@ export function LuminaChat() {
       markTeased();
       setTeaser(true);
     }, 12_500);
-    const hideAt = window.setTimeout(() => setTeaser(false), 21_500);
+    const hideAt = window.setTimeout(() => setTeaser(false), 19_500);
     return () => {
       window.clearTimeout(showAt);
       window.clearTimeout(hideAt);
@@ -400,14 +409,14 @@ export function LuminaChat() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 12 }}
             transition={{ duration: 0.25 }}
-            className="glass fixed inset-0 z-[130] flex h-[100dvh] w-full flex-col overflow-hidden rounded-none bg-[hsl(var(--card))] shadow-2xl sm:inset-auto sm:bottom-[calc(6rem+env(safe-area-inset-bottom))] sm:right-4 sm:h-auto sm:max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] sm:w-[min(92vw,22rem)] sm:origin-bottom-right sm:rounded-2xl sm:bg-[hsl(var(--card)/0.82)] md:right-6"
+            className="fixed inset-0 z-[130] flex h-[100dvh] w-full flex-col overflow-hidden bg-card sm:px-window sm:inset-auto sm:bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] sm:right-6 sm:h-auto sm:max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] sm:w-[min(92vw,23rem)] sm:origin-bottom-right"
             role="dialog"
             aria-modal="true"
             aria-labelledby="lumina-chat-title"
           >
-            <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+            <div className="flex items-center justify-between border-b-2 border-foreground/10 bg-secondary/60 px-4 py-2.5 pt-[max(0.625rem,env(safe-area-inset-top))]">
           <div className="flex items-center gap-2">
-            <span className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full ring-1 ring-primary/40">
+            <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden bg-primary/10 ring-2 ring-primary/60">
               <AnimatePresence mode="wait">
                 <motion.span
                   key={mood}
@@ -427,14 +436,14 @@ export function LuminaChat() {
                 </motion.span>
               </AnimatePresence>
               {mood !== "Offline" && (
-                <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full border border-card bg-primary" />
+                <span className="absolute bottom-0 right-0 h-2.5 w-2.5 border-2 border-card bg-primary" />
               )}
             </span>
             <div className="leading-tight">
-              <p id="lumina-chat-title" className="text-sm font-semibold text-foreground">
+              <p id="lumina-chat-title" className="font-display text-[1.35rem] uppercase leading-none text-foreground">
                 {t.lumina.name}
               </p>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground">
                 {mood === "Offline"
                   ? t.lumina.offline
                   : loading
@@ -466,9 +475,9 @@ export function LuminaChat() {
         >
           {messages.map((m, i) => {
             const className = cn(
-              "max-w-[85%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed [&_a]:text-primary [&_a]:underline",
+              "px-shape max-w-[85%] px-3.5 py-2.5 text-sm leading-relaxed [&_a]:text-primary [&_a]:underline",
               m.role === "user"
-                ? "self-end bg-primary text-primary-foreground"
+                ? "self-end bg-primary text-primary-foreground [&_a]:text-primary-foreground"
                 : "self-start bg-secondary text-foreground"
             );
             // User input is never trusted as HTML — only sanitized assistant
@@ -486,8 +495,9 @@ export function LuminaChat() {
             );
           })}
           {loading && (
-            <div className="self-start rounded-2xl bg-secondary px-3.5 py-2 text-sm text-muted-foreground">
+            <div className="px-shape self-start bg-secondary px-3.5 py-2.5 font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground">
               {t.lumina.typing}
+              <span aria-hidden className="px-blink ml-1 motion-reduce:animate-none">▌</span>
             </div>
           )}
           {retryText && !loading && (
@@ -521,7 +531,7 @@ export function LuminaChat() {
             e.preventDefault();
             send(input);
           }}
-          className="flex shrink-0 items-center gap-2 border-t border-border px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3"
+          className="flex shrink-0 items-center gap-2 border-t-2 border-foreground/10 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3"
         >
           <label htmlFor="lumina-message" className="sr-only">
             {t.lumina.placeholder}
@@ -534,13 +544,13 @@ export function LuminaChat() {
             onChange={(e) => setInput(e.target.value)}
             placeholder={t.lumina.placeholder}
             enterKeyHint="send"
-            className="min-h-11 min-w-0 flex-1 rounded-full border border-input bg-background px-4 py-2 text-base outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:text-sm"
+            className="min-h-11 min-w-0 flex-1 border-2 border-input bg-background px-4 py-2 text-base outline-none focus-visible:border-primary sm:text-sm"
           />
           <button
             type="submit"
             disabled={loading || !input.trim()}
             aria-label={t.lumina.send}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="btn-px flex h-11 w-11 shrink-0 items-center justify-center bg-primary text-primary-foreground disabled:opacity-50"
           >
             <Send className="h-4 w-4" />
           </button>
@@ -557,13 +567,13 @@ export function LuminaChat() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.3 }}
-            className="glass fixed bottom-[calc(5.5rem_+_env(safe-area-inset-bottom))] right-3 z-[120] max-w-[min(16rem,calc(100vw_-_1.5rem))] rounded-2xl rounded-br-sm px-4 py-3 pr-9 text-sm text-foreground shadow-xl sm:right-6"
+            className="px-window fixed bottom-[calc(var(--fab-edge)+(var(--fab-size)+var(--fab-gap))*2)] right-3 z-[120] max-w-[min(16rem,calc(100vw-1.5rem))] px-4 py-3 pr-12 text-sm text-foreground sm:right-6"
           >
             <button
               type="button"
               onClick={() => setTeaser(false)}
               aria-label={t.lumina.close}
-              className="absolute -right-2 -top-3 flex h-11 w-11 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="absolute right-0 top-0 flex h-11 w-11 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
             >
               <X className="h-4 w-4" />
             </button>
@@ -572,63 +582,52 @@ export function LuminaChat() {
         )}
       </AnimatePresence>
 
-      {/* FAB */}
-      <motion.button
-        ref={fabRef}
-        type="button"
-        onClick={openChat}
-        aria-label={open ? t.lumina.close : t.lumina.open}
-        aria-controls="lumina-chat-panel"
-        aria-expanded={open}
-        aria-hidden={footerInView}
-        tabIndex={footerInView ? -1 : 0}
-        animate={{
-          opacity: footerInView ? 0 : 1,
-          scale: footerInView ? 0.85 : 1,
-        }}
-        transition={{
-          opacity: { duration: 0.3, ease: "easeInOut" },
-          scale: { duration: 0.3, ease: "easeInOut" },
-        }}
-        className={cn(
-          "glass-nav fixed bottom-[calc(1rem_+_env(safe-area-inset-bottom))] right-3 z-[120] flex min-h-11 min-w-11 items-center rounded-xl border border-primary/35 p-1 text-left text-foreground shadow-[0_12px_40px_-14px_hsl(var(--primary)/0.45)] transition-[border-color,background-color,color] hover:border-primary/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:bottom-[calc(1.25rem_+_env(safe-area-inset-bottom))] sm:right-6 sm:gap-3 sm:rounded-2xl sm:p-2 sm:pr-4",
-          configuratorInView && "rounded-full p-1 pr-1 sm:p-1 sm:pr-1",
-          footerInView && "pointer-events-none"
-        )}
+      {/* FAB: mando de arcade con el avatar de Lumina. Mismo tamaño en todos
+          los estados; en el cotizador solo esconde la etiqueta. */}
+      <div
+        className="fab-slot fab-shadow fixed bottom-[var(--fab-edge)] right-3 z-[120] sm:right-6"
+        data-hidden={footerInView}
       >
-        <span
-          className={cn(
-            "relative flex h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-primary/10 ring-1 ring-primary/45 sm:h-12 sm:w-12",
-            configuratorInView && "rounded-full sm:h-11 sm:w-11"
-          )}
+        <button
+          ref={fabRef}
+          type="button"
+          onClick={openChat}
+          aria-label={open ? t.lumina.close : t.lumina.open}
+          aria-controls="lumina-chat-panel"
+          aria-expanded={open}
+          aria-hidden={footerInView}
+          tabIndex={footerInView ? -1 : 0}
+          className={cn("fab justify-start px-1.5 text-left", open && "fab-lime")}
         >
-          <Image src={MOOD_IMG.Normal} alt="" fill sizes="48px" className="object-cover" />
+          <span className="relative flex size-9 shrink-0 overflow-hidden bg-primary/15 ring-2 ring-primary/70 sm:size-10">
+            <Image src={MOOD_IMG.Normal} alt="" fill sizes="40px" className="object-cover" />
+            <span
+              className={cn(
+                "absolute bottom-0 right-0 h-2.5 w-2.5 border-2 border-background",
+                mood === "Offline" ? "bg-muted-foreground" : "bg-primary"
+              )}
+            />
+          </span>
           <span
             className={cn(
-              "absolute bottom-1 right-1 h-2.5 w-2.5 rounded-full border-2 border-background",
-              mood === "Offline" ? "bg-muted-foreground" : "bg-primary"
+              "hidden min-w-0 pr-2 leading-tight sm:block",
+              configuratorInView && "sm:hidden"
             )}
-          />
-        </span>
-        <span
-          className={cn(
-            "hidden min-w-0 leading-tight sm:block",
-            configuratorInView && "sm:hidden"
-          )}
-        >
-          <span className="flex items-center gap-1.5 font-semibold">
-            {t.lumina.name}
-            <MessageCircle className="h-3.5 w-3.5 text-primary" />
+          >
+            <span className="fab-label flex items-center gap-1.5">
+              {t.lumina.name}
+              <MessageCircle aria-hidden className={cn("h-3.5 w-3.5", open ? "" : "text-primary")} />
+            </span>
+            <span className="mt-1 block whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.08em] opacity-70">
+              {mood === "Offline"
+                ? t.lumina.offline
+                : loading
+                  ? t.lumina.thinking
+                  : t.lumina.online}
+            </span>
           </span>
-          <span className="mt-0.5 hidden whitespace-nowrap text-[11px] font-medium text-muted-foreground sm:block">
-            {mood === "Offline"
-              ? t.lumina.offline
-              : loading
-                ? t.lumina.thinking
-                : t.lumina.online}
-          </span>
-        </span>
-      </motion.button>
+        </button>
+      </div>
     </>
   );
 }

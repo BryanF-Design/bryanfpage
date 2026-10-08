@@ -14,6 +14,7 @@ const es = {
     menu: "Abrir menú",
     closeMenu: "Cerrar menú",
     skipToContent: "Saltar al contenido",
+    backToTop: "Volver arriba",
     serviciosEntrada: "Servicios de entrada",
     lumina: "Lumina",
     servicios: "Servicios",

@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useConfiguratorInView } from "@/lib/use-configurator-in-view";
 import { useFooterInView } from "@/lib/use-footer-in-view";
 
@@ -137,12 +138,12 @@ export function AccessibilityPanel() {
             role="dialog"
             aria-labelledby="accessibility-panel-title"
             id="accessibility-panel"
-            className="fixed bottom-[calc(5.5rem_+_env(safe-area-inset-bottom))] left-3 z-[120] max-h-[calc(100dvh_-_7rem_-_env(safe-area-inset-bottom))] w-[min(calc(100vw_-_1.5rem),20rem)] overflow-y-auto rounded-2xl border border-border bg-card shadow-2xl sm:left-6"
+            className="px-window fixed bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] left-3 z-[121] max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] w-[min(calc(100vw-1.5rem),20rem)] overflow-y-auto sm:left-6"
           >
-            <div className="flex items-center justify-between border-b border-border bg-secondary/40 px-4 py-3">
+            <div className="flex items-center justify-between border-b-2 border-foreground/10 bg-secondary/60 py-2 pl-4 pr-2">
               <p
                 id="accessibility-panel-title"
-                className="flex items-center gap-2 text-sm font-semibold text-foreground"
+                className="flex items-center gap-2 font-display text-[1.35rem] uppercase leading-none text-foreground"
               >
                 <Accessibility className="h-4 w-4 text-primary" aria-hidden />
                 Accesibilidad
@@ -163,7 +164,7 @@ export function AccessibilityPanel() {
 
             <div className="flex flex-col gap-4 p-4">
               <div>
-                <p className="mb-2 text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground">
+                <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
                   Tamaño de texto
                 </p>
                 <div className="flex items-center gap-2">
@@ -218,14 +219,14 @@ export function AccessibilityPanel() {
                       </span>
                       <span
                         className={cn(
-                          "flex h-5 w-9 items-center rounded-full border border-border p-0.5 transition-colors",
+                          "flex h-5 w-9 items-center border-2 border-foreground/25 p-0.5 transition-colors",
                           active ? "bg-primary" : "bg-secondary"
                         )}
                       >
                         <span
                           className={cn(
-                            "h-3.5 w-3.5 rounded-full bg-background transition-transform",
-                            active && "translate-x-4"
+                            "h-3 w-3 bg-foreground transition-transform",
+                            active && "translate-x-4 bg-primary-foreground"
                           )}
                         />
                       </span>
@@ -247,28 +248,28 @@ export function AccessibilityPanel() {
         )}
       </AnimatePresence>
 
-      <button
-        ref={triggerRef}
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-label={
-          open
-            ? "Cerrar opciones de accesibilidad"
-            : "Abrir opciones de accesibilidad"
-        }
-        aria-controls="accessibility-panel"
-        aria-expanded={open}
-        aria-hidden={footerInView}
-        tabIndex={footerInView ? -1 : 0}
-        className={cn(
-          "fixed bottom-[calc(1rem_+_env(safe-area-inset-bottom))] left-3 z-[120] flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-lg transition-[opacity,transform,color,border-color,background-color] duration-300 hover:scale-105 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:bottom-[calc(1.25rem_+_env(safe-area-inset-bottom))] sm:left-6",
-          footerInView
-            ? "pointer-events-none translate-y-3 opacity-0"
-            : "pointer-events-auto translate-y-0 opacity-100"
-        )}
+      <div
+        className="fab-slot fab-shadow fixed bottom-[var(--fab-edge)] left-3 z-[120] sm:left-6"
+        data-hidden={footerInView}
       >
-        <Accessibility className="h-5 w-5" />
-      </button>
+        <button
+          ref={triggerRef}
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-label={
+            open
+              ? "Cerrar opciones de accesibilidad"
+              : "Abrir opciones de accesibilidad"
+          }
+          aria-controls="accessibility-panel"
+          aria-expanded={open}
+          aria-hidden={footerInView}
+          tabIndex={footerInView ? -1 : 0}
+          className={cn("fab", open && "fab-lime")}
+        >
+          <PixelIcon name={open ? "close" : "person"} className="h-5 w-5" />
+        </button>
+      </div>
     </>
   );
 }

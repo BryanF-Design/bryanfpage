@@ -1,10 +1,10 @@
-"use client";
-
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { trackEvent } from "@/lib/analytics";
-
+/**
+ * Enlace de WhatsApp con el servicio de origen. El evento `generate_lead` lo
+ * envía el listener global de `ClickTracking`, que lee `data-track-service`.
+ */
 export function TrackedWhatsAppLink({
   href,
   service,
@@ -23,7 +23,7 @@ export function TrackedWhatsAppLink({
       className={className}
       target="_blank"
       rel="noopener noreferrer"
-      onClick={() => trackEvent("generate_lead", { method: "whatsapp", service })}
+      data-track-service={service}
     >
       {children}
     </Link>

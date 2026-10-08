@@ -13,6 +13,7 @@ const ja: Dictionary = {
     menu: "メニューを開く",
     closeMenu: "メニューを閉じる",
     skipToContent: "コンテンツへ移動",
+    backToTop: "トップへ戻る",
     serviciosEntrada: "エントリーサービス",
     lumina: "Lumina",
     servicios: "サービス",

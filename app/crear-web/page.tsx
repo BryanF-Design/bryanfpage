@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "es_MX",
-    url: "https://www.bryanfdesign.com.mx/crear-web",
+    url: "https://www.bryanfdesign.com/crear-web",
     siteName: "BryanF Design",
     title: "Cotiza y paga tu web en línea | BryanF Design",
     description:

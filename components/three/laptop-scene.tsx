@@ -27,6 +27,7 @@ export function LaptopScene({ progressRef, className }: LaptopSceneProps) {
   const { containerRef } = useThreeStage({
     fov: 33,
     cameraZ: 5.4,
+    pixelSize: 3,
     build: ({ scene, camera, container }) => {
       camera.position.set(0, 1.55, 5.4);
       camera.lookAt(0, 0.32, 0);
@@ -276,7 +277,7 @@ function makeScreen() {
     ctx.fillStyle = `${BONE}0.5)`;
     ctx.font = "11px monospace";
     ctx.textAlign = "center";
-    ctx.fillText("bryanfdesign.com.mx", W / 2, 21);
+    ctx.fillText("bryanfdesign.com", W / 2, 21);
 
     const stage = (openness - 0.08) / 0.92;
 

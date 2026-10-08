@@ -64,12 +64,26 @@ const config: Config = {
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
       },
+      // 8-bit: no hay curvas. Todo es retícula de píxeles; las esquinas
+      // escalonadas de paneles, píldoras y botones las dibuja globals.css
+      // (`clip-path`), así que cualquier `rounded-*` heredado queda recto.
+      // Lo único redondo que sobrevive usa `rounded-[50%]` a propósito.
       borderRadius: {
-        panel: "var(--r-panel)",
-        inner: "calc(var(--r-panel) - var(--gutter))",
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        none: "0px",
+        sm: "0px",
+        DEFAULT: "0px",
+        md: "0px",
+        lg: "0px",
+        xl: "0px",
+        "2xl": "0px",
+        "3xl": "0px",
+        full: "0px",
+        panel: "0px",
+        inner: "0px",
+      },
+      // Trazo de píxel: el borde por defecto es de 2px, como en un sprite.
+      borderWidth: {
+        DEFAULT: "2px",
       },
       spacing: {
         gutter: "var(--gutter)",
@@ -91,7 +105,7 @@ const config: Config = {
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
+        "accordion-up": "accordion-up 0.18s ease-out",
       },
     },
   },

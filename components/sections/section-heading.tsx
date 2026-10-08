@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { Reveal } from "@/components/ui/reveal";
 import { ChapterMark } from "@/components/japan/chapter-mark";
 
 interface SectionChapter {
@@ -43,50 +42,51 @@ export function SectionHeading({
   size = "lg",
   chapter,
 }: SectionHeadingProps) {
+  // La clase (col-span, orden…) va en el elemento más externo: antes la
+  // recibía un div interno y, dentro de una retícula, el envoltorio ocupaba
+  // una sola columna — el rótulo se partía palabra por palabra.
   return (
-    <Reveal>
-      <div
-        className={cn(
-          "flex flex-col gap-5 md:gap-6",
-          align === "center" ? "mx-auto max-w-3xl items-center text-center" : "items-start",
-          className
-        )}
-      >
-        {eyebrow && chapter ? (
-          <ChapterMark
-            kanji={chapter.kanji}
-            romaji={chapter.romaji}
-            label={eyebrow}
-            index={chapter.index}
-            total={CHAPTER_TOTAL}
-            className={align === "center" ? "justify-center" : undefined}
-          />
-        ) : (
-          eyebrow && (
-            <span className="tag-pill pl-4">
-              <span aria-hidden className="size-1.5 rounded-full bg-primary" />
-              {eyebrow}
-            </span>
-          )
-        )}
-        <div data-fx="up" className="max-w-full">
-          <h2
-            className={cn(
-              "display-xl max-w-4xl text-balance text-foreground",
-              size === "xl"
-                ? "text-[clamp(3.25rem,9vw,8rem)]"
-                : "text-[clamp(2.9rem,6.4vw,5.75rem)]"
-            )}
-          >
-            {title}
-          </h2>
-        </div>
-        {subtitle && (
-          <p className="max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
-            {subtitle}
-          </p>
-        )}
+    <div
+      className={cn(
+        "flex flex-col gap-5 md:gap-6",
+        align === "center" ? "mx-auto max-w-3xl items-center text-center" : "items-start",
+        className
+      )}
+    >
+      {eyebrow && chapter ? (
+        <ChapterMark
+          kanji={chapter.kanji}
+          romaji={chapter.romaji}
+          label={eyebrow}
+          index={chapter.index}
+          total={CHAPTER_TOTAL}
+          className={align === "center" ? "justify-center" : undefined}
+        />
+      ) : (
+        eyebrow && (
+          <span className="tag-pill pl-4">
+            <span aria-hidden className="size-1.5 rounded-full bg-primary" />
+            {eyebrow}
+          </span>
+        )
+      )}
+      <div data-fx="up" className="max-w-full">
+        <h2
+          className={cn(
+            "display-xl max-w-4xl text-balance text-foreground",
+            size === "xl"
+              ? "text-[clamp(3.25rem,9vw,8rem)]"
+              : "text-[clamp(2.9rem,6.4vw,5.75rem)]"
+          )}
+        >
+          {title}
+        </h2>
       </div>
-    </Reveal>
+      {subtitle && (
+        <p className="max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
+          {subtitle}
+        </p>
+      )}
+    </div>
   );
 }

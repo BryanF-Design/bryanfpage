@@ -63,6 +63,8 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
     if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    // Los botones flotantes se apartan mientras el menú ocupa la pantalla.
+    document.documentElement.classList.add("menu-open");
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setOpen(false);
@@ -100,6 +102,7 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
     desktopQuery.addEventListener("change", onDesktop);
     return () => {
       document.body.style.overflow = prev;
+      document.documentElement.classList.remove("menu-open");
       window.clearTimeout(focusTimer);
       window.removeEventListener("keydown", onKey);
       desktopQuery.removeEventListener("change", onDesktop);
@@ -117,12 +120,12 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
           <Link
             href="/"
             onClick={() => setOpen(false)}
-            className="nav-pill group gap-2.5 px-4 transition-transform duration-300 hover:-translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--sheet))]"
+            className="nav-pill group gap-2.5 px-4 transition-transform duration-150 hover:-translate-y-0.5"
             aria-label="BryanF Design — inicio"
           >
             <span
               aria-hidden
-              className="size-2 rounded-full bg-primary shadow-[0_0_10px_hsl(var(--primary)/0.8)] transition-transform duration-500 group-hover:scale-150"
+              className="px-blink size-2.5 bg-primary motion-reduce:animate-none"
             />
             <Image
               src="/img/logotipo-blanco.png"
@@ -151,14 +154,14 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
                 onMouseEnter={() => setHovered(i)}
                 onFocus={() => setHovered(i)}
                 onBlur={() => setHovered(null)}
-                className="relative inline-flex min-h-9 min-w-11 items-center justify-center rounded-full px-3.5 font-display text-[0.98rem] font-bold uppercase tracking-[0.06em] text-foreground/75 transition-colors hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary xl:px-4"
+                className="relative inline-flex min-h-9 min-w-11 items-center justify-center px-3.5 pb-[2px] font-display text-[1.2rem] uppercase leading-none tracking-[0.05em] text-foreground/80 transition-colors hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary xl:px-4"
               >
                 {hovered === i && (
                   <motion.span
                     layoutId={reducedMotion ? undefined : "nav-hover-pill"}
                     aria-hidden
-                    className="absolute inset-0 -z-0 rounded-full bg-primary"
-                    transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                    className="px-shape absolute inset-0 -z-0 bg-primary"
+                    transition={{ type: "spring", stiffness: 520, damping: 40 }}
                   />
                 )}
                 <span className="relative z-10">{l.label}</span>
@@ -170,7 +173,7 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
         {/* Pestaña derecha: idioma y acciones. */}
         <div className="tab tab-r justify-self-end">
           {!spanishOnly && (
-            <div className="nav-pill px-1 [&_button]:min-h-11 [&_button]:min-w-11 [&_button]:focus-visible:outline-none [&_button]:focus-visible:ring-2 [&_button]:focus-visible:ring-primary">
+            <div className="nav-pill px-free px-1 [&_button]:min-h-11 [&_button]:min-w-11">
               <LanguageSwitcher />
             </div>
           )}
@@ -178,14 +181,14 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
             href={CLIENT_PORTAL}
             target="_blank"
             rel="noopener noreferrer"
-            className="nav-pill hidden gap-2 px-4 font-display text-[0.98rem] font-bold uppercase tracking-[0.05em] transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary xl:inline-flex"
+            className="nav-pill hidden gap-2 px-4 pb-[2px] font-display text-[1.2rem] uppercase leading-none tracking-[0.04em] transition-colors hover:text-primary xl:inline-flex"
           >
             <LogIn className="h-3.5 w-3.5 text-primary" />
             {t.nav.cliente}
           </Link>
           <Button
             asChild
-            className="hidden min-h-11 sm:inline-flex focus-visible:ring-offset-[hsl(var(--sheet))]"
+            className="hidden min-h-11 sm:inline-flex"
           >
             <Link href="/#precios">
               {t.nav.armaTuWeb}
@@ -200,7 +203,7 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
             aria-label={open ? t.nav.closeMenu : t.nav.menu}
             aria-controls="mobile-site-menu"
             aria-expanded={open}
-            className="nav-pill w-11 justify-center text-primary transition-transform duration-300 hover:rotate-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary lg:hidden"
+            className="nav-pill w-11 justify-center text-primary active:translate-y-0.5 lg:hidden"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -215,11 +218,10 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
           <motion.div
             ref={menuPanelRef}
             id="mobile-site-menu"
-            initial={reducedMotion ? { opacity: 0 } : { x: "110%", rotate: 4 }}
-            animate={reducedMotion ? { opacity: 1 } : { x: 0, rotate: 0 }}
-            exit={reducedMotion ? { opacity: 0 } : { x: "110%", rotate: 3 }}
-            transition={{ type: "spring", stiffness: 260, damping: 30 }}
-            style={{ transformOrigin: "100% 0%" }}
+            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -16 }}
+            animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -12 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             className="panel panel-moss fixed inset-[var(--gutter)] z-[99] flex flex-col overflow-y-auto pt-[var(--header-h)] lg:hidden"
           >
             <span
@@ -238,26 +240,26 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
               {links.map((l, i) => (
                 <motion.div
                   key={l.href}
-                  initial={reducedMotion ? false : { opacity: 0, x: 90 }}
+                  initial={reducedMotion ? false : { opacity: 0, x: 24 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 40 }}
+                  exit={{ opacity: 0 }}
                   transition={{
-                    delay: reducedMotion ? 0 : 0.12 + i * 0.06,
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 26,
+                    delay: reducedMotion ? 0 : 0.06 + i * 0.04,
+                    duration: 0.28,
+                    ease: [0.22, 1, 0.36, 1],
                   }}
                 >
                   <Link
                     ref={i === 0 ? firstMenuLinkRef : undefined}
                     href={l.href}
                     onClick={() => setOpen(false)}
-                    className="group flex min-h-11 items-center justify-between gap-4 rounded-2xl px-2 py-2 transition-colors active:bg-foreground/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+                    className="group flex min-h-11 items-center justify-between gap-4 px-2 py-2 transition-colors active:bg-foreground/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
                   >
-                    <span className="display-xl text-[clamp(3rem,15vw,5.5rem)] text-foreground transition-colors group-hover:text-primary">
+                    <span className="display-xl flex items-center gap-3 text-[clamp(2.75rem,13vw,5rem)] text-foreground transition-colors group-hover:text-primary">
+                      <span aria-hidden className="text-[0.5em] text-primary opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">▶</span>
                       {l.label}
                     </span>
-                    <span className="grid size-11 shrink-0 place-items-center rounded-full border border-foreground/20 text-primary transition-all group-hover:rotate-45 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
+                    <span className="btn-px btn-px-outline grid size-11 shrink-0 place-items-center text-primary group-hover:bg-primary group-hover:text-primary-foreground">
                       <ArrowUpRight className="h-5 w-5" />
                     </span>
                   </Link>
@@ -265,10 +267,10 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
               ))}
 
               <motion.div
-                initial={reducedMotion ? false : { opacity: 0, y: 40 }}
+                initial={reducedMotion ? false : { opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                transition={{ delay: reducedMotion ? 0 : 0.44, type: "spring", stiffness: 260, damping: 26 }}
+                transition={{ delay: reducedMotion ? 0 : 0.26, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 className="mt-8 flex flex-col gap-3 sm:flex-row"
               >
                 <Button asChild size="lg" className="w-full sm:flex-1" onClick={() => setOpen(false)}>
@@ -291,10 +293,10 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
                 initial={reducedMotion ? false : { opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ delay: reducedMotion ? 0 : 0.52, duration: 0.4 }}
-                className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-foreground/10 pt-6"
+                transition={{ delay: reducedMotion ? 0 : 0.32, duration: 0.3 }}
+                className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t-2 border-dashed border-foreground/15 pt-6"
               >
-                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
                   CDMX · MX — EST. 2020
                 </span>
                 <div className="flex gap-2">
@@ -305,7 +307,7 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={label}
-                      className="flex h-11 w-11 items-center justify-center rounded-full bg-background/60 text-muted-foreground transition-[color,transform,background-color] hover:bg-primary hover:text-primary-foreground active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                      className="btn-px flex h-11 w-11 items-center justify-center bg-background/70 text-muted-foreground hover:bg-primary hover:text-primary-foreground"
                     >
                       <Icon className="h-4 w-4" />
                     </Link>

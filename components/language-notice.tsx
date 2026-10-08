@@ -70,19 +70,19 @@ export function LanguageNotice() {
     // Móvil: tarjeta sobre la fila de accesibilidad/Lumina. Desktop: tarjeta
     // a la derecha del botón de accesibilidad, sin encimarse con él.
     <div
-      className="glass fixed inset-x-3 bottom-[calc(5.5rem_+_env(safe-area-inset-bottom))] z-[115] flex items-start gap-3 rounded-xl border border-border p-3 shadow-xl md:inset-x-auto md:bottom-5 md:left-24 md:max-w-md md:p-4"
+      className="px-window fixed bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] left-3 right-[calc(var(--fab-size)+1.5rem)] z-[115] flex items-center gap-3 p-2.5 pl-3 md:bottom-[var(--fab-edge)] md:left-[calc(var(--fab-size)+2.5rem)] md:right-auto md:max-w-md md:p-4"
     >
-      <Globe className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+      <Globe className="hidden h-4 w-4 shrink-0 text-primary sm:block" aria-hidden />
       <p
         role="status"
-        className="flex-1 text-[11px] leading-relaxed text-muted-foreground sm:text-xs"
+        className="line-clamp-3 flex-1 text-[11px] leading-snug text-muted-foreground sm:line-clamp-none sm:text-xs sm:leading-relaxed"
       >
         {t.languageNotice.text}
       </p>
       <button
         type="button"
         onClick={dismiss}
-        className="min-h-11 shrink-0 rounded-md bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className="btn-px min-h-11 shrink-0 bg-primary px-3 pb-[3px] font-display text-[1.1rem] uppercase leading-none text-primary-foreground"
       >
         {t.languageNotice.dismiss}
       </button>
@@ -90,7 +90,7 @@ export function LanguageNotice() {
         type="button"
         onClick={dismiss}
         aria-label={t.lumina.close}
-        className="absolute -right-3 -top-3 hidden h-11 w-11 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background md:flex"
+        className="hidden h-11 w-11 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-foreground md:flex"
       >
         <X className="h-4 w-4" />
       </button>

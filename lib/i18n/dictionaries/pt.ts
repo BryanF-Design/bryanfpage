@@ -13,6 +13,7 @@ const pt: Dictionary = {
     menu: "Abrir menu",
     closeMenu: "Fechar menu",
     skipToContent: "Pular para o conteúdo",
+    backToTop: "Voltar ao topo",
     serviciosEntrada: "Serviços de entrada",
     lumina: "Lumina",
     servicios: "Serviços",

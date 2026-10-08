@@ -1,20 +1,13 @@
 "use client";
 
-import { useRef, type CSSProperties } from "react";
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  motion,
-  useMotionTemplate,
-  useScroll,
-  useTransform,
-} from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
-import { useReducedMotionPreference } from "@/lib/motion-preference";
 
 const WHATSAPP = "https://wa.me/525663012505";
 
@@ -35,21 +28,9 @@ const PRINCIPLE_MARKS = [
  */
 export function MeetBryan() {
   const { t, locale } = useLanguage();
-  const reducedMotion = useReducedMotionPreference();
-  const sectionRef = useRef<HTMLElement>(null);
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-
-  const gray = useTransform(scrollYProgress, [0.1, 0.34], [1, 0]);
-  const photoFilter = useMotionTemplate`grayscale(${gray})`;
-  const photoScale = useTransform(scrollYProgress, [0, 0.5], [1.14, 1]);
 
   return (
     <section
-      ref={sectionRef}
       id="bryan"
       aria-labelledby="bryan-title"
       className="relative grid gap-gutter lg:grid-cols-12"
@@ -58,18 +39,15 @@ export function MeetBryan() {
       <div data-fx="left" className="min-w-0 lg:col-span-5 lg:row-span-3">
         <figure className="panel relative h-full min-h-[30rem] overflow-hidden sm:min-h-[36rem]">
           <div className="amiten absolute inset-0 overflow-hidden rounded-[inherit]">
-            <motion.div
-              style={reducedMotion ? undefined : { filter: photoFilter, scale: photoScale }}
-              className="absolute inset-0"
-            >
-              <Image
-                src="/img/me/about-photo.png"
-                alt={t.about.photoAlt}
-                fill
-                sizes="(min-width: 1024px) 42vw, 100vw"
-                className="object-cover object-[56%_center]"
-              />
-            </motion.div>
+            {/* Foto fija: antes un filtro de grises y una escala seguían al
+                scroll y repintaban la imagen completa en cada cuadro. */}
+            <Image
+              src="/img/me/about-photo.png"
+              alt={t.about.photoAlt}
+              fill
+              sizes="(min-width: 1024px) 42vw, 100vw"
+              className="object-cover object-[56%_center]"
+            />
           </div>
           <div aria-hidden className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-t from-background via-background/20 to-transparent" />
 
@@ -84,10 +62,10 @@ export function MeetBryan() {
 
           <figcaption className="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-4 p-5 md:p-7">
             <span className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-primary px-3 py-1.5 font-display text-base font-extrabold uppercase tracking-[0.06em] text-primary-foreground">
+              <span className="px-shape bg-primary px-3 py-1.5 font-display text-[1.3rem] uppercase leading-none tracking-[0.04em] text-primary-foreground">
                 Bryan F.
               </span>
-              <span className="rounded-full bg-background/80 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-foreground/80 backdrop-blur-sm">
+              <span className="px-shape bg-background/90 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/85">
                 {t.about.role}
               </span>
             </span>
@@ -148,12 +126,12 @@ export function MeetBryan() {
             {t.about.subtitle}
           </p>
 
-          <div className="relative mt-8 max-w-2xl rounded-inner bg-background/55 p-5 backdrop-blur-sm md:p-6">
+          <div className="px-shape relative mt-8 max-w-2xl bg-background/70 p-5 md:p-6">
             <p className="mb-3 flex items-center gap-3 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-primary">
               <span aria-hidden className="h-[2px] w-8 rounded-full bg-signal" />
               {t.about.inspirationLabel}
             </p>
-            <p className="text-pretty font-display text-[1.45rem] font-semibold leading-[1.15] text-foreground md:text-[1.7rem]">
+            <p className="text-pretty text-[1.05rem] font-medium leading-relaxed text-foreground md:text-lg">
               {t.about.inspiration}
             </p>
           </div>
