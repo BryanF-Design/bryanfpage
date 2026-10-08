@@ -74,12 +74,12 @@ export function HeroPop() {
       </div>
 
       {/* Panel lima: propuesta, acciones y ventajas. Bryan sale de él. */}
-      <div className="panel-lime relative mt-4 rounded-[calc(var(--r-panel)-0.5rem)] lg:mt-2">
+      <div className="panel-lime relative mt-20 rounded-[calc(var(--r-panel)-0.5rem)] sm:mt-24 lg:mt-2">
         <div className="relative grid gap-6 p-5 pt-0 sm:p-7 sm:pt-0 lg:grid-cols-[1fr_minmax(18rem,30%)_1fr] lg:gap-8 lg:p-10">
           {/* Foto: en teléfono encabeza la tarjeta y asoma sobre su canto; en
               escritorio ocupa la columna central y sube hasta el titular. */}
           <div
-            className="hero-in hero-in-up pointer-events-none relative -mt-12 flex justify-center sm:-mt-20 lg:order-2 lg:mt-0 lg:self-stretch"
+            className="hero-in hero-in-up pointer-events-none relative -mt-16 flex justify-center sm:-mt-20 lg:order-2 lg:mt-0 lg:self-stretch"
             style={delay(220)}
           >
             <svg
@@ -105,7 +105,7 @@ export function HeroPop() {
               height={1184}
               priority
               sizes="(min-width: 1024px) 26rem, 18rem"
-              className="relative z-[1] h-[19rem] w-auto drop-shadow-[0_30px_40px_hsl(160_40%_8%/0.35)] sm:h-[25rem] lg:absolute lg:bottom-[-2.5rem] lg:left-1/2 lg:h-[calc(100%+13rem)] lg:max-w-none lg:-translate-x-1/2"
+              className="relative z-[1] h-[19rem] w-auto [mask-image:linear-gradient(to_bottom,black_78%,transparent)] lg:[mask-image:none] drop-shadow-[0_30px_40px_hsl(160_40%_8%/0.35)] sm:h-[25rem] lg:absolute lg:bottom-[-2.5rem] lg:left-1/2 lg:h-[calc(100%+13rem)] lg:max-w-none lg:-translate-x-1/2"
             />
           </div>
 

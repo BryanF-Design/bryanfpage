@@ -91,6 +91,9 @@ const zh: Dictionary = {
     subtitle: "使用现代化的框架与工具进行开发：快速、可扩展、按需定制。技术服务于创意，而不是相反。",
     ctaPrimary: "查看作品",
     ctaSecondary: "一起合作",
+    filtersLabel: "按类型筛选工具",
+    filters: { all: "全部", front: "前端", back: "后端", tools: "工具" },
+    countLabel: "我每天使用的工具",
   },
   projects: {
     eyebrow: "作品集",
@@ -99,6 +102,17 @@ const zh: Dictionary = {
     subtitle: "每个网站都为客户带来真实的价值，均为按需设计与开发。点击任意一个即可访问。",
     visitSite: "访问网站",
     showMore: "查看更多作品",
+    title: "真实作品，已经在创造业绩。",
+    titleAccent: "创造业绩",
+    live: "已上线",
+    countLabel: "已上线的网站，可直接打开浏览。",
+    recent: "最新",
+    all: "全部",
+    newBadge: "新",
+    casesTitle: "案例研究",
+    casesSubtitle: "四个项目背后的问题、决策与成果。",
+    nextTitle: "下一个可能就是你的网站。",
+    moreLabel: "个其他作品",
     descs: {
       "goldenrepublic-com-mx": "房地产",
       "serviciosecem-com-mx": "会计与税务咨询",
@@ -122,6 +136,8 @@ const zh: Dictionary = {
       "nezga-arquitectos-vercel-app": "建筑与施工",
       "epiko-vercel-app": "活动制作",
       "element-experiences-com": "体验与活动",
+      "gecomex-web-vercel-app": "国际物流与报关",
+      "ceahestructural-com-mx": "FRP 与 PVC 结构解决方案",
     },
     caseLabels: {
       problem: "问题",
@@ -175,9 +191,19 @@ const zh: Dictionary = {
       france: "法国",
       japan: "日本",
     },
+    listTitle: "地点",
+    localTime: "当地时间",
+    countries: "个国家",
+    kinds: {
+      work: "项目",
+      culture: "文化",
+    },
   },
   clients: {
+    eyebrow: "客户",
     label: "值得信赖的合作品牌",
+    subtitle: "从大型企业到独立工作室，每一次交付都同样用心。",
+    brands: "个品牌",
   },
   entryServices: {
     eyebrow: "入门服务",
@@ -185,6 +211,7 @@ const zh: Dictionary = {
     subtitle: "如果你还不需要完整的网站，从这里开始：几天内就能拥有同样高品质设计的联系身份。",
     cta: "咨询这项服务",
     note: "价格以墨西哥比索（MXN）计价。项目更大？我们可以把它和完整网站结合起来——问问 Lumina。",
+    fromPrice: (price: string) => `${price} 起`,
     items: [
       {
         id: "tarjetaDigital",
@@ -330,6 +357,7 @@ const zh: Dictionary = {
     ],
     notFound: "没有找到您想要的答案？联系我们，一起聊聊。",
     sendWhatsapp: "发送WhatsApp消息",
+    bubble: "有疑问？",
   },
   closingCta: {
     title: "准备好让您的品牌展现应有的价值了吗？",
@@ -438,7 +466,7 @@ const zh: Dictionary = {
       "Lumina住在这个网站里，了解我们的一切：价格、工期、模块和流程。随时问她任何问题 — 她会立即回答，并帮您搭建理想的网站。",
     cta: "与Lumina聊天",
     status: "在线 24/7",
-    hint: "点击换表情 · 拖动可旋转",
+    hint: "点击她即可切换表情",
     badges: [
       { title: "即时回答", desc: "随时回复，无需等待。" },
       { title: "熟悉全部服务", desc: "价格、周期、模块与流程。" },
@@ -446,6 +474,7 @@ const zh: Dictionary = {
     ],
     privacy: "聊天中不会索取敏感信息。对话仅保存在本设备。",
     quotePresets: ["定制网站报价", "在线商店报价", "维护报价"],
+    presetsTitle: "一键报价",
     moods: {
       normal: "正常模式",
       enfocada: "专注模式",

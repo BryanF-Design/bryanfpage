@@ -104,6 +104,9 @@ const ja: Dictionary = {
     subtitle: "速く、拡張性があり、要件に合わせて構築できるモダンなフレームワークとツール。技術はアイデアに従うもの、その逆ではありません。",
     ctaPrimary: "実績を見る",
     ctaSecondary: "一緒に働きましょう",
+    filtersLabel: "種類でツールを絞り込む",
+    filters: { all: "すべて", front: "フロントエンド", back: "バックエンド", tools: "ツール" },
+    countLabel: "日々使っているツール",
   },
   projects: {
     eyebrow: "実績",
@@ -112,6 +115,17 @@ const ja: Dictionary = {
     subtitle: "どのお客様にも本当の成果をもたらすウェブサイトです。それぞれオーダーメイドで設計・制作しました。気になるものをタップして見てみてください。",
     visitSite: "サイトを見る",
     showMore: "もっと見る",
+    title: "すでに成果を生んでいる、実際の仕事。",
+    titleAccent: "成果",
+    live: "公開中",
+    countLabel: "公開中のサイト。実際に開いて確かめられます。",
+    recent: "最新",
+    all: "すべて",
+    newBadge: "新着",
+    casesTitle: "ケーススタディ",
+    casesSubtitle: "4つのプロジェクトの課題、判断、そして成果。",
+    nextTitle: "次はあなたのサイトかもしれません。",
+    moreLabel: "件のほかの実績",
     descs: {
       "goldenrepublic-com-mx": "不動産",
       "serviciosecem-com-mx": "会計・税務アドバイザリー",
@@ -135,6 +149,8 @@ const ja: Dictionary = {
       "nezga-arquitectos-vercel-app": "建築・建設",
       "epiko-vercel-app": "イベントプロデュース",
       "element-experiences-com": "体験・イベント",
+      "gecomex-web-vercel-app": "国際物流・通関",
+      "ceahestructural-com-mx": "FRP・PVCの構造ソリューション",
     },
     caseLabels: {
       problem: "課題",
@@ -188,9 +204,19 @@ const ja: Dictionary = {
       france: "フランス",
       japan: "日本",
     },
+    listTitle: "ロケーション",
+    localTime: "現地時間",
+    countries: "か国",
+    kinds: {
+      work: "プロジェクト",
+      culture: "カルチャー",
+    },
   },
   clients: {
+    eyebrow: "クライアント",
     label: "信頼していただいたブランド",
+    subtitle: "大手企業から独立系スタジオまで、どの案件にも同じこだわりを。",
+    brands: "ブランド",
   },
   entryServices: {
     eyebrow: "エントリーサービス",
@@ -199,6 +225,7 @@ const ja: Dictionary = {
       "まだ本格的なウェブサイトが必要なければ、ここから始めましょう。数日で完成する、同じ品質のコンタクトアイデンティティです。",
     cta: "このサービスについて問い合わせる",
     note: "価格はメキシコペソ(MXN)です。もっと大きなプロジェクトをお考えなら、フルサイトと組み合わせることもできます — Luminaにご相談ください。",
+    fromPrice: (price: string) => `${price}から`,
     items: [
       {
         id: "tarjetaDigital",
@@ -378,6 +405,7 @@ const ja: Dictionary = {
     ],
     notFound: "求めていた回答が見つかりませんでしたか？ご連絡いただければ、直接お話しします。",
     sendWhatsapp: "WhatsAppで連絡する",
+    bubble: "質問ある？",
   },
   closingCta: {
     title: "ブランドにふさわしい見た目にする準備はできていますか？",
@@ -486,7 +514,7 @@ const ja: Dictionary = {
       "Luminaはこのサイトに住んでいて、料金・納期・モジュール・進め方まで全部知っています。何でも聞いてください — いつでも即答で、あなたのサイトづくりをお手伝いします。",
     cta: "Luminaとチャット",
     status: "オンライン 24/7",
-    hint: "タップで表情が変わる · ドラッグで回転",
+    hint: "タップで表情が変わります",
     badges: [
       { title: "即時に回答", desc: "いつでも、待ち時間なし。" },
       { title: "全カタログを把握", desc: "価格・納期・モジュール・工程。" },
@@ -494,6 +522,7 @@ const ja: Dictionary = {
     ],
     privacy: "チャットで機微な情報は尋ねません。会話はこの端末にのみ残ります。",
     quotePresets: ["オーダーメイドのサイトを見積", "オンラインストアを見積", "保守を見積"],
+    presetsTitle: "ワンクリックで見積もり",
     moods: {
       normal: "ノーマルモード",
       enfocada: "集中モード",

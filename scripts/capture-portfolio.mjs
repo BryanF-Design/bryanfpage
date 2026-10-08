@@ -1,13 +1,14 @@
 // Captura las webs del portafolio en el formato que usa el sitio:
 //   public/img/portafolio/escritorio/<slug>.png  → 1440×1000, primera pantalla
 //   public/img/portafolio/movil/<slug>.png       → 390 px de ancho, página completa
+//   public/img/portafolio/movil-top/<slug>.webp  → 390×845, primera pantalla (la que usa el sitio)
 //
 // Uso (necesita Playwright con Chromium):
 //   node scripts/capture-portfolio.mjs                  # todas las de lib/projects.ts sin captura
 //   node scripts/capture-portfolio.mjs urban-flip-com   # solo esos slugs
 //   node scripts/capture-portfolio.mjs urban-flip-com=http://localhost:4000/
 //     (slug=url captura otra URL, p. ej. una copia local del sitio)
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
@@ -31,8 +32,10 @@ const projects = [...source.matchAll(/slug:\s*"([^"]+)"[^}]*?url:\s*"([^"]+)"/g)
 
 const desktopDir = join(root, "public/img/portafolio/escritorio");
 const mobileDir = join(root, "public/img/portafolio/movil");
+const mobileTopDir = join(root, "public/img/portafolio/movil-top");
 mkdirSync(desktopDir, { recursive: true });
 mkdirSync(mobileDir, { recursive: true });
+mkdirSync(mobileTopDir, { recursive: true });
 
 const args = process.argv.slice(2);
 const targets = args.length
@@ -72,6 +75,22 @@ for (const { slug, url } of targets) {
     });
     await mobile.waitForTimeout(1500);
     await mobile.screenshot({ path: join(mobileDir, `${slug}.png`), fullPage: true });
+    // Primera pantalla en WebP: Chromium la codifica desde un canvas, en una
+    // pestaña en blanco (la CSP del sitio capturado podría bloquear data:).
+    const topPng = await mobile.screenshot({ clip: { x: 0, y: 0, width: 390, height: 845 } });
+    const blank = await browser.newPage();
+    const webp = await blank.evaluate(async (b64) => {
+      const img = new Image();
+      img.src = `data:image/png;base64,${b64}`;
+      await img.decode();
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      canvas.getContext("2d").drawImage(img, 0, 0);
+      return canvas.toDataURL("image/webp", 0.86).split(",")[1];
+    }, topPng.toString("base64"));
+    await blank.close();
+    writeFileSync(join(mobileTopDir, `${slug}.webp`), Buffer.from(webp, "base64"));
     await mobile.close();
     console.log(`✓ ${slug}`);
   } catch (error) {

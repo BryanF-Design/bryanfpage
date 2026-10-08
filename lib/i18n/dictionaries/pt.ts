@@ -106,6 +106,9 @@ const pt: Dictionary = {
       "Frameworks e ferramentas modernas com as quais construo: rápido, escalável e sob medida. A tecnologia a serviço da ideia, não o contrário.",
     ctaPrimary: "Ver projetos",
     ctaSecondary: "Vamos trabalhar juntos",
+    filtersLabel: "Filtrar ferramentas por tipo",
+    filters: { all: "Tudo", front: "Frontend", back: "Backend", tools: "Ferramentas" },
+    countLabel: "ferramentas no meu dia a dia",
   },
   projects: {
     eyebrow: "Portfólio",
@@ -114,6 +117,17 @@ const pt: Dictionary = {
     subtitle: "Sites que geram impacto real para cada cliente. Cada um projetado e construído sob medida. Toque em qualquer um para visitar.",
     visitSite: "Visitar site",
     showMore: "Mostrar mais projetos",
+    title: "Trabalho real que já está vendendo.",
+    titleAccent: "vendendo",
+    live: "No ar",
+    countLabel: "sites no ar que você pode abrir e explorar",
+    recent: "Recentes",
+    all: "Todos",
+    newBadge: "Novo",
+    casesTitle: "Estudos de caso",
+    casesSubtitle: "O problema, a decisão e o resultado por trás de quatro projetos.",
+    nextTitle: "Seu site pode ser o próximo.",
+    moreLabel: "projetos a mais",
     descs: {
       "goldenrepublic-com-mx": "Imóveis",
       "serviciosecem-com-mx": "Assessoria contábil e fiscal",
@@ -137,6 +151,8 @@ const pt: Dictionary = {
       "nezga-arquitectos-vercel-app": "Arquitetura e construção",
       "epiko-vercel-app": "Produção de eventos",
       "element-experiences-com": "Experiências e eventos",
+      "gecomex-web-vercel-app": "Logística e despacho aduaneiro internacional",
+      "ceahestructural-com-mx": "Soluções estruturais em PRFV e PVC",
     },
     caseLabels: {
       problem: "Problema",
@@ -190,9 +206,19 @@ const pt: Dictionary = {
       france: "França",
       japan: "Japão",
     },
+    listTitle: "Localizações",
+    localTime: "Hora local",
+    countries: "países",
+    kinds: {
+      work: "Projetos",
+      culture: "Cultura",
+    },
   },
   clients: {
+    eyebrow: "Clientes",
     label: "Marcas que confiaram",
+    subtitle: "Da grande corporação ao estúdio independente: o mesmo cuidado em cada entrega.",
+    brands: "marcas",
   },
   entryServices: {
     eyebrow: "Serviços de entrada",
@@ -201,6 +227,7 @@ const pt: Dictionary = {
       "Se você ainda não precisa de um site completo, comece por aqui: identidade de contato pronta em dias, com a mesma qualidade de design.",
     cta: "Perguntar sobre este serviço",
     note: "Preços em pesos mexicanos (MXN). Projeto maior em mente? Podemos combinar com um site completo — pergunte à Lumina.",
+    fromPrice: (price: string) => `A partir de ${price}`,
     items: [
       {
         id: "tarjetaDigital",
@@ -384,6 +411,7 @@ const pt: Dictionary = {
     ],
     notFound: "Não encontrou sua resposta? Fale conosco e vamos conversar.",
     sendWhatsapp: "Enviar WhatsApp",
+    bubble: "Dúvidas?",
   },
   closingCta: {
     title: "Pronto para sua marca ter a cara do que ela vale?",
@@ -493,7 +521,7 @@ const pt: Dictionary = {
       "A Lumina mora neste site e conhece tudo o que fazemos: preços, prazos, módulos e processo. Pergunte o que quiser — ela responde na hora, a qualquer momento, e ajuda a montar seu site.",
     cta: "Converse com a Lumina",
     status: "Online 24/7",
-    hint: "Toque nela para mudar o humor · arraste para girá-la",
+    hint: "Toque nela para mudar o humor",
     badges: [
       { title: "Respostas na hora", desc: "A qualquer hora, sem espera." },
       { title: "Conhece todo o catálogo", desc: "Preços, prazos, módulos e processo." },
@@ -501,6 +529,7 @@ const pt: Dictionary = {
     ],
     privacy: "Não pedimos dados sensíveis no chat. A tua conversa fica só neste dispositivo.",
     quotePresets: ["Orçar site sob medida", "Orçar loja online", "Orçar manutenção"],
+    presetsTitle: "Orçamento em um clique",
     moods: {
       normal: "Modo normal",
       enfocada: "Modo focada",

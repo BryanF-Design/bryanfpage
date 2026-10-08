@@ -1,80 +1,175 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { Heart, Sparkle } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
-import { Button } from "@/components/ui/button";
+import { Button, ButtonArrow } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n/context";
+import { mobileShot } from "@/lib/projects";
+import { cn } from "@/lib/utils";
 
 const WHATSAPP = "https://wa.me/525663012505";
 
+/** Miniaturas de la prueba social: tres sitios reales del portafolio. */
+const PROOF_SHOTS = [
+  "efficientplasticolors-com",
+  "mielyabejas-mx",
+  "gecomex-web-vercel-app",
+];
+
 /**
- * 結 — el cierre.
- *
- * Un panel lima a sangre, como el bloque de color pleno de la referencia:
- * rótulo de tinta enorme, las dos acciones y el kanji de arranque ocupando
- * la esquina. Los tokens del panel se invierten solos (ver `.panel-lime`),
- * así que el botón principal pasa a tinta con texto lima sin tocarlo.
+ * El cierre — el panel lima más grande de la página. A la izquierda, el
+ * rótulo gigante y la prueba social; a la derecha, Bryan sale por encima del
+ * canto del panel y se queda "detrás" de una tarjeta de tinta con la bajada
+ * y las dos acciones (como la tarjeta oscura de promo de las referencias).
+ * Un recorte cóncavo arriba a la izquierda lleva el chip de agenda abierta.
  */
 export function ClosingCta() {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  // El rótulo gigante se ajusta a la longitud real: los títulos largos
+  // (francés, alemán) bajan un punto y el japonés/chino gana interlineado.
+  const cjk = locale === "ja" || locale === "zh";
+  const titleSize = cjk
+    ? "text-[clamp(2.5rem,5vw,4.75rem)] leading-[1.08] tracking-normal"
+    : t.closingCta.title.length > 52
+      ? "text-[clamp(2.75rem,6vw,5.75rem)]"
+      : "text-[clamp(3rem,7.3vw,6.75rem)]";
 
   return (
-    <section aria-label={t.closingCta.title} data-fx="panel">
-      <div className="panel panel-lime relative overflow-hidden px-6 pb-8 pt-12 sm:px-10 md:px-14 md:pb-12 md:pt-16 lg:px-16">
-        <span
-          aria-hidden
-          lang="ja"
-          className="drift-y pointer-events-none absolute -right-6 -top-10 select-none font-jp text-[14rem] leading-none text-[hsl(150_42%_6%/0.08)] md:text-[22rem]"
-        >
-          始動
-        </span>
-        <div aria-hidden className="absolute inset-0 rounded-[inherit] opacity-50 [background-image:radial-gradient(circle,hsl(150_42%_6%/0.12)_1px,transparent_1.2px)] [background-size:16px_16px] [mask-image:linear-gradient(120deg,transparent_30%,black)]" />
+    <section aria-labelledby="closing-title" className="relative xl:pt-[5rem]">
+      <div data-fx="panel">
+        <div className="panel panel-lime grid gap-8 px-4 pb-4 pt-[5rem] sm:px-7 sm:pb-7 sm:pt-[5.75rem] lg:px-10 lg:pb-10 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] xl:gap-8 xl:p-12 xl:pt-[6.25rem]">
+          {/* Recorte cóncavo con el chip de disponibilidad. */}
+          <div className="notch notch-tl">
+            <span className="eyebrow bg-white pl-3 text-ink shadow-soft">
+              <span aria-hidden className="relative flex size-2">
+                <span className="absolute inset-0 animate-ping rounded-full bg-forest/60 motion-reduce:animate-none" />
+                <span className="relative size-2 rounded-full bg-forest" />
+              </span>
+              {t.hero.available}
+            </span>
+          </div>
 
-        <div className="relative grid gap-10 lg:grid-cols-12 lg:items-end lg:gap-12">
-          <div data-fx="up" className="lg:col-span-8">
-            <h2 className="display-xl max-w-5xl text-balance text-[clamp(3.2rem,8.5vw,8.5rem)] text-foreground">
+          {/* Izquierda: rótulo y prueba social. */}
+          <div className="relative flex min-w-0 flex-col gap-6 xl:justify-between xl:gap-12">
+            <h2
+              id="closing-title"
+              className={cn(
+                "display-xl text-balance break-words text-ink",
+                titleSize,
+              )}
+            >
               {t.closingCta.title}
             </h2>
-          </div>
 
-          <div data-fx="right" className="lg:col-span-4" style={{ "--fx-delay": "140ms" } as CSSProperties}>
-            <p className="max-w-xl text-base leading-relaxed text-foreground/80 md:text-lg">
-              {t.closingCta.subtitle}
-            </p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
-              <Button asChild size="lg" className="w-full sm:w-auto">
-                <Link href="#precios">
-                  {t.closingCta.ctaPrimary}
-                  <ArrowUpRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="w-full border-foreground/40 sm:w-auto"
-              >
-                <Link href={WHATSAPP} target="_blank" rel="noopener noreferrer">
-                  <FaWhatsapp className="h-4 w-4" />
-                  {t.closingCta.ctaSecondary}
-                </Link>
-              </Button>
+            <div className="flex w-fit items-center gap-3 rounded-full bg-white/55 py-1.5 pl-1.5 pr-4">
+              <span className="flex -space-x-3">
+                {PROOF_SHOTS.map((slug) => (
+                  <span
+                    key={slug}
+                    className="relative size-10 overflow-hidden rounded-full bg-white ring-[3px] ring-lime"
+                  >
+                    <Image
+                      src={mobileShot(slug)}
+                      alt=""
+                      fill
+                      sizes="40px"
+                      className="object-cover object-top"
+                    />
+                  </span>
+                ))}
+              </span>
+              <span className="text-sm font-semibold leading-tight text-ink">
+                {t.hero.proof}
+              </span>
+              <Heart aria-hidden className="h-4 w-4 fill-ink text-ink" />
             </div>
           </div>
-        </div>
 
-        <div aria-hidden className="relative mt-12 flex items-center gap-3 md:mt-16">
-          <span className="size-3 shrink-0 rounded-full bg-signal" />
-          <span className="h-[2px] flex-1 rounded-full bg-foreground/80" />
-          <span className="font-mono text-[10px] uppercase tracking-[0.24em]">
-            <span lang="ja" className="font-jp">
-              結
-            </span>{" "}
-            · BryanF Design
-          </span>
+          {/* Derecha: Bryan detrás de la tarjeta de tinta. En escritorio la
+              columna no aporta altura (h-0 + min-h-full) y reparte su alto en
+              dos filas: la foto ocupa lo que deja la tarjeta y, con margen
+              negativo, sube por encima del canto del panel. Su alto se topa
+              con `cqw` para que nunca sea más ancha que la tarjeta. */}
+          <div className="relative flex min-w-0 flex-col xl:grid xl:h-0 xl:min-h-full xl:grid-cols-[minmax(0,1fr)] xl:grid-rows-[minmax(0,1fr)_auto]">
+            <div className="pointer-events-none relative z-[1] -mb-10 flex min-w-0 justify-center xl:-mb-12 xl:-mt-[10.25rem] xl:min-h-0 xl:items-end xl:[container-type:inline-size]">
+              <div className="relative w-fit xl:h-full xl:max-h-[min(34rem,88cqw)]">
+                <span
+                  aria-hidden
+                  className="absolute left-1/2 top-[4%] aspect-square w-[105%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,hsl(0_0%_100%/0.55),hsl(0_0%_100%/0)_100%)]"
+                />
+                <svg
+                  aria-hidden
+                  viewBox="0 0 400 140"
+                  className="float-y absolute left-1/2 top-[2%] w-[118%] -translate-x-1/2 text-ink/30"
+                >
+                  <ellipse
+                    cx="200"
+                    cy="70"
+                    rx="190"
+                    ry="38"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.25"
+                    transform="rotate(-8 200 70)"
+                  />
+                </svg>
+                <Image
+                  src="/img/brand/bryan-cutout.webp"
+                  alt="Bryan F., listo para arrancar tu proyecto"
+                  width={623}
+                  height={558}
+                  sizes="(min-width: 1280px) 600px, 340px"
+                  className="relative h-[16.5rem] w-auto max-w-none drop-shadow-[0_24px_30px_hsl(160_40%_8%/0.3)] sm:h-[19rem] lg:h-[22rem] xl:h-full"
+                />
+                <Sparkle
+                  aria-hidden
+                  className="float-y absolute right-[2%] top-[13%] h-8 w-8 fill-ink text-ink sm:h-10 sm:w-10"
+                />
+              </div>
+            </div>
+
+            <div className="panel-ink relative z-[2] rounded-card p-5 shadow-pop sm:p-6 xl:p-7">
+              <p className="text-pretty text-[0.9375rem] leading-relaxed text-white/80 md:text-base">
+                {t.closingCta.subtitle}
+              </p>
+              <div className="mt-5 flex flex-col gap-2.5 sm:flex-row">
+                <Button
+                  asChild
+                  size="lg"
+                  className="w-full bg-lime pr-2.5 text-ink sm:w-auto sm:flex-1 sm:pl-6"
+                >
+                  <Link href="#precios">
+                    {t.closingCta.ctaPrimary}
+                    <ButtonArrow
+                      tone="ink"
+                      className="ml-auto -mr-0.5 sm:ml-2"
+                    />
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="w-full sm:w-auto sm:flex-1"
+                >
+                  <Link
+                    href={WHATSAPP}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <FaWhatsapp
+                      aria-hidden
+                      className="h-[1.1rem] w-[1.1rem] text-lime"
+                    />
+                    {t.closingCta.ctaSecondary}
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

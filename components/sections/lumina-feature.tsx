@@ -1,23 +1,41 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
-import dynamic from "next/dynamic";
-import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
-import { MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
+import { useEffect, useState, type CSSProperties } from "react";
+import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ArrowUpRight,
+  Check,
+  Clock,
+  Layers,
+  LayoutTemplate,
+  LibraryBig,
+  MessageCircle,
+  MousePointerClick,
+  Send,
+  ShieldCheck,
+  ShoppingBag,
+  Sparkle,
+  Tag,
+  WandSparkles,
+  Wrench,
+  Zap,
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { LazyMount } from "@/components/three/lazy-mount";
-import type { LuminaMood } from "@/components/three/lumina-hologram";
+import { Button, ButtonArrow } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 import { useReducedMotionPreference } from "@/lib/motion-preference";
 
-const LuminaHologram = dynamic(
-  () => import("@/components/three/lumina-hologram").then((m) => m.LuminaHologram),
-  { ssr: false }
-);
+type MoodKey = "normal" | "enfocada" | "duda" | "sorprendida";
 
-const MOOD_CYCLE: LuminaMood[] = ["Normal", "Sorprendida", "Enfocada", "Duda"];
+/** Recortes de Lumina, en el orden en que cambian al tocarla. */
+const MOODS: { key: MoodKey; src: string; height: number }[] = [
+  { key: "normal", src: "/img/brand/lumina-normal.webp", height: 1059 },
+  { key: "enfocada", src: "/img/brand/lumina-enfocada.webp", height: 1080 },
+  { key: "duda", src: "/img/brand/lumina-duda.webp", height: 968 },
+  { key: "sorprendida", src: "/img/brand/lumina-sorprendida.webp", height: 1040 },
+];
 
 // Enlaces preconfigurados del cotizador, en el mismo orden que
 // `luminaSection.quotePresets` (sitio a medida · tienda · mantenimiento).
@@ -26,222 +44,381 @@ const QUOTE_PRESET_HREFS = [
   "/crear-web?plan=full&modules=ecommerce,payments",
   "/crear-web?plan=maintenance",
 ] as const;
+const PRESET_ICONS = [LayoutTemplate, ShoppingBag, Wrench];
+const BADGE_ICONS = [Zap, LibraryBig, WandSparkles];
 
 /** Abre el chat de Lumina desde cualquier parte (lo escucha LuminaChat). */
 export function openLuminaChat(message?: string) {
   window.dispatchEvent(new CustomEvent("lumina:open", { detail: { message } }));
 }
 
+function fxDelay(ms: number) {
+  return { "--fx-delay": `${ms}ms` } as CSSProperties;
+}
+
 /**
- * 案内 — Lumina, en bento.
+ * Lumina — el personaje que rompe el marco.
  *
- * Panel musgo con el relato y los atajos; panel de tinta con el holograma,
- * que se sale por arriba de su tarjeta como los personajes de las
- * referencias; y tres fichas con lo que sabe hacer. Las preguntas rápidas
- * abren el chat y se envían solas, igual que antes.
+ * Panel bosque con Lumina saliéndose por el borde superior y el titular a su
+ * lado; al tocarla cambia de ánimo (cambia el recorte). A la derecha, una
+ * vista previa del chat con las preguntas rápidas; abajo, sus tres
+ * capacidades y los atajos al cotizador ya preconfigurado.
  */
 export function LuminaFeature() {
   const { t } = useLanguage();
   const reduced = useReducedMotionPreference();
-  const sectionRef = useRef<HTMLElement>(null);
-  const [mood, setMood] = useState<LuminaMood>("Normal");
+  const [moodIndex, setMoodIndex] = useState(0);
+  // Solo se montan el ánimo visible y el siguiente: el cambio es instantáneo
+  // sin descargar los cuatro recortes de entrada.
+  const [primed, setPrimed] = useState<number[]>([0, 1]);
 
-  // El nombre de fondo se desliza más lento que el scroll (capa profunda).
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-  const bgX = useTransform(scrollYProgress, [0, 1], ["4%", "-10%"]);
-  const bgOpacity = useTransform(scrollYProgress, [0, 0.35, 0.75, 1], [0, 1, 1, 0]);
-
-  const moodLabels = t.luminaSection.moods;
-  const moodLabel: Record<LuminaMood, string> = {
-    Normal: moodLabels.normal,
-    Enfocada: moodLabels.enfocada,
-    Duda: moodLabels.duda,
-    Sorprendida: moodLabels.sorprendida,
-  };
+  const mood = MOODS[moodIndex].key;
+  const moodLabel = t.luminaSection.moods[mood];
 
   function poke() {
-    setMood((m) => MOOD_CYCLE[(MOOD_CYCLE.indexOf(m) + 1) % MOOD_CYCLE.length]);
+    const next = (moodIndex + 1) % MOODS.length;
+    setMoodIndex(next);
+    setPrimed((list) => {
+      const following = (next + 1) % MOODS.length;
+      return list.includes(following) ? list : [...list, following];
+    });
   }
 
   return (
     <section
-      ref={sectionRef}
       id="lumina"
-      aria-label={t.luminaSection.eyebrow}
-      className="relative grid gap-gutter lg:grid-cols-12"
+      aria-labelledby="lumina-title"
+      className="relative grid gap-gutter md:grid-cols-12"
     >
-      {/* A · Relato y atajos */}
-      <div data-fx="left" className="order-2 min-w-0 lg:order-1 lg:col-span-7">
-        <div className="panel panel-moss relative h-full overflow-hidden p-6 md:p-10 lg:p-12">
-          <motion.div
-            aria-hidden
-            style={reduced ? undefined : { x: bgX, opacity: bgOpacity }}
-            className="pointer-events-none absolute inset-x-0 bottom-[-0.12em] select-none whitespace-nowrap"
-          >
-            <span className="ghost-word text-[30vw] lg:text-[17vw]">Lumina</span>
-          </motion.div>
+      {/* A · Escenario bosque: Lumina rompe el borde superior del panel. */}
+      <div data-fx="panel" className="min-w-0 pt-16 sm:pt-20 md:col-span-12 md:pt-32 xl:col-span-8 xl:row-start-1">
+        <div className="panel panel-forest relative flex h-full flex-col md:min-h-[32rem] md:flex-row xl:min-h-[33rem]">
+          {/* Fondo: brillo, disco lima detrás de su cabeza y puntos. */}
+          <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_28%_30%,hsl(var(--lime)/0.18),transparent_65%)]" />
+            <div className="absolute left-[14%] top-2 aspect-square w-[74%] rounded-full bg-lime sm:left-[22%] sm:w-[56%] md:left-[7%] md:top-[-3.5rem] md:w-[43%]" />
+            <div className="absolute -bottom-24 -right-24 size-80 rounded-full border border-white/10" />
+            <div className="absolute -bottom-10 -right-10 size-48 rounded-full border border-white/10" />
+            <div className="dot-cluster absolute right-9 top-[5.5rem] hidden h-[4.125rem] w-[6.875rem] opacity-60 min-[1400px]:block" />
+          </div>
 
-          <div className="relative flex flex-col items-start gap-6">
-            <span className="tag-pill">
-              <span aria-hidden lang="ja" className="seal">
-                案
+          {/* Recorte cóncavo con la etiqueta de la sección (escritorio). */}
+          <div className="notch notch-tr hidden md:flex">
+            <span className="eyebrow bg-white pl-1.5 text-ink shadow-soft">
+              <b aria-hidden>
+                <Sparkle className="h-3 w-3 fill-current" />
+              </b>
+              {t.luminaSection.eyebrow}
+            </span>
+          </div>
+
+          {/* Escenario: en teléfono encabeza el panel; en escritorio ocupa la
+              mitad izquierda y Lumina se asienta en el canto inferior. El
+              recorte deja pasar todo lo que sube y corta la base curva. */}
+          <div className="relative h-[21rem] shrink-0 [clip-path:inset(-12rem_0_0_0)] sm:h-[27rem] md:absolute md:inset-y-0 md:left-0 md:h-auto md:w-[54%] md:[clip-path:inset(-14rem_-2rem_0_0_round_0_0_0_var(--r-panel))]">
+            <button
+              type="button"
+              onClick={poke}
+              aria-label={`${t.luminaSection.hint} · ${moodLabel}`}
+              className="group absolute bottom-0 left-1/2 z-10 block w-[min(24rem,106%)] -translate-x-[54%] translate-y-[9%] cursor-pointer rounded-[2rem] focus-visible:outline-offset-[-8px] sm:w-[27rem] md:h-[calc(100%+12rem)] md:w-auto xl:h-[calc(100%+15rem)] md:-translate-x-[44%]"
+            >
+              <motion.span
+                className="relative block aspect-[900/1080] origin-bottom md:h-full"
+                whileHover={reduced ? undefined : { y: -6 }}
+                whileTap={reduced ? undefined : { scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 380, damping: 26 }}
+              >
+                {MOODS.map((m, i) =>
+                  primed.includes(i) ? (
+                    <Image
+                      key={m.key}
+                      src={m.src}
+                      alt={i === moodIndex ? `${t.lumina.name} · ${moodLabel}` : ""}
+                      aria-hidden={i === moodIndex ? undefined : true}
+                      width={900}
+                      height={m.height}
+                      sizes="(min-width: 768px) 40rem, (min-width: 640px) 27rem, 24rem"
+                      className={cn(
+                        "absolute bottom-0 left-0 h-auto w-full origin-bottom drop-shadow-[0_24px_30px_hsl(160_40%_6%/0.45)] transition-[opacity,transform] duration-500 [transition-timing-function:var(--ease-pop)]",
+                        i === moodIndex ? "scale-100 opacity-100" : "translate-y-3 scale-[0.96] opacity-0"
+                      )}
+                    />
+                  ) : null
+                )}
+              </motion.span>
+            </button>
+          </div>
+
+          {/* Ánimo actual + pista para tocarla: una ficha tipo app. En
+              teléfono cabalga la unión entre Lumina y la hoja; en escritorio
+              flota junto a su cabeza, fuera del panel, como un globo. */}
+          <div className="absolute right-3 top-[16rem] z-30 sm:right-6 sm:top-[22rem] md:left-[55%] md:right-auto md:top-[-5.25rem]">
+            <span aria-hidden className="absolute -bottom-1 left-7 hidden size-3.5 rotate-45 rounded-[3px] bg-white md:block" />
+            <div className="relative flex items-center gap-2.5 rounded-[1.35rem] bg-white py-2 pl-2 pr-4 text-ink shadow-pop">
+              <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-ink text-lime">
+                <Sparkle className="h-4 w-4 fill-current" />
               </span>
+              <span className="min-w-0 leading-tight">
+                <span className="flex items-center gap-2.5">
+                  <span id="lumina-mood" aria-live="polite" className="block text-sm font-bold">
+                    <AnimatePresence mode="wait" initial={false}>
+                      <motion.span
+                        key={mood}
+                        initial={reduced ? { opacity: 0 } : { opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={reduced ? { opacity: 0 } : { opacity: 0, y: -6 }}
+                        transition={{ duration: 0.18 }}
+                        className="block whitespace-nowrap"
+                      >
+                        {moodLabel}
+                      </motion.span>
+                    </AnimatePresence>
+                  </span>
+                  <span aria-hidden className="ml-auto flex gap-1">
+                    {MOODS.map((m, i) => (
+                      <span
+                        key={m.key}
+                        className={cn(
+                          "h-1.5 rounded-full transition-[width,background-color] duration-300",
+                          i === moodIndex ? "w-4 bg-forest" : "w-1.5 bg-ink/15"
+                        )}
+                      />
+                    ))}
+                  </span>
+                </span>
+                <span aria-hidden className="mt-1 flex max-w-[12rem] items-center gap-1 text-xs font-medium text-ink/60">
+                  <MousePointerClick className="h-3.5 w-3.5 shrink-0 text-forest" />
+                  {t.luminaSection.hint}
+                </span>
+              </span>
+            </div>
+          </div>
+
+          {/* Relato. En teléfono es una hoja blanca que tapa la base del
+              recorte (como una app); en escritorio vive sobre el bosque. */}
+          <div className="relative z-20 -mt-14 mx-2 mb-2 flex flex-col items-start gap-5 rounded-[calc(var(--r-panel)-0.375rem)] bg-white p-5 pt-11 text-ink sm:mx-3 sm:mb-3 sm:p-7 sm:pt-12 md:z-10 md:m-0 md:ml-auto md:w-[47%] md:justify-end md:rounded-none md:bg-transparent md:p-10 md:pl-0 md:pt-24 md:text-white">
+            <span className="eyebrow bg-ink/[0.06] pl-1.5 text-ink md:hidden">
+              <b aria-hidden className="!bg-ink !text-lime">
+                <Sparkle className="h-3 w-3 fill-current" />
+              </b>
               {t.luminaSection.eyebrow}
             </span>
 
-            <div data-fx="up">
-              <h2 className="display-xl text-[clamp(3.25rem,8vw,7.5rem)] text-foreground">
-                {t.luminaSection.titlePrefix}{" "}
-                <span className="text-primary drop-shadow-[0_0_30px_hsl(76_76%_54%/0.35)]">
+            <div data-fx="up" className="max-w-full">
+              <h2 id="lumina-title">
+                <span className="display-italic block text-[clamp(1.75rem,3vw,3rem)] leading-none">
+                  {t.luminaSection.titlePrefix}
+                </span>
+                <span className="display-xl mt-1 block text-[clamp(4.75rem,7.4vw,7rem)] text-forest md:text-lime">
                   Lumina.
                 </span>
               </h2>
             </div>
 
-            <p className="max-w-xl text-pretty text-base leading-relaxed text-foreground/75 md:text-lg">
+            <p className="max-w-md text-pretty text-[0.975rem] leading-relaxed text-ink/70 md:text-base md:text-white/80">
               {t.luminaSection.subtitle}
             </p>
 
-            {/* Frases que Lumina "escribe" */}
-            <TypedPhrases phrases={t.luminaSection.phrases} />
-
-            {/* Preguntas rápidas: tocar una abre el chat y la envía */}
-            <div className="flex flex-wrap gap-2">
-              {t.lumina.quick.map((q) => (
-                <button
-                  key={q}
-                  onClick={() => openLuminaChat(q)}
-                  className="min-h-11 rounded-full bg-background/60 px-4 py-2 text-left font-mono text-[10px] uppercase tracking-[0.1em] text-foreground/80 ring-1 ring-foreground/10 transition-[background-color,color,transform] duration-200 hover:-translate-y-0.5 hover:bg-primary hover:text-primary-foreground active:scale-[0.97] md:text-xs"
-                >
-                  {q}
-                </button>
-              ))}
-            </div>
-
-            {/* Casos de uso: cada uno abre el cotizador YA preconfigurado. */}
-            <div className="flex flex-wrap gap-2">
-              {t.luminaSection.quotePresets.map((label, i) => (
-                <a
-                  key={label}
-                  href={QUOTE_PRESET_HREFS[i]}
-                  className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-primary/50 px-4 py-2 font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-primary transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary/15 active:scale-[0.97] md:text-xs"
-                >
-                  <Sparkles className="h-3.5 w-3.5" />
-                  {label}
-                </a>
-              ))}
-            </div>
-
-            <div className="mt-1 flex flex-wrap items-center gap-4">
-              <Button size="lg" onClick={() => openLuminaChat()}>
-                <MessageCircle className="h-4 w-4" />
+            <div className="flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
+              <Button size="lg" onClick={() => openLuminaChat()} className="pl-5 pr-2.5">
+                <MessageCircle aria-hidden className="h-[1.1rem] w-[1.1rem]" />
                 {t.luminaSection.cta}
+                <ButtonArrow tone="ink" className="ml-auto -mr-0.5 sm:ml-1" />
               </Button>
-              <span className="tech-label inline-flex items-center gap-2 text-foreground/70">
-                <span className="relative inline-flex size-2.5">
-                  <span className="absolute inset-0 animate-ping rounded-full bg-primary/60 motion-reduce:animate-none" />
-                  <span className="relative inline-flex size-2.5 rounded-full bg-primary" />
+              <span className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-mint px-4 text-sm font-semibold text-ink md:bg-white/10 md:text-white">
+                <span aria-hidden className="relative flex size-2.5">
+                  <span className="absolute inset-0 animate-ping rounded-full bg-forest/50 motion-reduce:animate-none md:bg-lime/60" />
+                  <span className="relative size-2.5 rounded-full bg-forest md:bg-lime" />
                 </span>
                 {t.luminaSection.status}
               </span>
             </div>
-
-            {/* Privacidad / límites: claridad, no letras chiquitas. */}
-            <p className="inline-flex items-start gap-2 text-xs text-foreground/65">
-              <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
-              {t.luminaSection.privacy}
-            </p>
           </div>
         </div>
       </div>
 
-      {/* B · Holograma. Se sale del panel por arriba: el personaje rompe su
-          marco, como en las referencias. */}
+      {/* B · Vista previa del chat: tarjeta tipo app. */}
       <div
-        data-fx="right"
-        className="order-1 min-w-0 lg:order-2 lg:col-span-5"
-        style={{ "--fx-delay": "90ms" } as CSSProperties}
+        data-fx="up"
+        className="min-w-0 md:col-span-7 md:row-span-2 xl:col-span-4 xl:col-start-9 xl:row-span-1 xl:row-start-1"
+        style={fxDelay(90)}
       >
-        <div className="panel relative flex h-full min-h-[24rem] flex-col items-center justify-end overflow-visible px-5 pb-6 pt-4 md:min-h-[30rem]">
-          <div aria-hidden className="absolute inset-0 overflow-hidden rounded-[inherit]">
-            <div className="mesh-glow-c opacity-80" />
-            <div className="hinomaru-dots left-1/2 top-[44%] aspect-square w-[82%] -translate-x-1/2 -translate-y-1/2 opacity-25" />
-            <span
-              lang="ja"
-              className="tategaki-display absolute bottom-6 left-5 text-5xl text-foreground/[0.07] md:text-6xl"
-            >
-              案内
+        <div className="panel flex h-full flex-col gap-4 p-3 shadow-soft sm:p-4 lg:p-5">
+          <div className="flex items-center gap-3 px-1 pt-1">
+            <span className="relative size-12 shrink-0">
+              <span className="absolute inset-0 overflow-hidden rounded-full bg-ink ring-[3px] ring-lime">
+                <Image src="/img/lumina/Normal.png" alt="" fill sizes="48px" className="object-cover" />
+              </span>
+              <span aria-hidden className="absolute bottom-0 right-0 size-3.5 rounded-full border-[3px] border-white bg-forest" />
             </span>
-          </div>
-
-          <div
-            data-fx="pop"
-            className="relative -mt-[14%] w-full lg:-mt-[22%]"
-            style={{ "--fx-delay": "260ms" } as CSSProperties}
-          >
-            <LazyMount
-              className="relative mx-auto aspect-square w-full max-w-[320px] sm:max-w-[420px] lg:max-w-[520px]"
-              fallback={<div className="absolute inset-12 rounded-full border border-border bg-secondary/40" />}
+            <div className="min-w-0 flex-1 leading-tight">
+              <p className="display-title text-xl text-ink">{t.lumina.name}</p>
+              <p className="mt-1 truncate text-sm font-medium text-muted-foreground">
+                {t.luminaSection.status}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => openLuminaChat()}
+              aria-label={t.lumina.open}
+              className="grid size-11 shrink-0 place-items-center rounded-full bg-ink text-lime transition-transform duration-300 hover:rotate-45 active:scale-95"
             >
-              <LuminaHologram mood={mood} onPoke={poke} className="absolute inset-0" />
-            </LazyMount>
+              <ArrowUpRight aria-hidden className="h-5 w-5" />
+            </button>
           </div>
 
-          {/* Chip de mood en el recorte del panel */}
-          <div className="notch notch-tr pointer-events-none">
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={mood}
-                initial={{ opacity: 0, y: 8, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -8, scale: 0.9 }}
-                transition={{ duration: 0.25 }}
-                className="tag-pill pl-3.5 text-primary"
-              >
-                <Sparkles className="h-3.5 w-3.5" />
-                {moodLabel[mood]}
-              </motion.span>
-            </AnimatePresence>
+          <div className="flex flex-1 flex-col gap-3 rounded-[calc(var(--r-panel)-0.75rem)] bg-mint p-3 sm:p-4">
+            {/* El saludo es copia propia del diccionario (HTML de confianza). */}
+            <div
+              className="max-w-[90%] self-start rounded-[1.35rem] rounded-bl-md bg-white px-4 py-3 text-[0.9375rem] leading-relaxed text-ink shadow-[0_10px_24px_-18px_hsl(var(--ink)/0.5)]"
+              dangerouslySetInnerHTML={{ __html: t.lumina.greeting }}
+            />
+            <TypedPhrases phrases={t.luminaSection.phrases} />
+
+            {/* Preguntas rápidas: tocar una abre el chat y la envía. */}
+            <div className="mt-auto flex flex-col items-end gap-2 pt-3">
+              {t.lumina.quick.map((q) => (
+                <button
+                  key={q}
+                  type="button"
+                  onClick={() => openLuminaChat(q)}
+                  className="group inline-flex min-h-11 max-w-full items-center gap-2 rounded-full bg-white py-2 pl-4 pr-2 text-left text-sm font-semibold text-ink ring-1 ring-ink/10 transition-[background-color,color,transform] duration-200 hover:-translate-y-0.5 hover:bg-ink hover:text-white active:scale-[0.97]"
+                >
+                  {q}
+                  <span className="grid size-7 shrink-0 place-items-center rounded-full bg-lime text-ink">
+                    <ArrowUpRight aria-hidden className="h-3.5 w-3.5 transition-transform group-hover:rotate-45" />
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
 
-          <p className="tech-label relative mt-2 rounded-full bg-secondary/80 px-4 py-2 text-center text-muted-foreground">
-            {t.luminaSection.hint}
+          {/* Caja de texto de mentira: abre el chat de verdad. */}
+          <button
+            type="button"
+            onClick={() => openLuminaChat()}
+            aria-label={t.luminaSection.cta}
+            className="group flex h-14 w-full items-center gap-3 rounded-full bg-white pl-5 pr-1.5 text-left ring-1 ring-ink/[0.12] transition-shadow hover:ring-ink/30"
+          >
+            <span className="min-w-0 flex-1 truncate text-[0.9375rem] text-muted-foreground">
+              {t.lumina.placeholder}
+            </span>
+            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-lime text-ink transition-transform duration-300 group-hover:-rotate-12">
+              <Send aria-hidden className="h-[1.05rem] w-[1.05rem]" />
+            </span>
+          </button>
+
+          {/* Privacidad / límites: claridad, no letras chiquitas. */}
+          <p className="flex items-start gap-2 px-2 pb-1 text-[0.8125rem] leading-relaxed text-muted-foreground">
+            <ShieldCheck aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-forest" />
+            {t.luminaSection.privacy}
           </p>
         </div>
       </div>
 
-      {/* C · Qué es capaz de hacer — tres capacidades reales, sin relleno. */}
-      <ul className="order-3 grid gap-gutter sm:grid-cols-3 lg:col-span-12">
-        {t.luminaSection.badges.map((b, i) => (
-          <li
-            key={b.title}
-            data-fx="up"
-            style={{ "--fx-delay": `${i * 90}ms` } as CSSProperties}
-            className="min-w-0"
-          >
-            <div
-              className={cn(
-                "panel flex h-full min-h-36 flex-col justify-end gap-2 p-6 md:p-7",
-                i === 1 && "panel-lime"
-              )}
-            >
-              <span aria-hidden className="display-xl mb-auto text-3xl text-foreground/25">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <span className="display-xl text-[1.9rem] text-foreground">{b.title}</span>
-              <span className="text-sm text-muted-foreground">{b.desc}</span>
-            </div>
-          </li>
-        ))}
+      {/* C · Atajos al cotizador: cada uno lo abre ya preconfigurado. */}
+      <div
+        data-fx="up"
+        className="min-w-0 md:col-span-5 xl:col-span-4 xl:col-start-9 xl:row-start-2"
+        style={fxDelay(120)}
+      >
+        <div className="panel panel-lime flex h-full flex-col gap-5 p-5 sm:p-7">
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="display-title text-[1.65rem] text-ink">{t.luminaSection.presetsTitle}</h3>
+            <Sparkle aria-hidden className="h-7 w-7 shrink-0 fill-ink text-ink" />
+          </div>
+          <ul className="mt-auto flex flex-col gap-2">
+            {t.luminaSection.quotePresets.map((label, i) => {
+              const Icon = PRESET_ICONS[i] ?? LayoutTemplate;
+              return (
+                <li key={label}>
+                  <a
+                    href={QUOTE_PRESET_HREFS[i]}
+                    className="group flex min-h-14 items-center gap-3 rounded-full bg-white/55 py-1.5 pl-1.5 pr-2 text-ink transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-white"
+                  >
+                    <span className="grid size-11 shrink-0 place-items-center rounded-full bg-ink text-lime">
+                      <Icon aria-hidden className="h-[1.1rem] w-[1.1rem]" />
+                    </span>
+                    <span className="min-w-0 flex-1 text-[0.9375rem] font-semibold leading-tight">{label}</span>
+                    <span className="grid size-9 shrink-0 place-items-center rounded-full ring-1 ring-ink/20 transition-colors group-hover:bg-ink group-hover:text-lime group-hover:ring-ink">
+                      <ArrowUpRight aria-hidden className="h-4 w-4" />
+                    </span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
+
+      {/* D · Lo que sabe hacer: tres capacidades reales, sin relleno. */}
+      <ul className="grid min-w-0 gap-gutter md:col-span-5 xl:col-span-8 xl:col-start-1 xl:row-start-2 xl:grid-cols-3">
+        {t.luminaSection.badges.map((b, i) => {
+          const Icon = BADGE_ICONS[i] ?? Zap;
+          return (
+            <li key={b.title} data-fx="up" style={fxDelay(i * 90)} className="min-w-0">
+              <div className="panel flex h-full items-center gap-4 p-5 shadow-soft xl:flex-col xl:items-start xl:justify-between xl:gap-10 xl:p-7">
+                <div className="flex shrink-0 items-center justify-between xl:w-full">
+                  <span className="grid size-12 place-items-center rounded-full bg-ink text-lime">
+                    <Icon aria-hidden className="h-5 w-5" />
+                  </span>
+                  <BadgeVisual index={i} />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="display-title text-[1.3rem] text-ink xl:text-[1.75rem]">{b.title}</h3>
+                  <p className="mt-1.5 text-[0.9375rem] leading-snug text-muted-foreground">{b.desc}</p>
+                </div>
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
 }
 
-/** Terminal chiquita: Lumina escribe una frase una vez y después queda quieta. */
+/** Detalle tipo app de cada capacidad (decorativo). */
+function BadgeVisual({ index }: { index: number }) {
+  if (index === 0) {
+    // Lumina escribiendo: la respuesta ya viene.
+    return (
+      <span aria-hidden className="hidden h-9 items-center gap-1 rounded-full rounded-br-md bg-mint px-3.5 xl:flex">
+        {[0, 160, 320].map((ms) => (
+          <span
+            key={ms}
+            style={{ animationDelay: `${ms}ms` }}
+            className="size-1.5 animate-bounce rounded-full bg-forest motion-reduce:animate-none"
+          />
+        ))}
+      </span>
+    );
+  }
+  if (index === 1) {
+    // Precios, tiempos y módulos: todo el catálogo en una pila.
+    return (
+      <span aria-hidden className="hidden -space-x-2 xl:flex">
+        {[Tag, Clock, Layers].map((Icon, i) => (
+          <span key={i} className="grid size-9 place-items-center rounded-full bg-lime text-ink ring-[3px] ring-white">
+            <Icon className="h-4 w-4" />
+          </span>
+        ))}
+      </span>
+    );
+  }
+  // Cotización armada: pasos completos y palomita.
+  return (
+    <span aria-hidden className="hidden items-center gap-1 xl:flex">
+      {[0, 1, 2, 3].map((i) => (
+        <span key={i} className={cn("h-2 w-4 rounded-full", i < 3 ? "bg-lime" : "bg-ink/10")} />
+      ))}
+      <span className="ml-1 grid size-8 place-items-center rounded-full bg-ink text-lime">
+        <Check className="h-4 w-4" />
+      </span>
+    </span>
+  );
+}
+
+/** Burbuja de Lumina: escribe una frase una vez y después queda quieta. */
 function TypedPhrases({ phrases }: { phrases: string[] }) {
   const reduced = useReducedMotionPreference();
   const [text, setText] = useState("");
@@ -264,14 +441,13 @@ function TypedPhrases({ phrases }: { phrases: string[] }) {
   }, [phrases, reduced]);
 
   return (
-    <div className="flex w-full max-w-md items-center gap-3 rounded-full bg-background/70 px-4 py-3 ring-1 ring-foreground/10">
-      <span className="flex gap-1.5" aria-hidden>
-        <span className="h-2 w-2 rounded-full bg-primary" />
-        <span className="h-2 w-2 rounded-full bg-foreground/25" />
-      </span>
-      <p className="min-h-[1.25rem] flex-1 truncate font-mono text-xs text-foreground/90 md:text-sm">
+    <div className="flex max-w-[90%] items-end gap-2 self-start">
+      <p className="min-h-[2.9rem] rounded-[1.35rem] rounded-bl-md bg-white px-4 py-3 text-[0.9375rem] font-semibold leading-relaxed text-ink shadow-[0_10px_24px_-18px_hsl(var(--ink)/0.5)]">
         {text}
-        <span className="ml-0.5 inline-block h-[1em] w-[2px] translate-y-[2px] bg-primary" aria-hidden />
+        <span
+          aria-hidden
+          className="ml-0.5 inline-block h-[1.05em] w-[2px] translate-y-[3px] animate-pulse bg-forest motion-reduce:animate-none"
+        />
       </p>
     </div>
   );

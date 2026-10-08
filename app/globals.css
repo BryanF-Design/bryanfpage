@@ -639,39 +639,6 @@
     z-index: 30;
   }
 
-  /* ——— Carrusel 3D (anillo de herramientas) ———————————————————————— */
-  .ring-stage {
-    perspective: 1200px;
-    perspective-origin: 50% 40%;
-  }
-  .ring {
-    position: relative;
-    transform-style: preserve-3d;
-    animation: ring-spin 36s linear infinite;
-  }
-  .ring-stage:hover .ring,
-  .ring-stage:focus-within .ring {
-    animation-play-state: paused;
-  }
-  .ring > li {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: var(--tile);
-    height: calc(var(--tile) * 1.25);
-    margin-left: calc(var(--tile) / -2);
-    margin-top: calc(var(--tile) * -0.625);
-    transform: rotateY(calc(var(--i) * 360deg / var(--n))) translateZ(var(--rz));
-    backface-visibility: hidden;
-  }
-  @keyframes ring-spin {
-    from {
-      transform: rotateX(-10deg) rotateY(0deg);
-    }
-    to {
-      transform: rotateX(-10deg) rotateY(-360deg);
-    }
-  }
   .spin-slow {
     animation: spin-slow 18s linear infinite;
   }
@@ -918,12 +885,14 @@ html.fx-on [data-fx="panel"]:not([data-fx-in]) > * {
   }
 }
 /* Flotación suave para objetos decorativos (estrellas, órbitas). */
+/* Usa la propiedad `translate` (no `transform`) para no pisar los
+   centrados con translate de Tailwind del mismo elemento. */
 .float-y {
   animation: float-y 6s ease-in-out infinite;
 }
 @keyframes float-y {
   50% {
-    transform: translate3d(0, -10px, 0);
+    translate: 0 -10px;
   }
 }
 

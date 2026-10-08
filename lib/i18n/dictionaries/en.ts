@@ -106,6 +106,9 @@ const en: Dictionary = {
       "Modern frameworks and tools I use to build: fast, scalable, and tailored to the job. Technology in service of the idea, not the other way around.",
     ctaPrimary: "See projects",
     ctaSecondary: "Let's work together",
+    filtersLabel: "Filter tools by type",
+    filters: { all: "All", front: "Frontend", back: "Backend", tools: "Tools" },
+    countLabel: "tools I use every day",
   },
   projects: {
     eyebrow: "Portfolio",
@@ -114,6 +117,17 @@ const en: Dictionary = {
     subtitle: "Sites that make a real impact for every client. Each one designed and built to order. Tap any of them to visit.",
     visitSite: "Visit site",
     showMore: "Show more projects",
+    title: "Real work that's already selling.",
+    titleAccent: "selling",
+    live: "Live",
+    countLabel: "live sites you can open and explore",
+    recent: "Recent",
+    all: "All",
+    newBadge: "New",
+    casesTitle: "Case studies",
+    casesSubtitle: "The problem, the decision and the result behind four projects.",
+    nextTitle: "Your site could be next.",
+    moreLabel: "more projects",
     descs: {
       "goldenrepublic-com-mx": "Real estate",
       "serviciosecem-com-mx": "Accounting and tax advisory",
@@ -137,6 +151,8 @@ const en: Dictionary = {
       "nezga-arquitectos-vercel-app": "Architecture and construction",
       "epiko-vercel-app": "Event production",
       "element-experiences-com": "Experiences and events",
+      "gecomex-web-vercel-app": "International logistics and customs",
+      "ceahestructural-com-mx": "FRP and PVC structural solutions",
     },
     caseLabels: {
       problem: "Problem",
@@ -190,9 +206,19 @@ const en: Dictionary = {
       france: "France",
       japan: "Japan",
     },
+    listTitle: "Locations",
+    localTime: "Local time",
+    countries: "countries",
+    kinds: {
+      work: "Projects",
+      culture: "Culture",
+    },
   },
   clients: {
+    eyebrow: "Clients",
     label: "Brands that have trusted us",
+    subtitle: "From global corporations to independent studios: the same care in every delivery.",
+    brands: "brands",
   },
   entryServices: {
     eyebrow: "Entry-level services",
@@ -201,6 +227,7 @@ const en: Dictionary = {
       "If you don't need a complete site yet, start here: a ready contact identity in days, with the same design quality.",
     cta: "Ask about this service",
     note: "Prices in Mexican pesos (MXN). Bigger project in mind? We can combine it with a full site — ask Lumina.",
+    fromPrice: (price: string) => `From ${price}`,
     items: [
       {
         id: "tarjetaDigital",
@@ -384,6 +411,7 @@ const en: Dictionary = {
     ],
     notFound: "Didn't find your answer? Message us and let's talk it through.",
     sendWhatsapp: "Message us on WhatsApp",
+    bubble: "Questions?",
   },
   closingCta: {
     title: "Ready for your brand to look like what it's worth?",
@@ -493,7 +521,7 @@ const en: Dictionary = {
       "Lumina lives on this site and knows everything we do: pricing, timelines, modules, and process. Ask her anything — she answers instantly, any time, and helps you spec out your site.",
     cta: "Chat with Lumina",
     status: "Online 24/7",
-    hint: "Tap her to change her mood · drag to spin her around",
+    hint: "Tap her to change her mood",
     badges: [
       { title: "Instant answers", desc: "Any time, no waiting." },
       { title: "Knows the whole catalog", desc: "Prices, timelines, modules and process." },
@@ -501,6 +529,7 @@ const en: Dictionary = {
     ],
     privacy: "No sensitive data in the chat. Your conversation stays on this device only.",
     quotePresets: ["Quote a custom site", "Quote an online store", "Quote maintenance"],
+    presetsTitle: "Quote in one click",
     moods: {
       normal: "Normal mode",
       enfocada: "Focused mode",

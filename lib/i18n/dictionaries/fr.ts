@@ -106,6 +106,9 @@ const fr: Dictionary = {
       "Des frameworks et outils modernes pour construire : rapide, évolutif et sur mesure. La technologie au service de l'idée, jamais l'inverse.",
     ctaPrimary: "Voir les projets",
     ctaSecondary: "Travaillons ensemble",
+    filtersLabel: "Filtrer les outils par type",
+    filters: { all: "Tout", front: "Front-end", back: "Back-end", tools: "Outils" },
+    countLabel: "outils que j'utilise au quotidien",
   },
   projects: {
     eyebrow: "Portfolio",
@@ -114,6 +117,17 @@ const fr: Dictionary = {
     subtitle: "Des sites qui font une vraie différence pour chaque client. Chacun conçu et construit sur mesure. Touchez-en un pour le visiter.",
     visitSite: "Visiter le site",
     showMore: "Voir plus de projets",
+    title: "Du vrai travail qui vend déjà.",
+    titleAccent: "vend déjà",
+    live: "En ligne",
+    countLabel: "sites en ligne à ouvrir et à parcourir",
+    recent: "Récents",
+    all: "Tous",
+    newBadge: "Nouveau",
+    casesTitle: "Études de cas",
+    casesSubtitle: "Le problème, la décision et le résultat derrière quatre projets.",
+    nextTitle: "Votre site pourrait être le prochain.",
+    moreLabel: "projets de plus",
     descs: {
       "goldenrepublic-com-mx": "Immobilier",
       "serviciosecem-com-mx": "Conseil comptable et fiscal",
@@ -137,6 +151,8 @@ const fr: Dictionary = {
       "nezga-arquitectos-vercel-app": "Architecture et construction",
       "epiko-vercel-app": "Production d'événements",
       "element-experiences-com": "Expériences et événements",
+      "gecomex-web-vercel-app": "Logistique et douanes internationales",
+      "ceahestructural-com-mx": "Solutions structurelles en PRV et PVC",
     },
     caseLabels: {
       problem: "Problème",
@@ -190,9 +206,19 @@ const fr: Dictionary = {
       france: "France",
       japan: "Japon",
     },
+    listTitle: "Lieux",
+    localTime: "Heure locale",
+    countries: "pays",
+    kinds: {
+      work: "Projets",
+      culture: "Culture",
+    },
   },
   clients: {
+    eyebrow: "Clients",
     label: "Des marques qui nous ont fait confiance",
+    subtitle: "Du grand groupe au studio indépendant : le même soin à chaque livraison.",
+    brands: "marques",
   },
   entryServices: {
     eyebrow: "Services d'entrée",
@@ -201,6 +227,7 @@ const fr: Dictionary = {
       "Si vous n'avez pas encore besoin d'un site complet, commencez ici : une identité de contact prête en quelques jours, avec la même qualité de design.",
     cta: "Se renseigner sur ce service",
     note: "Prix en pesos mexicains (MXN). Un projet plus grand en tête ? On peut le combiner avec un site complet — demandez à Lumina.",
+    fromPrice: (price: string) => `Dès ${price}`,
     items: [
       {
         id: "tarjetaDigital",
@@ -384,6 +411,7 @@ const fr: Dictionary = {
     ],
     notFound: "Vous n'avez pas trouvé votre réponse ? Écrivez-nous, on en discute.",
     sendWhatsapp: "Envoyer un WhatsApp",
+    bubble: "Des questions ?",
   },
   closingCta: {
     title: "Prêt à ce que votre marque ait enfin l'allure qu'elle mérite ?",
@@ -493,7 +521,7 @@ const fr: Dictionary = {
       "Lumina vit sur ce site et connaît tout ce que nous faisons : tarifs, délais, modules et processus. Posez-lui vos questions — elle répond instantanément, à toute heure, et vous aide à composer votre site.",
     cta: "Discuter avec Lumina",
     status: "En ligne 24/7",
-    hint: "Touchez-la pour changer son humeur · faites-la tourner en glissant",
+    hint: "Touchez-la pour changer son humeur",
     badges: [
       { title: "Réponses instantanées", desc: "À toute heure, sans attente." },
       { title: "Connaît tout le catalogue", desc: "Prix, délais, modules et processus." },
@@ -501,6 +529,7 @@ const fr: Dictionary = {
     ],
     privacy: "Aucune donnée sensible dans le chat. Ta conversation reste sur cet appareil.",
     quotePresets: ["Devis site sur mesure", "Devis boutique en ligne", "Devis maintenance"],
+    presetsTitle: "Devis en un clic",
     moods: {
       normal: "Mode normal",
       enfocada: "Mode concentrée",

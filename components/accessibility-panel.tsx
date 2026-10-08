@@ -134,17 +134,21 @@ export function AccessibilityPanel() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.96 }}
             transition={{ duration: 0.2 }}
+            style={{ transformOrigin: "0% 100%" }}
             role="dialog"
             aria-labelledby="accessibility-panel-title"
             id="accessibility-panel"
-            className="px-window fixed bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] left-3 z-[121] max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] w-[min(calc(100vw-1.5rem),20rem)] overflow-y-auto sm:left-6"
+            className="fixed bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] left-3 z-[121] max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] w-[min(calc(100vw-1.5rem),22rem)] overflow-y-auto overscroll-contain rounded-card bg-white p-2 text-ink shadow-[0_2px_0_hsl(var(--ink)/0.03),0_34px_70px_-26px_hsl(var(--ink)/0.55)] ring-1 ring-ink/[0.06] [scrollbar-width:thin] sm:left-6"
           >
-            <div className="flex items-center justify-between border-b border-border py-2 pl-4 pr-2">
+            {/* Cabecera tipo hoja de app: icono redondo, título y cerrar. */}
+            <div className="flex items-center justify-between gap-3 py-1.5 pl-2 pr-1">
               <p
                 id="accessibility-panel-title"
-                className="flex items-center gap-2 text-base font-bold text-foreground"
+                className="flex items-center gap-3 font-display text-lg font-bold tracking-[-0.02em] text-ink"
               >
-                <Accessibility className="h-4 w-4 text-primary" aria-hidden />
+                <span className="grid size-10 place-items-center rounded-full bg-ink text-lime">
+                  <Accessibility className="h-5 w-5" aria-hidden />
+                </span>
                 Accesibilidad
               </p>
               <button
@@ -155,29 +159,28 @@ export function AccessibilityPanel() {
                   window.setTimeout(() => triggerRef.current?.focus());
                 }}
                 aria-label="Cerrar panel de accesibilidad"
-                className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="grid size-11 place-items-center rounded-full bg-ink/[0.05] text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="flex flex-col gap-4 p-4">
-              <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-                  Tamaño de texto
-                </p>
-                <div className="flex items-center gap-2">
+            <div className="mt-1.5 flex flex-col gap-1.5">
+              {/* Tamaño de texto: un paso a paso en píldora. */}
+              <div className="flex items-center justify-between gap-3 rounded-inner bg-mint p-2 pl-3.5">
+                <span className="text-sm font-semibold text-ink">Tamaño de texto</span>
+                <div className="flex items-center gap-1 rounded-full bg-white p-1 shadow-[0_4px_14px_-8px_hsl(var(--ink)/0.35)]">
                   <button
                     type="button"
                     onClick={() => update({ fontStep: Math.max(0, settings.fontStep - 1) })}
                     disabled={settings.fontStep === 0}
                     aria-label="Disminuir tamaño de texto"
-                    className="flex h-11 w-11 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-40"
+                    className="grid size-11 place-items-center rounded-full text-ink transition-colors hover:bg-ink/[0.06] disabled:opacity-35"
                   >
                     <Minus className="h-4 w-4" />
                   </button>
                   <span
-                    className="min-w-[3rem] text-center text-sm text-muted-foreground"
+                    className="min-w-[3.25rem] text-center text-sm font-bold tabular-nums text-ink"
                     aria-live="polite"
                   >
                     {Math.round(FONT_STEPS[settings.fontStep])}%
@@ -189,15 +192,16 @@ export function AccessibilityPanel() {
                     }
                     disabled={settings.fontStep === FONT_STEPS.length - 1}
                     aria-label="Aumentar tamaño de texto"
-                    className="flex h-11 w-11 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-40"
+                    className="grid size-11 place-items-center rounded-full bg-ink text-white transition-colors hover:bg-ink-soft disabled:opacity-35"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
                 </div>
               </div>
 
-              <div className="flex flex-col gap-1">
-                {toggles.map(({ key, label, icon: Icon }) => {
+              {/* Interruptores tipo iOS: pista tinta + perilla lima al activarse. */}
+              <div className="flex flex-col overflow-hidden rounded-inner bg-mint">
+                {toggles.map(({ key, label, icon: Icon }, index) => {
                   const active = settings[key] as boolean;
                   return (
                     <button
@@ -206,24 +210,33 @@ export function AccessibilityPanel() {
                       onClick={() => update({ [key]: !active } as Partial<A11ySettings>)}
                       aria-pressed={active}
                       className={cn(
-                        "flex min-h-11 items-center justify-between rounded-2xl px-3 py-2 text-sm font-medium transition-colors",
-                        active ? "bg-lime/25 text-ink" : "text-foreground/80 hover:bg-ink/[0.04]"
+                        "flex min-h-[3.5rem] items-center justify-between gap-3 px-3.5 py-2 text-left text-sm font-semibold transition-colors hover:bg-ink/[0.03]",
+                        index > 0 && "border-t border-ink/[0.07]",
+                        active ? "text-ink" : "text-ink/80"
                       )}
                     >
-                      <span className="flex items-center gap-2">
-                        <Icon className="h-4 w-4" aria-hidden />
+                      <span className="flex items-center gap-3">
+                        <span
+                          className={cn(
+                            "grid size-9 shrink-0 place-items-center rounded-full transition-colors",
+                            active ? "bg-lime text-ink" : "bg-white text-ink/70"
+                          )}
+                        >
+                          <Icon className="h-4 w-4" aria-hidden />
+                        </span>
                         {label}
                       </span>
                       <span
+                        aria-hidden
                         className={cn(
-                          "flex h-6 w-10 items-center rounded-full p-0.5 transition-colors",
-                          active ? "bg-ink" : "bg-ink/15"
+                          "relative flex h-[1.875rem] w-[3.125rem] shrink-0 items-center rounded-full p-[3px] transition-colors duration-200",
+                          active ? "bg-ink" : "bg-ink/[0.16]"
                         )}
                       >
                         <span
                           className={cn(
-                            "h-5 w-5 rounded-full bg-white shadow transition-transform",
-                            active && "translate-x-4 bg-lime"
+                            "size-6 rounded-full shadow-[0_2px_6px_hsl(var(--ink)/0.3)] transition-transform duration-200 [transition-timing-function:var(--ease-out)]",
+                            active ? "translate-x-5 bg-lime" : "bg-white"
                           )}
                         />
                       </span>
@@ -235,9 +248,9 @@ export function AccessibilityPanel() {
               <button
                 type="button"
                 onClick={reset}
-                className="flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="flex min-h-11 items-center justify-center gap-2 rounded-full border-[1.5px] border-ink/15 px-4 py-2 text-sm font-semibold text-ink/75 transition-colors hover:border-ink/50 hover:text-ink"
               >
-                <RotateCcw className="h-3.5 w-3.5" />
+                <RotateCcw className="h-3.5 w-3.5" aria-hidden />
                 Restablecer
               </button>
             </div>

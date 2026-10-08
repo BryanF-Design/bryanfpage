@@ -2,156 +2,232 @@
 
 import Image from "next/image";
 import { useRef, type CSSProperties } from "react";
-import {
-  motion,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-} from "framer-motion";
+import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
+import { Sparkle } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button, ButtonArrow } from "@/components/ui/button";
 import { SectionHeading } from "@/components/sections/section-heading";
 import { openLuminaChat } from "@/components/sections/lumina-feature";
+import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 
-// El estado (mood) de Lumina cambia con cada paso — reutiliza las mismas
-// imágenes del avatar del chat, en el mismo orden que `luminaJourney.steps`:
-// escucha → responde → analiza/cotiza → enfoca el pago → celebra.
+// El ánimo de Lumina cambia con cada paso, en el mismo orden que
+// `luminaJourney.steps`: escucha → recomienda → cotiza → enfoca el pago → celebra.
 const STEP_MOODS = [
-  "/img/lumina/Enfocada.png",
-  "/img/lumina/Normal.png",
-  "/img/lumina/Duda.png",
-  "/img/lumina/Enfocada.png",
-  "/img/lumina/Sorprendida.png",
+  "/img/brand/lumina-enfocada.webp",
+  "/img/brand/lumina-normal.webp",
+  "/img/brand/lumina-duda.webp",
+  "/img/brand/lumina-enfocada.webp",
+  "/img/brand/lumina-sorprendida.webp",
 ] as const;
 
+const pad = (n: number) => String(n).padStart(2, "0");
+
+/** Avatar redondo con el recorte de Lumina encuadrado en la cara. */
+function LuminaAvatar({ src, className }: { src: string; className?: string }) {
+  return (
+    <span
+      className={cn(
+        "relative block shrink-0 overflow-hidden rounded-full bg-lime-soft ring-4 ring-white",
+        className
+      )}
+    >
+      <Image
+        src={src}
+        alt=""
+        fill
+        sizes="64px"
+        className="origin-[40%_32%] translate-x-[7%] scale-[1.45] object-cover object-top"
+      />
+    </span>
+  );
+}
+
+/** Tramo del riel entre dos avatares: se llena con el scroll (solo transform). */
+function RailSegment({
+  progress,
+  index,
+  count,
+  reduced,
+}: {
+  progress: MotionValue<number>;
+  index: number;
+  count: number;
+  reduced: boolean;
+}) {
+  const start = index / count;
+  const fill = useTransform(progress, [start, start + 1 / count], [0, 1]);
+  return (
+    <span
+      aria-hidden
+      className="absolute left-7 top-[2.75rem] h-full w-[3px] -translate-x-1/2 overflow-hidden rounded-full bg-ink/10 sm:left-8 sm:top-[3rem]"
+    >
+      <motion.span
+        style={reduced ? { scaleY: 1 } : { scaleY: fill }}
+        className="absolute inset-0 origin-top rounded-full bg-lime-deep"
+      />
+    </span>
+  );
+}
+
 /**
- * 道筋 — el recorrido con Lumina.
+ * Lumina te acompaña — el recorrido como una conversación.
  *
- * Un riel central se llena con el scroll y los pasos se reparten a los dos
- * lados, entrando desde fuera del lienzo por el lado que les toca. El avatar
- * de cada paso se monta sobre el riel, mordiendo el canto de su ficha. En
- * teléfono el riel pasa al margen izquierdo y todo entra desde la derecha.
+ * Panel lima con una tarjeta blanca tipo app: la cabecera del chat y, debajo,
+ * los cinco pasos como actividad reciente, cada uno con el ánimo de Lumina en
+ * su avatar. Un riel une los avatares y se llena al hacer scroll. A un lado,
+ * la cabecera de la sección, una burbuja de Lumina y la llamada al chat.
  */
 export function LuminaJourney() {
   const { t } = useLanguage();
-  const reduced = useReducedMotion();
-  const railRef = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotionPreference();
+  const listRef = useRef<HTMLOListElement>(null);
 
   const { scrollYProgress } = useScroll({
-    target: railRef,
-    offset: ["start 75%", "end 55%"],
+    target: listRef,
+    offset: ["start 80%", "end 60%"],
   });
-  const fill = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   const steps = t.luminaJourney.steps;
+  const segments = steps.length - 1;
+  const bubble = t.luminaSection.phrases[2] ?? t.luminaSection.phrases[0];
 
   return (
-    <section
-      id="lumina-journey"
-      aria-label={t.luminaJourney.title}
-      className="panel relative overflow-hidden px-5 py-12 md:px-10 md:py-16 lg:px-14 lg:py-20"
-    >
-      <div aria-hidden className="mesh-glow-c opacity-60" />
-      <div aria-hidden className="dot-grid absolute inset-0 rounded-[inherit] opacity-25" />
+    <section id="lumina-journey" aria-label={t.luminaJourney.title} className="relative">
+      <div data-fx="panel">
+        <div className="panel panel-lime relative grid gap-6 overflow-hidden p-4 sm:p-7 lg:grid-cols-12 lg:grid-rows-[auto_1fr_auto] lg:gap-x-12 lg:gap-y-8 lg:p-10">
+          {/* Cabecera de la sección. */}
+          <SectionHeading
+            eyebrow={t.luminaJourney.eyebrow}
+            title={t.luminaJourney.title}
+            subtitle={t.luminaJourney.subtitle}
+            chapter={{ index: 6 }}
+            className="relative px-1 pt-1 sm:px-0 sm:pt-0 lg:col-span-5 lg:col-start-8 lg:row-start-1"
+          />
 
-      <div className="relative">
-        <SectionHeading
-          eyebrow={t.luminaJourney.eyebrow}
-          title={t.luminaJourney.title}
-          subtitle={t.luminaJourney.subtitle}
-          chapter={{ kanji: "道筋", romaji: "michisuji", index: 6 }}
-          align="center"
-        />
-
-        <div ref={railRef} className="relative mx-auto mt-14 max-w-5xl md:mt-20">
-          {/* Riel base + relleno que sigue el scroll. */}
+          {/* Tarjeta tipo app: el chat con los pasos como actividad. */}
           <div
-            aria-hidden
-            className="absolute bottom-6 left-[27px] top-6 w-[3px] rounded-full bg-foreground/10 md:left-1/2 md:-translate-x-1/2"
-          />
-          <motion.div
-            aria-hidden
-            style={reduced ? { scaleY: 1 } : { scaleY: fill }}
-            className="absolute bottom-6 left-[27px] top-6 w-[3px] origin-top rounded-full bg-primary shadow-[0_0_14px_hsl(var(--primary)/0.6)] md:left-1/2 md:-translate-x-1/2"
-          />
-
-          <ol className="flex flex-col gap-6 md:gap-4">
-            {steps.map((step, i) => {
-              const right = i % 2 === 1;
-              return (
-                <li
-                  key={step.title}
-                  className={cn(
-                    "relative grid grid-cols-[56px_1fr] items-center gap-4 md:grid-cols-[1fr_72px_1fr] md:gap-6"
-                  )}
+            data-fx="up"
+            className="relative min-w-0 lg:col-span-7 lg:col-start-1 lg:row-span-3 lg:row-start-1"
+          >
+            <div className="panel-card card-pop flex h-full flex-col rounded-[calc(var(--r-panel)-0.75rem)] p-4 shadow-float sm:p-6 lg:p-7">
+              {/* Cabecera del chat. */}
+              <div className="flex items-center gap-3 border-b border-border pb-4 sm:pb-5">
+                <span className="relative">
+                  <LuminaAvatar src="/img/brand/lumina-normal.webp" className="size-12 ring-2 ring-lime" />
+                  <span
+                    aria-hidden
+                    className="absolute bottom-0 right-0 size-3.5 rounded-full bg-[hsl(142_70%_42%)] ring-[3px] ring-white"
+                  />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-base font-bold leading-tight">{t.lumina.name}</span>
+                  <span className="block truncate text-sm text-muted-foreground">{t.lumina.online}</span>
+                </span>
+                <span
+                  aria-hidden
+                  className="grid size-11 shrink-0 place-items-center rounded-full bg-ink text-lime"
                 >
-                  {/* Nodo: avatar de Lumina en su ánimo del paso, sobre el riel. */}
-                  <div
-                    data-fx="pop"
-                    style={{ "--fx-delay": "120ms" } as CSSProperties}
-                    className="relative z-10 flex justify-center md:col-start-2 md:row-start-1"
-                  >
-                    <span className="relative flex size-14 items-center justify-center overflow-hidden rounded-full bg-background ring-4 ring-primary/70 md:size-[72px]">
-                      <Image
-                        src={STEP_MOODS[i % STEP_MOODS.length]}
-                        alt=""
-                        fill
-                        sizes="72px"
-                        className="object-cover"
-                      />
-                    </span>
-                  </div>
+                  <Sparkle className="h-5 w-5 fill-lime" />
+                </span>
+              </div>
 
-                  <div
-                    data-fx={right ? "right" : "left"}
-                    className={cn(
-                      "min-w-0 md:row-start-1",
-                      right ? "md:col-start-3" : "md:col-start-1"
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        "group rounded-inner p-5 transition-transform duration-500 hover:-translate-y-1 md:p-6",
-                        i === steps.length - 1
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-secondary ring-1 ring-foreground/10"
-                      )}
+              {/* Los pasos: filas de actividad unidas por el riel. */}
+              <ol ref={listRef} className="relative mt-1 flex flex-1 flex-col">
+                {steps.map((step, i) => {
+                  const isLast = i === steps.length - 1;
+                  return (
+                    <li
+                      key={step.title}
+                      data-fx="up"
+                      style={{ "--fx-delay": `${120 + i * 80}ms` } as CSSProperties}
+                      className="relative"
                     >
-                      <span className="flex items-center gap-3">
-                        <span
+                      <div className="relative grid grid-cols-[3.5rem_minmax(0,1fr)] gap-x-3.5 sm:grid-cols-[4rem_minmax(0,1fr)] sm:gap-x-4">
+                        {!isLast && (
+                          <RailSegment
+                            progress={scrollYProgress}
+                            index={i}
+                            count={segments}
+                            reduced={reduced}
+                          />
+                        )}
+                        <LuminaAvatar
+                          src={STEP_MOODS[i % STEP_MOODS.length]}
                           className={cn(
-                            "display-xl text-4xl leading-none",
-                            i === steps.length - 1 ? "text-primary-foreground" : "text-primary"
+                            "z-10 mt-4 size-14 sm:size-16",
+                            isLast && "ring-lime"
+                          )}
+                        />
+                        <div
+                          className={cn(
+                            "min-w-0 py-4 sm:py-5",
+                            !isLast && "border-b border-border"
                           )}
                         >
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <span className="display-xl text-[1.7rem] leading-none md:text-[2rem]">
-                          {step.title}
-                        </span>
-                      </span>
-                      <p
-                        className={cn(
-                          "mt-3 text-pretty text-sm md:text-base",
-                          i === steps.length - 1 ? "text-primary-foreground/80" : "text-muted-foreground"
-                        )}
-                      >
-                        {step.desc}
-                      </p>
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ol>
-        </div>
+                          <div className="flex items-center justify-between gap-3">
+                            <h3 className="text-lg font-bold leading-snug tracking-[-0.01em] sm:text-xl">
+                              {step.title}
+                            </h3>
+                            <span
+                              aria-hidden
+                              className={cn(
+                                "inline-grid h-7 min-w-[2.5rem] shrink-0 place-items-center rounded-full px-2 text-xs font-bold tabular-nums",
+                                isLast ? "bg-ink text-lime" : "bg-mint text-ink ring-1 ring-ink/10"
+                              )}
+                            >
+                              {pad(i + 1)}
+                            </span>
+                          </div>
+                          <p className="mt-1.5 text-pretty text-[0.9375rem] leading-relaxed text-muted-foreground">
+                            {step.desc}
+                          </p>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
+          </div>
 
-        <div data-fx="pop" className="mt-12 flex justify-center md:mt-16">
-          <Button size="lg" onClick={() => openLuminaChat()}>
-            {t.luminaJourney.cta}
-          </Button>
+          {/* Burbuja de Lumina: su voz, en serif. */}
+          <div
+            data-fx="pop"
+            style={{ "--fx-delay": "160ms" } as CSSProperties}
+            className="relative lg:col-span-5 lg:col-start-8 lg:row-start-2 lg:self-center"
+          >
+            <div className="flex items-end gap-3">
+              <LuminaAvatar
+                src="/img/brand/lumina-sorprendida.webp"
+                className="size-12 ring-[3px] ring-ink"
+              />
+              <div className="relative rounded-[1.5rem] rounded-bl-md bg-white px-5 py-4 pr-9 shadow-soft">
+                <Sparkle
+                  aria-hidden
+                  className="absolute -right-2.5 -top-3 h-8 w-8 fill-ink text-ink"
+                />
+                <p className="font-serif text-[1.65rem] italic leading-[1.1] text-ink sm:text-[1.9rem]">
+                  “{bubble}”
+                </p>
+                <p className="mt-1.5 text-xs font-semibold text-ink/60">{t.lumina.name}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Llamada al chat. */}
+          <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center lg:col-span-5 lg:col-start-8 lg:row-start-3">
+            <Button
+              size="lg"
+              variant="ink"
+              onClick={() => openLuminaChat()}
+              className="w-full justify-between pl-6 pr-2.5 sm:w-auto"
+            >
+              {t.luminaJourney.cta}
+              <ButtonArrow tone="lime" className="-mr-0.5 ml-2" />
+            </Button>
+          </div>
         </div>
       </div>
     </section>

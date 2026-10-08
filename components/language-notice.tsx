@@ -69,20 +69,23 @@ export function LanguageNotice() {
   return (
     // Móvil: tarjeta sobre la fila de accesibilidad/Lumina. Desktop: tarjeta
     // a la derecha del botón de accesibilidad, sin encimarse con él.
-    <div
-      className="px-window fixed bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] left-3 right-[calc(var(--fab-size)+1.5rem)] z-[115] flex items-center gap-3 p-2.5 pl-3 md:bottom-[var(--fab-edge)] md:left-[calc(var(--fab-size)+2.5rem)] md:right-auto md:max-w-md md:p-4"
-    >
-      <Globe className="hidden h-4 w-4 shrink-0 text-primary sm:block" aria-hidden />
+    <div className="fixed bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] left-3 right-[calc(var(--fab-size)+1.5rem)] z-[115] flex items-center gap-3 rounded-card bg-white p-2.5 pl-3 text-ink shadow-float ring-1 ring-ink/[0.06] sm:left-6 sm:right-[calc(var(--fab-size)+2.25rem)] md:bottom-[var(--fab-edge)] md:left-[calc(var(--fab-size)+2.5rem)] md:right-auto md:max-w-[36rem] md:gap-4 md:p-3 md:pl-3.5">
+      <span
+        aria-hidden
+        className="hidden size-10 shrink-0 place-items-center rounded-full bg-ink text-lime sm:grid"
+      >
+        <Globe className="h-[1.1rem] w-[1.1rem]" />
+      </span>
       <p
         role="status"
-        className="line-clamp-3 flex-1 text-[11px] leading-snug text-muted-foreground sm:line-clamp-none sm:text-xs sm:leading-relaxed"
+        className="line-clamp-3 flex-1 text-xs leading-snug text-ink/70 sm:line-clamp-none sm:text-[0.8125rem] sm:leading-relaxed"
       >
         {t.languageNotice.text}
       </p>
       <button
         type="button"
         onClick={dismiss}
-        className="btn-px min-h-11 shrink-0 bg-primary px-3 pb-[3px] font-display text-[1.1rem] uppercase leading-none text-primary-foreground"
+        className="inline-flex min-h-11 shrink-0 items-center rounded-full bg-lime px-4 text-sm font-semibold text-ink transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.97]"
       >
         {t.languageNotice.dismiss}
       </button>
@@ -90,7 +93,7 @@ export function LanguageNotice() {
         type="button"
         onClick={dismiss}
         aria-label={t.lumina.close}
-        className="hidden h-11 w-11 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-foreground md:flex"
+        className="hidden size-11 shrink-0 items-center justify-center rounded-full text-ink/50 transition-colors hover:bg-ink/[0.06] hover:text-ink md:flex"
       >
         <X className="h-4 w-4" />
       </button>

@@ -106,6 +106,9 @@ const de: Dictionary = {
       "Moderne Frameworks und Tools, mit denen ich baue: schnell, skalierbar und maßgeschneidert. Technologie im Dienst der Idee, nicht umgekehrt.",
     ctaPrimary: "Projekte ansehen",
     ctaSecondary: "Lass uns zusammenarbeiten",
+    filtersLabel: "Tools nach Typ filtern",
+    filters: { all: "Alle", front: "Frontend", back: "Backend", tools: "Werkzeuge" },
+    countLabel: "Tools in meinem Arbeitsalltag",
   },
   projects: {
     eyebrow: "Portfolio",
@@ -114,6 +117,17 @@ const de: Dictionary = {
     subtitle: "Websites mit echter Wirkung für jeden Kunden. Jede maßgeschneidert entworfen und gebaut. Tippe auf eine, um sie zu besuchen.",
     visitSite: "Website besuchen",
     showMore: "Mehr Projekte anzeigen",
+    title: "Echte Projekte, die bereits verkaufen.",
+    titleAccent: "verkaufen",
+    live: "Online",
+    countLabel: "Live-Websites zum Öffnen und Erkunden",
+    recent: "Neueste",
+    all: "Alle",
+    newBadge: "Neu",
+    casesTitle: "Fallstudien",
+    casesSubtitle: "Problem, Entscheidung und Ergebnis hinter vier Projekten.",
+    nextTitle: "Deine Website könnte die nächste sein.",
+    moreLabel: "weitere Projekte",
     descs: {
       "goldenrepublic-com-mx": "Immobilien",
       "serviciosecem-com-mx": "Steuer- und Buchhaltungsberatung",
@@ -137,6 +151,8 @@ const de: Dictionary = {
       "nezga-arquitectos-vercel-app": "Architektur und Bau",
       "epiko-vercel-app": "Eventproduktion",
       "element-experiences-com": "Erlebnisse und Events",
+      "gecomex-web-vercel-app": "Internationale Logistik und Zollabwicklung",
+      "ceahestructural-com-mx": "Tragwerkslösungen aus GFK und PVC",
     },
     caseLabels: {
       problem: "Aufgabe",
@@ -190,9 +206,19 @@ const de: Dictionary = {
       france: "Frankreich",
       japan: "Japan",
     },
+    listTitle: "Standorte",
+    localTime: "Ortszeit",
+    countries: "Länder",
+    kinds: {
+      work: "Projekte",
+      culture: "Kultur",
+    },
   },
   clients: {
+    eyebrow: "Kunden",
     label: "Marken, die uns vertraut haben",
+    subtitle: "Vom Großkonzern bis zum unabhängigen Studio: dieselbe Sorgfalt bei jeder Lieferung.",
+    brands: "Marken",
   },
   entryServices: {
     eyebrow: "Einstiegsleistungen",
@@ -201,6 +227,7 @@ const de: Dictionary = {
       "Wenn Sie noch keine komplette Website brauchen, fangen Sie hier an: eine fertige Kontaktidentität in wenigen Tagen, mit derselben Designqualität.",
     cta: "Nach diesem Service fragen",
     note: "Preise in mexikanischen Pesos (MXN). Größeres Projekt geplant? Wir können es mit einer kompletten Website kombinieren — fragen Sie Lumina.",
+    fromPrice: (price: string) => `Ab ${price}`,
     items: [
       {
         id: "tarjetaDigital",
@@ -384,6 +411,7 @@ const de: Dictionary = {
     ],
     notFound: "Deine Frage war nicht dabei? Schreib uns, wir klären es gemeinsam.",
     sendWhatsapp: "WhatsApp schreiben",
+    bubble: "Fragen?",
   },
   closingCta: {
     title: "Bereit, dass deine Marke so aussieht, wie sie es verdient?",
@@ -493,7 +521,7 @@ const de: Dictionary = {
       "Lumina lebt auf dieser Website und kennt alles, was wir tun: Preise, Zeiten, Module und Ablauf. Frag sie, was du willst — sie antwortet sofort, rund um die Uhr, und hilft dir, deine Website zusammenzustellen.",
     cta: "Mit Lumina chatten",
     status: "Online 24/7",
-    hint: "Tippe sie an, um ihre Stimmung zu ändern · ziehe, um sie zu drehen",
+    hint: "Tippe sie an, um ihre Stimmung zu ändern",
     badges: [
       { title: "Sofortige Antworten", desc: "Jederzeit, ohne Warten." },
       { title: "Kennt den ganzen Katalog", desc: "Preise, Zeiten, Module und Ablauf." },
@@ -501,6 +529,7 @@ const de: Dictionary = {
     ],
     privacy: "Keine sensiblen Daten im Chat. Dein Gespräch bleibt nur auf diesem Gerät.",
     quotePresets: ["Website anfragen", "Onlineshop anfragen", "Wartung anfragen"],
+    presetsTitle: "Angebot mit einem Klick",
     moods: {
       normal: "Normal-Modus",
       enfocada: "Fokus-Modus",

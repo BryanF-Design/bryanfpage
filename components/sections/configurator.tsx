@@ -1,12 +1,25 @@
 "use client";
 
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import {
+  Building2,
   Check,
   Copy,
-  Building2,
+  CreditCard,
+  LayoutPanelTop,
   Loader2,
   Mail,
+  Minus,
+  Nfc,
+  Plus,
+  RefreshCw,
+  Rocket,
+  ShieldCheck,
+  Sparkle,
+  Store,
+  TicketPercent,
+  Wrench,
+  type LucideIcon,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { SiStripe, SiMercadopago } from "react-icons/si";
@@ -14,7 +27,7 @@ import { SiStripe, SiMercadopago } from "react-icons/si";
 const STRIPE_BRAND = "#635BFF";
 const MERCADOPAGO_BRAND = "#00B1EA";
 
-import { Button } from "@/components/ui/button";
+import { Button, ButtonArrow } from "@/components/ui/button";
 import { SectionHeading } from "@/components/sections/section-heading";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
@@ -31,6 +44,70 @@ import {
   CONFIGURATOR_PLANS as PLAN_META,
   SECTION_PRICE,
 } from "@/lib/catalog";
+
+/** Íconos redondos de cada paquete y módulo, por id del catálogo. */
+const PLAN_ICONS: Record<string, LucideIcon> = {
+  full: Rocket,
+  update: RefreshCw,
+  maintenance: ShieldCheck,
+};
+const MODULE_ICONS: Record<string, LucideIcon> = {
+  ecommerce: Store,
+  payments: CreditCard,
+  maintenance: Wrench,
+};
+
+/** "1. Elige tu paquete" → "Elige tu paquete": el número va en su insignia. */
+function stepText(label: string) {
+  return label.replace(/^\s*\d+\s*[.)．、]\s*/, "");
+}
+
+/** Cabecera de paso: insignia redonda numerada + título. */
+function StepHeader({ n, id, label }: { n: number; id?: string; label: string }) {
+  return (
+    <span id={id} className="flex items-center gap-3">
+      <span className="grid size-10 shrink-0 place-items-center rounded-full bg-ink text-[0.9375rem] font-bold tabular-nums text-lime">
+        {n}
+      </span>
+      <span className="display-title text-[1.45rem] leading-tight sm:text-[1.7rem]">{stepText(label)}</span>
+    </span>
+  );
+}
+
+/** Un paso del cobro: la insignia y un riel punteado que baja al siguiente. */
+function Step({ children, last = false }: { children: ReactNode; last?: boolean }) {
+  return (
+    <div className="relative">
+      {!last && (
+        <span
+          aria-hidden
+          className="absolute bottom-[-2.25rem] left-5 top-12 hidden w-0 -translate-x-1/2 border-l-2 border-dashed border-ink/15 sm:block"
+        />
+      )}
+      {children}
+    </div>
+  );
+}
+
+/** Pila de medios de pago, como la prueba social de las referencias. */
+function PayStack({ className }: { className?: string }) {
+  return (
+    <span aria-hidden className={cn("flex items-center -space-x-2.5", className)}>
+      <span className="grid size-11 place-items-center rounded-full bg-white ring-[3px] ring-[hsl(var(--nb,var(--canvas)))]">
+        <SiStripe className="h-4 w-4" style={{ color: STRIPE_BRAND }} />
+      </span>
+      <span className="grid size-11 place-items-center rounded-full bg-white ring-[3px] ring-[hsl(var(--nb,var(--canvas)))]">
+        <SiMercadopago className="h-5 w-5" style={{ color: MERCADOPAGO_BRAND }} />
+      </span>
+      <span className="grid size-11 place-items-center rounded-full bg-ink text-lime ring-[3px] ring-[hsl(var(--nb,var(--canvas)))]">
+        <Building2 className="h-4 w-4" />
+      </span>
+      <span className="grid size-11 place-items-center rounded-full bg-lime text-ink ring-[3px] ring-[hsl(var(--nb,var(--canvas)))]">
+        <ShieldCheck className="h-4 w-4" />
+      </span>
+    </span>
+  );
+}
 
 const WA_PHONE = "525663012505";
 const USD_MXN_RATE = getUsdMxnRate(process.env.NEXT_PUBLIC_USD_MXN_RATE);
@@ -303,210 +380,244 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
     })
   );
 
+  // Íconos del resumen, en el mismo orden que `items`: paquete, módulos
+  // activos y secciones adicionales.
+  const itemIcons: LucideIcon[] = [
+    PLAN_ICONS[plan.id] ?? Rocket,
+    ...MODULES.filter((m) => mods[m.id]).map((m) => MODULE_ICONS[m.id] ?? Plus),
+    ...(sections > 0 ? [LayoutPanelTop] : []),
+  ];
+
   return (
     <section
       id="precios"
       aria-label={t.configurator.title}
-      className="relative flex flex-col gap-gutter"
+      className="relative grid gap-gutter lg:grid-cols-12"
     >
-        {!hideHeading && (
-          <div data-fx="panel">
-            <div className="panel panel-lime relative overflow-hidden p-6 md:p-10 lg:p-12">
-              <span
-                aria-hidden
-                lang="ja"
-                className="drift-y pointer-events-none absolute -right-4 -top-8 select-none font-jp text-[11rem] leading-none text-[hsl(150_42%_6%/0.08)] md:text-[15rem]"
-              >
-                見積
-              </span>
+      {/* IZQUIERDA: la configuración, como una pantalla de cobro. */}
+      <div data-fx="up" className="min-w-0 lg:col-span-7 xl:col-span-8">
+        <div className="panel relative flex h-full flex-col gap-9 p-4 pt-5 shadow-soft sm:gap-10 sm:p-7 lg:p-10">
+          {!hideHeading && (
+            <>
+              <div className="notch notch-tr hidden sm:flex">
+                <PayStack />
+              </div>
               <SectionHeading
                 eyebrow={t.configurator.eyebrow}
                 title={t.configurator.title}
                 subtitle={t.configurator.subtitle}
-                chapter={{ kanji: "見積", romaji: "mitsumori", index: 8 }}
-                size="xl"
-                className="relative"
+                chapter={{ index: 8 }}
+                className="relative px-1 sm:px-0 [&_p]:text-[0.975rem] md:[&_p]:text-base"
               />
-            </div>
-          </div>
-        )}
+            </>
+          )}
 
-        <div className="grid gap-gutter lg:grid-cols-[1.3fr_1fr]">
-          {/* LEFT: configuration */}
-          <div data-fx="left" className="min-w-0">
-          <div className="panel flex h-full flex-col gap-9 p-4 sm:p-6 md:p-9">
-            {/* Plans */}
-            <div>
-              <p
-                id="configurator-plan-label"
-                className="mb-4 font-display text-[1.6rem] font-black uppercase leading-none text-foreground"
-              >
-                {t.configurator.step1}
-              </p>
-              <div
-                role="group"
-                aria-labelledby="configurator-plan-label"
-                className="grid gap-3 sm:grid-cols-3"
-              >
-                {PLANS.map((p) => {
-                  const active = p.id === planId;
-                  return (
-                    <button
-                      key={p.id}
-                      type="button"
-                      aria-pressed={active}
-                      onClick={() => setPlanId(p.id)}
-                      className={cn(
-                        "group relative flex min-h-11 flex-col px-shape p-4 text-left transition-[background-color,box-shadow,transform] duration-300 [transition-timing-function:var(--ease-material)] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                        active
-                          ? "bg-primary text-primary-foreground shadow-[0_18px_40px_-20px_hsl(var(--primary)/0.9)]"
-                          : "bg-secondary text-foreground ring-1 ring-foreground/10 hover:ring-primary/50"
-                      )}
-                    >
-                      <span
-                        aria-hidden
-                        className={cn(
-                          "absolute right-3 top-3 grid size-6 place-items-center rounded-full transition-all duration-300",
-                          active
-                            ? "scale-100 bg-[hsl(150_42%_6%)] text-[hsl(76_76%_58%)]"
-                            : "scale-75 bg-foreground/10 text-transparent"
-                        )}
-                      >
-                        <Check className="h-3.5 w-3.5" strokeWidth={3} />
-                      </span>
-                      <span className="pr-7 text-sm font-semibold">
-                        {p.name}
-                      </span>
-                      <span className="mt-2 font-display text-[2rem] font-black leading-none">
-                        {display(p.price)}
-                      </span>
-                      <span
-                        className={cn(
-                          "mt-2 text-xs",
-                          active ? "text-primary-foreground/75" : "text-muted-foreground"
-                        )}
-                      >
-                        {p.desc}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Modules */}
-            <div>
-              <p
-                id="configurator-modules-label"
-                className="mb-4 font-display text-[1.6rem] font-black uppercase leading-none text-foreground"
-              >
-                {t.configurator.step2}
-              </p>
-              <div
-                role="group"
-                aria-labelledby="configurator-modules-label"
-                className="flex flex-col gap-2"
-              >
-                {MODULES.map((m) => (
-                  <label
-                    key={m.id}
+          {/* Paso 1: paquetes. */}
+          <Step>
+            <p className="px-1 sm:px-0">
+              <StepHeader n={1} id="configurator-plan-label" label={t.configurator.step1} />
+            </p>
+            <div
+              role="group"
+              aria-labelledby="configurator-plan-label"
+              className="mt-4 grid gap-2.5 sm:mt-5 sm:grid-cols-3 sm:gap-3 sm:pl-14"
+            >
+              {PLANS.map((p) => {
+                const active = p.id === planId;
+                const Icon = PLAN_ICONS[p.id] ?? Rocket;
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => setPlanId(p.id)}
                     className={cn(
-                      "flex min-h-12 cursor-pointer items-center justify-between gap-3 rounded-full px-5 py-3 transition-colors duration-300 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background",
-                      mods[m.id]
-                        ? "bg-primary/15 ring-1 ring-primary/60"
-                        : "bg-secondary ring-1 ring-foreground/10 hover:ring-primary/40"
+                      "group relative grid min-h-11 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2.5 rounded-card p-3.5 text-left text-ink transition-[background-color,box-shadow,transform] duration-300 [transition-timing-function:var(--ease-out)] hover:-translate-y-0.5 sm:grid-cols-[minmax(0,1fr)_auto] sm:content-start sm:items-start sm:gap-y-0 sm:p-4 lg:p-5",
+                      active
+                        ? "bg-lime shadow-[0_18px_36px_-20px_hsl(var(--lime-deep)/0.95)]"
+                        : "bg-mint ring-1 ring-inset ring-ink/10 hover:ring-ink/30"
                     )}
                   >
-                    <span className="flex items-center gap-3">
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "grid size-11 place-items-center rounded-full transition-colors duration-300 sm:col-start-1 sm:row-start-1",
+                        active ? "bg-ink text-lime" : "bg-white text-ink ring-1 ring-ink/10"
+                      )}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <span className="min-w-0 sm:col-span-2 sm:row-start-2 sm:mt-5">
+                      <span className="flex items-center gap-1.5 text-[0.9375rem] font-semibold leading-tight">
+                        {p.name}
+                        {p.featured && (
+                          <Sparkle aria-hidden className="h-3.5 w-3.5 shrink-0 fill-ink text-ink" />
+                        )}
+                      </span>
+                      <span className="display-title mt-1 block text-[1.6rem] tabular-nums sm:mt-1.5 sm:text-[2rem]">
+                        {display(p.price)}
+                      </span>
+                    </span>
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "grid size-7 place-items-center rounded-full transition-all duration-300 [transition-timing-function:var(--ease-pop)] sm:col-start-2 sm:row-start-1 sm:justify-self-end",
+                        active
+                          ? "scale-100 bg-ink text-lime"
+                          : "scale-90 text-transparent ring-[1.5px] ring-inset ring-ink/25"
+                      )}
+                    >
+                      <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                    </span>
+                    <span
+                      className={cn(
+                        "col-span-3 text-pretty text-sm leading-snug sm:col-span-2 sm:row-start-3 sm:mt-2",
+                        active ? "text-ink/75" : "text-muted-foreground"
+                      )}
+                    >
+                      {p.desc}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </Step>
+
+          {/* Paso 2: módulos extra y secciones. */}
+          <Step>
+            <p className="px-1 sm:px-0">
+              <StepHeader n={2} id="configurator-modules-label" label={t.configurator.step2} />
+            </p>
+            <div
+              role="group"
+              aria-labelledby="configurator-modules-label"
+              className="mt-4 flex flex-col gap-1.5 rounded-card bg-mint p-1.5 ring-1 ring-inset ring-ink/[0.06] sm:ml-14 sm:mt-5"
+            >
+              {MODULES.map((m) => {
+                const Icon = MODULE_ICONS[m.id] ?? Plus;
+                return (
+                  <label
+                    key={m.id}
+                    className="flex min-h-16 cursor-pointer items-center gap-3 rounded-[calc(var(--r-card)-0.375rem)] bg-white p-2.5 pr-3 transition-colors duration-300 hover:bg-white/70 has-[:checked]:bg-lime-soft has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ink sm:p-3 sm:pr-4"
+                  >
+                    <span
+                      aria-hidden
+                      className="grid size-11 shrink-0 place-items-center rounded-full bg-ink text-lime"
+                    >
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <span className="flex min-w-0 flex-1 flex-col gap-0.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                      <span className="text-[0.9375rem] font-semibold leading-snug text-ink">{m.label}</span>
+                      <span className="shrink-0 text-sm font-bold tabular-nums text-forest sm:text-base">
+                        +{display(m.price)}
+                      </span>
+                    </span>
+                    <span className="relative ml-1 inline-flex shrink-0">
                       <input
                         type="checkbox"
+                        role="switch"
                         checked={!!mods[m.id]}
                         onChange={(e) =>
                           setMods((s) => ({ ...s, [m.id]: e.target.checked }))
                         }
-                        className="h-4 w-4 accent-primary focus-visible:outline-none"
+                        className="peer sr-only"
                       />
-                      <span className="text-sm text-foreground">{m.label}</span>
-                    </span>
-                    <span className="shrink-0 font-display text-[1.15rem] leading-none text-primary">
-                      +{display(m.price)}
+                      <span
+                        aria-hidden
+                        className="block h-7 w-12 rounded-full bg-ink/15 transition-colors duration-300 peer-checked:bg-ink"
+                      />
+                      <span
+                        aria-hidden
+                        className="absolute left-1 top-1 size-5 rounded-full bg-white shadow-[0_2px_6px_hsl(var(--ink)/0.3)] transition-transform duration-300 [transition-timing-function:var(--ease-pop)] peer-checked:translate-x-5 peer-checked:bg-lime"
+                      />
                     </span>
                   </label>
-                ))}
+                );
+              })}
 
-                {/* Sections counter */}
-                <div className="flex flex-wrap items-center justify-between gap-3 px-shape bg-secondary py-2 pl-5 pr-2 ring-1 ring-foreground/10">
-                  <span className="text-sm text-foreground">
+              {/* Contador de secciones. */}
+              <div className="flex min-h-16 flex-wrap items-center gap-3 rounded-[calc(var(--r-card)-0.375rem)] bg-white p-2.5 sm:p-3">
+                <span
+                  aria-hidden
+                  className="grid size-11 shrink-0 place-items-center rounded-full bg-ink text-lime"
+                >
+                  <LayoutPanelTop className="h-5 w-5" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[0.9375rem] font-semibold leading-snug text-ink">
                     {t.configurator.extraSections}
-                    <span className="ml-1 font-mono text-xs text-muted-foreground">
-                      (+{display(SECTION_PRICE)} {t.configurator.perUnit})
-                    </span>
                   </span>
-                  <span className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setSections((n) => Math.max(0, n - 1))}
-                      className="flex h-11 w-11 items-center justify-center rounded-full bg-background text-lg text-foreground transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                      aria-label={t.configurator.removeSection}
-                    >
-                      −
-                    </button>
-                    <span
-                      className="w-7 text-center font-display text-2xl font-black"
-                      aria-live="polite"
-                      aria-atomic="true"
-                    >
-                      {sections}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setSections((n) => n + 1)}
-                      className="flex h-11 w-11 items-center justify-center rounded-full bg-background text-lg text-foreground transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                      aria-label={t.configurator.addSection}
-                    >
-                      +
-                    </button>
+                  <span className="block text-sm tabular-nums text-muted-foreground">
+                    +{display(SECTION_PRICE)} {t.configurator.perUnit}
                   </span>
-                </div>
+                </span>
+                <span className="flex items-center gap-1 rounded-full bg-mint p-1 ring-1 ring-inset ring-ink/[0.06]">
+                  <button
+                    type="button"
+                    onClick={() => setSections((n) => Math.max(0, n - 1))}
+                    className="grid size-11 place-items-center rounded-full bg-white text-ink shadow-[0_1px_2px_hsl(var(--ink)/0.12)] transition-transform hover:scale-105 active:scale-95"
+                    aria-label={t.configurator.removeSection}
+                  >
+                    <Minus aria-hidden className="h-4 w-4" strokeWidth={2.5} />
+                  </button>
+                  <span
+                    className="display-title w-9 text-center text-2xl tabular-nums"
+                    aria-live="polite"
+                    aria-atomic="true"
+                  >
+                    {sections}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setSections((n) => n + 1)}
+                    className="grid size-11 place-items-center rounded-full bg-ink text-lime transition-transform hover:scale-105 active:scale-95"
+                    aria-label={t.configurator.addSection}
+                  >
+                    <Plus aria-hidden className="h-4 w-4" strokeWidth={2.5} />
+                  </button>
+                </span>
               </div>
             </div>
+          </Step>
 
-            {/* Payment mode + currency + coupon */}
-            <div className="grid gap-5 px-shape bg-secondary/60 p-4 ring-1 ring-foreground/10 sm:grid-cols-3 sm:p-5">
-              <fieldset>
-                <legend className="tech-label mb-2 text-primary">
-                  {t.configurator.step3}
-                </legend>
-                <div className="flex flex-col gap-2">
-                  {[
-                    { v: "liquidacion", label: t.configurator.paymentFull },
-                    { v: "anticipo", label: t.configurator.paymentAdvance },
-                  ].map((o) => (
-                    <label
-                      key={o.v}
-                      className="flex min-h-11 cursor-pointer items-center gap-2 rounded-md px-1 text-sm text-foreground focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background"
-                    >
-                      <input
-                        type="radio"
-                        name="payment-mode"
-                        value={o.v}
-                        checked={mode === o.v}
-                        onChange={() => setMode(o.v as "liquidacion" | "anticipo")}
-                        className="h-4 w-4 accent-primary focus-visible:outline-none"
-                      />
-                      {o.label}
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
+          {/* Paso 3: modalidad, moneda y cupón. */}
+          <Step last>
+            <fieldset>
+              <legend className="px-1 sm:px-0">
+                <StepHeader n={3} label={t.configurator.step3} />
+              </legend>
+              <div className="mt-4 grid grid-cols-2 gap-1 rounded-full bg-mint p-1 ring-1 ring-inset ring-ink/[0.06] sm:ml-14 sm:mt-5">
+                {[
+                  { v: "liquidacion", label: t.configurator.paymentFull },
+                  { v: "anticipo", label: t.configurator.paymentAdvance },
+                ].map((o) => (
+                  <label
+                    key={o.v}
+                    className="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-full px-3 text-center text-sm font-semibold leading-tight text-ink/70 transition-colors duration-300 hover:text-ink has-[:checked]:bg-ink has-[:checked]:text-white has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ink has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-mint"
+                  >
+                    <input
+                      type="radio"
+                      name="payment-mode"
+                      value={o.v}
+                      checked={mode === o.v}
+                      onChange={() => setMode(o.v as "liquidacion" | "anticipo")}
+                      className="sr-only"
+                    />
+                    {o.label}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <div className="mt-5 grid gap-5 sm:ml-14 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-4">
               <div>
-                <p className="tech-label mb-2 text-primary">
+                <p className="mb-2 px-1 text-xs font-semibold text-muted-foreground">
                   {t.configurator.currencyLabel}
                 </p>
                 <div
                   role="group"
                   aria-label={t.configurator.currencyLabel}
-                  className="inline-flex overflow-hidden rounded-full bg-background p-1 ring-1 ring-foreground/10"
+                  className="grid grid-cols-2 gap-1 rounded-full bg-mint p-1 ring-1 ring-inset ring-ink/[0.06] sm:inline-grid"
                 >
                   {(["MXN", "USD"] as Currency[]).map((c) => (
                     <button
@@ -515,30 +626,26 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                       aria-pressed={currency === c}
                       onClick={() => setCurrency(c)}
                       className={cn(
-                        "min-h-11 min-w-11 rounded-full px-4 py-2 font-mono text-xs font-medium tracking-[0.12em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary",
+                        "min-h-12 min-w-[4.75rem] rounded-full px-4 text-sm font-bold tracking-[0.02em] transition-colors duration-300",
                         currency === c
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-transparent text-muted-foreground hover:text-foreground"
+                          ? "bg-ink text-white"
+                          : "text-ink/65 hover:text-ink"
                       )}
                     >
                       {c}
                     </button>
                   ))}
                 </div>
-                {currency === "USD" && (
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    {t.configurator.currencyNote(String(USD_MXN_RATE))}
-                  </p>
-                )}
               </div>
-              <div>
+              <div className="min-w-0">
                 <label
                   htmlFor="configurator-coupon"
-                  className="tech-label mb-2 block text-primary"
+                  className="mb-2 block px-1 text-xs font-semibold text-muted-foreground"
                 >
                   {t.configurator.couponLabel}
                 </label>
-                <div className="flex gap-2">
+                <div className="flex items-center gap-1 rounded-full bg-mint p-1 pl-4 ring-1 ring-inset ring-ink/[0.06] focus-within:ring-2 focus-within:ring-ink">
+                  <TicketPercent aria-hidden className="h-5 w-5 shrink-0 text-ink/45" />
                   <input
                     id="configurator-coupon"
                     name="coupon"
@@ -547,227 +654,314 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                     placeholder={t.configurator.couponPlaceholder}
                     aria-describedby={couponMsg ? "configurator-coupon-status" : undefined}
                     autoComplete="off"
-                    className="min-h-11 min-w-0 flex-1 rounded-full border border-input bg-background px-4 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    className="h-12 min-w-0 flex-1 bg-transparent px-2 text-[0.9375rem] font-medium text-ink outline-none placeholder:text-ink/40 focus-visible:outline-none"
                   />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={applyCoupon}
-                    className="min-h-11"
-                  >
+                  <Button type="button" variant="ink" onClick={applyCoupon} className="h-12 shrink-0 px-5">
                     {t.configurator.apply}
                   </Button>
                 </div>
-                {couponMsg && (
-                  <p
-                    id="configurator-coupon-status"
-                    role="status"
-                    className="mt-2 text-xs text-muted-foreground"
-                  >
-                    {couponMsg}
-                  </p>
-                )}
               </div>
+              {(currency === "USD" || couponMsg) && (
+                <div className="flex flex-col gap-2 sm:col-span-2">
+                  {currency === "USD" && (
+                    <p className="flex items-start gap-2 px-1 text-sm leading-snug text-muted-foreground">
+                      <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-lime-deep" />
+                      {t.configurator.currencyNote(String(USD_MXN_RATE))}
+                    </p>
+                  )}
+                  {couponMsg && (
+                    <p
+                      id="configurator-coupon-status"
+                      role="status"
+                      className="flex items-start gap-2 px-1 text-sm leading-snug text-muted-foreground"
+                    >
+                      <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-signal" />
+                      {couponMsg}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
-          </div>
+          </Step>
+        </div>
+      </div>
 
-          </div>
+      {/* DERECHA: el resumen como tarjeta negra, con el total en lima. */}
+      <div
+        data-fx="up"
+        className="min-w-0 lg:col-span-5 xl:col-span-4"
+        style={{ "--fx-delay": "120ms" } as CSSProperties}
+      >
+        <div className="lg:sticky lg:top-[calc(var(--header-h)+var(--gutter))]">
+          <div className="panel panel-ink relative flex flex-col gap-5 overflow-hidden p-4 pt-5 sm:p-7">
+            <div aria-hidden className="mesh-glow-a opacity-60" />
 
-          {/* RIGHT: summary + pay */}
-          <div data-fx="right" className="min-w-0" style={{ "--fx-delay": "120ms" } as CSSProperties}>
-          <div className="lg:sticky lg:top-[calc(var(--header-h)+var(--gutter))]">
-            <div className="panel panel-moss relative flex flex-col gap-4 overflow-hidden p-6 md:p-8">
-              <div aria-hidden className="dot-grid absolute inset-0 rounded-[inherit] opacity-30 [mask-image:linear-gradient(to_bottom,black,transparent_50%)]" />
-              <p className="relative flex items-center justify-between gap-3">
-                <span className="font-display text-[1.6rem] font-black uppercase leading-none text-foreground">
-                  {t.configurator.summary}
-                </span>
-                <span aria-hidden lang="ja" className="grid size-9 place-items-center rounded-full bg-primary font-jp text-xs text-primary-foreground">
-                  見
-                </span>
+            <div className="relative flex items-center justify-between gap-3 px-1 sm:px-0">
+              <p className="display-title text-[1.75rem] leading-none text-white">
+                {t.configurator.summary}
               </p>
-              <div className="relative flex flex-col gap-2 px-shape bg-background/55 p-4">
-                {items.map((it, i) => (
-                  <div
+              <span className="inline-flex h-9 items-center gap-2 rounded-full bg-white/10 px-3.5 text-xs font-bold tracking-[0.04em] text-white">
+                <span aria-hidden className="size-2 rounded-full bg-lime" />
+                {currency}
+              </span>
+            </div>
+
+            {/* Partidas: filas con ícono redondo, como la actividad reciente. */}
+            <ul className="relative flex flex-col rounded-card bg-white/[0.05] px-3 ring-1 ring-inset ring-white/10 sm:px-4">
+              {items.map((it, i) => {
+                const Icon = itemIcons[i] ?? Plus;
+                return (
+                  <li
                     key={i}
-                    className="flex items-center justify-between gap-3 text-sm"
+                    className="flex items-center gap-3 border-b border-white/10 py-3 last:border-0"
                   >
-                    <span className="text-foreground/70">{it.source}</span>
-                    <span className="font-display text-[1.15rem] leading-none text-foreground">
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "grid size-9 shrink-0 place-items-center rounded-full",
+                        i === 0 ? "bg-lime text-ink" : "bg-white/10 text-lime"
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <span className="min-w-0 flex-1 text-sm leading-snug text-white/80">{it.source}</span>
+                    <span className="shrink-0 text-[0.9375rem] font-bold tabular-nums text-white">
                       {display(it.price)}
                     </span>
+                  </li>
+                );
+              })}
+            </ul>
+
+            {/* El total, como la tarjeta de la referencia. */}
+            <div className="relative overflow-hidden rounded-card bg-[linear-gradient(140deg,hsl(160_20%_17%),hsl(160_32%_6%))] p-5 ring-1 ring-inset ring-white/10 sm:p-6">
+              <svg
+                aria-hidden
+                viewBox="0 0 320 160"
+                fill="none"
+                className="pointer-events-none absolute inset-0 h-full w-full text-white/[0.06]"
+                preserveAspectRatio="xMidYMid slice"
+              >
+                <path d="M-10 120 H70 a14 14 0 0 0 14 -14 V60 a14 14 0 0 1 14 -14 H180" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M-10 140 H110 a14 14 0 0 0 14 -14 V96 a14 14 0 0 1 14 -14 H230" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M150 -10 V20 a14 14 0 0 0 14 14 H330" stroke="currentColor" strokeWidth="1.5" />
+              </svg>
+              <Sparkle aria-hidden className="absolute right-[5.25rem] top-5 h-5 w-5 fill-lime text-lime" />
+
+              <div className="relative flex items-stretch gap-4">
+                <div className="min-w-0 flex-1">
+                  <p className="flex flex-wrap items-center gap-2">
+                    <span className="text-sm font-semibold text-white/70">{t.configurator.payNow}</span>
+                    <span className="rounded-full bg-white/10 px-2.5 py-1 text-[0.6875rem] font-bold text-white/85">
+                      {mode === "anticipo"
+                        ? t.configurator.modeAdvanceLabel
+                        : t.configurator.modeFullLabel}
+                    </span>
+                  </p>
+                  <p className="display-xl mt-3 break-all text-[clamp(3.25rem,6vw,4.25rem)] leading-[0.9] tabular-nums text-lime">
+                    {formatMoney(payableNow, currency)}
+                  </p>
+                  {currency === "USD" && (
+                    <p className="mt-1.5 text-xs font-medium tabular-nums text-white/60">
+                      ≈ {formatMXN(payableNowMxn)}
+                    </p>
+                  )}
+                  <p aria-hidden className="mt-4 flex gap-3 text-sm font-bold tracking-[0.18em] text-white/35">
+                    <span>••••</span>
+                    <span>••••</span>
+                    <span>{String(projectTotalMxn).slice(-4).padStart(4, "0")}</span>
+                  </p>
+                </div>
+                <span
+                  aria-hidden
+                  className="flex w-12 shrink-0 items-center justify-center rounded-full bg-lime text-ink sm:w-14"
+                >
+                  <Nfc className="h-5 w-5" />
+                </span>
+              </div>
+
+              <div className="relative mt-4 flex items-center justify-between gap-3 border-t border-dashed border-white/15 pt-4 text-sm">
+                <span className="text-white/65">{t.configurator.totalProject}</span>
+                <span className="font-bold tabular-nums text-white">
+                  {formatMoney(projectTotal, currency)}
+                </span>
+              </div>
+            </div>
+
+            {/* Botones de pago. */}
+            <div className="relative flex flex-col gap-2.5">
+              <Button
+                size="lg"
+                onClick={() => pay("/api/stripe-checkout", "Stripe")}
+                disabled={!!loading || projectTotal <= 0}
+                className="w-full justify-between whitespace-normal pl-2 pr-2.5 text-left leading-tight"
+              >
+                <span className="flex items-center gap-3">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white">
+                    {loading === "Stripe" ? (
+                      <Loader2 className="h-4 w-4 animate-spin text-ink" />
+                    ) : (
+                      <SiStripe
+                        className="h-4 w-4"
+                        style={{ color: STRIPE_BRAND }}
+                        aria-hidden
+                      />
+                    )}
+                  </span>
+                  {t.configurator.payStripe}
+                </span>
+                <ButtonArrow tone="ink" className="mr-0 ml-2" />
+              </Button>
+              <Button
+                size="lg"
+                variant="white"
+                onClick={() => pay("/api/mercadopago", "Mercado Pago")}
+                disabled={!!loading || projectTotal <= 0}
+                className="w-full justify-between whitespace-normal pl-2 pr-2.5 text-left leading-tight"
+              >
+                <span className="flex items-center gap-3">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#00B1EA]/10">
+                    {loading === "Mercado Pago" ? (
+                      <Loader2 className="h-4 w-4 animate-spin text-ink" />
+                    ) : (
+                      <SiMercadopago
+                        className="h-5 w-5"
+                        style={{ color: MERCADOPAGO_BRAND }}
+                        aria-hidden
+                      />
+                    )}
+                  </span>
+                  {t.configurator.payMercadoPago}
+                </span>
+                <ButtonArrow tone="ink" className="mr-0 ml-2" />
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => setTransfer((prev) => !prev)}
+                aria-expanded={transfer}
+                aria-controls="bank-transfer-details"
+                className="w-full justify-start gap-3 whitespace-normal border-white/20 pl-2 text-left leading-tight text-white hover:border-white/50 hover:bg-white/[0.06]"
+              >
+                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white/10 text-lime">
+                  <Building2 className="h-4 w-4" />
+                </span>
+                {t.configurator.payTransfer}
+                <Plus
+                  aria-hidden
+                  className={cn(
+                    "ml-auto mr-2 h-4 w-4 transition-transform duration-300",
+                    transfer && "rotate-45"
+                  )}
+                />
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={emailQuote}
+                disabled={projectTotal <= 0}
+                className="w-full text-white/80 hover:bg-white/[0.06] hover:text-white"
+              >
+                <Mail className="h-4 w-4" />
+                {t.configurator.emailQuote}
+              </Button>
+            </div>
+
+            {status && (
+              <p
+                className="relative flex items-start gap-2.5 rounded-inner bg-white/[0.07] px-4 py-3 text-sm leading-snug text-white/85"
+                role="status"
+              >
+                <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-lime" />
+                {status}
+              </p>
+            )}
+
+            {/* Datos para transferencia. */}
+            {transfer && (
+              <div
+                id="bank-transfer-details"
+                className="relative flex flex-col rounded-card bg-white/[0.05] p-4 ring-1 ring-inset ring-white/10 sm:p-5"
+              >
+                <p className="mb-2 text-sm leading-snug text-white/75">
+                  {t.configurator.transferInstructions(formatMXN(payableNowMxn))}
+                </p>
+                {BANK.map((b) => (
+                  <div
+                    key={b.label}
+                    className="flex items-center gap-3 border-b border-white/10 py-2 last:border-0"
+                  >
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-xs font-semibold text-white/55">{b.label}</span>
+                      <span className="block break-words text-[0.9375rem] font-bold tabular-nums tracking-[0.01em] text-white">
+                        {b.value}
+                      </span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => copy(b.value, b.label)}
+                      className="grid size-11 shrink-0 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-lime hover:text-ink"
+                      aria-label={t.configurator.copyLabel(b.label)}
+                    >
+                      {copied === b.label ? (
+                        <Check className="h-4 w-4 text-lime" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </button>
                   </div>
                 ))}
-              </div>
-              <div className="relative border-t border-dashed border-foreground/20 pt-4">
-                <div className="flex items-center justify-between text-sm text-foreground/70">
-                  <span>{t.configurator.totalProject}</span>
-                  <span className="font-display text-[1.15rem] leading-none">{formatMoney(projectTotal, currency)}</span>
-                </div>
-                <div className="mt-1 flex items-baseline justify-between">
-                  <span className="text-sm font-medium text-foreground">
-                    {t.configurator.payNow}
-                  </span>
-                  <span className="font-display text-[3.25rem] font-black leading-none text-primary md:text-[3.75rem]">
-                    {formatMoney(payableNow, currency)}
-                  </span>
-                </div>
-                {currency === "USD" && (
-                  <p className="mt-1 text-right font-mono text-xs text-muted-foreground">
-                    ≈ {formatMXN(payableNowMxn)}
-                  </p>
-                )}
-              </div>
-
-              {/* Pay buttons */}
-              <div className="relative flex flex-col gap-2 pt-2">
-                <Button
-                  onClick={() => pay("/api/stripe-checkout", "Stripe")}
-                  disabled={!!loading || projectTotal <= 0}
-                  className="min-h-11 w-full"
-                >
-                  {loading === "Stripe" ? (
-                    <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-                  ) : (
-                    <SiStripe
-                      className="mr-1 h-4 w-4"
-                      style={{ color: STRIPE_BRAND }}
-                      aria-hidden
-                    />
-                  )}
-                  {t.configurator.payStripe}
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => pay("/api/mercadopago", "Mercado Pago")}
-                  disabled={!!loading || projectTotal <= 0}
-                  className="min-h-11 w-full"
-                >
-                  {loading === "Mercado Pago" ? (
-                    <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-                  ) : (
-                    <SiMercadopago
-                      className="mr-1 h-4 w-4"
-                      style={{ color: MERCADOPAGO_BRAND }}
-                      aria-hidden
-                    />
-                  )}
-                  {t.configurator.payMercadoPago}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setTransfer((prev) => !prev)}
-                  aria-expanded={transfer}
-                  aria-controls="bank-transfer-details"
-                  className="min-h-11 w-full"
-                >
-                  <Building2 className="mr-1 h-4 w-4" />
-                  {t.configurator.payTransfer}
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={emailQuote}
-                  disabled={projectTotal <= 0}
-                  className="w-full"
-                >
-                  <Mail className="mr-1 h-4 w-4" />
-                  {t.configurator.emailQuote}
-                </Button>
-              </div>
-
-              {status && (
-                <p className="relative rounded-2xl bg-background/60 px-4 py-3 text-xs text-foreground/80" role="status">
-                  {status}
-                </p>
-              )}
-
-              {/* Transfer details */}
-              {transfer && (
-                <div
-                  id="bank-transfer-details"
-                  className="relative mt-1 flex flex-col gap-2 px-shape bg-background/70 p-4"
-                >
-                  <p className="text-xs text-muted-foreground">
-                    {t.configurator.transferInstructions(formatMXN(payableNowMxn))}
-                  </p>
-                  {BANK.map((b) => (
-                    <div
-                      key={b.label}
-                      className="flex items-center justify-between gap-2 text-sm"
+                <div className="mt-3 flex flex-col gap-2">
+                  <Button asChild className="w-full whitespace-normal text-center leading-tight">
+                    <a
+                      href={`https://wa.me/${WA_PHONE}?text=${transferMsg}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() =>
+                        trackEvent("begin_checkout", {
+                          payment_provider: "bank_transfer",
+                          value: payableNowMxn,
+                          currency,
+                        })
+                      }
                     >
-                      <span className="text-muted-foreground">{b.label}</span>
-                      <span className="flex items-center gap-2">
-                        <span className="font-display text-[1.15rem] leading-none text-foreground">
-                          {b.value}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => copy(b.value, b.label)}
-                          className="flex h-11 w-11 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                          aria-label={t.configurator.copyLabel(b.label)}
-                        >
-                          {copied === b.label ? (
-                            <Check className="h-3.5 w-3.5 text-primary" />
-                          ) : (
-                            <Copy className="h-3.5 w-3.5" />
-                          )}
-                        </button>
-                      </span>
-                    </div>
-                  ))}
-                  <div className="mt-2 flex flex-col gap-2">
-                    <Button asChild size="sm" className="min-h-11 w-full">
-                      <a
-                        href={`https://wa.me/${WA_PHONE}?text=${transferMsg}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={() =>
-                          trackEvent("begin_checkout", {
-                            payment_provider: "bank_transfer",
-                            value: payableNowMxn,
-                            currency,
-                          })
-                        }
-                      >
-                        <FaWhatsapp className="mr-1 h-4 w-4" />
-                        {t.configurator.sendWhatsapp}
-                      </a>
-                    </Button>
-                    <Button
-                      asChild
-                      size="sm"
-                      variant="outline"
-                      className="min-h-11 w-full"
-                    >
-                      <a href="mailto:bryanf@bryanfdesign.com.mx?subject=Comprobante%20de%20transferencia%20-%20BryanF%20Design">
-                        {t.configurator.sendEmail}
-                      </a>
-                    </Button>
-                  </div>
+                      <FaWhatsapp className="h-4 w-4" />
+                      {t.configurator.sendWhatsapp}
+                    </a>
+                  </Button>
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="w-full whitespace-normal text-center leading-tight"
+                  >
+                    <a href="mailto:bryanf@bryanfdesign.com.mx?subject=Comprobante%20de%20transferencia%20-%20BryanF%20Design">
+                      {t.configurator.sendEmail}
+                    </a>
+                  </Button>
                 </div>
-              )}
+              </div>
+            )}
 
-              <p className="relative pt-1 text-center text-[11px] text-foreground/65">
-                {t.configurator.securePaymentPrefix}{" "}
-                <a
-                  href="/terminos"
-                  className="inline-flex min-h-11 items-center rounded-sm underline transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                >
-                  {t.configurator.terms}
-                </a>{" "}
-                {t.configurator.and}{" "}
-                <a
-                  href="/privacidad"
-                  className="inline-flex min-h-11 items-center rounded-sm underline transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                >
-                  {t.configurator.privacyNotice}
-                </a>
-                .
-              </p>
-            </div>
-          </div>
+            <p className="relative px-2 text-center text-xs leading-relaxed text-white/60">
+              <ShieldCheck aria-hidden className="-mt-0.5 mr-1.5 inline h-4 w-4 text-lime" />
+              {t.configurator.securePaymentPrefix}{" "}
+              <a
+                href="/terminos"
+                className="rounded-sm py-3 underline underline-offset-2 transition-colors hover:text-lime"
+              >
+                {t.configurator.terms}
+              </a>{" "}
+              {t.configurator.and}{" "}
+              <a
+                href="/privacidad"
+                className="rounded-sm py-3 underline underline-offset-2 transition-colors hover:text-lime"
+              >
+                {t.configurator.privacyNotice}
+              </a>
+              .
+            </p>
           </div>
         </div>
+      </div>
     </section>
   );
 }

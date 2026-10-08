@@ -3,12 +3,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, RotateCcw, Send, X } from "lucide-react";
+import { ArrowUpRight, MessageCircle, RotateCcw, Send, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useFooterInView } from "@/lib/use-footer-in-view";
 import { useLanguage } from "@/lib/i18n/context";
 import { useConfiguratorInView } from "@/lib/use-configurator-in-view";
+import { useReducedMotionPreference } from "@/lib/motion-preference";
 
 type Mood = "Normal" | "Enfocada" | "Duda" | "Sorprendida" | "Offline";
 
@@ -121,6 +122,7 @@ function sanitizeHtml(html: string): string {
 
 export function LuminaChat() {
   const { t } = useLanguage();
+  const reducedMotion = useReducedMotionPreference();
   const [open, setOpen] = useState(false);
   const configuratorInView = useConfiguratorInView();
   const [input, setInput] = useState("");
@@ -397,192 +399,219 @@ export function LuminaChat() {
     send(text);
   }
 
+  const statusText =
+    mood === "Offline" ? t.lumina.offline : loading ? t.lumina.thinking : t.lumina.online;
+
   return (
     <>
-      {/* Hoja de pantalla completa en móvil; panel flotante desde sm. */}
+      {/* Hoja de pantalla completa en móvil; hoja flotante redondeada desde sm. */}
       <AnimatePresence>
         {open && (
           <motion.div
             ref={panelRef}
             id="lumina-chat-panel"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 12 }}
-            transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-[130] flex h-[100dvh] w-full flex-col overflow-hidden bg-card sm:px-window sm:inset-auto sm:bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] sm:right-6 sm:h-auto sm:max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] sm:w-[min(92vw,23rem)] sm:origin-bottom-right"
+            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.98 }}
+            transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed inset-0 z-[130] flex h-[100dvh] w-full flex-col overflow-hidden bg-white text-ink sm:inset-auto sm:bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] sm:right-6 sm:h-auto sm:max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] sm:w-[min(92vw,24.5rem)] sm:origin-bottom-right sm:rounded-[2rem] sm:shadow-[0_40px_80px_-30px_hsl(var(--ink)/0.55)] sm:ring-1 sm:ring-ink/[0.06]"
             role="dialog"
             aria-modal="true"
             aria-labelledby="lumina-chat-title"
           >
-            <div className="flex items-center justify-between border-b-2 border-foreground/10 bg-secondary/60 px-4 py-2.5 pt-[max(0.625rem,env(safe-area-inset-top))]">
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden bg-primary/10 ring-2 ring-primary/60">
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={mood}
-                  initial={{ opacity: 0, scale: 0.85 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.85 }}
-                  transition={{ duration: 0.25 }}
-                  className="absolute inset-0"
-                >
-                  <Image
-                    src={MOOD_IMG[mood]}
-                    alt=""
-                    fill
-                    sizes="36px"
-                    className="object-cover"
-                  />
-                </motion.span>
-              </AnimatePresence>
-              {mood !== "Offline" && (
-                <span className="absolute bottom-0 right-0 h-2.5 w-2.5 border-2 border-card bg-primary" />
-              )}
-            </span>
-            <div className="leading-tight">
-              <p id="lumina-chat-title" className="font-display text-[1.35rem] uppercase leading-none text-foreground">
-                {t.lumina.name}
-              </p>
-              <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground">
-                {mood === "Offline"
-                  ? t.lumina.offline
-                  : loading
-                    ? t.lumina.thinking
-                    : t.lumina.online}
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              setOpen(false);
-              restoreChatFocus();
-            }}
-            aria-label={t.lumina.close}
-            className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        <div
-          ref={scrollRef}
-          role="log"
-          aria-live="polite"
-          aria-relevant="additions"
-          aria-busy={loading}
-          className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-4 sm:max-h-[50vh] sm:min-h-[16rem] sm:flex-none"
-        >
-          {messages.map((m, i) => {
-            const className = cn(
-              "px-shape max-w-[85%] px-3.5 py-2.5 text-sm leading-relaxed [&_a]:text-primary [&_a]:underline",
-              m.role === "user"
-                ? "self-end bg-primary text-primary-foreground [&_a]:text-primary-foreground"
-                : "self-start bg-secondary text-foreground"
-            );
-            // User input is never trusted as HTML — only sanitized assistant
-            // replies (see sanitizeHtml) go through dangerouslySetInnerHTML.
-            return m.role === "user" ? (
-              <div key={i} className={className}>
-                {m.content}
+            {/* Cabecera: avatar redondo con el ánimo de Lumina + estado. */}
+            <div className="flex shrink-0 items-center gap-3 px-4 pb-3 pt-[max(0.875rem,env(safe-area-inset-top))] sm:px-5 sm:pt-4">
+              <span className="relative size-12 shrink-0">
+                <span className="absolute inset-0 overflow-hidden rounded-full bg-ink ring-[3px] ring-lime">
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.span
+                      key={mood}
+                      initial={{ opacity: 0, scale: reducedMotion ? 1 : 0.85 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: reducedMotion ? 1 : 0.85 }}
+                      transition={{ duration: 0.22 }}
+                      className="absolute inset-0"
+                    >
+                      <Image src={MOOD_IMG[mood]} alt="" fill sizes="48px" className="object-cover" />
+                    </motion.span>
+                  </AnimatePresence>
+                </span>
+                <span
+                  aria-hidden
+                  className={cn(
+                    "absolute bottom-0 right-0 size-3.5 rounded-full border-[3px] border-white",
+                    mood === "Offline" ? "bg-ink/30" : "bg-forest"
+                  )}
+                />
+              </span>
+              <div className="min-w-0 flex-1 leading-tight">
+                <p id="lumina-chat-title" className="display-title text-xl text-ink">
+                  {t.lumina.name}
+                </p>
+                <p className="mt-1 flex items-center gap-1.5 truncate text-[0.8125rem] font-medium text-ink/60">
+                  {loading && (
+                    <span aria-hidden className="size-1.5 shrink-0 animate-pulse rounded-full bg-forest motion-reduce:animate-none" />
+                  )}
+                  {statusText}
+                </p>
               </div>
-            ) : (
-              <div
-                key={i}
-                className={className}
-                dangerouslySetInnerHTML={{ __html: m.content }}
-              />
-            );
-          })}
-          {loading && (
-            <div className="px-shape self-start bg-secondary px-3.5 py-2.5 font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground">
-              {t.lumina.typing}
-              <span aria-hidden className="px-blink ml-1 motion-reduce:animate-none">▌</span>
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  restoreChatFocus();
+                }}
+                aria-label={t.lumina.close}
+                className="grid size-11 shrink-0 place-items-center rounded-full bg-ink/[0.05] text-ink transition-colors hover:bg-ink hover:text-white"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
-          )}
-          {retryText && !loading && (
-            <button
-              type="button"
-              onClick={retry}
-              className="inline-flex min-h-11 items-center gap-1.5 self-start rounded-full border border-border px-3 py-2 text-xs text-muted-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            >
-              <RotateCcw className="h-3 w-3" />
-              {t.lumina.retry}
-            </button>
-          )}
-          {messages.length <= 1 && (
-            <div className="mt-1 flex flex-wrap gap-2">
-              {t.lumina.quick.map((q) => (
-                <button
-                  key={q}
-                  type="button"
-                  onClick={() => send(q)}
-                  className="min-h-11 rounded-full border border-border px-3 py-2 text-xs text-muted-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                >
-                  {q}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            send(input);
-          }}
-          className="flex shrink-0 items-center gap-2 border-t-2 border-foreground/10 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3"
-        >
-          <label htmlFor="lumina-message" className="sr-only">
-            {t.lumina.placeholder}
-          </label>
-          <input
-            ref={inputRef}
-            id="lumina-message"
-            name="message"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={t.lumina.placeholder}
-            enterKeyHint="send"
-            className="min-h-11 min-w-0 flex-1 border-2 border-input bg-background px-4 py-2 text-base outline-none focus-visible:border-primary sm:text-sm"
-          />
-          <button
-            type="submit"
-            disabled={loading || !input.trim()}
-            aria-label={t.lumina.send}
-            className="btn-px flex h-11 w-11 shrink-0 items-center justify-center bg-primary text-primary-foreground disabled:opacity-50"
-          >
-            <Send className="h-4 w-4" />
-          </button>
-        </form>
+            {/* Conversación: lienzo menta con burbujas redondeadas. */}
+            <div
+              ref={scrollRef}
+              role="log"
+              aria-live="polite"
+              aria-relevant="additions"
+              aria-busy={loading}
+              className="mx-2.5 flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto overscroll-contain rounded-[1.6rem] bg-mint p-3 [scrollbar-width:thin] sm:mx-3 sm:max-h-[50vh] sm:min-h-[16rem] sm:flex-none sm:p-3.5"
+            >
+              {messages.map((m, i) => {
+                const className = cn(
+                  "max-w-[86%] px-4 py-2.5 text-[0.9375rem] leading-relaxed [&_a]:font-semibold [&_a]:underline [&_a]:underline-offset-2 [&_li]:mt-0.5 [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5",
+                  m.role === "user"
+                    ? "self-end rounded-[1.35rem] rounded-br-md bg-ink text-white [&_a]:text-lime"
+                    : "self-start rounded-[1.35rem] rounded-bl-md bg-white text-ink shadow-[0_10px_24px_-18px_hsl(var(--ink)/0.5)] [&_a]:text-forest"
+                );
+                // User input is never trusted as HTML — only sanitized assistant
+                // replies (see sanitizeHtml) go through dangerouslySetInnerHTML.
+                return m.role === "user" ? (
+                  <div key={i} className={className}>
+                    {m.content}
+                  </div>
+                ) : (
+                  <div
+                    key={i}
+                    className={className}
+                    dangerouslySetInnerHTML={{ __html: m.content }}
+                  />
+                );
+              })}
+              {loading && (
+                <div className="flex items-center gap-2.5 self-start rounded-[1.35rem] rounded-bl-md bg-white px-4 py-3 text-sm font-medium text-ink/60">
+                  <span aria-hidden className="flex gap-1">
+                    {[0, 160, 320].map((ms) => (
+                      <span
+                        key={ms}
+                        style={{ animationDelay: `${ms}ms` }}
+                        className="size-1.5 animate-bounce rounded-full bg-forest motion-reduce:animate-none"
+                      />
+                    ))}
+                  </span>
+                  {t.lumina.typing}
+                </div>
+              )}
+              {retryText && !loading && (
+                <button
+                  type="button"
+                  onClick={retry}
+                  className="inline-flex min-h-11 items-center gap-2 self-start rounded-full bg-white px-4 py-2 text-sm font-semibold text-ink ring-1 ring-ink/10 transition-colors hover:bg-ink hover:text-white"
+                >
+                  <RotateCcw aria-hidden className="h-4 w-4" />
+                  {t.lumina.retry}
+                </button>
+              )}
+              {messages.length <= 1 && (
+                <div className="mt-auto flex flex-col items-end gap-2 pt-2">
+                  {t.lumina.quick.map((q) => (
+                    <button
+                      key={q}
+                      type="button"
+                      onClick={() => send(q)}
+                      className="group inline-flex min-h-11 max-w-full items-center gap-2 rounded-full bg-white py-2 pl-4 pr-2 text-left text-sm font-semibold text-ink ring-1 ring-ink/10 transition-colors hover:bg-ink hover:text-white"
+                    >
+                      {q}
+                      <span className="grid size-7 shrink-0 place-items-center rounded-full bg-lime text-ink">
+                        <ArrowUpRight aria-hidden className="h-3.5 w-3.5 transition-transform group-hover:rotate-45" />
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Caja de texto en píldora + botón redondo lima. */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                send(input);
+              }}
+              className="flex shrink-0 items-center gap-2 px-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2.5 sm:px-3 sm:pb-3"
+            >
+              <label htmlFor="lumina-message" className="sr-only">
+                {t.lumina.placeholder}
+              </label>
+              <input
+                ref={inputRef}
+                id="lumina-message"
+                name="message"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={t.lumina.placeholder}
+                enterKeyHint="send"
+                className="h-12 min-w-0 flex-1 rounded-full border border-ink/[0.12] bg-white px-5 text-base text-ink outline-none transition-[border-color,box-shadow] placeholder:text-ink/45 focus-visible:border-forest focus-visible:shadow-[0_0_0_4px_hsl(var(--lime)/0.45)] sm:text-[0.9375rem]"
+              />
+              <button
+                type="submit"
+                disabled={loading || !input.trim()}
+                aria-label={t.lumina.send}
+                className="grid size-12 shrink-0 place-items-center rounded-full bg-lime text-ink shadow-[0_10px_20px_-12px_hsl(var(--ink)/0.5)] transition-[transform,opacity] duration-200 hover:-rotate-12 active:scale-95 disabled:opacity-45 disabled:hover:rotate-0"
+              >
+                <Send aria-hidden className="h-[1.1rem] w-[1.1rem]" />
+              </button>
+            </form>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Proactive teaser bubble */}
+      {/* Burbuja proactiva: saluda una vez; tocarla abre el chat. */}
       <AnimatePresence>
         {teaser && !open && !footerInView && !configuratorInView && (
           <motion.div
-            initial={{ opacity: 0, y: 8, scale: 0.95 }}
+            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.95 }}
-            transition={{ duration: 0.3 }}
-            className="px-window fixed bottom-[calc(var(--fab-edge)+(var(--fab-size)+var(--fab-gap))*2)] right-3 z-[120] max-w-[min(16rem,calc(100vw-1.5rem))] px-4 py-3 pr-12 text-sm text-foreground sm:right-6"
+            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 10, scale: 0.95 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            style={{ transformOrigin: "100% 100%" }}
+            className="fixed bottom-[calc(var(--fab-edge)+(var(--fab-size)+var(--fab-gap))*2)] right-3 z-[120] w-[min(17.5rem,calc(100vw-1.5rem))] sm:right-6"
           >
-            <button
-              type="button"
-              onClick={() => setTeaser(false)}
-              aria-label={t.lumina.close}
-              className="absolute right-0 top-0 flex h-11 w-11 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <X className="h-4 w-4" />
-            </button>
-            {t.lumina.teaser}
+            <div className="relative flex items-start gap-3 rounded-[1.5rem] rounded-br-md bg-white p-3 pr-11 text-ink shadow-float ring-1 ring-ink/[0.06]">
+              <span aria-hidden className="relative size-10 shrink-0 overflow-hidden rounded-full bg-ink ring-2 ring-lime">
+                <Image src={MOOD_IMG.Normal} alt="" fill sizes="40px" className="object-cover" />
+              </span>
+              <button
+                type="button"
+                onClick={openChat}
+                className="min-w-0 flex-1 rounded-lg pt-0.5 text-left text-sm font-medium leading-snug"
+              >
+                <span className="block text-xs font-bold text-ink/50">{t.lumina.name}</span>
+                {t.lumina.teaser}
+              </button>
+              <button
+                type="button"
+                onClick={() => setTeaser(false)}
+                aria-label={t.lumina.close}
+                className="absolute right-0.5 top-0.5 grid size-11 place-items-center rounded-full text-ink/50 transition-colors hover:text-ink"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* FAB: mando de arcade con el avatar de Lumina. Mismo tamaño en todos
+      {/* FAB: píldora blanca con el avatar de Lumina. Mismo tamaño en todos
           los estados; en el cotizador solo esconde la etiqueta. */}
       <div
         className="fab-slot fixed bottom-[var(--fab-edge)] right-3 z-[120] sm:right-6"
@@ -599,31 +628,34 @@ export function LuminaChat() {
           tabIndex={footerInView ? -1 : 0}
           className={cn("fab justify-start px-1.5 text-left", open && "fab-ink")}
         >
-          <span className="relative flex size-10 shrink-0 overflow-hidden rounded-full bg-ink sm:size-11">
-            <Image src={MOOD_IMG.Normal} alt="" fill sizes="40px" className="object-cover" />
+          <span className="relative size-10 shrink-0 sm:size-11">
+            <span className="absolute inset-0 overflow-hidden rounded-full bg-ink ring-2 ring-lime">
+              <Image src={MOOD_IMG.Normal} alt="" fill sizes="44px" className="object-cover" />
+            </span>
             <span
               className={cn(
-                "absolute bottom-0.5 right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white",
-                mood === "Offline" ? "bg-muted-foreground" : "bg-primary"
+                "absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full border-[2.5px]",
+                open ? "border-ink" : "border-white",
+                mood === "Offline" ? "bg-ink/30" : "bg-lime"
               )}
             />
           </span>
           <span
             className={cn(
-              "hidden min-w-0 pr-2 leading-tight sm:block",
+              "hidden min-w-0 pr-2.5 leading-tight sm:block",
               configuratorInView && "sm:hidden"
             )}
           >
             <span className="fab-label flex items-center gap-1.5">
               {t.lumina.name}
-              <MessageCircle aria-hidden className="h-3.5 w-3.5" />
+              {open ? (
+                <X aria-hidden className="h-3.5 w-3.5" />
+              ) : (
+                <MessageCircle aria-hidden className="h-3.5 w-3.5" />
+              )}
             </span>
             <span className="mt-1 block whitespace-nowrap text-[11px] font-medium opacity-60">
-              {mood === "Offline"
-                ? t.lumina.offline
-                : loading
-                  ? t.lumina.thinking
-                  : t.lumina.online}
+              {statusText}
             </span>
           </span>
         </button>

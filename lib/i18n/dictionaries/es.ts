@@ -112,6 +112,9 @@ const es = {
       "Elijo cada herramienta por lo que el proyecto necesita. No por moda, sino para que el sitio cargue bien, escale y sea fácil de mantener.",
     ctaPrimary: "Ver proyectos",
     ctaSecondary: "Trabajemos juntos",
+    filtersLabel: "Filtrar herramientas por tipo",
+    filters: { all: "Todo", front: "Frontend", back: "Backend", tools: "Herramientas" },
+    countLabel: "herramientas en mi día a día",
   },
   projects: {
     eyebrow: "Portafolio",
@@ -121,6 +124,17 @@ const es = {
       "Cada proyecto aquí está en línea y resolvió una necesidad distinta. Puedes abrirlos y recorrer el trabajo real.",
     visitSite: "Visitar sitio",
     showMore: "Mostrar más proyectos",
+    title: "Trabajo real que ya está vendiendo.",
+    titleAccent: "vendiendo",
+    live: "En línea",
+    countLabel: "sitios en línea que puedes abrir y recorrer",
+    recent: "Recientes",
+    all: "Todos",
+    newBadge: "Nuevo",
+    casesTitle: "Casos de estudio",
+    casesSubtitle: "El problema, la decisión y el resultado detrás de cuatro proyectos.",
+    nextTitle: "Tu web puede ser la siguiente.",
+    moreLabel: "proyectos más",
     descs: {
       "goldenrepublic-com-mx": "Bienes raíces",
       "serviciosecem-com-mx": "Asesoría contable y fiscal",
@@ -144,6 +158,8 @@ const es = {
       "nezga-arquitectos-vercel-app": "Arquitectura y construcción",
       "epiko-vercel-app": "Producción de eventos",
       "element-experiences-com": "Experiencias y eventos",
+      "gecomex-web-vercel-app": "Logística y aduanas internacionales",
+      "ceahestructural-com-mx": "Soluciones estructurales FRP y PVC",
     } as Record<string, string>,
     caseLabels: {
       problem: "Problema",
@@ -197,9 +213,19 @@ const es = {
       france: "Francia",
       japan: "Japón",
     },
+    listTitle: "Ubicaciones",
+    localTime: "Hora local",
+    countries: "países",
+    kinds: {
+      work: "Proyectos",
+      culture: "Cultura",
+    },
   },
   clients: {
+    eyebrow: "Clientes",
     label: "Marcas que han confiado",
+    subtitle: "Del corporativo al estudio independiente: el mismo cuidado en cada entrega.",
+    brands: "marcas",
   },
   entryServices: {
     eyebrow: "Servicios de entrada",
@@ -208,6 +234,7 @@ const es = {
       "Si todavía no necesitas una web completa, arranca aquí: identidad de contacto lista en días, con la misma calidad de diseño.",
     cta: "Preguntar por este servicio",
     note: "Precios en pesos mexicanos (MXN). ¿Tu proyecto es más grande? Podemos combinarlo con un sitio completo — pregúntale a Lumina.",
+    fromPrice: (price: string) => `Desde ${price}`,
     items: [
       {
         id: "tarjetaDigital",
@@ -403,6 +430,7 @@ const es = {
     ],
     notFound: "¿No encontraste tu respuesta? Escríbenos y lo platicamos.",
     sendWhatsapp: "Mandar WhatsApp",
+    bubble: "¿Dudas?",
   },
   closingCta: {
     title: "¿Listo para que tu marca se vea como lo que vale?",
@@ -514,7 +542,7 @@ const es = {
       "Lumina vive en este sitio y conoce todo lo que hacemos: precios, tiempos, módulos y proceso. Pregúntale lo que sea — responde al instante, a cualquier hora, y te deja tu web armada.",
     cta: "Chatea con Lumina",
     status: "En línea 24/7",
-    hint: "Tócala para cambiar su ánimo · arrástrala para girarla",
+    hint: "Tócala para cambiar su ánimo",
     badges: [
       { title: "Responde al instante", desc: "A cualquier hora, sin esperas." },
       { title: "Conoce todo el catálogo", desc: "Precios, tiempos, módulos y proceso." },
@@ -522,6 +550,7 @@ const es = {
     ],
     privacy: "No pedimos datos sensibles en el chat. Tu conversación vive sólo en este dispositivo.",
     quotePresets: ["Cotiza tu sitio a medida", "Cotiza tu tienda en línea", "Cotiza tu mantenimiento"],
+    presetsTitle: "Cotiza en un clic",
     moods: {
       normal: "Modo normal",
       enfocada: "Modo enfocada",

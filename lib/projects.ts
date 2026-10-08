@@ -14,6 +14,8 @@ export interface Project {
 /**
  * Live client sites. Screenshots live in:
  *   /public/img/portafolio/{escritorio,movil,tablet}/<slug>.png
+ *   /public/img/portafolio/movil-top/<slug>.webp (recorte de la primera pantalla)
+ * Se generan con `node scripts/capture-portfolio.mjs <slug>`.
  */
 export const projects: Project[] = [
   // Lanzamientos recientes: van primero en el portafolio.
@@ -49,5 +51,8 @@ export const projects: Project[] = [
 
 export const desktopShot = (slug: string) =>
   `/img/portafolio/escritorio/${slug}.png`;
-export const mobileShot = (slug: string) => `/img/portafolio/movil/${slug}.png`;
+/** Primera pantalla del teléfono (390×845, WebP): lo único que muestran las
+ *  maquetas y miniaturas. La captura completa sigue en /movil/ por si hace falta. */
+export const mobileShot = (slug: string) => `/img/portafolio/movil-top/${slug}.webp`;
+export const mobileShotFull = (slug: string) => `/img/portafolio/movil/${slug}.png`;
 export const tabletShot = (slug: string) => `/img/portafolio/tablet/${slug}.png`;
