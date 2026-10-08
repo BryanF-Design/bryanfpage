@@ -664,11 +664,12 @@ export function LuminaChat() {
         )}
       </AnimatePresence>
 
-      {/* FAB: píldora blanca con el avatar de Lumina. Mismo tamaño en todos
-          los estados; en el cotizador solo esconde la etiqueta. */}
+      {/* FAB: píldora blanca con el avatar de Lumina. Se aparta con el
+          footer y dentro del cotizador (ahí mandan los botones de pago), salvo
+          que el chat esté abierto. La etiqueta solo aparece desde escritorio. */}
       <div
         className="fab-slot fixed bottom-[var(--fab-edge)] right-3 z-[120] sm:right-6"
-        data-hidden={footerInView}
+        data-hidden={footerInView || (configuratorInView && !open)}
       >
         <button
           ref={fabRef}
@@ -677,8 +678,8 @@ export function LuminaChat() {
           aria-label={open ? t.lumina.close : t.lumina.open}
           aria-controls="lumina-chat-panel"
           aria-expanded={open}
-          aria-hidden={footerInView}
-          tabIndex={footerInView ? -1 : 0}
+          aria-hidden={footerInView || (configuratorInView && !open)}
+          tabIndex={footerInView || (configuratorInView && !open) ? -1 : 0}
           className={cn("fab justify-start px-1.5 text-left", open && "fab-ink")}
         >
           <span className="relative size-10 shrink-0 sm:size-11">
@@ -695,8 +696,8 @@ export function LuminaChat() {
           </span>
           <span
             className={cn(
-              "hidden min-w-0 pr-2.5 leading-tight sm:block",
-              configuratorInView && "sm:hidden"
+              "hidden min-w-0 pr-2.5 leading-tight lg:block",
+              configuratorInView && "lg:hidden"
             )}
           >
             <span className="fab-label flex items-center gap-1.5">

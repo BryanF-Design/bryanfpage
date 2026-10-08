@@ -172,7 +172,7 @@ export function MeetBryan() {
               >
                 &ldquo;
               </span>
-              <p className="flex items-center gap-3 text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              <p className="flex items-center gap-3 text-[0.8125rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                 <span aria-hidden className="h-px w-8 bg-current" />
                 {t.about.inspirationLabel}
               </p>

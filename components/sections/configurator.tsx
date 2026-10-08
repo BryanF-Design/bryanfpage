@@ -704,7 +704,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                     placeholder={t.configurator.couponPlaceholder}
                     aria-describedby={couponMsg ? "configurator-coupon-status" : undefined}
                     autoComplete="off"
-                    className="h-12 min-w-0 flex-1 bg-transparent px-2 text-[0.9375rem] font-medium text-ink outline-none placeholder:text-ink/40 focus-visible:outline-none"
+                    className="h-12 min-w-0 flex-1 bg-transparent px-2 text-[0.9375rem] font-medium text-ink outline-none placeholder:text-ink/60 focus-visible:outline-none"
                   />
                   <Button type="button" variant="ink" onClick={applyCoupon} className="h-12 shrink-0 px-5">
                     {t.configurator.apply}

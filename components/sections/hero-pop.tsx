@@ -228,7 +228,7 @@ export function HeroPop() {
                     <span className="grid size-11 place-items-center rounded-full bg-ink text-lime">
                       <Icon aria-hidden className="h-5 w-5" />
                     </span>
-                    <span className="text-balance text-[0.8125rem] font-semibold leading-snug text-ink">
+                    <span className="text-balance text-sm font-semibold leading-snug text-ink">
                       {feature}
                     </span>
                   </li>

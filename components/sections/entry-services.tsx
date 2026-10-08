@@ -126,7 +126,7 @@ function CardMock({ fromLabel }: { fromLabel: string }) {
                 src="/img/brand/bryan-cutout.webp"
                 alt=""
                 fill
-                sizes="56px"
+                sizes="128px"
                 className="origin-top scale-[1.35] object-cover object-top"
               />
             </span>

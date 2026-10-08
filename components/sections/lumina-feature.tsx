@@ -339,7 +339,7 @@ export function LuminaFeature() {
           </button>
 
           {/* Privacidad / límites: claridad, no letras chiquitas. */}
-          <p className="flex items-start gap-2 px-2 pb-1 text-[0.8125rem] leading-relaxed text-muted-foreground">
+          <p className="flex items-start gap-2 px-2 pb-1 text-sm leading-relaxed text-muted-foreground">
             <ShieldCheck aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-forest" />
             {t.luminaSection.privacy}
           </p>

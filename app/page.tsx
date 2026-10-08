@@ -31,6 +31,9 @@ const StackOrbit = dynamic(() =>
 const ProjectsShowcase = dynamic(() =>
   import("@/components/sections/projects-showcase").then((m) => m.ProjectsShowcase)
 );
+const ProjectCases = dynamic(() =>
+  import("@/components/sections/projects-showcase").then((m) => m.ProjectCases)
+);
 const WorldPresence = dynamic(() =>
   import("@/components/sections/world-presence").then((m) => m.WorldPresence)
 );
@@ -100,7 +103,7 @@ export default function HomePage() {
             className="grid grid-cols-2 gap-gutter sm:grid-cols-3"
           >
             <div data-fx="up" className="col-span-2 min-w-0 sm:col-span-1">
-              <div className="panel panel-lime flex h-full min-h-[10rem] flex-col justify-between gap-5 p-5 sm:min-h-[13.5rem] sm:p-6 md:p-8">
+              <div className="panel flex h-full min-h-[10rem] flex-col justify-between gap-5 p-5 shadow-soft sm:min-h-[13.5rem] sm:p-6 md:p-8">
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-sm font-semibold">{t.experience.statsRecord}</span>
                   <span className="rounded-full bg-ink px-3 py-1 text-xs font-semibold text-lime">
@@ -111,14 +114,14 @@ export default function HomePage() {
                   <p className="display-xl text-[clamp(3.5rem,16vw,4.5rem)] leading-[0.82] sm:text-[clamp(3.5rem,7.5vw,7.5rem)] lg:text-[clamp(4.5rem,9vw,7.5rem)]">
                     <StatCounter value={5} prefix="+" />
                   </p>
-                  <p className="mt-2 text-sm font-semibold">
+                  <p className="mt-2 text-sm font-semibold text-muted-foreground">
                     {t.trust.years} {t.trust.yearsCaption}
                   </p>
                   <span aria-hidden className="mt-4 flex gap-1.5">
                     {Array.from({ length: 10 }, (_, i) => (
                       <span
                         key={i}
-                        className={i < 7 ? "size-2.5 rounded-full bg-ink" : "size-2.5 rounded-full bg-ink/20"}
+                        className={i < 7 ? "size-2.5 rounded-full bg-lime" : "size-2.5 rounded-full bg-ink/10"}
                       />
                     ))}
                   </span>
@@ -171,9 +174,13 @@ export default function HomePage() {
           </section>
         </div>
 
-        <ProjectsShowcase />
+        <ProjectsShowcase withCases={false} />
 
         <MarqueeBand words={t.marquee.words} />
+
+        {/* Casos de estudio: después de la cinta, para que el portafolio no
+            sea un solo bloque de tres pantallas. */}
+        <ProjectCases />
 
         <MeetBryan />
 
@@ -183,11 +190,13 @@ export default function HomePage() {
 
         <LuminaFeature />
 
-        <LuminaJourney />
-
         <EntryServices />
 
         <Configurator />
+
+        {/* El recorrido con Lumina termina en el pago: va después del cotizador
+            y así las dos secciones de Lumina no quedan seguidas. */}
+        <LuminaJourney />
 
         <WorldPresence />
 
