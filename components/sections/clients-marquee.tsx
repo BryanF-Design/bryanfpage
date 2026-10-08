@@ -1,9 +1,10 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { Sparkle } from "lucide-react";
 
+import { MarqueeToggle } from "@/components/sections/marquee-band";
+import { SectionHeading } from "@/components/sections/section-heading";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 import { useReducedMotionPreference } from "@/lib/motion-preference";
@@ -100,10 +101,7 @@ const logos: ClientLogo[] = [
   },
 ];
 
-/** Dos filas de cinco: cada una corre en sentido contrario. */
-const ROWS = [logos.slice(0, 5), logos.slice(5)];
-
-/** Insignias del montón de "avatares" de la tarjeta lima. */
+/** Insignias del montón de "avatares" de la píldora lima. */
 const STACK = [logos[2], logos[4], logos[6]];
 
 // Bucle de CSS: dos copias idénticas por fila y -50 % de recorrido.
@@ -165,97 +163,91 @@ function LogoTile({
 }
 
 /**
- * Marcas que han confiado. Una tarjeta lima con el titular y una pila de
- * insignias (como la prueba social del hero) junto a un panel blanco con dos
- * cintas de logos en fichas redondeadas que corren en sentidos opuestos.
- * Los logos van en tinta sobre el lienzo; la ficha se vuelve lima al pasar.
- * Con movimiento reducido las cintas se convierten en una retícula quieta.
+ * Marcas que han confiado — una sola banda blanca a todo lo ancho (no otra
+ * "columna de color + columna blanca"): arriba, chip y titular a la
+ * izquierda y la bajada con la pila de insignias a la derecha; abajo, una
+ * cinta de logos de borde a borde. Los logos van en tinta sobre el lienzo y
+ * la ficha se vuelve lima al pasar. La cinta se detiene bajo el puntero, con
+ * el foco dentro o con el botón de pausa; con movimiento reducido se
+ * convierte en una retícula quieta.
  */
 export function ClientsMarquee() {
   const { t } = useLanguage();
   const reduced = useReducedMotionPreference();
+  const [paused, setPaused] = useState(false);
 
   return (
-    <section aria-label={t.clients.label} className="grid gap-gutter lg:grid-cols-12">
+    <section aria-label={t.clients.label}>
       <style>{LOGO_KEYFRAMES}</style>
 
-      {/* Tarjeta lima: qué es esta fila de logos. */}
-      <div data-fx="up" className="min-w-0 lg:col-span-4">
-        <div className="panel panel-lime flex h-full flex-col justify-between gap-7 overflow-hidden p-6 sm:p-7 lg:p-9">
-          {/* Trama de puntos de tinta (la de las referencias), en la esquina. */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute right-5 top-5 h-20 w-[7.5rem] bg-[radial-gradient(circle,hsl(var(--ink)/0.16)_0_4px,transparent_4.5px)] bg-[length:20px_20px] [mask-image:linear-gradient(225deg,black_30%,transparent_85%)] sm:right-7 sm:top-7"
-          />
-          <div className="relative flex items-center justify-between gap-3">
-            <span className="eyebrow pl-3">
-              <Sparkle aria-hidden className="size-3.5 fill-ink text-ink" />
-              {t.clients.eyebrow}
-            </span>
-          </div>
+      <div data-fx="up">
+        <div className="panel group/band overflow-hidden pb-5 pt-6 shadow-soft sm:pb-7 sm:pt-8 lg:pb-10 lg:pt-10">
+          <div className="relative grid gap-5 px-5 sm:px-8 lg:grid-cols-12 lg:items-end lg:gap-10 lg:px-10">
+            <SectionHeading
+              eyebrow={t.clients.eyebrow}
+              title={t.clients.label}
+              className="lg:col-span-7"
+            />
 
-          <div className="relative">
-            <h2 className="display-title text-balance text-[clamp(2.25rem,3.4vw,3.35rem)] text-ink">
-              {t.clients.label}
-            </h2>
-            <p className="mt-3 max-w-sm text-pretty text-[0.975rem] leading-relaxed text-ink/75 md:text-base">
-              {t.clients.subtitle}
-            </p>
-          </div>
-
-          <div className="relative flex w-fit items-center gap-3 rounded-full bg-white/55 py-1.5 pl-1.5 pr-5">
-            <span aria-hidden className="flex -space-x-3">
-              {STACK.map((logo) => (
-                <span
-                  key={logo.alt}
-                  className="grid size-11 place-items-center rounded-full bg-white p-2.5 ring-[3px] ring-lime"
-                >
-                  <Image
-                    src={logo.src}
-                    alt=""
-                    width={logo.w}
-                    height={logo.h}
-                    sizes="28px"
-                    className={cn("h-auto max-h-full w-auto max-w-full object-contain", LOGO_INK)}
+            <div className="flex flex-col gap-4 lg:col-span-5 lg:items-end lg:pb-1.5">
+              <p className="max-w-md text-pretty text-base leading-relaxed text-muted-foreground md:text-lg lg:text-right">
+                {t.clients.subtitle}
+              </p>
+              <div className="flex items-center gap-2.5">
+                <div className="flex w-fit items-center gap-3 rounded-full bg-lime py-1.5 pl-1.5 pr-5">
+                  <span aria-hidden className="flex -space-x-3">
+                    {STACK.map((logo) => (
+                      <span
+                        key={logo.alt}
+                        className="grid size-11 place-items-center rounded-full bg-white p-2.5 ring-[3px] ring-lime"
+                      >
+                        <Image
+                          src={logo.src}
+                          alt=""
+                          width={logo.w}
+                          height={logo.h}
+                          sizes="28px"
+                          className={cn("h-auto max-h-full w-auto max-w-full object-contain", LOGO_INK)}
+                        />
+                      </span>
+                    ))}
+                  </span>
+                  <span className="text-sm font-semibold leading-tight text-ink">
+                    <b className="display-xl mr-1 text-[1.6rem] leading-none">{logos.length}</b>
+                    {t.clients.brands}
+                  </span>
+                </div>
+                {!reduced && (
+                  <MarqueeToggle
+                    paused={paused}
+                    onToggle={() => setPaused((p) => !p)}
+                    className="bg-ink text-lime"
                   />
-                </span>
-              ))}
-            </span>
-            <span className="text-sm font-semibold leading-tight text-ink">
-              <b className="display-xl mr-1 text-[1.6rem] leading-none">{logos.length}</b>
-              {t.clients.brands}
-            </span>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Panel blanco: las dos cintas de logos. */}
-      <div
-        data-fx="up"
-        className="min-w-0 lg:col-span-8"
-        style={{ "--fx-delay": "90ms" } as CSSProperties}
-      >
-        <div className="panel flex h-full flex-col justify-center gap-3 overflow-hidden py-5 shadow-soft sm:py-7 lg:gap-4 lg:py-9">
-          {reduced ? (
-            <ul className="grid grid-cols-2 gap-2.5 px-4 sm:grid-cols-3 sm:gap-3 sm:px-7 md:grid-cols-5">
-              {logos.map((logo) => (
-                <LogoTile key={logo.alt} logo={logo} fluid />
-              ))}
-            </ul>
-          ) : (
-            ROWS.map((row, r) => (
-              <div
-                key={r}
-                className="group/row overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_7%,black_93%,transparent)]"
-              >
+          {/* Cinta de logos de borde a borde del panel. */}
+          <div className="mt-6 sm:mt-8 lg:mt-10">
+            {reduced ? (
+              <ul className="grid grid-cols-2 gap-2.5 px-4 sm:grid-cols-3 sm:gap-3 sm:px-8 md:grid-cols-5 lg:px-10">
+                {logos.map((logo) => (
+                  <LogoTile key={logo.alt} logo={logo} fluid />
+                ))}
+              </ul>
+            ) : (
+              <div className="group/row overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_6%,black_94%,transparent)]">
                 <div
-                  className="flex w-max group-hover/row:[animation-play-state:paused]"
+                  className="flex w-max group-focus-within/band:[animation-play-state:paused] group-hover/row:[animation-play-state:paused]"
                   style={{
                     animationName: "logos-x",
-                    animationDuration: r === 0 ? "30s" : "36s",
+                    animationDuration: "48s",
                     animationTimingFunction: "linear",
                     animationIterationCount: "infinite",
-                    animationDirection: r === 0 ? "normal" : "reverse",
+                    // Solo se escribe cuando el botón la detiene: así la
+                    // pausa bajo el puntero (una clase) sigue funcionando.
+                    animationPlayState: paused ? "paused" : undefined,
                   }}
                 >
                   {[0, 1].map((copy) => (
@@ -264,15 +256,15 @@ export function ClientsMarquee() {
                       aria-hidden={copy === 1 || undefined}
                       className="flex shrink-0 gap-2.5 pr-2.5 sm:gap-3 sm:pr-3"
                     >
-                      {row.map((logo) => (
+                      {logos.map((logo) => (
                         <LogoTile key={logo.alt} logo={logo} decorative={copy === 1} />
                       ))}
                     </ul>
                   ))}
                 </div>
               </div>
-            ))
-          )}
+            )}
+          </div>
         </div>
       </div>
     </section>

@@ -55,14 +55,15 @@ type Filter = (typeof FILTERS)[number];
 const GROUPS: Category[] = ["front", "back", "tools"];
 const GROUP_TONES: Record<Category, string> = {
   front: "bg-ink",
-  back: "bg-white",
+  back: "bg-lime",
   tools: "bg-forest",
 };
 
 /**
  * Stack — las herramientas como iconos de app.
  *
- * Panel lima con el titular, la cifra y las acciones; al lado, una retícula
+ * Panel crema (editorial, como REF/4) con el titular, la cifra y las
+ * acciones; la lima queda como acento en la barra. Al lado, una retícula
  * de fichas con icono redondo y nombre que se lee de un vistazo en teléfono.
  * Las píldoras de filtro (como las de la referencia de AirPods) resaltan una
  * familia sin mover la retícula: las demás fichas solo se atenúan.
@@ -81,10 +82,10 @@ export function StackOrbit() {
       className="relative grid gap-gutter lg:grid-cols-12"
     >
       <div data-fx="up" className="min-w-0 lg:col-span-5">
-        <div className="panel panel-lime relative flex h-full flex-col justify-between gap-10 overflow-hidden p-5 sm:p-8 lg:p-10">
+        <div className="panel relative flex h-full flex-col justify-between gap-10 overflow-hidden bg-cream p-5 shadow-soft sm:p-8 lg:p-10">
           <Sparkle
             aria-hidden
-            className="float-y absolute right-6 top-6 h-8 w-8 fill-ink text-ink sm:right-8 sm:top-8"
+            className="float-y absolute right-6 top-6 h-8 w-8 fill-lime text-lime-deep sm:right-8 sm:top-8"
           />
 
           <SectionHeading
@@ -92,7 +93,7 @@ export function StackOrbit() {
             title={t.stack.title}
             subtitle={t.stack.subtitle}
             chapter={{ index: 5 }}
-            className="relative [&_p]:text-ink/75"
+            className="relative"
           />
 
           <div className="relative flex flex-col gap-6">
@@ -121,14 +122,14 @@ export function StackOrbit() {
                   <li key={group} className="flex items-center gap-2">
                     <span aria-hidden className={cn("size-2.5 rounded-full", GROUP_TONES[group])} />
                     {t.stack.filters[group]}
-                    <span className="text-ink/60">{countFor(group)}</span>
+                    <span className="text-muted-foreground">{countFor(group)}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
             <div className="flex flex-col gap-2.5 sm:flex-row lg:flex-col xl:flex-row">
-              <Button asChild size="lg" className="pr-2.5">
+              <Button asChild size="lg" variant="ink" className="pr-2.5">
                 <Link href="#projects">
                   {t.stack.ctaPrimary}
                   <ButtonArrow tone="lime" className="ml-auto -mr-0.5 sm:ml-2" />

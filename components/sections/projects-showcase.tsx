@@ -26,20 +26,27 @@ import { SectionHeading } from "@/components/sections/section-heading";
 import { useLanguage } from "@/lib/i18n/context";
 import { cn } from "@/lib/utils";
 
-/** Los nueve lanzamientos recientes, en el orden en que se presumen. */
+/**
+ * Recientes: seis lanzamientos con captura (dos filas en escritorio). Gecomex
+ * ya vive en el hero y CEAH es el destacado, así que no se repiten aquí.
+ */
 const RECENT_SLUGS = [
-  "urban-flip-com",
-  "gecomex-web-vercel-app",
-  "ceahestructural-com-mx",
   "efficientplasticolors-com",
   "koi-arquitectura-vercel-app",
-  "bioslaboratorios-com",
-  "haften-lyart-vercel-app",
-  "sermaqro-com",
   "epiko-vercel-app",
+  "goldenrepublic-com-mx",
+  "serviciosecem-com-mx",
+  "industriastritton-com",
 ];
 
-/** El protagonista (escritorio + teléfono). Gecomex ya vive en el hero. */
+/** Solo los estrenos de verdad llevan "Nuevo": si todo es nuevo, nada lo es. */
+const NEW_SLUGS = new Set([
+  "efficientplasticolors-com",
+  "koi-arquitectura-vercel-app",
+  "epiko-vercel-app",
+]);
+
+/** El protagonista (escritorio + teléfono). */
 const FEATURED_SLUG = "ceahestructural-com-mx";
 
 /** Los cuatro casos con problema, decisión y resultado en el diccionario. */
@@ -57,47 +64,37 @@ const CASE_FIELDS = [
   { key: "result", Icon: TrendingUp },
 ] as const;
 
-const bySlug = new Map(projects.map((p) => [p.slug, p]));
-const recentProjects = RECENT_SLUGS.map((slug) => bySlug.get(slug)).filter(
-  (p): p is Project => Boolean(p)
-);
-const featuredProject = bySlug.get(FEATURED_SLUG) ?? recentProjects[0];
-const recentGrid = recentProjects.filter((p) => p.slug !== featuredProject.slug);
-const restProjects = projects.filter(
-  (p) => p.slug !== featuredProject.slug && !RECENT_SLUGS.includes(p.slug)
-);
-const RECENT_COUNT = recentGrid.length + 1;
-
 const hasShots = (p: Project) => p.shots !== false;
 const hostname = (url: string) => new URL(url).hostname.replace(/^www\./, "");
 
-// Los sitios sin captura todavía llevan una "pantalla en vivo" de marca; el
-// tono rota en el orden en que aparecen para que nunca se repitan seguidos.
-const LIVE_TONES = ["ink", "lime", "forest", "mint"] as const;
-type LiveTone = (typeof LIVE_TONES)[number];
-const toneBySlug = new Map<string, LiveTone>();
-[...recentGrid, ...restProjects]
-  .filter((p) => !hasShots(p))
-  .forEach((p, i) => toneBySlug.set(p.slug, LIVE_TONES[i % LIVE_TONES.length]));
+const bySlug = new Map(projects.map((p) => [p.slug, p]));
+const featuredProject = bySlug.get(FEATURED_SLUG) ?? projects[0];
+const recentGrid = RECENT_SLUGS.map((slug) => bySlug.get(slug)).filter(
+  (p): p is Project => p !== undefined && hasShots(p) && p.slug !== featuredProject.slug
+);
+const restProjects = projects.filter(
+  (p) => p.slug !== featuredProject.slug && !recentGrid.includes(p)
+);
+/** El resto con captura va a la retícula; los que aún no la tienen, a una
+ *  lista tipo app (nunca una ficha de relleno). */
+const restTiles = restProjects.filter(hasShots);
+const launching = restProjects.filter((p) => !hasShots(p));
+const RECENT_COUNT = recentGrid.length + 1;
 
-const TONE_SURFACE: Record<LiveTone, string> = {
-  ink: "panel-ink",
-  lime: "panel-lime",
-  forest: "panel-forest",
-  mint: "panel-mint",
-};
-const TONE_NAME: Record<LiveTone, string> = {
-  ink: "text-lime",
-  lime: "text-ink",
-  forest: "text-white",
-  mint: "text-ink",
-};
+/** El teléfono del contador y su pila: sitios que no salen en el hero, el
+ *  destacado, los recientes ni los casos, para no repetir caras. */
+const COUNT_PHONE = "ndt360-com-mx";
+const COUNT_AVATARS = ["mielyabejas-mx", "bravologix-com-mx", "gruposum-com"];
+/** La pila de "+N": tres del resto con cabecera oscura (se leen en el lima). */
+const MORE_AVATARS = ["grupocosma-com", "nezga-arquitectos-vercel-app", "distribuidorajemar-com"];
 
-/** Avatares de captura para las pilas (comparten caché con el hero). */
-const COUNT_AVATARS = ["koi-arquitectura-vercel-app", "efficientplasticolors-com", "epiko-vercel-app"];
-/** El teléfono del contador: el mismo lanzamiento que presume el hero. */
-const COUNT_PHONE = "gecomex-web-vercel-app";
-const MORE_AVATARS = restProjects.filter(hasShots).slice(0, 3).map((p) => p.slug);
+// Cierre de "Todos": ocupa justo los huecos que deja la última fila
+// (dos columnas en teléfono y tableta, tres en escritorio).
+const allTileCells = recentGrid.length + restTiles.length;
+const closerSpan = (allTileCells + (launching.length > 0 ? 2 : 0)) % 2 ? "col-span-1" : "col-span-2";
+const closerDeskCells = (allTileCells + (launching.length > 0 ? 1 : 0)) % 3;
+const closerWide = closerDeskCells === 0;
+const closerLgSpan = ["lg:col-span-3", "lg:col-span-2", "lg:col-span-1"][closerDeskCells];
 
 const fx = (ms: number) => ({ "--fx-delay": `${ms}ms` }) as CSSProperties;
 
@@ -149,16 +146,29 @@ function ShotStack({ slugs, ring = "ring-lime" }: { slugs: string[]; ring?: stri
 }
 
 /** Barra de navegador: tres puntos y la URL en píldora. */
-function BrowserBar({ host, className }: { host: string; className?: string }) {
+function BrowserBar({
+  host,
+  className,
+  pillClassName,
+}: {
+  host: string;
+  className?: string;
+  pillClassName?: string;
+}) {
   return (
-    <div aria-hidden className={cn("flex h-8 shrink-0 items-center gap-2 px-2.5 sm:h-10 sm:px-3.5", className)}>
+    <div aria-hidden className={cn("flex h-9 shrink-0 items-center gap-2 px-2.5 sm:h-10 sm:px-3.5", className)}>
       <span className="flex gap-1">
         <span className="size-2 rounded-full bg-foreground/20 sm:size-2.5" />
         <span className="size-2 rounded-full bg-foreground/20 sm:size-2.5" />
         <span className="size-2 rounded-full bg-foreground/20 sm:size-2.5" />
       </span>
-      <span className="mx-auto flex h-5 min-w-0 max-w-[78%] flex-1 items-center justify-center gap-1 rounded-full bg-foreground/[0.07] px-2 text-[10px] font-semibold text-foreground/65 sm:h-7 sm:max-w-[64%] sm:gap-1.5 sm:px-3 sm:text-xs">
-        <Lock className="size-2.5 shrink-0 sm:size-3" />
+      <span
+        className={cn(
+          "mx-auto flex h-6 min-w-0 max-w-[78%] flex-1 items-center justify-center gap-1.5 rounded-full bg-foreground/[0.07] px-2.5 text-xs font-semibold text-foreground/85 sm:h-7 sm:max-w-[64%] sm:px-3",
+          pillClassName
+        )}
+      >
+        <Lock className="size-3 shrink-0" />
         <span className="truncate">{host}</span>
       </span>
       <span className="hidden w-[2.4rem] sm:block" />
@@ -204,46 +214,10 @@ function PhoneMock({
 }
 
 /**
- * Pantalla de marca para un sitio que aún no tiene captura: barra de
- * navegador, el nombre en rótulo grande y el estado "en línea". Nunca se
- * pinta una imagen rota.
+ * Ficha del catálogo: en escritorio, la misma barra de navegador sobre la
+ * captura en todas las fichas (la URL se ilumina al pasar el puntero); en
+ * teléfono, la captura móvil. Debajo, el nombre y su giro.
  */
-function LiveScreen({ project, tone, label, cta }: { project: Project; tone: LiveTone; label: string; cta: string }) {
-  const longest = Math.max(...project.name.split(/\s+/).map((w) => w.length));
-  // El rótulo llena el ancho sin partir palabras: se ajusta a la más larga.
-  const size = `min(20cqi, ${(100 / (longest * 0.72)).toFixed(2)}cqi)`;
-
-  return (
-    <div className={cn("absolute inset-0 flex flex-col", TONE_SURFACE[tone])}>
-      <BrowserBar host={hostname(project.url)} className="border-b border-foreground/10" />
-      <div className="relative flex flex-1 flex-col justify-start gap-3 overflow-hidden p-3 pt-3.5 [container-type:inline-size] sm:justify-between sm:gap-2 sm:p-6">
-        <span
-          aria-hidden
-          className={cn(
-            "dot-cluster pointer-events-none absolute -right-2 -top-2 h-24 w-24 [mask-image:radial-gradient(circle_at_80%_20%,black,transparent_70%)] sm:h-36 sm:w-44",
-            tone === "lime" ? "opacity-60 [filter:brightness(0.55)]" : "opacity-80"
-          )}
-        />
-        <span className="relative inline-flex w-fit items-center gap-1.5 rounded-full bg-foreground/10 px-2 py-1 text-[10px] font-bold text-foreground sm:px-2.5 sm:text-xs">
-          <LiveDot className={tone === "lime" || tone === "mint" ? "text-forest" : "text-lime"} />
-          {label}
-        </span>
-        <span
-          className={cn("display-xl relative my-auto block leading-[0.86] sm:my-0", TONE_NAME[tone])}
-          style={{ fontSize: size }}
-        >
-          {project.name}
-        </span>
-        <span className="relative hidden w-fit items-center gap-1.5 rounded-full bg-foreground px-3.5 py-2 text-xs font-semibold text-background sm:inline-flex">
-          {cta}
-          <ArrowUpRight aria-hidden className="h-3.5 w-3.5" />
-        </span>
-      </div>
-    </div>
-  );
-}
-
-/** Ficha de proyecto del catálogo: captura (o pantalla en vivo) + nombre. */
 function ProjectTile({
   project,
   isNew,
@@ -254,9 +228,8 @@ function ProjectTile({
   linkRef?: (node: HTMLAnchorElement | null) => void;
 }) {
   const { t } = useLanguage();
-  const desc = t.projects.descs[project.slug] ?? project.desc;
   const host = hostname(project.url);
-  const tone = toneBySlug.get(project.slug);
+  const desc = t.projects.descs[project.slug] || project.desc || host;
 
   return (
     <a
@@ -264,39 +237,33 @@ function ProjectTile({
       href={project.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="card-pop group flex h-full flex-col p-1.5 transition-[transform,box-shadow] duration-300 [transition-timing-function:var(--ease-out)] hover:-translate-y-1 hover:shadow-float sm:p-2.5"
+      className="card-pop group flex h-full flex-col p-1.5 transition-[transform,box-shadow] duration-300 [transition-timing-function:var(--ease-out)] hover:-translate-y-1 hover:shadow-float sm:p-2.5 md:pt-1"
     >
+      <BrowserBar
+        host={host}
+        className="hidden md:flex"
+        pillClassName="transition-colors duration-300 group-hover:bg-lime-soft group-hover:text-ink"
+      />
       <div
         className="relative aspect-[4/5] overflow-hidden rounded-inner bg-mint md:aspect-[1440/1000]"
         style={{ "--notch-bg": "var(--card)" } as CSSProperties}
       >
-        {hasShots(project) ? (
-          <>
-            <Image
-              src={mobileShot(project.slug)}
-              alt={`${project.name} — versión móvil del sitio`}
-              fill
-              sizes="(max-width: 767px) 50vw, 1px"
-              quality={70}
-              className="object-cover object-top transition-transform duration-700 [transition-timing-function:var(--ease-out)] group-hover:scale-[1.04] md:hidden"
-            />
-            <Image
-              src={desktopShot(project.slug)}
-              alt={`${project.name} — captura del sitio`}
-              fill
-              sizes="(min-width: 1024px) 32vw, (min-width: 768px) 50vw, 1px"
-              quality={70}
-              className="hidden object-cover object-top transition-transform duration-700 [transition-timing-function:var(--ease-out)] group-hover:scale-[1.04] md:block"
-            />
-          </>
-        ) : (
-          <LiveScreen
-            project={project}
-            tone={tone ?? "ink"}
-            label={t.projects.live}
-            cta={t.projects.visitSite}
-          />
-        )}
+        <Image
+          src={mobileShot(project.slug)}
+          alt={`${project.name} — versión móvil del sitio`}
+          fill
+          sizes="(max-width: 767px) 50vw, 1px"
+          quality={70}
+          className="object-cover object-top transition-transform duration-700 [transition-timing-function:var(--ease-out)] group-hover:scale-[1.04] md:hidden"
+        />
+        <Image
+          src={desktopShot(project.slug)}
+          alt={`${project.name} — captura del sitio`}
+          fill
+          sizes="(min-width: 1024px) 32vw, (min-width: 768px) 50vw, 1px"
+          quality={70}
+          className="hidden object-cover object-top transition-transform duration-700 [transition-timing-function:var(--ease-out)] group-hover:scale-[1.04] md:block"
+        />
         <span className="notch notch-br">
           <span className="grid size-9 place-items-center rounded-full bg-ink text-lime transition-transform duration-500 [transition-timing-function:var(--ease-pop)] group-hover:rotate-45 sm:size-11">
             <ArrowUpRight aria-hidden className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -304,27 +271,89 @@ function ProjectTile({
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col gap-1.5 px-1.5 pb-2 pt-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4 sm:px-3 sm:pb-2.5 sm:pt-4">
+      <div className="flex flex-1 flex-col gap-2 px-1.5 pb-2 pt-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4 sm:px-3 sm:pb-2.5 sm:pt-4">
         <div className="min-w-0">
           <h3 className="display-title text-[1.0625rem] leading-[1.08] text-foreground sm:text-[1.5rem]">
             {project.name}
           </h3>
           <p className="mt-1 line-clamp-2 text-[0.8125rem] leading-snug text-muted-foreground sm:text-sm">
-            {desc || host}
+            {desc}
           </p>
         </div>
-        {isNew ? (
-          <span className="inline-flex h-6 w-fit shrink-0 items-center gap-1 rounded-full bg-lime-soft px-2 text-[11px] font-bold text-ink sm:h-8 sm:px-3 sm:text-xs">
+        {isNew && (
+          <span className="inline-flex h-7 w-fit shrink-0 items-center gap-1 rounded-full bg-lime-soft px-2.5 text-xs font-bold text-ink sm:h-8 sm:px-3">
             <Sparkle aria-hidden className="h-3 w-3 fill-lime-deep text-lime-deep" />
             {t.projects.newBadge}
-          </span>
-        ) : (
-          <span className="hidden max-w-[45%] shrink-0 truncate rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-muted-foreground sm:inline">
-            {host}
           </span>
         )}
       </div>
     </a>
+  );
+}
+
+/**
+ * Lanzamientos que todavía no tienen captura: filas tipo app (punto en vivo,
+ * nombre y dominio). Se vacía sola cuando cada sitio tenga su captura.
+ */
+function LaunchList({
+  items,
+  firstLinkRef,
+}: {
+  items: Project[];
+  firstLinkRef?: (node: HTMLAnchorElement | null) => void;
+}) {
+  const { t } = useLanguage();
+
+  return (
+    <div className="card-pop flex h-full flex-col gap-4 p-4 sm:gap-5 sm:p-6">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <h3 className="display-title text-[1.375rem] leading-[1.08] text-foreground sm:text-[1.5rem]">
+            {t.projects.launchedTitle}
+          </h3>
+          <p className="mt-1.5 text-pretty text-sm leading-snug text-muted-foreground">
+            {t.projects.launchedNote}
+          </p>
+        </div>
+        <span aria-hidden className="grid size-11 shrink-0 place-items-center rounded-full bg-lime text-ink">
+          <Sparkle className="h-5 w-5 fill-ink" />
+        </span>
+      </div>
+      {/* En escritorio la lista llena la celda: las filas se reparten el alto. */}
+      <ul role="list" className="flex flex-col gap-1 rounded-card bg-mint p-1.5 lg:flex-1">
+        {items.map((project, index) => (
+          <li key={project.slug} className="flex lg:flex-1">
+            <a
+              ref={index === 0 ? firstLinkRef : undefined}
+              href={project.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex min-h-14 w-full items-center gap-3 rounded-inner px-2.5 py-2 transition-colors duration-200 hover:bg-white"
+            >
+              <span
+                aria-hidden
+                className="display-title grid size-10 shrink-0 place-items-center rounded-full bg-ink text-base text-lime"
+              >
+                {project.name.charAt(0)}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[0.9375rem] font-semibold text-foreground">
+                  {project.name}
+                </span>
+                <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                  <LiveDot className="shrink-0 text-forest" />
+                  <span className="truncate">{hostname(project.url)}</span>
+                </span>
+              </span>
+              <ArrowUpRight
+                aria-hidden
+                className="h-4 w-4 shrink-0 text-forest transition-transform duration-300 group-hover:rotate-45"
+              />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -369,7 +398,7 @@ function FeaturedProject({ project }: { project: Project }) {
             <LiveDot className="text-lime" />
             {t.projects.live}
           </span>
-          <span className="inline-flex h-9 items-center rounded-full bg-white/10 px-3.5 text-sm font-semibold text-white/85">
+          <span className="inline-flex h-9 items-center rounded-full bg-white/10 px-3.5 text-sm font-semibold text-white">
             {host}
           </span>
         </div>
@@ -414,8 +443,13 @@ function FeaturedProject({ project }: { project: Project }) {
   );
 }
 
-/** Casos de estudio: pestañas en píldora, filas tipo app y el teléfono. */
-function CaseStudies() {
+/**
+ * Casos de estudio — sección propia en tres piezas: cabecera con pestañas en
+ * píldora, escenario crema con el teléfono (numerado 01/04, editorial) y el
+ * detalle en filas tipo app. En teléfono el escenario queda entre las
+ * pestañas y el detalle.
+ */
+export function ProjectCases() {
   const { t } = useLanguage();
   const [active, setActive] = useState(0);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -443,127 +477,152 @@ function CaseStudies() {
 
   if (!project) return null;
   const desc = t.projects.descs[slug] ?? project.desc;
+  const pad = (n: number) => String(n).padStart(2, "0");
 
   return (
-    <div className="panel relative grid gap-5 p-4 shadow-soft sm:gap-6 sm:p-7 lg:grid-cols-12 lg:grid-rows-[auto_auto_1fr] lg:gap-x-10 lg:p-10">
-      <div className="flex flex-col gap-2 px-1 pt-1 sm:px-0 sm:pt-0 lg:col-span-7">
-        <h3 className="display-title text-[clamp(2rem,3.4vw,3.25rem)] text-foreground">
-          {t.projects.casesTitle}
-        </h3>
-        <p className="max-w-xl text-pretty text-[0.975rem] leading-relaxed text-muted-foreground md:text-base">
-          {t.projects.casesSubtitle}
-        </p>
-      </div>
-
-      <div
-        role="tablist"
-        aria-label={t.projects.casesTitle}
-        onKeyDown={onKeyDown}
-        className="-mx-4 flex min-w-0 gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 lg:col-span-7 lg:row-start-2 [&::-webkit-scrollbar]:hidden"
-      >
-        {CASE_SLUGS.map((caseSlug, index) => {
-          const selected = index === active;
-          return (
-            <button
-              key={caseSlug}
-              ref={(node) => {
-                tabRefs.current[index] = node;
-              }}
-              type="button"
-              role="tab"
-              id={`case-tab-${caseSlug}`}
-              aria-selected={selected}
-              aria-controls="case-panel"
-              tabIndex={selected ? 0 : -1}
-              onClick={() => setActive(index)}
-              className={cn(
-                "h-11 shrink-0 rounded-full px-4 text-sm font-semibold transition-colors duration-200",
-                selected
-                  ? "bg-ink text-white"
-                  : "border border-ink/15 text-ink hover:border-ink/40 hover:bg-ink/[0.03]"
-              )}
-            >
-              {bySlug.get(caseSlug)?.name ?? caseSlug}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Escenario lima: el teléfono sube desde el borde inferior. */}
-      <div className="panel-lime relative h-[20rem] overflow-hidden rounded-card sm:h-[24rem] lg:col-span-5 lg:col-start-8 lg:row-span-3 lg:row-start-1 lg:h-auto lg:min-h-[34rem]">
-        <span
-          aria-hidden
-          className="dot-cluster pointer-events-none absolute bottom-4 left-4 h-28 w-32 opacity-90 [filter:brightness(0.62)] [mask-image:radial-gradient(circle_at_20%_80%,black,transparent_72%)] sm:h-36 sm:w-48 lg:bottom-auto lg:top-4 lg:[mask-image:radial-gradient(circle_at_20%_20%,black,transparent_72%)]"
-        />
-        <svg
-          aria-hidden
-          viewBox="0 0 400 140"
-          className="pointer-events-none absolute left-1/2 top-[30%] w-[118%] -translate-x-1/2 text-ink/25"
-        >
-          <ellipse cx="200" cy="70" rx="190" ry="44" fill="none" stroke="currentColor" strokeWidth="1.25" transform="rotate(-10 200 70)" />
-        </svg>
-        <span className="absolute left-4 top-4 z-[2] inline-flex h-9 max-w-[calc(100%-2rem)] items-center gap-2 rounded-full bg-white/75 px-3.5 text-sm font-semibold text-ink lg:left-auto lg:right-5 lg:top-5">
-          <LiveDot className="text-forest" />
-          <span className="truncate">{hostname(project.url)}</span>
-        </span>
-        <Sparkle aria-hidden className="float-y absolute bottom-6 left-[18%] z-[2] h-7 w-7 fill-ink text-ink lg:hidden" />
-        <div
-          key={slug}
-          className="absolute inset-x-0 bottom-0 flex justify-end pr-[9%] duration-700 animate-in fade-in-0 slide-in-from-bottom-6 sm:justify-center sm:pr-0"
-        >
-          <PhoneMock
-            slug={slug}
-            alt={`${project.name} — captura del sitio en móvil`}
-            sizes="(min-width: 1024px) 17rem, 12rem"
-            className="w-[11.5rem] translate-y-[33%] sm:w-[14rem] sm:translate-y-[24%] lg:w-[17rem] lg:translate-y-[16%]"
+    <section
+      id="casos-de-estudio"
+      aria-label={t.projects.casesTitle}
+      className="grid gap-gutter lg:grid-cols-12 lg:grid-rows-[auto_1fr]"
+    >
+      {/* Cabecera + pestañas. */}
+      <div data-fx="panel" className="min-w-0 lg:col-span-7">
+        <div className="panel flex h-full flex-col gap-6 p-5 shadow-soft sm:gap-7 sm:p-7 lg:p-10">
+          <SectionHeading
+            eyebrow={t.projects.casesEyebrow}
+            title={t.projects.casesTitle}
+            subtitle={t.projects.casesSubtitle}
           />
+          <div
+            role="tablist"
+            aria-label={t.projects.casesTitle}
+            onKeyDown={onKeyDown}
+            className="-mx-5 flex min-w-0 gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 [&::-webkit-scrollbar]:hidden"
+          >
+            {CASE_SLUGS.map((caseSlug, index) => {
+              const selected = index === active;
+              return (
+                <button
+                  key={caseSlug}
+                  ref={(node) => {
+                    tabRefs.current[index] = node;
+                  }}
+                  type="button"
+                  role="tab"
+                  id={`case-tab-${caseSlug}`}
+                  aria-selected={selected}
+                  aria-controls="case-panel"
+                  tabIndex={selected ? 0 : -1}
+                  onClick={() => setActive(index)}
+                  className={cn(
+                    "h-11 shrink-0 rounded-full px-4 text-sm font-semibold transition-colors duration-200",
+                    selected
+                      ? "bg-ink text-white"
+                      : "border border-ink/15 text-ink hover:border-ink/40 hover:bg-ink/[0.03]"
+                  )}
+                >
+                  {bySlug.get(caseSlug)?.name ?? caseSlug}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
+      {/* Escenario crema: número editorial, órbita y el teléfono que sube
+          desde el borde inferior. */}
       <div
-        role="tabpanel"
-        id="case-panel"
-        aria-labelledby={`case-tab-${slug}`}
-        className="flex min-w-0 flex-col gap-4 lg:col-span-7 lg:row-start-3"
+        data-fx="right"
+        className="min-w-0 lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1"
+        style={fx(120)}
       >
-        <div key={slug} className="flex flex-col gap-4 duration-500 animate-in fade-in-0 slide-in-from-bottom-2">
-          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-1 sm:px-0">
-            <p className="display-title text-[1.6rem] text-foreground sm:text-[2rem]">{project.name}</p>
-            {desc && <p className="text-sm font-semibold text-muted-foreground">{desc}</p>}
+        <div className="panel relative h-[23rem] overflow-hidden bg-cream shadow-soft sm:h-[27rem] lg:h-full lg:min-h-[36rem]">
+          <span
+            aria-hidden
+            className="dot-cluster pointer-events-none absolute bottom-6 left-4 h-32 w-40 opacity-90 [filter:brightness(0.62)] [mask-image:radial-gradient(circle_at_20%_80%,black,transparent_72%)] sm:h-40 sm:w-52"
+          />
+          <svg
+            aria-hidden
+            viewBox="0 0 400 140"
+            className="pointer-events-none absolute left-1/2 top-[38%] w-[124%] -translate-x-1/2 text-forest/30"
+          >
+            <ellipse cx="200" cy="70" rx="190" ry="44" fill="none" stroke="currentColor" strokeWidth="1.25" transform="rotate(-10 200 70)" />
+          </svg>
+          <p
+            aria-hidden
+            className="absolute left-5 top-4 z-[2] flex items-baseline gap-1.5 font-serif italic text-forest sm:left-7 sm:top-6"
+          >
+            <span className="text-[3.25rem] leading-none sm:text-[4.5rem]">{pad(active + 1)}</span>
+            <span className="text-lg text-muted-foreground sm:text-xl">/ {pad(CASE_SLUGS.length)}</span>
+          </p>
+          <span className="absolute right-4 top-5 z-[2] inline-flex h-9 max-w-[calc(100%-9rem)] items-center gap-2 rounded-full bg-white px-3.5 text-sm font-semibold text-ink shadow-soft sm:right-6 sm:top-7">
+            <LiveDot className="shrink-0 text-forest" />
+            <span className="truncate">{hostname(project.url)}</span>
+          </span>
+          <Sparkle aria-hidden className="float-y absolute bottom-8 right-6 z-[2] h-7 w-7 fill-lime text-lime-deep sm:right-10 lg:h-9 lg:w-9" />
+          <div
+            key={slug}
+            className="absolute inset-x-0 bottom-0 flex justify-center duration-700 animate-in fade-in-0 slide-in-from-bottom-6"
+          >
+            <PhoneMock
+              slug={slug}
+              alt={`${project.name} — captura del sitio en móvil`}
+              sizes="(min-width: 1024px) 20rem, 13rem"
+              className="w-[12.5rem] translate-y-[30%] sm:w-[14.5rem] sm:translate-y-[22%] lg:w-[min(19.5rem,62%)] lg:translate-y-[7%]"
+            />
           </div>
-          <dl className="rounded-card bg-mint p-1.5 sm:p-2">
-            {CASE_FIELDS.map(({ key, Icon }, index) => (
-              <div
-                key={key}
-                className={cn(
-                  "flex items-start gap-3.5 rounded-inner px-3 py-3.5 sm:gap-4 sm:px-4 sm:py-4",
-                  index === 1 && "bg-white"
-                )}
-              >
-                <span className="grid size-11 shrink-0 place-items-center rounded-full bg-ink text-lime">
-                  <Icon aria-hidden className="h-5 w-5" />
-                </span>
-                <div className="min-w-0">
+        </div>
+      </div>
+
+      {/* Detalle del caso. */}
+      <div data-fx="up" className="min-w-0 lg:col-span-7 lg:row-start-2" style={fx(80)}>
+        <div
+          role="tabpanel"
+          id="case-panel"
+          aria-labelledby={`case-tab-${slug}`}
+          className="panel flex h-full min-w-0 flex-col gap-5 p-4 shadow-soft sm:p-7 lg:p-8"
+        >
+          <div key={slug} className="flex flex-col gap-4 duration-500 animate-in fade-in-0 slide-in-from-bottom-2">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-1 pt-1 sm:px-0 sm:pt-0">
+              <p className="display-title text-[1.6rem] text-foreground sm:text-[2rem]">{project.name}</p>
+              {desc && <p className="text-sm font-semibold text-muted-foreground">{desc}</p>}
+            </div>
+            {/* Cada fila es dt + dd directos; el icono vive dentro del dt. */}
+            <dl className="rounded-card bg-mint p-1.5 sm:p-2">
+              {CASE_FIELDS.map(({ key, Icon }, index) => (
+                <div
+                  key={key}
+                  className={cn(
+                    "relative min-h-[4.5rem] rounded-inner py-3.5 pl-[4.375rem] pr-3 sm:min-h-[4.75rem] sm:py-4 sm:pl-[4.75rem] sm:pr-4",
+                    index === 1 && "bg-white"
+                  )}
+                >
                   <dt className="text-xs font-bold uppercase tracking-[0.08em] text-forest">
+                    <span
+                      aria-hidden
+                      className="absolute left-3 top-3.5 grid size-11 place-items-center rounded-full bg-ink text-lime sm:left-4 sm:top-4"
+                    >
+                      <Icon className="h-5 w-5" />
+                    </span>
                     {t.projects.caseLabels[key]}
                   </dt>
                   <dd className="mt-1 text-pretty text-[0.95rem] leading-relaxed text-foreground/85 sm:text-base">
                     {projectCase[key]}
                   </dd>
                 </div>
-              </div>
-            ))}
-          </dl>
+              ))}
+            </dl>
+          </div>
+          <Button asChild variant="ink" size="lg" className="w-full pr-2.5 sm:w-fit">
+            <a href={project.url} target="_blank" rel="noopener noreferrer">
+              {t.projects.visitSite}
+              <span className="sr-only"> — {project.name}</span>
+              <ButtonArrow tone="lime" className="-mr-0.5 ml-auto sm:ml-2" />
+            </a>
+          </Button>
         </div>
-        <Button asChild variant="ink" size="lg" className="w-full pr-2.5 sm:w-fit">
-          <a href={project.url} target="_blank" rel="noopener noreferrer">
-            {t.projects.visitSite}
-            <span className="sr-only"> — {project.name}</span>
-            <ButtonArrow tone="lime" className="-mr-0.5 ml-auto sm:ml-2" />
-          </a>
-        </Button>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -571,18 +630,24 @@ function CaseStudies() {
  * Portafolio — catálogo tipo app.
  *
  * Cabecera en bento (titular + contador lima), el lanzamiento destacado en
- * un panel bosque con navegador y teléfono, la retícula de fichas con los
- * nueve sitios recientes primero (el resto detrás de "Mostrar más") y los
- * cuatro casos de estudio en pestañas. En teléfono las fichas van a dos
- * columnas con la captura móvil, como una tienda.
+ * un panel bosque con navegador y teléfono, y la retícula: seis recientes con
+ * captura y la tarjeta "+N"; en "Todos", el resto, los recién lanzados sin
+ * captura en una lista y el cierre hacia el configurador. En teléfono las
+ * fichas van a dos columnas con la captura móvil, como una tienda.
+ *
+ * Los casos de estudio son su propia sección (`ProjectCases`). Mientras la
+ * página no la monte aparte, el portafolio la incluye al final (`withCases`).
  */
-export function ProjectsShowcase() {
+export function ProjectsShowcase({ withCases = true }: { withCases?: boolean } = {}) {
   const { t } = useLanguage();
   const [showAll, setShowAll] = useState(false);
   const [focusRest, setFocusRest] = useState(false);
   const firstRestRef = useRef<HTMLAnchorElement | null>(null);
+  const setFirstRest = (node: HTMLAnchorElement | null) => {
+    firstRestRef.current = node;
+  };
 
-  // Al desplegar desde la ficha "Mostrar más", el foco pasa al primer
+  // Al desplegar desde la tarjeta "Mostrar más", el foco pasa al primer
   // proyecto nuevo para que el teclado no se quede en un botón que ya no está.
   useEffect(() => {
     if (!focusRest || !showAll) return;
@@ -590,20 +655,15 @@ export function ProjectsShowcase() {
     setFocusRest(false);
   }, [focusRest, showAll]);
 
-  const gridProjects = showAll ? [...recentGrid, ...restProjects] : recentGrid;
   const filters = [
     { label: t.projects.recent, count: RECENT_COUNT, pressed: !showAll, all: false },
     { label: t.projects.all, count: projects.length, pressed: showAll, all: true },
   ];
 
   return (
-    <section
-      id="projects"
-      aria-label={t.projects.eyebrow}
-      className="relative flex scroll-mt-[calc(var(--header-h)+1rem)] flex-col gap-gutter"
-    >
-      {/* Legacy anchor: keep older internal links (#portafolio) landing here. */}
-      <span id="portafolio" className="absolute -top-24" aria-hidden />
+    <section id="projects" aria-label={t.projects.eyebrow} className="relative flex flex-col gap-gutter">
+      {/* Ancla heredada: los enlaces viejos a #portafolio caen aquí. */}
+      <span id="portafolio" aria-hidden className="absolute left-0 top-0" />
 
       {/* Cabecera en bento: titular + contador. */}
       <div className="grid gap-gutter lg:grid-cols-12">
@@ -693,43 +753,44 @@ export function ProjectsShowcase() {
 
       {/* Catálogo: recientes primero; el resto detrás de "Mostrar más". */}
       <ul role="list" className="grid grid-cols-2 gap-2.5 sm:gap-gutter lg:grid-cols-3">
-        {gridProjects.map((project, index) => {
-          const isRest = index >= recentGrid.length;
-          return (
-            <li
-              key={project.slug}
-              data-fx="up"
-              className="min-w-0"
-              style={fx(((isRest ? index - recentGrid.length : index) % 3) * 80)}
-            >
+        {recentGrid.map((project, index) => (
+          <li key={project.slug} data-fx="up" className="min-w-0" style={fx((index % 3) * 80)}>
+            <ProjectTile project={project} isNew={NEW_SLUGS.has(project.slug)} />
+          </li>
+        ))}
+
+        {showAll && launching.length > 0 && (
+          <li data-fx="up" className="col-span-2 min-w-0 lg:col-span-1">
+            <LaunchList items={launching} firstLinkRef={setFirstRest} />
+          </li>
+        )}
+
+        {showAll &&
+          restTiles.map((project, index) => (
+            <li key={project.slug} data-fx="up" className="min-w-0" style={fx((index % 3) * 80)}>
               <ProjectTile
                 project={project}
-                isNew={!isRest}
-                linkRef={
-                  index === recentGrid.length
-                    ? (node) => {
-                        firstRestRef.current = node;
-                      }
-                    : undefined
-                }
+                isNew={false}
+                linkRef={index === 0 && launching.length === 0 ? setFirstRest : undefined}
               />
             </li>
-          );
-        })}
+          ))}
 
         {!showAll && restProjects.length > 0 ? (
-          <li data-fx="pop" className="col-span-2 min-w-0 lg:col-span-1" style={fx(160)}>
-            <div className="panel-lime relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-card p-5 sm:p-7">
+          <li data-fx="pop" className="col-span-2 min-w-0 lg:col-span-3" style={fx(120)}>
+            <div className="panel-lime relative flex flex-col gap-5 overflow-hidden rounded-card p-5 sm:p-7 lg:flex-row lg:items-center lg:justify-between lg:gap-10 lg:px-10 lg:py-7">
               <span
                 aria-hidden
-                className="dot-cluster pointer-events-none absolute -right-2 -top-2 h-36 w-44 opacity-90 [filter:brightness(0.62)] [mask-image:radial-gradient(circle_at_85%_15%,black,transparent_70%)]"
+                className="dot-cluster pointer-events-none absolute -right-2 -top-2 h-32 w-40 opacity-90 [filter:brightness(0.62)] [mask-image:radial-gradient(circle_at_85%_15%,black,transparent_70%)] lg:left-[38%] lg:right-auto lg:top-auto lg:-bottom-6 lg:h-32 lg:w-56 lg:[mask-image:radial-gradient(circle_at_50%_70%,black,transparent_70%)]"
               />
-              <ShotStack slugs={MORE_AVATARS} />
-              <div className="relative">
-                <p className="display-xl text-[clamp(4.5rem,8vw,7.5rem)] leading-[0.8] text-ink">
+              <div className="relative flex items-center gap-4 sm:gap-6">
+                <p className="display-xl text-[clamp(4.25rem,8vw,6.5rem)] leading-[0.8] text-ink">
                   +{restProjects.length}
                 </p>
-                <p className="mt-2 text-base font-semibold text-ink">{t.projects.moreLabel}</p>
+                <div className="flex flex-col gap-2.5">
+                  <ShotStack slugs={MORE_AVATARS} />
+                  <p className="text-base font-semibold leading-snug text-ink">{t.projects.moreLabel}</p>
+                </div>
               </div>
               <Button
                 size="lg"
@@ -737,7 +798,7 @@ export function ProjectsShowcase() {
                   setShowAll(true);
                   setFocusRest(true);
                 }}
-                className="relative w-full justify-between pr-2.5"
+                className="relative w-full justify-between pr-2.5 lg:w-auto lg:min-w-[19rem]"
               >
                 {t.projects.showMore}
                 <span aria-hidden className="grid size-9 place-items-center rounded-full bg-lime text-ink">
@@ -747,11 +808,14 @@ export function ProjectsShowcase() {
             </div>
           </li>
         ) : (
-          <li data-fx="pop" className="col-span-1 min-w-0 lg:col-span-3">
+          <li data-fx="pop" className={cn("min-w-0", closerSpan, closerLgSpan)}>
             {/* Cierre del catálogo: toda la ficha lleva al configurador. */}
             <Link
               href="#precios"
-              className="panel-lime group relative flex h-full flex-col justify-between gap-5 overflow-hidden rounded-card p-4 transition-transform duration-300 [transition-timing-function:var(--ease-out)] hover:-translate-y-1 sm:p-7 lg:flex-row lg:items-center lg:p-8"
+              className={cn(
+                "panel-lime group relative flex h-full flex-col justify-between gap-5 overflow-hidden rounded-card p-4 transition-transform duration-300 [transition-timing-function:var(--ease-out)] hover:-translate-y-1 sm:p-7",
+                closerWide && "lg:flex-row lg:items-center lg:p-8"
+              )}
             >
               <span
                 aria-hidden
@@ -760,11 +824,26 @@ export function ProjectsShowcase() {
               <span className="display-title relative max-w-[18ch] text-[clamp(1.35rem,3vw,2.75rem)] text-ink">
                 {t.projects.nextTitle}
               </span>
-              <span className="relative flex items-center justify-between gap-3 lg:h-14 lg:rounded-full lg:bg-ink lg:pl-7 lg:pr-2.5 lg:text-lime">
-                <span className="text-sm font-bold text-ink sm:text-base lg:text-[0.9375rem] lg:font-semibold lg:text-lime">
+              <span
+                className={cn(
+                  "relative flex items-center justify-between gap-3",
+                  closerWide && "lg:h-14 lg:rounded-full lg:bg-ink lg:pl-7 lg:pr-2.5 lg:text-lime"
+                )}
+              >
+                <span
+                  className={cn(
+                    "text-sm font-bold text-ink sm:text-base",
+                    closerWide && "lg:text-[0.9375rem] lg:font-semibold lg:text-lime"
+                  )}
+                >
                   {t.nav.armaTuWeb}
                 </span>
-                <span className="btn-arrow size-11 bg-ink text-lime lg:size-9 lg:bg-white lg:text-ink">
+                <span
+                  className={cn(
+                    "btn-arrow size-11 bg-ink text-lime",
+                    closerWide && "lg:size-9 lg:bg-white lg:text-ink"
+                  )}
+                >
                   <ArrowUpRight aria-hidden className="h-4 w-4" />
                 </span>
               </span>
@@ -773,9 +852,7 @@ export function ProjectsShowcase() {
         )}
       </ul>
 
-      <div data-fx="panel" className="min-w-0">
-        <CaseStudies />
-      </div>
+      {withCases && <ProjectCases />}
     </section>
   );
 }

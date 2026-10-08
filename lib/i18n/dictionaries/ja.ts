@@ -20,6 +20,8 @@ const ja: Dictionary = {
   },
   marquee: {
     words: ["デザイン", "コード", "SEO", "パフォーマンス", "EC", "ブランディング"],
+    pause: "アニメーションを一時停止",
+    play: "アニメーションを再開",
   },
   hero: {
     eyebrow: "メキシコのWebデザイン・開発",
@@ -69,7 +71,7 @@ const ja: Dictionary = {
     projectsCaption: "のプロジェクトを成功に導きました",
     deliveryPrefix: "最短",
     days: "営業日",
-    deliveryCaption: "で納品",
+    deliveryCaption: "営業日で納品",
   },
   process: {
     eyebrow: "進め方",
@@ -124,6 +126,9 @@ const ja: Dictionary = {
     newBadge: "新着",
     casesTitle: "ケーススタディ",
     casesSubtitle: "4つのプロジェクトの課題、判断、そして成果。",
+    casesEyebrow: "制作の裏側",
+    launchedTitle: "公開したばかり",
+    launchedNote: "すでに公開中。サイトを開いて実際にご覧ください。",
     nextTitle: "次はあなたのサイトかもしれません。",
     moreLabel: "件のほかの実績",
     descs: {
@@ -367,6 +372,7 @@ const ja: Dictionary = {
       `こんにちは、プロジェクト代金を銀行振込で支払いたいです。\n\nプラン: ${plan}\nモジュール: ${modules}\n支払い方法: ${mode}\nプロジェクト合計: ${total}\n今すぐ支払う金額: ${payNow}`,
     modeFullLabel: "全額支払い",
     modeAdvanceLabel: "前払い50%",
+    viewSummary: "概要を見て支払う",
     none: "なし",
   },
   faq: {
@@ -422,6 +428,7 @@ const ja: Dictionary = {
     inspirationLabel: "仕事に持ち込む視点",
     inspiration:
       "高性能な車（特に2016年のホンダ・シビック TYPE Rが好きです）、日本のビジュアル文化、そしてよく設計されたネットワークの論理に惹かれます。それらを飾りとして貼るのではなく、精度・リズム・つながりへと翻訳します。",
+    inspirationAccent: "精度・リズム・つながり",
     chips: ["デザイン + コード", "直接対応", "意図のあるパフォーマンス"],
     principlesLabel: "私の仕事の軸 · 精度、リズム、つながり",
     principles: [
@@ -571,6 +578,7 @@ const ja: Dictionary = {
     send: "送信",
     open: "Luminaとチャットを開く",
     teaser: "サイト制作をお考えですか？料金や納期、始め方について聞いてください ✨",
+    teaserShort: "サイトの相談、気軽にどうぞ ✨",
     typing: "入力中…",
     retry: "再試行",
     languageInstruction: "日本語",

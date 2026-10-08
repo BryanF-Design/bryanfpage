@@ -20,6 +20,8 @@ const en: Dictionary = {
   },
   marquee: {
     words: ["Design", "Code", "SEO", "Performance", "E-commerce", "Branding"],
+    pause: "Pause animation",
+    play: "Resume animation",
   },
   hero: {
     eyebrow: "Web design and development in Mexico",
@@ -126,6 +128,9 @@ const en: Dictionary = {
     newBadge: "New",
     casesTitle: "Case studies",
     casesSubtitle: "The problem, the decision and the result behind four projects.",
+    casesEyebrow: "Behind the build",
+    launchedTitle: "Just launched",
+    launchedNote: "Already live — open them and look around.",
     nextTitle: "Your site could be next.",
     moreLabel: "more projects",
     descs: {
@@ -369,6 +374,7 @@ const en: Dictionary = {
       `Hi, I'd like to pay for my project by bank transfer.\n\nPlan: ${plan}\nModules: ${modules}\nMode: ${mode}\nProject total: ${total}\nDue now: ${payNow}`,
     modeFullLabel: "Full payment",
     modeAdvanceLabel: "50% deposit",
+    viewSummary: "View summary and pay",
     none: "none",
   },
   faq: {
@@ -429,6 +435,7 @@ const en: Dictionary = {
     inspirationLabel: "What I bring to the work",
     inspiration:
       "I'm inspired by high-performance cars—my favorite is the 2016 Honda Civic Type R—Japanese visual culture and the logic of a well-built network. I don't paste them on as decoration: I translate them into precision, rhythm and connection.",
+    inspirationAccent: "precision, rhythm and connection",
     chips: ["Design + code", "Direct contact", "Performance with purpose"],
     principlesLabel: "How I work · precision, rhythm and connection",
     principles: [
@@ -579,6 +586,7 @@ const en: Dictionary = {
     send: "Send",
     open: "Open chat with Lumina",
     teaser: "Looking to build your site? Ask me about pricing, timelines, or where to start ✨",
+    teaserShort: "Need a website? Ask me ✨",
     typing: "Typing…",
     retry: "Retry",
     languageInstruction: "English",

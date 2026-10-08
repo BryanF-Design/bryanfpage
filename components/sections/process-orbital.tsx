@@ -147,7 +147,7 @@ export function ProcessOrbital() {
                             <span
                               className={cn(
                                 "font-semibold",
-                                isHighlight ? "text-ink/55" : "text-muted-foreground"
+                                isHighlight ? "text-ink/75" : "text-muted-foreground"
                               )}
                             >
                               / {pad(total)}

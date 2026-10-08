@@ -135,6 +135,12 @@
     overflow-x: clip;
     text-rendering: optimizeLegibility;
   }
+  /* Japonés: corta por frases (BudouX nativo en Chromium 119+) y con reglas
+     estrictas de kinsoku, para no partir palabras en botones y etiquetas. */
+  :lang(ja) {
+    word-break: auto-phrase;
+    line-break: strict;
+  }
   :where(a, button, input, textarea, select, summary):focus-visible {
     outline: 2.5px solid hsl(var(--ring));
     outline-offset: 3px;
@@ -168,11 +174,13 @@
   }
 
   /* ——— Contenedor de la página ———————————————————————————————————— */
+  /* Entre secciones hay más aire que entre los paneles de una misma sección
+     (`gap-gutter`), para que cada composición se lea por separado. */
   .sheet-main {
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: var(--gutter);
+    gap: clamp(2rem, 5vw, 5.5rem);
     width: 100%;
     max-width: 1520px;
     margin-inline: auto;
@@ -707,9 +715,46 @@
     background: hsl(var(--lime));
     color: hsl(var(--ink));
   }
+  /* WhatsApp en la paleta de la marca: tinta con el icono en lima (el verde
+     de WhatsApp chocaba con la lima y no daba contraste con texto blanco). */
   .fab-wa {
-    background: hsl(142 70% 41%);
+    background: hsl(var(--ink));
     color: hsl(0 0% 100%);
+  }
+  .fab-wa > svg {
+    color: hsl(var(--lime));
+  }
+  /* Dock de contacto: una píldora tinta con botones redondos dentro. */
+  .fab-dock {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    height: var(--fab-size);
+    padding: 0.25rem;
+    border-radius: 999px;
+    background: hsl(var(--ink));
+    color: hsl(0 0% 100%);
+    box-shadow:
+      0 0 0 1px hsl(var(--ink) / 0.06),
+      0 16px 34px -14px hsl(var(--ink) / 0.5);
+  }
+  .fab-dock-btn {
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-width: calc(var(--fab-size) - 0.5rem);
+    height: calc(var(--fab-size) - 0.5rem);
+    padding: 0 0.6875rem;
+    border-radius: 999px;
+    transition:
+      background-color 160ms linear,
+      transform 220ms var(--ease-out);
+  }
+  .fab-dock-btn:hover {
+    background-color: hsl(0 0% 100% / 0.1);
+  }
+  .fab-dock-btn:active {
+    transform: scale(0.94);
   }
   .fab-label {
     font-size: 0.9375rem;
@@ -736,6 +781,22 @@
       transform 240ms var(--ease-out),
       opacity 180ms linear,
       visibility 0s linear 240ms;
+  }
+  /* Teléfono: los flotantes se guardan al bajar (`fab-tucked`), y dentro del
+     cotizador (`fab-config`) se aparta Lumina, que tapaba precios y botones
+     del borde derecho; las clases las pone FloatingDock en <html>. */
+  @media (max-width: 639px) {
+    html.fab-tucked .fab-slot,
+    html.fab-config .fab-slot:has(> [aria-controls="lumina-chat-panel"]) {
+      transform: translateY(16px) scale(0.92);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition:
+        transform 240ms var(--ease-out),
+        opacity 180ms linear,
+        visibility 0s linear 240ms;
+    }
   }
 
   /* Heredados del sistema anterior: sin efecto. */
@@ -839,6 +900,15 @@ html.fx-on [data-fx="panel"]:not([data-fx-in]) > * {
 .hero-in-fade {
   animation-name: hero-in-fade;
 }
+/* Solo desplazamiento, sin fundido: para la imagen LCP (no retrasa su pintado). */
+.hero-in-rise {
+  animation-name: hero-in-rise;
+}
+@keyframes hero-in-rise {
+  from {
+    transform: translate3d(0, 28px, 0);
+  }
+}
 @keyframes hero-in-left {
   from {
     opacity: 0;
@@ -866,6 +936,19 @@ html.fx-on [data-fx="panel"]:not([data-fx-in]) > * {
 @keyframes hero-in-fade {
   from {
     opacity: 0;
+  }
+}
+/* Palabra gigante que cabe en su columna en cualquier idioma: el contenedor
+   lleva `container-type: inline-size`, `--fit-own` es el ancho estimado de la
+   palabra en em y `--fit-max` el tamaño de diseño. Desde md las dos palabras
+   del hero comparten el tamaño de la más ancha (`--fit-shared`). */
+.fit-word {
+  --fit: var(--fit-own, 6);
+  font-size: min(var(--fit-max, 12rem), calc(100cqi / var(--fit)));
+}
+@media (min-width: 768px) {
+  .fit-word {
+    --fit: var(--fit-shared, var(--fit-own, 6));
   }
 }
 .hero-line {
@@ -967,6 +1050,24 @@ html.fx-on [data-fx="panel"]:not([data-fx-in]) > * {
   --foreground: 0 0% 100%;
   --muted-foreground: 0 0% 92%;
   background-color: hsl(0 0% 0%);
+}
+/* Los textos atenuados con opacidad (`text-ink/55`, `text-white/60`…) no
+   pasan por los tokens: en alto contraste se fuerzan al color pleno. */
+.a11y-contrast [class*="text-ink/"] {
+  color: hsl(var(--ink)) !important;
+}
+.a11y-contrast [class*="text-white/"] {
+  color: hsl(0 0% 100%) !important;
+}
+.a11y-contrast [class*="text-foreground/"] {
+  color: hsl(var(--foreground)) !important;
+}
+.a11y-contrast [class*="text-muted-foreground/"] {
+  color: hsl(var(--muted-foreground)) !important;
+}
+.a11y-contrast ::placeholder {
+  color: hsl(var(--foreground) / 0.8) !important;
+  opacity: 1;
 }
 
 .a11y-reduce-motion *,

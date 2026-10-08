@@ -20,6 +20,8 @@ const zh: Dictionary = {
   },
   marquee: {
     words: ["设计", "代码", "SEO", "性能", "电商", "品牌"],
+    pause: "暂停动画",
+    play: "继续播放动画",
   },
   hero: {
     eyebrow: "墨西哥网页设计与开发",
@@ -68,7 +70,7 @@ const zh: Dictionary = {
     projectsCaption: "成功交付",
     deliveryPrefix: "最快",
     days: "个工作日",
-    deliveryCaption: "交付",
+    deliveryCaption: "个工作日交付",
   },
   process: {
     eyebrow: "我们的工作方式",
@@ -111,6 +113,9 @@ const zh: Dictionary = {
     newBadge: "新",
     casesTitle: "案例研究",
     casesSubtitle: "四个项目背后的问题、决策与成果。",
+    casesEyebrow: "项目背后",
+    launchedTitle: "刚刚上线",
+    launchedNote: "均已上线，点开即可实地浏览。",
     nextTitle: "下一个可能就是你的网站。",
     moreLabel: "个其他作品",
     descs: {
@@ -319,6 +324,7 @@ const zh: Dictionary = {
       `您好，我想通过银行转账支付项目款项。\n\n套餐：${plan}\n模块：${modules}\n支付方式：${mode}\n项目总额：${total}\n现在需支付：${payNow}`,
     modeFullLabel: "全款支付",
     modeAdvanceLabel: "50%定金",
+    viewSummary: "查看摘要并付款",
     none: "无",
   },
   faq: {
@@ -374,6 +380,7 @@ const zh: Dictionary = {
     inspirationLabel: "我带入工作中的视角",
     inspiration:
       "高性能汽车（我最喜欢的是2016款本田思域Type R）、日本视觉文化，以及结构良好的网络逻辑都给我灵感。我不会把它们当作装饰贴上去，而是把它们转化为精准、节奏与连接。",
+    inspirationAccent: "精准、节奏与连接",
     chips: ["设计 + 代码", "直接沟通", "有目的的性能"],
     principlesLabel: "我的工作方式 · 精准、节奏与连接",
     principles: [
@@ -523,6 +530,7 @@ const zh: Dictionary = {
     send: "发送",
     open: "打开与Lumina的对话",
     teaser: "想要打造您的网站吗？问我价格、交付时间，或从哪里开始 ✨",
+    teaserShort: "网站有疑问？问我吧 ✨",
     typing: "正在输入…",
     retry: "重试",
     languageInstruction: "中文",

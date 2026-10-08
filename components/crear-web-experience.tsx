@@ -110,7 +110,7 @@ export function CrearWebExperience() {
                       <span className="grid size-11 place-items-center rounded-full bg-ink text-lime">
                         <Icon aria-hidden className="h-5 w-5" />
                       </span>
-                      <span className="text-[0.8125rem] font-semibold leading-snug text-ink sm:text-sm">
+                      <span className="text-sm font-semibold leading-snug text-ink">
                         {feature}
                       </span>
                     </li>
@@ -133,7 +133,7 @@ export function CrearWebExperience() {
 
           {/* Panel lima: Lumina sale por el canto superior. */}
           <div
-            className="hero-in hero-in-up relative mt-24 min-h-[19rem] sm:mt-32 sm:min-h-[24rem] lg:col-span-5 lg:mt-36 lg:min-h-0"
+            className="hero-in hero-in-up relative mt-24 min-h-[19rem] sm:mt-32 sm:min-h-[24rem] lg:col-span-5 lg:mt-52 lg:min-h-0 xl:mt-36"
             style={delay(200)}
           >
             <div className="panel-lime relative h-full min-h-[inherit] rounded-[calc(var(--r-panel)-0.5rem)]">
@@ -142,14 +142,18 @@ export function CrearWebExperience() {
                 className="absolute inset-x-6 top-6 h-24 bg-[radial-gradient(circle,hsl(var(--ink)/0.14)_0_4px,transparent_4.5px)] [background-size:20px_20px] [mask-image:linear-gradient(to_bottom,black,transparent)]"
               />
               {/* Recorte: deja salir la cabeza por arriba y los lados, y
-                  esconde la base curva del PNG en el canto inferior. */}
+                  esconde la base curva del PNG en el canto inferior. En
+                  tableta horizontal el panel es angosto: Lumina se mide más
+                  baja y nunca pasa del 115 % del ancho (object-contain la
+                  apoya en el canto sin deformarla), así no invade el titular
+                  ni se sale del marco. */}
               <div
                 aria-hidden
                 className="pointer-events-none absolute inset-0 [clip-path:inset(-80%_-40%_0_-40%)]"
               >
                 <svg
                   viewBox="0 0 400 140"
-                  className="float-y absolute left-1/2 top-[-6.5rem] w-[26rem] max-w-[115%] -translate-x-1/2 text-ink/30 sm:top-[-8rem] lg:top-[-9rem]"
+                  className="float-y absolute left-1/2 top-[-6.5rem] w-[26rem] max-w-[115%] -translate-x-1/2 text-ink/30 sm:top-[-8rem] lg:top-[-7rem] xl:top-[-9rem]"
                 >
                   <ellipse
                     cx="200"
@@ -165,17 +169,19 @@ export function CrearWebExperience() {
                 <Image
                   src="/img/brand/lumina-normal.webp"
                   alt=""
-                  width={900}
-                  height={1059}
+                  width={864}
+                  height={1121}
                   priority
-                  sizes="(min-width: 1024px) 28rem, 20rem"
-                  className="absolute bottom-[-2.5rem] left-1/2 h-[calc(100%+7rem)] w-auto max-w-none -translate-x-1/2 drop-shadow-[0_28px_36px_hsl(160_40%_8%/0.3)] sm:h-[calc(100%+8rem)] lg:bottom-[-3rem] lg:h-[calc(100%+11rem)]"
+                  sizes="(min-width: 1024px) 36rem, 26rem"
+                  className="absolute bottom-[-2.5rem] left-1/2 h-[calc(100%+7rem)] w-auto max-w-[115%] -translate-x-1/2 object-contain object-bottom drop-shadow-[0_28px_36px_hsl(160_40%_8%/0.3)] sm:h-[calc(100%+8rem)] lg:bottom-[-3rem] lg:h-[calc(100%+8.5rem)] xl:h-[calc(100%+11rem)]"
                 />
               </div>
 
+              {/* A la izquierda, sobre el canto: a la derecha el chongo de
+                  Lumina (tinta sobre tinta) la escondía. */}
               <Sparkle
                 aria-hidden
-                className="float-y absolute -top-5 right-6 h-9 w-9 fill-ink text-ink sm:right-10"
+                className="float-y absolute -top-5 left-5 h-9 w-9 fill-lime text-lime-deep sm:left-7"
               />
 
               {/* Píldora flotante: el paquete principal y los medios de pago. */}

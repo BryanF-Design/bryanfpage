@@ -24,7 +24,6 @@ import { SectionHeading } from "@/components/sections/section-heading";
 import { openLuminaChat } from "@/components/sections/lumina-feature";
 import { ENTRY_SERVICE_PRICES } from "@/lib/catalog";
 import { formatMoney } from "@/lib/currency";
-import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 
 /** Ícono de cada producto, por id del catálogo. */
@@ -92,7 +91,8 @@ function QrMark({ className }: { className?: string }) {
 /**
  * La tarjeta de presentación digital, dibujada como objeto: el producto
  * estrella de la carta, inclinado sobre una segunda tarjeta de tinta y con
- * la píldora flotante del precio de entrada (como la bolsa de la referencia).
+ * la píldora flotante del precio de entrada (como la bolsa de la referencia),
+ * colgada de la esquina inferior derecha para no tapar la fila de íconos.
  */
 function CardMock({ fromLabel }: { fromLabel: string }) {
   return (
@@ -104,7 +104,7 @@ function CardMock({ fromLabel }: { fromLabel: string }) {
       </div>
 
       {/* Tarjeta frontal. */}
-      <div className="relative -rotate-[4deg] rounded-[1.6rem] bg-white p-4 text-ink shadow-float transition-transform duration-500 [transition-timing-function:var(--ease-out)] group-hover/intro:-rotate-[2deg] sm:p-5">
+      <div className="relative -rotate-[4deg] rounded-[1.6rem] bg-white p-4 pb-10 text-ink shadow-float transition-transform duration-500 [transition-timing-function:var(--ease-out)] group-hover/intro:-rotate-[2deg] sm:p-5 sm:pb-10">
         <div className="flex items-center justify-between">
           <Image
             src="/img/brand/logo-dark.png"
@@ -131,7 +131,7 @@ function CardMock({ fromLabel }: { fromLabel: string }) {
               />
             </span>
             <span className="mt-3 block text-lg font-bold leading-tight tracking-[-0.01em]">Bryan F.</span>
-            <span className="block truncate text-xs font-medium text-ink/55">bryanfdesign.com</span>
+            <span className="block truncate text-xs font-medium text-ink/70">bryanfdesign.com</span>
           </div>
           <QrMark className="size-[5.25rem] shrink-0 rounded-lg text-ink" />
         </div>
@@ -142,12 +142,11 @@ function CardMock({ fromLabel }: { fromLabel: string }) {
               <Icon className="h-4 w-4" />
             </span>
           ))}
-          <span className="ml-auto h-2 w-16 rounded-full bg-ink/10" />
         </div>
       </div>
 
       {/* Píldora flotante: el precio de entrada. */}
-      <div className="absolute -bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-3 whitespace-nowrap rounded-full bg-ink py-2 pl-5 pr-2 text-white shadow-pop ring-1 ring-white/10">
+      <div className="absolute -bottom-6 right-0 flex items-center gap-3 whitespace-nowrap rounded-full bg-ink py-2 pl-5 pr-2 text-white shadow-pop ring-1 ring-white/10 sm:-bottom-5 sm:right-2">
         <span className="text-[0.9375rem] font-bold tabular-nums">{fromLabel}</span>
         <span className="grid size-9 place-items-center rounded-full bg-lime text-ink">
           <ShoppingBag className="h-4 w-4" />
@@ -178,11 +177,13 @@ export function EntryServices() {
     <section
       id="servicios-entrada"
       aria-label={t.entryServices.title}
-      className="relative grid gap-gutter lg:grid-cols-12"
+      className="relative grid gap-gutter xl:grid-cols-12"
     >
-      {/* Presentación de la carta. */}
-      <div data-fx="panel" className="min-w-0 lg:col-span-5 xl:col-span-4">
-        <div className="group/intro panel panel-forest relative flex h-full flex-col overflow-hidden p-5 pb-6 sm:p-7 lg:p-9">
+      {/* Presentación de la carta. De tableta a laptop va a todo lo ancho
+          (texto | tarjeta) para que las fichas de abajo respiren en 2×2;
+          desde xl vuelve a ser la columna izquierda de la vitrina. */}
+      <div data-fx="panel" className="min-w-0 xl:col-span-4">
+        <div className="group/intro panel panel-forest relative flex h-full flex-col overflow-hidden p-5 pb-6 sm:p-7 md:grid md:grid-cols-2 md:gap-x-10 lg:p-9 xl:flex">
           <svg
             aria-hidden
             viewBox="0 0 400 140"
@@ -208,11 +209,11 @@ export function EntryServices() {
             className="relative [&_h2]:text-[clamp(2.1rem,3.4vw,3.35rem)] [&_p]:text-[0.975rem] md:[&_p]:text-base"
           />
 
-          <div className="relative mb-6 mt-10 flex flex-1 items-center justify-center sm:mt-12 lg:mb-8">
+          <div className="relative mb-6 mt-10 flex flex-1 items-center justify-center sm:mt-12 md:col-start-2 md:row-span-2 md:row-start-1 md:my-6 xl:mb-8 xl:mt-12">
             <CardMock fromLabel={fromLabel} />
           </div>
 
-          <p className="relative mt-6 flex items-start gap-3 rounded-card bg-white/[0.08] p-3 pr-4 text-sm leading-relaxed text-white/85 ring-1 ring-white/10">
+          <p className="relative mt-6 flex items-start gap-3 rounded-card bg-white/[0.08] p-3 pr-4 text-[0.9375rem] leading-relaxed text-white/85 ring-1 ring-white/10 sm:text-sm md:col-start-1 md:self-end">
             <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-full bg-lime text-ink">
               <Info className="h-4 w-4" />
             </span>
@@ -224,7 +225,7 @@ export function EntryServices() {
       {/* Fichas de producto: carrusel en el teléfono, retícula 2×2 después. */}
       <ul
         aria-label={t.entryServices.eyebrow}
-        className="-mx-[var(--gutter)] flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-[var(--gutter)] px-[var(--gutter)] pb-1 [scrollbar-width:none] md:mx-0 md:grid md:snap-none md:grid-cols-2 md:gap-gutter md:overflow-visible md:p-0 lg:col-span-7 xl:col-span-8 [&::-webkit-scrollbar]:hidden"
+        className="-mx-[var(--gutter)] flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-[var(--gutter)] px-[var(--gutter)] pb-1 [scrollbar-width:none] md:mx-0 md:grid md:snap-none md:grid-cols-2 md:gap-gutter md:overflow-visible md:p-0 xl:col-span-8 [&::-webkit-scrollbar]:hidden"
       >
         {regular.map((item, index) => {
           const Icon = ICONS[item.id] ?? Package;
@@ -277,7 +278,10 @@ export function EntryServices() {
                   onClick={() => openLuminaChat(item.question)}
                   className="mt-6 w-full justify-between whitespace-normal pl-5 pr-2 text-left leading-tight hover:border-ink hover:bg-ink hover:text-white"
                 >
-                  {t.entryServices.cta}
+                  <span>
+                    {t.entryServices.cta}
+                    <span className="sr-only"> — {item.name}</span>
+                  </span>
                   <ButtonArrow tone="ink" className="mr-0 size-8 [button:hover>&]:bg-lime [button:hover>&]:text-ink" />
                 </Button>
               </article>
@@ -286,13 +290,14 @@ export function EntryServices() {
         })}
       </ul>
 
-      {/* La ficha destacada: la landing, en lima y a todo lo ancho. */}
+      {/* La ficha destacada: la landing, en lima y a todo lo ancho. Dos
+          columnas: la propuesta | lo que incluye + la acción. */}
       {featured && (
-        <div data-fx="up" className="min-w-0 lg:col-span-12">
+        <div data-fx="up" className="min-w-0 xl:col-span-12">
           <article className="panel panel-lime group relative overflow-hidden p-5 pt-6 sm:p-7 lg:p-10">
             <span
               aria-hidden
-              className="pointer-events-none absolute right-10 top-24 hidden h-28 w-64 bg-[radial-gradient(circle,hsl(var(--ink)/0.16)_0_5px,transparent_5.5px)] [background-size:22px_22px] [mask-image:linear-gradient(to_left,black,transparent)] lg:block"
+              className="pointer-events-none absolute right-28 top-9 hidden h-14 w-60 bg-[radial-gradient(circle,hsl(var(--ink)/0.16)_0_5px,transparent_5.5px)] [background-size:22px_22px] [mask-image:linear-gradient(to_left,black,transparent)] xl:block"
             />
             {/* Recorte cóncavo con el número de la ficha. */}
             <div className="notch notch-tr">
@@ -304,7 +309,7 @@ export function EntryServices() {
               </span>
             </div>
 
-            <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)_auto] lg:items-center lg:gap-10">
+            <div className="relative grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-end lg:gap-12">
               <div className="min-w-0">
                 <span className="grid size-14 place-items-center rounded-full bg-ink text-lime transition-transform duration-500 [transition-timing-function:var(--ease-pop)] group-hover:-rotate-12 group-hover:scale-105">
                   {(() => {
@@ -323,26 +328,31 @@ export function EntryServices() {
                 </p>
               </div>
 
-              <ul className="grid gap-2.5 rounded-card bg-white/45 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-1">
-                {featured.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2.5 text-[0.9375rem] font-medium leading-snug text-ink">
-                    <span aria-hidden className="mt-px grid size-5 shrink-0 place-items-center rounded-full bg-ink text-lime">
-                      <Check className="h-3 w-3" strokeWidth={3} />
-                    </span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
+              <div className="flex min-w-0 flex-col gap-4 lg:gap-5">
+                <ul className="grid gap-x-5 gap-y-2.5 rounded-card bg-white/45 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-1 xl:grid-cols-2">
+                  {featured.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2.5 text-[0.9375rem] font-medium leading-snug text-ink">
+                      <span aria-hidden className="mt-px grid size-5 shrink-0 place-items-center rounded-full bg-ink text-lime">
+                        <Check className="h-3 w-3" strokeWidth={3} />
+                      </span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
 
-              <Button
-                size="lg"
-                variant="ink"
-                onClick={() => openLuminaChat(featured.question)}
-                className="w-full justify-between whitespace-normal pl-6 pr-2.5 text-left leading-tight lg:w-auto lg:self-end lg:whitespace-nowrap"
-              >
-                {t.entryServices.cta}
-                <ButtonArrow tone="lime" className="-mr-0.5 ml-2" />
-              </Button>
+                <Button
+                  size="lg"
+                  variant="ink"
+                  onClick={() => openLuminaChat(featured.question)}
+                  className="w-full justify-between whitespace-normal pl-6 pr-2.5 text-left leading-tight sm:w-auto sm:self-end sm:whitespace-nowrap"
+                >
+                  <span>
+                    {t.entryServices.cta}
+                    <span className="sr-only"> — {featured.name}</span>
+                  </span>
+                  <ButtonArrow tone="lime" className="-mr-0.5 ml-2" />
+                </Button>
+              </div>
             </div>
           </article>
         </div>

@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useInView } from "framer-motion";
 import {
   ArrowUpRight,
   Check,
@@ -29,12 +29,12 @@ import { useReducedMotionPreference } from "@/lib/motion-preference";
 
 type MoodKey = "normal" | "enfocada" | "duda" | "sorprendida";
 
-/** Recortes de Lumina, en el orden en que cambian al tocarla. */
-const MOODS: { key: MoodKey; src: string; height: number }[] = [
-  { key: "normal", src: "/img/brand/lumina-normal.webp", height: 1059 },
-  { key: "enfocada", src: "/img/brand/lumina-enfocada.webp", height: 1080 },
-  { key: "duda", src: "/img/brand/lumina-duda.webp", height: 968 },
-  { key: "sorprendida", src: "/img/brand/lumina-sorprendida.webp", height: 1040 },
+/** Recortes de Lumina, en el orden en que cambian al tocarla (medidas reales). */
+const MOODS: { key: MoodKey; src: string; width: number; height: number }[] = [
+  { key: "normal", src: "/img/brand/lumina-normal.webp", width: 864, height: 1121 },
+  { key: "enfocada", src: "/img/brand/lumina-enfocada.webp", width: 852, height: 1162 },
+  { key: "duda", src: "/img/brand/lumina-duda.webp", width: 807, height: 1139 },
+  { key: "sorprendida", src: "/img/brand/lumina-sorprendida.webp", width: 876, height: 1124 },
 ];
 
 // Enlaces preconfigurados del cotizador, en el mismo orden que
@@ -67,31 +67,53 @@ function fxDelay(ms: number) {
 export function LuminaFeature() {
   const { t } = useLanguage();
   const reduced = useReducedMotionPreference();
-  const [moodIndex, setMoodIndex] = useState(0);
-  // Solo se montan el ánimo visible y el siguiente: el cambio es instantáneo
-  // sin descargar los cuatro recortes de entrada.
-  const [primed, setPrimed] = useState<number[]>([0, 1]);
+  // `wanted` es el ánimo pedido; `shown`, el que ya descargó y se ve. Así un
+  // toque nunca deja el escenario en blanco mientras llega el recorte.
+  const [wanted, setWanted] = useState(0);
+  const [shown, setShown] = useState(0);
+  const wantedRef = useRef(0);
+  const loaded = useRef(new Set<number>([0]));
+  // De entrada solo se monta el ánimo visible; el siguiente se pide al pasar
+  // el puntero o enfocar (o con el primer toque), no en la carga.
+  const [primed, setPrimed] = useState<number[]>([0]);
 
-  const mood = MOODS[moodIndex].key;
+  const mood = MOODS[shown].key;
   const moodLabel = t.luminaSection.moods[mood];
 
-  function poke() {
-    const next = (moodIndex + 1) % MOODS.length;
-    setMoodIndex(next);
+  function prime(...indexes: number[]) {
     setPrimed((list) => {
-      const following = (next + 1) % MOODS.length;
-      return list.includes(following) ? list : [...list, following];
+      const missing = indexes.filter((i) => !list.includes(i));
+      return missing.length ? [...list, ...missing] : list;
     });
+  }
+
+  function primeNext() {
+    prime((wanted + 1) % MOODS.length);
+  }
+
+  function poke() {
+    const next = (wanted + 1) % MOODS.length;
+    wantedRef.current = next;
+    setWanted(next);
+    prime(next, (next + 1) % MOODS.length);
+    if (loaded.current.has(next)) setShown(next);
+  }
+
+  function onMoodLoad(index: number) {
+    loaded.current.add(index);
+    if (wantedRef.current === index) setShown(index);
   }
 
   return (
     <section
       id="lumina"
       aria-labelledby="lumina-title"
-      className="relative grid gap-gutter md:grid-cols-12"
+      className="relative isolate grid gap-gutter md:grid-cols-12"
     >
-      {/* A · Escenario bosque: Lumina rompe el borde superior del panel. */}
-      <div data-fx="panel" className="min-w-0 pt-16 sm:pt-20 md:col-span-12 md:pt-32 xl:col-span-8 xl:row-start-1">
+      {/* A · Escenario bosque: Lumina rompe el borde superior del panel. El
+          relleno superior reserva exactamente lo que sube su cabeza, así nunca
+          invade la sección anterior. */}
+      <div data-fx="panel" className="min-w-0 pt-16 sm:pt-20 md:col-span-12 md:pt-16 lg:pt-28 xl:col-span-8 xl:pt-[6.25rem] xl:row-start-1">
         <div className="panel panel-forest relative flex h-full flex-col md:min-h-[32rem] md:flex-row xl:min-h-[33rem]">
           {/* Fondo: brillo, disco lima detrás de su cabeza y puntos. */}
           <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
@@ -114,16 +136,21 @@ export function LuminaFeature() {
 
           {/* Escenario: en teléfono encabeza el panel; en escritorio ocupa la
               mitad izquierda y Lumina se asienta en el canto inferior. El
-              recorte deja pasar todo lo que sube y corta la base curva. */}
-          <div className="relative h-[21rem] shrink-0 [clip-path:inset(-12rem_0_0_0)] sm:h-[27rem] md:absolute md:inset-y-0 md:left-0 md:h-auto md:w-[54%] md:[clip-path:inset(-14rem_-2rem_0_0_round_0_0_0_var(--r-panel))]">
+              recorte solo corta la base (con la esquina redondeada del panel):
+              arriba y a la derecha el pelo sale libre, sin cantos rectos.
+              Cuánto sube = relleno superior del contenedor: alto extra − lo que
+              baja (4 · 5 · 4 · 7 · 6.25rem por breakpoint). */}
+          <div className="relative h-[21rem] shrink-0 [clip-path:inset(-6rem_0_0_0)] sm:h-[27rem] md:absolute md:inset-y-0 md:left-0 md:h-auto md:w-[54%] md:[clip-path:inset(-100%_-100%_0_0_round_0_0_0_var(--r-panel))]">
             <button
               type="button"
               onClick={poke}
+              onPointerEnter={primeNext}
+              onFocus={primeNext}
               aria-label={`${t.luminaSection.hint} · ${moodLabel}`}
-              className="group absolute bottom-0 left-1/2 z-10 block w-[min(24rem,106%)] -translate-x-[54%] translate-y-[9%] cursor-pointer rounded-[2rem] focus-visible:outline-offset-[-8px] sm:w-[27rem] md:h-[calc(100%+12rem)] md:w-auto xl:h-[calc(100%+15rem)] md:-translate-x-[44%]"
+              className="group absolute left-1/2 top-[-4rem] z-10 block w-[min(22rem,94%)] -translate-x-[52%] cursor-pointer rounded-[2rem] focus-visible:outline-offset-[-8px] sm:top-[-5rem] sm:w-[27rem] md:bottom-[-3.25rem] md:left-0 md:top-auto md:h-[calc(100%+7.25rem)] md:w-auto md:-translate-x-[18%] lg:h-[calc(100%+10.25rem)] lg:-translate-x-[12%] xl:h-[calc(100%+9.5rem)]"
             >
               <motion.span
-                className="relative block aspect-[900/1080] origin-bottom md:h-full"
+                className="relative block aspect-[864/1121] origin-bottom md:h-full"
                 whileHover={reduced ? undefined : { y: -6 }}
                 whileTap={reduced ? undefined : { scale: 0.97 }}
                 transition={{ type: "spring", stiffness: 380, damping: 26 }}
@@ -133,14 +160,17 @@ export function LuminaFeature() {
                     <Image
                       key={m.key}
                       src={m.src}
-                      alt={i === moodIndex ? `${t.lumina.name} · ${moodLabel}` : ""}
-                      aria-hidden={i === moodIndex ? undefined : true}
-                      width={900}
+                      alt={i === shown ? `${t.lumina.name} · ${moodLabel}` : ""}
+                      aria-hidden={i === shown ? undefined : true}
+                      width={m.width}
                       height={m.height}
-                      sizes="(min-width: 768px) 40rem, (min-width: 640px) 27rem, 24rem"
+                      sizes="(min-width: 768px) 34rem, (min-width: 640px) 27rem, 22rem"
+                      onLoad={() => onMoodLoad(i)}
                       className={cn(
-                        "absolute bottom-0 left-0 h-auto w-full origin-bottom drop-shadow-[0_24px_30px_hsl(160_40%_6%/0.45)] transition-[opacity,transform] duration-500 [transition-timing-function:var(--ease-pop)]",
-                        i === moodIndex ? "scale-100 opacity-100" : "translate-y-3 scale-[0.96] opacity-0"
+                        // Alineadas arriba: la cabeza no salta entre ánimos; lo
+                        // que sobra abajo queda bajo el canto del panel.
+                        "absolute left-0 top-0 h-auto w-full origin-bottom drop-shadow-[0_24px_30px_hsl(160_40%_6%/0.45)] transition-[opacity,transform] duration-500 [transition-timing-function:var(--ease-pop)]",
+                        i === shown ? "scale-100 opacity-100" : "translate-y-3 scale-[0.96] opacity-0"
                       )}
                     />
                   ) : null
@@ -152,7 +182,7 @@ export function LuminaFeature() {
           {/* Ánimo actual + pista para tocarla: una ficha tipo app. En
               teléfono cabalga la unión entre Lumina y la hoja; en escritorio
               flota junto a su cabeza, fuera del panel, como un globo. */}
-          <div className="absolute right-3 top-[16rem] z-30 sm:right-6 sm:top-[22rem] md:left-[55%] md:right-auto md:top-[-5.25rem]">
+          <div className="absolute right-3 top-[16rem] z-30 sm:right-6 sm:top-[22rem] md:left-[55%] md:right-auto md:top-[-4rem] lg:top-[-5.25rem]">
             <span aria-hidden className="absolute -bottom-1 left-7 hidden size-3.5 rotate-45 rounded-[3px] bg-white md:block" />
             <div className="relative flex items-center gap-2.5 rounded-[1.35rem] bg-white py-2 pl-2 pr-4 text-ink shadow-pop">
               <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-ink text-lime">
@@ -180,7 +210,7 @@ export function LuminaFeature() {
                         key={m.key}
                         className={cn(
                           "h-1.5 rounded-full transition-[width,background-color] duration-300",
-                          i === moodIndex ? "w-4 bg-forest" : "w-1.5 bg-ink/15"
+                          i === shown ? "w-4 bg-forest" : "w-1.5 bg-ink/15"
                         )}
                       />
                     ))}
@@ -422,6 +452,9 @@ function BadgeVisual({ index }: { index: number }) {
 function TypedPhrases({ phrases }: { phrases: string[] }) {
   const reduced = useReducedMotionPreference();
   const [text, setText] = useState("");
+  // Escribe cuando alguien la ve, no durante la carga lejos del viewport.
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "0px 0px -15% 0px" });
 
   useEffect(() => {
     const phrase = phrases[0] ?? "";
@@ -429,6 +462,7 @@ function TypedPhrases({ phrases }: { phrases: string[] }) {
       setText(phrase);
       return;
     }
+    if (!inView) return;
 
     setText("");
     let char = 0;
@@ -438,10 +472,10 @@ function TypedPhrases({ phrases }: { phrases: string[] }) {
       if (char >= phrase.length) window.clearInterval(timer);
     }, 42);
     return () => window.clearInterval(timer);
-  }, [phrases, reduced]);
+  }, [phrases, reduced, inView]);
 
   return (
-    <div className="flex max-w-[90%] items-end gap-2 self-start">
+    <div ref={ref} className="flex max-w-[90%] items-end gap-2 self-start">
       <p className="min-h-[2.9rem] rounded-[1.35rem] rounded-bl-md bg-white px-4 py-3 text-[0.9375rem] font-semibold leading-relaxed text-ink shadow-[0_10px_24px_-18px_hsl(var(--ink)/0.5)]">
         {text}
         <span

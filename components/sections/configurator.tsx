@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import {
+  ArrowDown,
   Building2,
   Check,
   Copy,
@@ -32,6 +33,8 @@ import { SectionHeading } from "@/components/sections/section-heading";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 import { trackEvent } from "@/lib/analytics";
+import { isReducedMotionRequested } from "@/lib/motion-preference";
+import { useConfiguratorInView } from "@/lib/use-configurator-in-view";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import {
   formatMoney,
@@ -44,6 +47,13 @@ import {
   CONFIGURATOR_PLANS as PLAN_META,
   SECTION_PRICE,
 } from "@/lib/catalog";
+
+/**
+ * Tope de secciones adicionales: el mismo que aplica el servidor al recomponer
+ * el precio (lib/quote.ts → normalizeSelection), para que el total mostrado
+ * nunca difiera de lo que cobran Stripe o Mercado Pago.
+ */
+const MAX_SECTIONS = 50;
 
 /** Íconos redondos de cada paquete y módulo, por id del catálogo. */
 const PLAN_ICONS: Record<string, LucideIcon> = {
@@ -168,6 +178,32 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
 
   const plan = PLANS.find((p) => p.id === planId)!;
 
+  // Teléfono: mientras se arma la cotización y el resumen aún no está a la
+  // vista, una píldora flotante muestra el total en vivo y lleva al resumen.
+  const summaryRef = useRef<HTMLDivElement>(null);
+  const summaryTitleRef = useRef<HTMLParagraphElement>(null);
+  const configuratorInView = useConfiguratorInView();
+  const [summaryInView, setSummaryInView] = useState(false);
+  useEffect(() => {
+    const el = summaryRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setSummaryInView(entry.isIntersecting),
+      { rootMargin: "0px 0px -18% 0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  const showTotalDock = configuratorInView && !summaryInView;
+
+  function goToSummary() {
+    summaryRef.current?.scrollIntoView({
+      behavior: isReducedMotionRequested() ? "auto" : "smooth",
+      block: "start",
+    });
+    summaryTitleRef.current?.focus({ preventScroll: true });
+  }
+
   // Preselección por enlace: Lumina (o cualquier CTA) puede mandar a
   // /crear-web?plan=full&modules=ecommerce,payments&sections=2 y el cotizador
   // arranca con esa configuración. El deep-link gana sobre lo guardado.
@@ -193,7 +229,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
           );
         }
         const sec = Number(params.get("sections"));
-        if (Number.isFinite(sec)) setSections(Math.max(0, Math.min(50, Math.floor(sec))));
+        if (Number.isFinite(sec)) setSections(Math.max(0, Math.min(MAX_SECTIONS, Math.floor(sec))));
         const dlMode = params.get("mode");
         if (dlMode === "anticipo" || dlMode === "liquidacion") setMode(dlMode);
         const dlCur = params.get("currency");
@@ -220,7 +256,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
               ) as Record<string, boolean>
             );
           const sec = Number(s.sections);
-          if (Number.isFinite(sec)) setSections(Math.max(0, Math.min(50, Math.floor(sec))));
+          if (Number.isFinite(sec)) setSections(Math.max(0, Math.min(MAX_SECTIONS, Math.floor(sec))));
           if (s.mode === "anticipo" || s.mode === "liquidacion") setMode(s.mode);
           if (s.currency === "MXN" || s.currency === "USD") setCurrency(s.currency);
         }
@@ -391,11 +427,14 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
   return (
     <section
       id="precios"
-      aria-label={t.configurator.title}
-      className="relative grid gap-gutter lg:grid-cols-12"
+      // En /crear-web el titular de la portada ya se llama igual: sin
+      // encabezado propio, la sección toma el nombre corto ("Configurador").
+      aria-label={hideHeading ? t.configurator.eyebrow : t.configurator.title}
+      className="relative grid gap-gutter xl:grid-cols-12"
     >
-      {/* IZQUIERDA: la configuración, como una pantalla de cobro. */}
-      <div data-fx="up" className="min-w-0 lg:col-span-7 xl:col-span-8">
+      {/* IZQUIERDA: la configuración, como una pantalla de cobro. Hasta xl
+          ocupa todo el ancho y el resumen baja debajo como tarjeta ancha. */}
+      <div data-fx="up" className="min-w-0 xl:col-span-8">
         <div className="panel relative flex h-full flex-col gap-9 p-4 pt-5 shadow-soft sm:gap-10 sm:p-7 lg:p-10">
           {!hideHeading && (
             <>
@@ -417,51 +456,58 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
             <p className="px-1 sm:px-0">
               <StepHeader n={1} id="configurator-plan-label" label={t.configurator.step1} />
             </p>
+            {/* Elección única: radios nativos (flechas del teclado incluidas).
+                Filas horizontales hasta lg; desde lg, tres fichas. */}
             <div
-              role="group"
+              role="radiogroup"
               aria-labelledby="configurator-plan-label"
-              className="mt-4 grid gap-2.5 sm:mt-5 sm:grid-cols-3 sm:gap-3 sm:pl-14"
+              className="mt-4 grid gap-2.5 sm:mt-5 sm:pl-14 lg:grid-cols-3 lg:gap-3"
             >
               {PLANS.map((p) => {
                 const active = p.id === planId;
                 const Icon = PLAN_ICONS[p.id] ?? Rocket;
                 return (
-                  <button
+                  <label
                     key={p.id}
-                    type="button"
-                    aria-pressed={active}
-                    onClick={() => setPlanId(p.id)}
                     className={cn(
-                      "group relative grid min-h-11 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2.5 rounded-card p-3.5 text-left text-ink transition-[background-color,box-shadow,transform] duration-300 [transition-timing-function:var(--ease-out)] hover:-translate-y-0.5 sm:grid-cols-[minmax(0,1fr)_auto] sm:content-start sm:items-start sm:gap-y-0 sm:p-4 lg:p-5",
+                      "group relative grid min-h-11 cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2.5 rounded-card p-3.5 text-left text-ink transition-[background-color,box-shadow,transform] duration-300 [transition-timing-function:var(--ease-out)] hover:-translate-y-0.5 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ink has-[:focus-visible]:ring-offset-2 sm:gap-x-4 sm:p-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:content-start lg:items-start lg:gap-x-3 lg:gap-y-0 lg:p-5",
                       active
                         ? "bg-lime shadow-[0_18px_36px_-20px_hsl(var(--lime-deep)/0.95)]"
                         : "bg-mint ring-1 ring-inset ring-ink/10 hover:ring-ink/30"
                     )}
                   >
+                    <input
+                      type="radio"
+                      name="configurator-plan"
+                      value={p.id}
+                      checked={active}
+                      onChange={() => setPlanId(p.id)}
+                      className="sr-only"
+                    />
                     <span
                       aria-hidden
                       className={cn(
-                        "grid size-11 place-items-center rounded-full transition-colors duration-300 sm:col-start-1 sm:row-start-1",
+                        "grid size-11 place-items-center rounded-full transition-colors duration-300 lg:col-start-1 lg:row-start-1",
                         active ? "bg-ink text-lime" : "bg-white text-ink ring-1 ring-ink/10"
                       )}
                     >
                       <Icon className="h-5 w-5" />
                     </span>
-                    <span className="min-w-0 sm:col-span-2 sm:row-start-2 sm:mt-5">
+                    <span className="min-w-0 sm:flex sm:items-baseline sm:justify-between sm:gap-4 lg:col-span-2 lg:row-start-2 lg:mt-5 lg:block">
                       <span className="flex items-center gap-1.5 text-[0.9375rem] font-semibold leading-tight">
                         {p.name}
                         {p.featured && (
                           <Sparkle aria-hidden className="h-3.5 w-3.5 shrink-0 fill-ink text-ink" />
                         )}
                       </span>
-                      <span className="display-title mt-1 block text-[1.6rem] tabular-nums sm:mt-1.5 sm:text-[2rem]">
+                      <span className="display-title mt-1 block text-[1.6rem] tabular-nums sm:mt-0 sm:text-[1.75rem] lg:mt-1.5 lg:text-[2rem]">
                         {display(p.price)}
                       </span>
                     </span>
                     <span
                       aria-hidden
                       className={cn(
-                        "grid size-7 place-items-center rounded-full transition-all duration-300 [transition-timing-function:var(--ease-pop)] sm:col-start-2 sm:row-start-1 sm:justify-self-end",
+                        "grid size-7 place-items-center rounded-full transition-all duration-300 [transition-timing-function:var(--ease-pop)] lg:col-start-2 lg:row-start-1 lg:justify-self-end",
                         active
                           ? "scale-100 bg-ink text-lime"
                           : "scale-90 text-transparent ring-[1.5px] ring-inset ring-ink/25"
@@ -471,13 +517,13 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                     </span>
                     <span
                       className={cn(
-                        "col-span-3 text-pretty text-sm leading-snug sm:col-span-2 sm:row-start-3 sm:mt-2",
+                        "col-span-3 text-pretty text-[0.9375rem] leading-snug sm:col-span-1 sm:col-start-2 lg:col-span-2 lg:col-start-1 lg:row-start-3 lg:mt-2 lg:text-sm",
                         active ? "text-ink/75" : "text-muted-foreground"
                       )}
                     >
                       {p.desc}
                     </span>
-                  </button>
+                  </label>
                 );
               })}
             </div>
@@ -543,7 +589,9 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                 >
                   <LayoutPanelTop className="h-5 w-5" />
                 </span>
-                <span className="min-w-0 flex-1">
+                {/* Con base de 9rem: si no cabe junto al contador, el contador
+                    baja a su propia fila (flex-wrap) en vez de pisar el texto. */}
+                <span className="min-w-0 grow basis-[9rem]">
                   <span className="block text-[0.9375rem] font-semibold leading-snug text-ink">
                     {t.configurator.extraSections}
                   </span>
@@ -551,11 +599,12 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                     +{display(SECTION_PRICE)} {t.configurator.perUnit}
                   </span>
                 </span>
-                <span className="flex items-center gap-1 rounded-full bg-mint p-1 ring-1 ring-inset ring-ink/[0.06]">
+                <span className="ml-auto flex items-center gap-1 rounded-full bg-mint p-1 ring-1 ring-inset ring-ink/[0.06]">
                   <button
                     type="button"
                     onClick={() => setSections((n) => Math.max(0, n - 1))}
-                    className="grid size-11 place-items-center rounded-full bg-white text-ink shadow-[0_1px_2px_hsl(var(--ink)/0.12)] transition-transform hover:scale-105 active:scale-95"
+                    disabled={sections <= 0}
+                    className="grid size-11 place-items-center rounded-full bg-white text-ink shadow-[0_1px_2px_hsl(var(--ink)/0.12)] transition-transform hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-40"
                     aria-label={t.configurator.removeSection}
                   >
                     <Minus aria-hidden className="h-4 w-4" strokeWidth={2.5} />
@@ -569,8 +618,9 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                   </span>
                   <button
                     type="button"
-                    onClick={() => setSections((n) => n + 1)}
-                    className="grid size-11 place-items-center rounded-full bg-ink text-lime transition-transform hover:scale-105 active:scale-95"
+                    onClick={() => setSections((n) => Math.min(MAX_SECTIONS, n + 1))}
+                    disabled={sections >= MAX_SECTIONS}
+                    className="grid size-11 place-items-center rounded-full bg-ink text-lime transition-transform hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-35"
                     aria-label={t.configurator.addSection}
                   >
                     <Plus aria-hidden className="h-4 w-4" strokeWidth={2.5} />
@@ -664,7 +714,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
               {(currency === "USD" || couponMsg) && (
                 <div className="flex flex-col gap-2 sm:col-span-2">
                   {currency === "USD" && (
-                    <p className="flex items-start gap-2 px-1 text-sm leading-snug text-muted-foreground">
+                    <p className="flex items-start gap-2 px-1 text-[0.9375rem] leading-snug text-muted-foreground sm:text-sm">
                       <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-lime-deep" />
                       {t.configurator.currencyNote(String(USD_MXN_RATE))}
                     </p>
@@ -673,7 +723,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                     <p
                       id="configurator-coupon-status"
                       role="status"
-                      className="flex items-start gap-2 px-1 text-sm leading-snug text-muted-foreground"
+                      className="flex items-start gap-2 px-1 text-[0.9375rem] leading-snug text-muted-foreground sm:text-sm"
                     >
                       <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-signal" />
                       {couponMsg}
@@ -686,281 +736,332 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
         </div>
       </div>
 
-      {/* DERECHA: el resumen como tarjeta negra, con el total en lima. */}
+      {/* DERECHA: el resumen como tarjeta negra, con el total en lima. Desde
+          xl es la columna fija; antes, una tarjeta ancha en dos columnas
+          (partidas y total | botones de pago). */}
       <div
         data-fx="up"
-        className="min-w-0 lg:col-span-5 xl:col-span-4"
+        className="min-w-0 xl:col-span-4"
         style={{ "--fx-delay": "120ms" } as CSSProperties}
       >
-        <div className="lg:sticky lg:top-[calc(var(--header-h)+var(--gutter))]">
-          <div className="panel panel-ink relative flex flex-col gap-5 overflow-hidden p-4 pt-5 sm:p-7">
+        <div
+          ref={summaryRef}
+          className="scroll-mt-[calc(var(--header-h)+var(--gutter))] xl:sticky xl:top-[calc(var(--header-h)+var(--gutter))]"
+        >
+          <div className="panel panel-ink relative grid gap-5 overflow-hidden p-4 pt-5 sm:p-7 md:grid-cols-2 md:gap-x-7 lg:gap-x-10 lg:p-9 xl:grid-cols-1 xl:p-7">
             <div aria-hidden className="mesh-glow-a opacity-60" />
 
-            <div className="relative flex items-center justify-between gap-3 px-1 sm:px-0">
-              <p className="display-title text-[1.75rem] leading-none text-white">
-                {t.configurator.summary}
-              </p>
-              <span className="inline-flex h-9 items-center gap-2 rounded-full bg-white/10 px-3.5 text-xs font-bold tracking-[0.04em] text-white">
-                <span aria-hidden className="size-2 rounded-full bg-lime" />
-                {currency}
-              </span>
-            </div>
-
-            {/* Partidas: filas con ícono redondo, como la actividad reciente. */}
-            <ul className="relative flex flex-col rounded-card bg-white/[0.05] px-3 ring-1 ring-inset ring-white/10 sm:px-4">
-              {items.map((it, i) => {
-                const Icon = itemIcons[i] ?? Plus;
-                return (
-                  <li
-                    key={i}
-                    className="flex items-center gap-3 border-b border-white/10 py-3 last:border-0"
-                  >
-                    <span
-                      aria-hidden
-                      className={cn(
-                        "grid size-9 shrink-0 place-items-center rounded-full",
-                        i === 0 ? "bg-lime text-ink" : "bg-white/10 text-lime"
-                      )}
-                    >
-                      <Icon className="h-4 w-4" />
-                    </span>
-                    <span className="min-w-0 flex-1 text-sm leading-snug text-white/80">{it.source}</span>
-                    <span className="shrink-0 text-[0.9375rem] font-bold tabular-nums text-white">
-                      {display(it.price)}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-
-            {/* El total, como la tarjeta de la referencia. */}
-            <div className="relative overflow-hidden rounded-card bg-[linear-gradient(140deg,hsl(160_20%_17%),hsl(160_32%_6%))] p-5 ring-1 ring-inset ring-white/10 sm:p-6">
-              <svg
-                aria-hidden
-                viewBox="0 0 320 160"
-                fill="none"
-                className="pointer-events-none absolute inset-0 h-full w-full text-white/[0.06]"
-                preserveAspectRatio="xMidYMid slice"
-              >
-                <path d="M-10 120 H70 a14 14 0 0 0 14 -14 V60 a14 14 0 0 1 14 -14 H180" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M-10 140 H110 a14 14 0 0 0 14 -14 V96 a14 14 0 0 1 14 -14 H230" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M150 -10 V20 a14 14 0 0 0 14 14 H330" stroke="currentColor" strokeWidth="1.5" />
-              </svg>
-              <Sparkle aria-hidden className="absolute right-[5.25rem] top-5 h-5 w-5 fill-lime text-lime" />
-
-              <div className="relative flex items-stretch gap-4">
-                <div className="min-w-0 flex-1">
-                  <p className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-semibold text-white/70">{t.configurator.payNow}</span>
-                    <span className="rounded-full bg-white/10 px-2.5 py-1 text-[0.6875rem] font-bold text-white/85">
-                      {mode === "anticipo"
-                        ? t.configurator.modeAdvanceLabel
-                        : t.configurator.modeFullLabel}
-                    </span>
-                  </p>
-                  <p className="display-xl mt-3 break-all text-[clamp(3.25rem,6vw,4.25rem)] leading-[0.9] tabular-nums text-lime">
-                    {formatMoney(payableNow, currency)}
-                  </p>
-                  {currency === "USD" && (
-                    <p className="mt-1.5 text-xs font-medium tabular-nums text-white/60">
-                      ≈ {formatMXN(payableNowMxn)}
-                    </p>
-                  )}
-                  <p aria-hidden className="mt-4 flex gap-3 text-sm font-bold tracking-[0.18em] text-white/35">
-                    <span>••••</span>
-                    <span>••••</span>
-                    <span>{String(projectTotalMxn).slice(-4).padStart(4, "0")}</span>
-                  </p>
-                </div>
-                <span
-                  aria-hidden
-                  className="flex w-12 shrink-0 items-center justify-center rounded-full bg-lime text-ink sm:w-14"
+            <div className="relative flex min-w-0 flex-col gap-5">
+              <div className="relative flex items-center justify-between gap-3 px-1 sm:px-0">
+                <p
+                  ref={summaryTitleRef}
+                  tabIndex={-1}
+                  className="display-title text-[1.75rem] leading-none text-white outline-none"
                 >
-                  <Nfc className="h-5 w-5" />
-                </span>
-              </div>
-
-              <div className="relative mt-4 flex items-center justify-between gap-3 border-t border-dashed border-white/15 pt-4 text-sm">
-                <span className="text-white/65">{t.configurator.totalProject}</span>
-                <span className="font-bold tabular-nums text-white">
-                  {formatMoney(projectTotal, currency)}
-                </span>
-              </div>
-            </div>
-
-            {/* Botones de pago. */}
-            <div className="relative flex flex-col gap-2.5">
-              <Button
-                size="lg"
-                onClick={() => pay("/api/stripe-checkout", "Stripe")}
-                disabled={!!loading || projectTotal <= 0}
-                className="w-full justify-between whitespace-normal pl-2 pr-2.5 text-left leading-tight"
-              >
-                <span className="flex items-center gap-3">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white">
-                    {loading === "Stripe" ? (
-                      <Loader2 className="h-4 w-4 animate-spin text-ink" />
-                    ) : (
-                      <SiStripe
-                        className="h-4 w-4"
-                        style={{ color: STRIPE_BRAND }}
-                        aria-hidden
-                      />
-                    )}
-                  </span>
-                  {t.configurator.payStripe}
-                </span>
-                <ButtonArrow tone="ink" className="mr-0 ml-2" />
-              </Button>
-              <Button
-                size="lg"
-                variant="white"
-                onClick={() => pay("/api/mercadopago", "Mercado Pago")}
-                disabled={!!loading || projectTotal <= 0}
-                className="w-full justify-between whitespace-normal pl-2 pr-2.5 text-left leading-tight"
-              >
-                <span className="flex items-center gap-3">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#00B1EA]/10">
-                    {loading === "Mercado Pago" ? (
-                      <Loader2 className="h-4 w-4 animate-spin text-ink" />
-                    ) : (
-                      <SiMercadopago
-                        className="h-5 w-5"
-                        style={{ color: MERCADOPAGO_BRAND }}
-                        aria-hidden
-                      />
-                    )}
-                  </span>
-                  {t.configurator.payMercadoPago}
-                </span>
-                <ButtonArrow tone="ink" className="mr-0 ml-2" />
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={() => setTransfer((prev) => !prev)}
-                aria-expanded={transfer}
-                aria-controls="bank-transfer-details"
-                className="w-full justify-start gap-3 whitespace-normal border-white/20 pl-2 text-left leading-tight text-white hover:border-white/50 hover:bg-white/[0.06]"
-              >
-                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white/10 text-lime">
-                  <Building2 className="h-4 w-4" />
-                </span>
-                {t.configurator.payTransfer}
-                <Plus
-                  aria-hidden
-                  className={cn(
-                    "ml-auto mr-2 h-4 w-4 transition-transform duration-300",
-                    transfer && "rotate-45"
-                  )}
-                />
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={emailQuote}
-                disabled={projectTotal <= 0}
-                className="w-full text-white/80 hover:bg-white/[0.06] hover:text-white"
-              >
-                <Mail className="h-4 w-4" />
-                {t.configurator.emailQuote}
-              </Button>
-            </div>
-
-            {status && (
-              <p
-                className="relative flex items-start gap-2.5 rounded-inner bg-white/[0.07] px-4 py-3 text-sm leading-snug text-white/85"
-                role="status"
-              >
-                <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-lime" />
-                {status}
-              </p>
-            )}
-
-            {/* Datos para transferencia. */}
-            {transfer && (
-              <div
-                id="bank-transfer-details"
-                className="relative flex flex-col rounded-card bg-white/[0.05] p-4 ring-1 ring-inset ring-white/10 sm:p-5"
-              >
-                <p className="mb-2 text-sm leading-snug text-white/75">
-                  {t.configurator.transferInstructions(formatMXN(payableNowMxn))}
+                  {t.configurator.summary}
                 </p>
-                {BANK.map((b) => (
-                  <div
-                    key={b.label}
-                    className="flex items-center gap-3 border-b border-white/10 py-2 last:border-0"
-                  >
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-xs font-semibold text-white/55">{b.label}</span>
-                      <span className="block break-words text-[0.9375rem] font-bold tabular-nums tracking-[0.01em] text-white">
-                        {b.value}
+                <span className="inline-flex h-9 items-center gap-2 rounded-full bg-white/10 px-3.5 text-xs font-bold tracking-[0.04em] text-white">
+                  <span aria-hidden className="size-2 rounded-full bg-lime" />
+                  {currency}
+                </span>
+              </div>
+
+              {/* Partidas: filas con ícono redondo, como la actividad reciente. */}
+              <ul className="relative flex flex-col rounded-card bg-white/[0.05] px-3 ring-1 ring-inset ring-white/10 sm:px-4">
+                {items.map((it, i) => {
+                  const Icon = itemIcons[i] ?? Plus;
+                  return (
+                    <li
+                      key={i}
+                      className="flex items-center gap-3 border-b border-white/10 py-3 last:border-0"
+                    >
+                      <span
+                        aria-hidden
+                        className={cn(
+                          "grid size-9 shrink-0 place-items-center rounded-full",
+                          i === 0 ? "bg-lime text-ink" : "bg-white/10 text-lime"
+                        )}
+                      >
+                        <Icon className="h-4 w-4" />
                       </span>
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => copy(b.value, b.label)}
-                      className="grid size-11 shrink-0 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-lime hover:text-ink"
-                      aria-label={t.configurator.copyLabel(b.label)}
-                    >
-                      {copied === b.label ? (
-                        <Check className="h-4 w-4 text-lime" />
-                      ) : (
-                        <Copy className="h-4 w-4" />
-                      )}
-                    </button>
+                      <span className="min-w-0 flex-1 text-sm leading-snug text-white/80">{it.source}</span>
+                      <span className="shrink-0 text-[0.9375rem] font-bold tabular-nums text-white">
+                        {display(it.price)}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              {/* El total, como la tarjeta de la referencia. */}
+              <div className="relative overflow-hidden rounded-card bg-[linear-gradient(140deg,hsl(160_20%_17%),hsl(160_32%_6%))] p-5 ring-1 ring-inset ring-white/10 sm:p-6">
+                <svg
+                  aria-hidden
+                  viewBox="0 0 320 160"
+                  fill="none"
+                  className="pointer-events-none absolute inset-0 h-full w-full text-white/[0.06]"
+                  preserveAspectRatio="xMidYMid slice"
+                >
+                  <path d="M-10 120 H70 a14 14 0 0 0 14 -14 V60 a14 14 0 0 1 14 -14 H180" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M-10 140 H110 a14 14 0 0 0 14 -14 V96 a14 14 0 0 1 14 -14 H230" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M150 -10 V20 a14 14 0 0 0 14 14 H330" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
+                <Sparkle aria-hidden className="absolute right-[5.25rem] top-5 h-5 w-5 fill-lime text-lime" />
+
+                <div className="relative flex items-stretch gap-4">
+                  <div className="min-w-0 flex-1">
+                    <p className="flex flex-wrap items-center gap-2">
+                      <span className="text-sm font-semibold text-white/70">{t.configurator.payNow}</span>
+                      <span className="rounded-full bg-white/10 px-2.5 py-1 text-[0.6875rem] font-bold text-white/85">
+                        {mode === "anticipo"
+                          ? t.configurator.modeAdvanceLabel
+                          : t.configurator.modeFullLabel}
+                      </span>
+                    </p>
+                    <p className="display-xl mt-3 break-all text-[clamp(3.25rem,6vw,4.25rem)] leading-[0.9] tabular-nums text-lime">
+                      {formatMoney(payableNow, currency)}
+                    </p>
+                    {currency === "USD" && (
+                      <p className="mt-1.5 text-xs font-medium tabular-nums text-white/60">
+                        ≈ {formatMXN(payableNowMxn)}
+                      </p>
+                    )}
+                    <p aria-hidden className="mt-4 flex gap-3 text-sm font-bold tracking-[0.18em] text-white/35">
+                      <span>••••</span>
+                      <span>••••</span>
+                      <span>{String(projectTotalMxn).slice(-4).padStart(4, "0")}</span>
+                    </p>
                   </div>
-                ))}
-                <div className="mt-3 flex flex-col gap-2">
-                  <Button asChild className="w-full whitespace-normal text-center leading-tight">
-                    <a
-                      href={`https://wa.me/${WA_PHONE}?text=${transferMsg}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() =>
-                        trackEvent("begin_checkout", {
-                          payment_provider: "bank_transfer",
-                          value: payableNowMxn,
-                          currency,
-                        })
-                      }
-                    >
-                      <FaWhatsapp className="h-4 w-4" />
-                      {t.configurator.sendWhatsapp}
-                    </a>
-                  </Button>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="w-full whitespace-normal text-center leading-tight"
+                  <span
+                    aria-hidden
+                    className="flex w-12 shrink-0 items-center justify-center rounded-full bg-lime text-ink sm:w-14"
                   >
-                    <a href="mailto:bryanf@bryanfdesign.com.mx?subject=Comprobante%20de%20transferencia%20-%20BryanF%20Design">
-                      {t.configurator.sendEmail}
-                    </a>
-                  </Button>
+                    <Nfc className="h-5 w-5" />
+                  </span>
+                </div>
+
+                <div className="relative mt-4 flex items-center justify-between gap-3 border-t border-dashed border-white/15 pt-4 text-sm">
+                  <span className="text-white/65">{t.configurator.totalProject}</span>
+                  <span className="font-bold tabular-nums text-white">
+                    {formatMoney(projectTotal, currency)}
+                  </span>
                 </div>
               </div>
-            )}
+            </div>
 
-            <p className="relative px-2 text-center text-xs leading-relaxed text-white/60">
-              <ShieldCheck aria-hidden className="-mt-0.5 mr-1.5 inline h-4 w-4 text-lime" />
-              {t.configurator.securePaymentPrefix}{" "}
-              <a
-                href="/terminos"
-                className="rounded-sm py-3 underline underline-offset-2 transition-colors hover:text-lime"
-              >
-                {t.configurator.terms}
-              </a>{" "}
-              {t.configurator.and}{" "}
-              <a
-                href="/privacidad"
-                className="rounded-sm py-3 underline underline-offset-2 transition-colors hover:text-lime"
-              >
-                {t.configurator.privacyNotice}
-              </a>
-              .
-            </p>
+            <div className="relative flex min-w-0 flex-col gap-5">
+              {/* Botones de pago. */}
+              <div className="relative flex flex-col gap-2.5">
+                <Button
+                  size="lg"
+                  onClick={() => pay("/api/stripe-checkout", "Stripe")}
+                  disabled={!!loading || projectTotal <= 0}
+                  className="w-full justify-between whitespace-normal pl-2 pr-2.5 text-left leading-tight"
+                >
+                  <span className="flex items-center gap-3">
+                    <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white">
+                      {loading === "Stripe" ? (
+                        <Loader2 className="h-4 w-4 animate-spin text-ink" />
+                      ) : (
+                        <SiStripe
+                          className="h-4 w-4"
+                          style={{ color: STRIPE_BRAND }}
+                          aria-hidden
+                        />
+                      )}
+                    </span>
+                    {t.configurator.payStripe}
+                  </span>
+                  <ButtonArrow tone="ink" className="mr-0 ml-2" />
+                </Button>
+                <Button
+                  size="lg"
+                  variant="white"
+                  onClick={() => pay("/api/mercadopago", "Mercado Pago")}
+                  disabled={!!loading || projectTotal <= 0}
+                  className="w-full justify-between whitespace-normal pl-2 pr-2.5 text-left leading-tight"
+                >
+                  <span className="flex items-center gap-3">
+                    <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#00B1EA]/10">
+                      {loading === "Mercado Pago" ? (
+                        <Loader2 className="h-4 w-4 animate-spin text-ink" />
+                      ) : (
+                        <SiMercadopago
+                          className="h-5 w-5"
+                          style={{ color: MERCADOPAGO_BRAND }}
+                          aria-hidden
+                        />
+                      )}
+                    </span>
+                    {t.configurator.payMercadoPago}
+                  </span>
+                  <ButtonArrow tone="ink" className="mr-0 ml-2" />
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => setTransfer((prev) => !prev)}
+                  aria-expanded={transfer}
+                  aria-controls="bank-transfer-details"
+                  className="w-full justify-start gap-3 whitespace-normal border-white/20 pl-2 text-left leading-tight text-white hover:border-white/50 hover:bg-white/[0.06]"
+                >
+                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white/10 text-lime">
+                    <Building2 className="h-4 w-4" />
+                  </span>
+                  {t.configurator.payTransfer}
+                  <Plus
+                    aria-hidden
+                    className={cn(
+                      "ml-auto mr-2 h-4 w-4 transition-transform duration-300",
+                      transfer && "rotate-45"
+                    )}
+                  />
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={emailQuote}
+                  disabled={projectTotal <= 0}
+                  className="w-full text-white/80 hover:bg-white/[0.06] hover:text-white"
+                >
+                  <Mail className="h-4 w-4" />
+                  {t.configurator.emailQuote}
+                </Button>
+              </div>
+
+              {status && (
+                <p
+                  className="relative flex items-start gap-2.5 rounded-inner bg-white/[0.07] px-4 py-3 text-sm leading-snug text-white/85"
+                  role="status"
+                >
+                  <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-lime" />
+                  {status}
+                </p>
+              )}
+
+              {/* Datos para transferencia. */}
+              {transfer && (
+                <div
+                  id="bank-transfer-details"
+                  className="relative flex flex-col rounded-card bg-white/[0.05] p-4 ring-1 ring-inset ring-white/10 sm:p-5"
+                >
+                  <p className="mb-2 text-[0.9375rem] leading-snug text-white/75 sm:text-sm">
+                    {t.configurator.transferInstructions(formatMXN(payableNowMxn))}
+                  </p>
+                  {BANK.map((b) => (
+                    <div
+                      key={b.label}
+                      className="flex items-center gap-3 border-b border-white/10 py-2 last:border-0"
+                    >
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-xs font-semibold text-white/55">{b.label}</span>
+                        <span className="block break-words text-[0.9375rem] font-bold tabular-nums tracking-[0.01em] text-white">
+                          {b.value}
+                        </span>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => copy(b.value, b.label)}
+                        className="grid size-11 shrink-0 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-lime hover:text-ink"
+                        aria-label={t.configurator.copyLabel(b.label)}
+                      >
+                        {copied === b.label ? (
+                          <Check className="h-4 w-4 text-lime" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                  ))}
+                  <div className="mt-3 flex flex-col gap-2">
+                    <Button asChild className="w-full whitespace-normal text-center leading-tight">
+                      <a
+                        href={`https://wa.me/${WA_PHONE}?text=${transferMsg}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() =>
+                          trackEvent("begin_checkout", {
+                            payment_provider: "bank_transfer",
+                            value: payableNowMxn,
+                            currency,
+                          })
+                        }
+                      >
+                        <FaWhatsapp className="h-4 w-4" />
+                        {t.configurator.sendWhatsapp}
+                      </a>
+                    </Button>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="w-full whitespace-normal text-center leading-tight"
+                    >
+                      <a href="mailto:bryanf@bryanfdesign.com.mx?subject=Comprobante%20de%20transferencia%20-%20BryanF%20Design">
+                        {t.configurator.sendEmail}
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              <p className="relative px-2 text-center text-xs leading-relaxed text-white/60">
+                <ShieldCheck aria-hidden className="-mt-0.5 mr-1.5 inline h-4 w-4 text-lime" />
+                {t.configurator.securePaymentPrefix}{" "}
+                <a
+                  href="/terminos"
+                  className="rounded-sm py-3 underline underline-offset-2 transition-colors hover:text-lime"
+                >
+                  {t.configurator.terms}
+                </a>{" "}
+                {t.configurator.and}{" "}
+                <a
+                  href="/privacidad"
+                  className="rounded-sm py-3 underline underline-offset-2 transition-colors hover:text-lime"
+                >
+                  {t.configurator.privacyNotice}
+                </a>
+                .
+              </p>
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* Teléfono: el total en vivo, flotando en la fila de los botones
+          flotantes (a la derecha del de accesibilidad; Lumina y WhatsApp se
+          apartan dentro del cotizador). Se va cuando el resumen ya se ve. */}
+      <div
+        className={cn(
+          "fixed bottom-[var(--fab-edge)] left-[calc(0.75rem+var(--fab-size)+var(--fab-gap))] right-3 z-[118] transition-[transform,opacity,visibility] duration-300 [transition-timing-function:var(--ease-out)] motion-reduce:transition-none sm:hidden [html.menu-open_&]:invisible [html.menu-open_&]:opacity-0",
+          showTotalDock
+            ? "visible translate-y-0 opacity-100"
+            : "pointer-events-none invisible translate-y-4 opacity-0"
+        )}
+      >
+        <button
+          type="button"
+          onClick={goToSummary}
+          className="flex h-[var(--fab-size)] w-full items-center gap-3 rounded-full bg-ink pl-5 pr-1.5 text-left text-white shadow-float ring-1 ring-white/10 transition-transform active:scale-[0.98]"
+        >
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-xs font-semibold leading-tight text-white/65">
+              {mode === "anticipo" ? t.configurator.modeAdvanceLabel : t.configurator.modeFullLabel}
+            </span>
+            <span
+              key={`${payableNow}-${currency}`}
+              className="block text-lg font-bold leading-tight tabular-nums text-lime duration-300 animate-in fade-in-0 zoom-in-90 motion-reduce:animate-none"
+            >
+              {formatMoney(payableNow, currency)}
+              <span className="text-xs font-semibold text-white/55"> {currency}</span>
+            </span>
+          </span>
+          <span className="sr-only">{t.configurator.viewSummary}</span>
+          <span
+            aria-hidden
+            className="grid size-10 shrink-0 place-items-center rounded-full bg-lime text-ink"
+          >
+            <ArrowDown className="h-4 w-4" strokeWidth={2.5} />
+          </span>
+        </button>
       </div>
     </section>
   );

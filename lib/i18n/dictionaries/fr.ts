@@ -20,6 +20,8 @@ const fr: Dictionary = {
   },
   marquee: {
     words: ["Design", "Code", "SEO", "Performance", "E-commerce", "Branding"],
+    pause: "Mettre l'animation en pause",
+    play: "Reprendre l'animation",
   },
   hero: {
     eyebrow: "Design et développement web au Mexique",
@@ -69,7 +71,7 @@ const fr: Dictionary = {
     projectsCaption: "menés avec succès",
     deliveryPrefix: "Dès",
     days: "jours",
-    deliveryCaption: "ouvrés de livraison",
+    deliveryCaption: "jours ouvrés de livraison",
   },
   process: {
     eyebrow: "Comment on travaille",
@@ -126,6 +128,9 @@ const fr: Dictionary = {
     newBadge: "Nouveau",
     casesTitle: "Études de cas",
     casesSubtitle: "Le problème, la décision et le résultat derrière quatre projets.",
+    casesEyebrow: "Les coulisses",
+    launchedTitle: "Tout juste lancés",
+    launchedNote: "Déjà en ligne : ouvrez-les et parcourez-les en direct.",
     nextTitle: "Votre site pourrait être le prochain.",
     moreLabel: "projets de plus",
     descs: {
@@ -369,6 +374,7 @@ const fr: Dictionary = {
       `Bonjour, je souhaite payer mon projet par virement.\n\nFormule : ${plan}\nModules : ${modules}\nMode : ${mode}\nTotal du projet : ${total}\nÀ payer maintenant : ${payNow}`,
     modeFullLabel: "Paiement complet",
     modeAdvanceLabel: "Acompte de 50 %",
+    viewSummary: "Voir le résumé et payer",
     none: "aucun",
   },
   faq: {
@@ -429,6 +435,7 @@ const fr: Dictionary = {
     inspirationLabel: "Ce que j'apporte au travail",
     inspiration:
       "Je m'inspire des voitures hautes performances — ma préférée est la Honda Civic Type R 2016 —, de la culture visuelle japonaise et de la logique d'un réseau bien construit. Je ne les colle pas comme décoration : je les traduis en précision, rythme et connexion.",
+    inspirationAccent: "précision, rythme et connexion",
     chips: ["Design + code", "Contact direct", "Performance intentionnelle"],
     principlesLabel: "Ma façon de travailler · précision, rythme et connexion",
     principles: [
@@ -579,6 +586,7 @@ const fr: Dictionary = {
     send: "Envoyer",
     open: "Ouvrir le chat avec Lumina",
     teaser: "Vous voulez créer votre site ? Demandez-moi les tarifs, les délais ou comment démarrer ✨",
+    teaserShort: "Un site en vue ? Parlons-en ✨",
     typing: "En train d'écrire…",
     retry: "Réessayer",
     languageInstruction: "français",

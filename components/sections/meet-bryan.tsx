@@ -1,9 +1,9 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Check, CodeXml, Sparkle } from "lucide-react";
+import { Check, CodeXml, Crosshair, Gauge, Network, Sparkle, type LucideIcon } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
 import { ChapterMark } from "@/components/japan/chapter-mark";
@@ -13,12 +13,8 @@ import { cn } from "@/lib/utils";
 
 const WHATSAPP = "https://wa.me/525663012505";
 
-/** Superficie de cada criterio: lima, blanca y tinta, como las tarjetas de Paytin. */
-const PRINCIPLE_SURFACES = [
-  "panel panel-lime",
-  "panel shadow-soft",
-  "panel panel-ink",
-] as const;
+/** Icono de cada criterio, en el orden del diccionario: precisión, ritmo, conexión. */
+const PRINCIPLE_ICONS: LucideIcon[] = [Crosshair, Gauge, Network];
 
 function fx(ms: number) {
   return { "--fx-delay": `${ms}ms` } as CSSProperties;
@@ -30,24 +26,44 @@ function splitTitle(title: string) {
   return match ? { lead: match[1], rest: match[2] } : { lead: "", rest: title };
 }
 
-/** "Mi forma de trabajar · precisión, ritmo y conexión" → titular + bajada. */
-function splitLabel(label: string) {
-  const [head, ...tail] = label.split(/\s*·\s*/);
-  return { head, tail: tail.join(" · ") };
+/**
+ * "Mi forma de trabajar · precisión, ritmo y conexión" → solo el titular: la
+ * bajada repetía los nombres de los tres criterios que vienen justo debajo.
+ */
+function labelHead(label: string) {
+  return label.split(/\s*·\s*/)[0] ?? label;
+}
+
+/** Envuelve la última aparición de `accent` dentro de `text` (si no está, queda igual). */
+function withAccent(text: string, accent: string, className: string): ReactNode {
+  const at = accent ? text.lastIndexOf(accent) : -1;
+  if (at < 0) return text;
+  return (
+    <>
+      {text.slice(0, at)}
+      <span className={className}>{accent}</span>
+      {text.slice(at + accent.length)}
+    </>
+  );
 }
 
 /**
  * Sobre mí — Bryan sale por arriba de un panel bosque (como los personajes
  * de las referencias), junto a un relato en tarjeta blanca con la cita
- * editorial, los chips y las acciones. Debajo, la foto del escritorio y los
- * tres criterios de trabajo en tarjetas tipo app: lima, blanca y tinta.
+ * editorial, los chips y las acciones, y la foto del escritorio (siempre
+ * apaisada). Debajo, los tres criterios de trabajo en un solo panel blanco,
+ * en columnas separadas por filetes finos.
+ *
+ * Retícula: en teléfono todo apila; de tableta a 1279px, retrato y foto van
+ * lado a lado y el relato debajo a todo lo ancho; desde xl el relato ocupa la
+ * columna derecha a dos filas.
  */
 export function MeetBryan() {
   const { t, locale } = useLanguage();
   const { lead, rest } = splitTitle(t.about.title);
   // Instrument Serif no trae glifos CJK: en japonés y chino la cita va recta.
   const cjk = locale === "ja" || locale === "zh";
-  const label = splitLabel(t.about.principlesLabel);
+  const principlesTitle = labelHead(t.about.principlesLabel);
 
   return (
     <section
@@ -55,10 +71,10 @@ export function MeetBryan() {
       aria-labelledby="bryan-title"
       className="relative flex flex-col gap-gutter"
     >
-      <div className="grid gap-gutter lg:grid-cols-12 lg:grid-rows-[auto_1fr]">
+      <div className="grid gap-gutter md:grid-cols-12 xl:grid-rows-[auto_1fr]">
         {/* Retrato: el panel arranca a la altura del cuello y la cabeza lo rebasa. */}
-        <div data-fx="up" className="min-w-0 lg:col-span-5 lg:row-start-1">
-          <figure className="relative mx-auto max-w-[36rem] pt-5 lg:max-w-none lg:pt-2">
+        <div data-fx="up" className="min-w-0 md:col-span-5 md:row-start-1">
+          <figure className="relative mx-auto max-w-[36rem] pt-5 md:max-w-none xl:pt-2">
             <div className="panel panel-forest absolute inset-x-0 bottom-0 top-[25%]">
               {/* Decoración recortada por el panel. */}
               <div aria-hidden className="absolute inset-0 overflow-hidden rounded-[inherit]">
@@ -107,7 +123,7 @@ export function MeetBryan() {
               alt={`Bryan F. — ${t.about.role}`}
               width={623}
               height={558}
-              sizes="(min-width: 1024px) 34rem, (min-width: 640px) 36rem, 92vw"
+              sizes="(min-width: 1280px) 34rem, (min-width: 768px) 40vw, (min-width: 640px) 36rem, 92vw"
               className="relative z-10 mx-auto h-auto w-[94%] drop-shadow-[0_24px_30px_hsl(160_40%_8%/0.35)]"
             />
 
@@ -117,7 +133,7 @@ export function MeetBryan() {
               </span>
               <span className="leading-tight">
                 <span className="block text-[0.9375rem] font-bold text-ink">Bryan F.</span>
-                <span className="block text-xs font-medium text-ink/60">{t.about.role}</span>
+                <span className="block text-xs font-medium text-ink/70">{t.about.role}</span>
               </span>
             </figcaption>
           </figure>
@@ -127,7 +143,7 @@ export function MeetBryan() {
         <div
           data-fx="up"
           style={fx(80)}
-          className="min-w-0 lg:col-span-7 lg:col-start-6 lg:row-span-2 lg:row-start-1"
+          className="min-w-0 md:col-span-12 md:row-start-2 xl:col-span-7 xl:col-start-6 xl:row-span-2 xl:row-start-1"
         >
           <div className="panel flex h-full flex-col p-5 shadow-soft sm:p-8 lg:p-12">
             <ChapterMark label={t.about.eyebrow} index={3} />
@@ -147,7 +163,8 @@ export function MeetBryan() {
               {t.about.subtitle}
             </p>
 
-            {/* Cita editorial: etiqueta espaciada, filete fino y serif itálica. */}
+            {/* Cita editorial: etiqueta espaciada, filete fino y el texto en
+                sans legible; solo el remate va en serif itálica. */}
             <div className="relative mt-8 rounded-card bg-mint p-5 pt-6 ring-1 ring-ink/[0.05] sm:p-7">
               <span
                 aria-hidden
@@ -161,13 +178,17 @@ export function MeetBryan() {
               </p>
               <p
                 className={cn(
-                  "mt-4 text-pretty text-ink",
-                  cjk
-                    ? "text-[1.0625rem] font-medium leading-[1.8] sm:text-lg"
-                    : "font-serif text-[1.35rem] italic leading-[1.32] sm:text-[1.5rem]"
+                  "mt-4 max-w-[62ch] text-pretty text-[1.0625rem] text-ink/80 sm:text-lg",
+                  cjk ? "leading-[1.8]" : "leading-[1.6]"
                 )}
               >
-                {t.about.inspiration}
+                {withAccent(
+                  t.about.inspiration,
+                  t.about.inspirationAccent,
+                  cjk
+                    ? "font-bold text-forest"
+                    : "font-serif text-[1.2em] italic leading-none text-forest"
+                )}
               </p>
             </div>
 
@@ -185,7 +206,7 @@ export function MeetBryan() {
               ))}
             </ul>
 
-            <div className="mt-8 flex flex-col gap-2.5 sm:flex-row lg:mt-auto lg:pt-10">
+            <div className="mt-8 flex flex-col gap-2.5 sm:flex-row xl:mt-auto xl:pt-10">
               <Button asChild size="lg" variant="ink" className="pr-2.5">
                 <Link href={WHATSAPP} target="_blank" rel="noopener noreferrer">
                   <FaWhatsapp aria-hidden className="h-5 w-5 text-lime" />
@@ -200,15 +221,21 @@ export function MeetBryan() {
           </div>
         </div>
 
-        {/* El escritorio */}
-        <div data-fx="up" style={fx(140)} className="min-w-0 lg:col-span-5 lg:row-start-2">
-          <figure className="group relative h-full min-h-[15rem] overflow-hidden rounded-panel bg-ink sm:min-h-[18rem]">
+        {/* El escritorio: la foto es apaisada (1672×941) y así se queda. En
+            teléfono manda la proporción; desde tableta llena su celda, que
+            nunca baja de 16rem y siempre es más ancha que alta. */}
+        <div
+          data-fx="up"
+          style={fx(140)}
+          className="min-w-0 md:col-span-7 md:col-start-6 md:row-start-1 xl:col-span-5 xl:col-start-1 xl:row-start-2"
+        >
+          <figure className="group relative aspect-[16/10] overflow-hidden rounded-panel bg-ink md:aspect-auto md:h-full md:min-h-[16rem] xl:min-h-[18rem]">
             <Image
               src="/img/me/about-photo.png"
               alt={t.about.photoAlt}
               fill
-              sizes="(min-width: 1024px) 38vw, 100vw"
-              className="object-cover object-[50%_42%] transition-transform duration-700 [transition-timing-function:var(--ease-out)] group-hover:scale-[1.04]"
+              sizes="(min-width: 1280px) 40vw, (min-width: 768px) 58vw, 100vw"
+              className="object-cover object-[50%_40%] transition-transform duration-700 [transition-timing-function:var(--ease-out)] group-hover:scale-[1.04]"
             />
             <div
               aria-hidden
@@ -226,116 +253,53 @@ export function MeetBryan() {
         </div>
       </div>
 
-      {/* Criterios de trabajo: rótulo con filete editorial y tres tarjetas. */}
+      {/* Criterios de trabajo: un solo panel blanco, el titular arriba y tres
+          columnas separadas por filetes, cada una con su botón redondo. En
+          teléfono son filas compactas (icono a la izquierda). */}
       <div data-fx="up" className="min-w-0">
-        <div className="flex flex-col gap-1.5 px-1 pt-4 sm:flex-row sm:items-center sm:gap-6 md:pt-6">
-          <p className="display-title shrink-0 text-[clamp(1.75rem,2.6vw,2.4rem)] text-ink">
-            {label.head}
-          </p>
-          <span aria-hidden className="hidden h-px min-w-8 flex-1 bg-ink/15 sm:block" />
-          {label.tail && (
-            <p className="text-base font-medium text-muted-foreground first-letter:uppercase sm:text-lg">
-              {label.tail}
-            </p>
-          )}
+        <div className="panel p-5 shadow-soft sm:p-8 lg:p-10">
+          <h3 className="display-title text-[clamp(1.75rem,2.6vw,2.4rem)] text-ink">
+            {principlesTitle}
+          </h3>
+
+          <ul className="mt-6 grid md:mt-9 md:grid-cols-3">
+            {t.about.principles.map((principle, index) => {
+              const Icon = PRINCIPLE_ICONS[index] ?? Sparkle;
+              return (
+                <li
+                  key={principle.title}
+                  className="grid min-w-0 grid-cols-[3rem_minmax(0,1fr)] gap-x-4 border-t border-border py-5 first:border-t-0 first:pt-0 last:pb-0 md:flex md:flex-col md:gap-6 md:border-l md:border-t-0 md:px-7 md:py-0 md:first:border-l-0 md:first:pl-0 md:last:pr-0 lg:px-9"
+                >
+                  <span
+                    aria-hidden
+                    className="grid size-12 place-items-center rounded-full bg-ink text-lime"
+                  >
+                    <Icon className="h-5 w-5" strokeWidth={2.25} />
+                  </span>
+                  <div className="min-w-0">
+                    <h4 className="display-title text-[1.5rem] text-ink md:text-[1.75rem]">
+                      {principle.title}
+                    </h4>
+                    <p className="mt-1.5 text-pretty text-[0.9375rem] leading-relaxed text-muted-foreground md:mt-2 md:text-base">
+                      {principle.body}
+                    </p>
+                    <ul className="mt-4 flex flex-wrap gap-1.5">
+                      {principle.detail.split(/\s*·\s*/).map((item) => (
+                        <li
+                          key={item}
+                          className="rounded-full bg-ink/[0.06] px-3 py-1.5 text-xs font-semibold text-ink/80"
+                        >
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       </div>
-
-      <div className="grid gap-gutter md:grid-cols-3">
-        {t.about.principles.map((principle, index) => (
-          <div
-            key={principle.title}
-            data-fx="up"
-            style={fx(index * 100)}
-            className="min-w-0"
-          >
-            <article
-              className={cn(
-                "group relative flex h-full min-h-[17rem] flex-col p-6 transition-transform duration-300 [transition-timing-function:var(--ease-out)] hover:-translate-y-1 md:p-7",
-                PRINCIPLE_SURFACES[index] ?? "panel shadow-soft"
-              )}
-            >
-              <div className="flex items-start justify-between gap-4">
-                <span
-                  className={cn(
-                    "display-xl text-[5.25rem] leading-[0.8]",
-                    index === 1 && "text-forest",
-                    index === 2 && "text-lime"
-                  )}
-                >
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <PrincipleViz index={index} />
-              </div>
-              <h3 className="display-title mt-auto pt-10 text-[2rem]">{principle.title}</h3>
-              <p className="mt-2 text-pretty text-[0.975rem] leading-relaxed text-muted-foreground">
-                {principle.body}
-              </p>
-              <ul className="mt-5 flex flex-wrap gap-1.5">
-                {principle.detail.split(/\s*·\s*/).map((item) => (
-                  <li
-                    key={item}
-                    className="rounded-full bg-foreground/[0.08] px-3 py-1.5 text-xs font-semibold text-foreground/85"
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </article>
-          </div>
-        ))}
-      </div>
     </section>
-  );
-}
-
-/** Mini gráfico de cada criterio: retícula, barras y nodos (decorativo). */
-function PrincipleViz({ index }: { index: number }) {
-  if (index === 0) {
-    // Precisión: una retícula de puntos con uno solo marcado.
-    return (
-      <span aria-hidden className="grid grid-cols-4 gap-1.5 pt-1">
-        {Array.from({ length: 12 }, (_, i) => (
-          <span
-            key={i}
-            className={cn(
-              "size-2.5 rounded-full",
-              i === 6 ? "bg-ink ring-[5px] ring-ink/15" : "bg-ink/20"
-            )}
-          />
-        ))}
-      </span>
-    );
-  }
-  if (index === 1) {
-    // Ritmo: barras redondeadas, la última en lima.
-    return (
-      <span aria-hidden className="flex h-14 items-end gap-1.5">
-        {[38, 64, 48, 86, 70, 100].map((h, i) => (
-          <span
-            key={i}
-            style={{ height: `${h}%` }}
-            className={cn("w-2.5 rounded-full", i === 5 ? "bg-lime" : "bg-ink/10")}
-          />
-        ))}
-      </span>
-    );
-  }
-  // Conexión: tres nodos unidos.
-  return (
-    <svg aria-hidden viewBox="0 0 96 56" className="h-14 w-24 text-lime">
-      <path
-        d="M12 44 C 30 44, 30 12, 48 12 S 66 44, 84 44"
-        fill="none"
-        stroke="currentColor"
-        strokeOpacity="0.45"
-        strokeWidth="2"
-        strokeDasharray="3 5"
-        strokeLinecap="round"
-      />
-      <circle cx="12" cy="44" r="7" fill="currentColor" />
-      <circle cx="48" cy="12" r="7" fill="none" stroke="currentColor" strokeWidth="2.5" />
-      <circle cx="84" cy="44" r="7" fill="currentColor" />
-    </svg>
   );
 }

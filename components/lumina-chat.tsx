@@ -120,6 +120,37 @@ function sanitizeHtml(html: string): string {
   return tpl.innerHTML;
 }
 
+/** Teléfono = la hoja de chat ocupa toda la pantalla (por debajo de `sm`). */
+function useIsPhone() {
+  const [isPhone, setIsPhone] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const update = () => setIsPhone(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  return isPhone;
+}
+
+/** true cuando el héroe (#home) ya quedó arriba; sin héroe, siempre true. */
+function usePastHero() {
+  const [past, setPast] = useState(false);
+  useEffect(() => {
+    const hero = document.getElementById("home");
+    if (!hero) {
+      setPast(true);
+      return;
+    }
+    const io = new IntersectionObserver(([entry]) => {
+      setPast(!entry.isIntersecting && entry.boundingClientRect.top < 0);
+    });
+    io.observe(hero);
+    return () => io.disconnect();
+  }, []);
+  return past;
+}
+
 export function LuminaChat() {
   const { t } = useLanguage();
   const reducedMotion = useReducedMotionPreference();
@@ -129,6 +160,9 @@ export function LuminaChat() {
   const [loading, setLoading] = useState(false);
   const [mood, setMood] = useState<Mood>("Normal");
   const [teaser, setTeaser] = useState(false);
+  const [teaserDue, setTeaserDue] = useState(false);
+  const isPhone = useIsPhone();
+  const pastHero = usePastHero();
   const [messages, setMessages] = useState<Msg[]>([
     { role: "assistant", content: t.lumina.greeting },
   ]);
@@ -199,15 +233,13 @@ export function LuminaChat() {
   // the page underneath shouldn't scroll behind it. Desktop stays a corner
   // panel that never covers navigation, so its scroll is left untouched.
   useEffect(() => {
-    if (!open || typeof window === "undefined") return;
-    const isMobile = window.matchMedia("(max-width: 639px)").matches;
-    if (!isMobile) return;
+    if (!open || !isPhone) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev;
     };
-  }, [open]);
+  }, [open, isPhone]);
 
   // If the visitor changes language before sending their first message,
   // swap the greeting too — but never touch an in-progress conversation.
@@ -239,27 +271,42 @@ export function LuminaChat() {
     }
   }, [configuratorInView, restoreChatFocus]);
 
+  // En teléfono la hoja tapa toda la pantalla: es modal (fondo inert y foco
+  // atrapado). Desde `sm` es una tarjeta de esquina NO modal: la página sigue
+  // usable y el FAB (que muestra la ×) la cierra.
   useEffect(() => {
     if (!open) return;
     const panel = panelRef.current;
     const parent = panel?.parentElement;
-    const background = parent
-      ? Array.from(parent.children)
-          .filter((element): element is HTMLElement => element instanceof HTMLElement && element !== panel)
-          .map((element) => ({ element, inert: element.inert }))
-      : [];
+    const background =
+      isPhone && parent
+        ? Array.from(parent.children)
+            .filter((element): element is HTMLElement => element instanceof HTMLElement && element !== panel)
+            .map((element) => ({ element, inert: element.inert }))
+        : [];
     background.forEach(({ element }) => {
       element.inert = true;
     });
 
-    const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 120);
+    // Con mouse se enfoca la caja de texto. En pantallas táctiles se enfoca el
+    // diálogo: abrir el teclado de golpe tapaba las preguntas rápidas.
+    const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const focusTimer = window.setTimeout(() => {
+      if (finePointer) inputRef.current?.focus();
+      else panel?.focus({ preventScroll: true });
+    }, 120);
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        // Sin modal, Escape solo cierra si el foco está en el chat o su botón.
+        const active = document.activeElement;
+        const inChat =
+          !active || active === document.body || active === fabRef.current || !!panel?.contains(active);
+        if (!isPhone && !inChat) return;
         setOpen(false);
         restoreChatFocus();
         return;
       }
-      if (event.key !== "Tab" || !panel) return;
+      if (!isPhone || event.key !== "Tab" || !panel) return;
 
       const focusable = Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
         (element) => element.getAttribute("aria-hidden") !== "true"
@@ -270,7 +317,8 @@ export function LuminaChat() {
       }
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
-      if (event.shiftKey && (document.activeElement === first || !panel.contains(document.activeElement))) {
+      const active = document.activeElement;
+      if (event.shiftKey && (active === first || active === panel || !panel.contains(active))) {
         event.preventDefault();
         last.focus();
       } else if (!event.shiftKey && document.activeElement === last) {
@@ -286,10 +334,11 @@ export function LuminaChat() {
         element.inert = inert;
       });
     };
-  }, [open, restoreChatFocus]);
+  }, [open, isPhone, restoreChatFocus]);
 
-  // Proactive teaser bubble: pops up once, a bit after load, if the visitor
-  // hasn't opened the chat yet — makes Lumina feel present, not just clickable.
+  // Burbuja proactiva: saluda una sola vez si aún no abrieron el chat. Llega
+  // a los 12.5 s (el aviso de idioma se va a los 11.2 s) y, en teléfono, solo
+  // cuando el héroe ya quedó atrás para no tapar su contenido.
   useEffect(() => {
     try {
       hasTeasedRef.current =
@@ -298,23 +347,24 @@ export function LuminaChat() {
     } catch {
       /* sessionStorage bloqueado */
     }
+    if (hasTeasedRef.current) return;
+    const dueAt = window.setTimeout(() => setTeaserDue(true), 12_500);
+    return () => window.clearTimeout(dueAt);
+  }, []);
 
-    if (open || configuratorInView || hasTeasedRef.current) {
-      setTeaser(false);
-      return;
-    }
-    // El aviso de idioma desaparece a los 11.2 s; Lumina entra después para
-    // que ambos mensajes proactivos no compitan en la misma zona móvil.
-    const showAt = window.setTimeout(() => {
-      markTeased();
-      setTeaser(true);
-    }, 12_500);
-    const hideAt = window.setTimeout(() => setTeaser(false), 19_500);
-    return () => {
-      window.clearTimeout(showAt);
-      window.clearTimeout(hideAt);
-    };
-  }, [configuratorInView, open]);
+  useEffect(() => {
+    if (!teaserDue || hasTeasedRef.current || open || configuratorInView) return;
+    if (isPhone && !pastHero) return;
+    markTeased();
+    setTeaser(true);
+  }, [teaserDue, open, configuratorInView, isPhone, pastHero]);
+
+  // Se retira sola a los 7 s.
+  useEffect(() => {
+    if (!teaser) return;
+    const hideAt = window.setTimeout(() => setTeaser(false), 7_000);
+    return () => window.clearTimeout(hideAt);
+  }, [teaser]);
 
   function openChat() {
     markTeased();
@@ -414,10 +464,11 @@ export function LuminaChat() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.98 }}
             transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-0 z-[130] flex h-[100dvh] w-full flex-col overflow-hidden bg-white text-ink sm:inset-auto sm:bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] sm:right-6 sm:h-auto sm:max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] sm:w-[min(92vw,24.5rem)] sm:origin-bottom-right sm:rounded-[2rem] sm:shadow-[0_40px_80px_-30px_hsl(var(--ink)/0.55)] sm:ring-1 sm:ring-ink/[0.06]"
+            className="fixed inset-0 z-[130] flex h-[100dvh] w-full flex-col overflow-hidden bg-white text-ink outline-none sm:inset-auto sm:bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] sm:right-6 sm:h-auto sm:max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] sm:w-[min(92vw,24.5rem)] sm:origin-bottom-right sm:rounded-[2rem] sm:shadow-[0_40px_80px_-30px_hsl(var(--ink)/0.55)] sm:ring-1 sm:ring-ink/[0.06]"
             role="dialog"
-            aria-modal="true"
+            aria-modal={isPhone ? true : undefined}
             aria-labelledby="lumina-chat-title"
+            tabIndex={-1}
           >
             {/* Cabecera: avatar redondo con el ánimo de Lumina + estado. */}
             <div className="flex shrink-0 items-center gap-3 px-4 pb-3 pt-[max(0.875rem,env(safe-area-inset-top))] sm:px-5 sm:pt-4">
@@ -560,7 +611,7 @@ export function LuminaChat() {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={t.lumina.placeholder}
                 enterKeyHint="send"
-                className="h-12 min-w-0 flex-1 rounded-full border border-ink/[0.12] bg-white px-5 text-base text-ink outline-none transition-[border-color,box-shadow] placeholder:text-ink/45 focus-visible:border-forest focus-visible:shadow-[0_0_0_4px_hsl(var(--lime)/0.45)] sm:text-[0.9375rem]"
+                className="h-12 min-w-0 flex-1 rounded-full border border-ink/[0.12] bg-white px-5 text-base text-ink outline-none transition-[border-color,box-shadow] placeholder:text-ink/60 focus-visible:border-forest focus-visible:shadow-[0_0_0_4px_hsl(var(--lime)/0.45)] sm:text-[0.9375rem]"
               />
               <button
                 type="submit"
@@ -584,25 +635,27 @@ export function LuminaChat() {
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             style={{ transformOrigin: "100% 100%" }}
-            className="fixed bottom-[calc(var(--fab-edge)+(var(--fab-size)+var(--fab-gap))*2)] right-3 z-[120] w-[min(17.5rem,calc(100vw-1.5rem))] sm:right-6"
+            className="fixed bottom-[calc(var(--fab-edge)+(var(--fab-size)+var(--fab-gap))*2)] right-3 z-[120] max-w-[15rem] sm:right-6 sm:w-[min(17.5rem,calc(100vw-1.5rem))] sm:max-w-none"
           >
-            <div className="relative flex items-start gap-3 rounded-[1.5rem] rounded-br-md bg-white p-3 pr-11 text-ink shadow-float ring-1 ring-ink/[0.06]">
-              <span aria-hidden className="relative size-10 shrink-0 overflow-hidden rounded-full bg-ink ring-2 ring-lime">
+            {/* En teléfono es una píldora compacta de una frase; desde sm, la tarjeta completa. */}
+            <div className="relative flex items-center gap-2.5 rounded-[1.4rem] rounded-br-md bg-white py-2 pl-2 pr-11 text-ink shadow-float ring-1 ring-ink/[0.06] sm:items-start sm:gap-3 sm:rounded-[1.5rem] sm:rounded-br-md sm:p-3 sm:pr-11">
+              <span aria-hidden className="relative size-9 shrink-0 overflow-hidden rounded-full bg-ink ring-2 ring-lime sm:size-10">
                 <Image src={MOOD_IMG.Normal} alt="" fill sizes="40px" className="object-cover" />
               </span>
               <button
                 type="button"
                 onClick={openChat}
-                className="min-w-0 flex-1 rounded-lg pt-0.5 text-left text-sm font-medium leading-snug"
+                className="min-w-0 flex-1 rounded-lg text-left text-sm font-semibold leading-snug sm:pt-0.5 sm:font-medium"
               >
-                <span className="block text-xs font-bold text-ink/50">{t.lumina.name}</span>
-                {t.lumina.teaser}
+                <span className="block text-xs font-bold text-ink/70 max-sm:sr-only">{t.lumina.name}</span>
+                <span className="line-clamp-2 sm:hidden">{t.lumina.teaserShort}</span>
+                <span className="hidden sm:inline">{t.lumina.teaser}</span>
               </button>
               <button
                 type="button"
                 onClick={() => setTeaser(false)}
                 aria-label={t.lumina.close}
-                className="absolute right-0.5 top-0.5 grid size-11 place-items-center rounded-full text-ink/50 transition-colors hover:text-ink"
+                className="absolute right-0.5 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full text-ink/60 transition-colors hover:text-ink sm:top-0.5 sm:translate-y-0"
               >
                 <X className="h-4 w-4" />
               </button>

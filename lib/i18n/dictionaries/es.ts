@@ -21,6 +21,9 @@ const es = {
   },
   marquee: {
     words: ["Diseño", "Código", "SEO", "Performance", "E-commerce", "Branding"],
+    /** Botón que detiene/reanuda las cintas animadas (WCAG 2.2.2). */
+    pause: "Pausar animación",
+    play: "Reanudar animación",
   },
   hero: {
     eyebrow: "Diseño y desarrollo web en México",
@@ -70,7 +73,7 @@ const es = {
     projectsCaption: "digitales impulsados con éxito",
     deliveryPrefix: "Desde",
     days: "días",
-    deliveryCaption: "hábiles de entrega",
+    deliveryCaption: "días hábiles de entrega",
   },
   process: {
     eyebrow: "Cómo trabajamos",
@@ -133,6 +136,9 @@ const es = {
     newBadge: "Nuevo",
     casesTitle: "Casos de estudio",
     casesSubtitle: "El problema, la decisión y el resultado detrás de cuatro proyectos.",
+    casesEyebrow: "Detrás del sitio",
+    launchedTitle: "Recién lanzados",
+    launchedNote: "Ya están en línea: ábrelos y recórrelos en vivo.",
     nextTitle: "Tu web puede ser la siguiente.",
     moreLabel: "proyectos más",
     descs: {
@@ -385,6 +391,7 @@ const es = {
       `Hola, quiero pagar mi proyecto por transferencia.\n\nPlan: ${opts.plan}\nMódulos: ${opts.modules}\nModalidad: ${opts.mode}\nTotal proyecto: ${opts.total}\nPago ahora: ${opts.payNow}`,
     modeFullLabel: "Pago completo",
     modeAdvanceLabel: "50% anticipo",
+    viewSummary: "Ver resumen y pagar",
     none: "ninguno",
   },
   faq: {
@@ -449,6 +456,8 @@ const es = {
     inspirationLabel: "Lo que llevo al trabajo",
     inspiration:
       "Hay cosas que se me quedaron pegadas: el Type R que para mí siempre será el de 2016, la forma en que Japón une oficio y cultura de taller, y la lógica de una red bien hecha. En mi trabajo aparecen como atención al detalle, ritmo y sistemas que sí conectan.",
+    // Fragmento final de `inspiration` que se resalta (debe aparecer tal cual).
+    inspirationAccent: "sistemas que sí conectan",
     chips: ["Diseño + código", "Trato directo", "Performance con intención"],
     principlesLabel: "Mi forma de trabajar · precisión, ritmo y conexión",
     principles: [
@@ -604,6 +613,7 @@ const es = {
     send: "Enviar",
     open: "Abrir chat con Lumina",
     teaser: "¿Buscas crear tu web? Pregúntame precios, tiempos o cómo empezamos ✨",
+    teaserShort: "¿Dudas con tu web? Pregúntame ✨",
     typing: "Escribiendo…",
     retry: "Reintentar",
     languageInstruction: "español",

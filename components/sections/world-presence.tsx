@@ -319,8 +319,9 @@ export function WorldPresence() {
       aria-label={t.world.title}
       className="relative grid gap-gutter lg:grid-cols-12"
     >
-      {/* Texto + bitácora de ubicaciones (primero en el DOM; a la derecha en escritorio). */}
-      <div data-fx="up" className="min-w-0 lg:order-2 lg:col-span-5">
+      {/* Texto + bitácora de ubicaciones, a la izquierda: la sección va en
+          espejo respecto a las vecinas (el panel de color queda a la derecha). */}
+      <div data-fx="up" className="min-w-0 lg:col-span-5">
         <div className="panel flex h-full flex-col gap-8 p-5 shadow-soft sm:p-7 lg:gap-10 lg:p-10">
           <SectionHeading
             eyebrow={t.world.eyebrow}
@@ -396,10 +397,10 @@ export function WorldPresence() {
         </div>
       </div>
 
-      {/* Panel bosque con el planeta. */}
+      {/* Panel bosque con el planeta, a la derecha. */}
       <div
         data-fx="panel"
-        className="min-w-0 lg:order-1 lg:col-span-7"
+        className="min-w-0 lg:col-span-7"
         style={{ "--fx-delay": "90ms" } as CSSProperties}
       >
         <div className="panel panel-forest flex h-full min-h-[26rem] flex-col overflow-hidden p-4 pt-16 sm:p-7 sm:pt-20 lg:p-10 lg:pt-20">

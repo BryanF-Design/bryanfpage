@@ -20,6 +20,8 @@ const de: Dictionary = {
   },
   marquee: {
     words: ["Design", "Code", "SEO", "Performance", "E-Commerce", "Branding"],
+    pause: "Animation pausieren",
+    play: "Animation fortsetzen",
   },
   hero: {
     eyebrow: "Webdesign und -entwicklung in Mexiko",
@@ -69,7 +71,7 @@ const de: Dictionary = {
     projectsCaption: "erfolgreich umgesetzt",
     deliveryPrefix: "Ab",
     days: "Werktagen",
-    deliveryCaption: "bis zur Lieferung",
+    deliveryCaption: "Werktage bis zur Lieferung",
   },
   process: {
     eyebrow: "So arbeiten wir",
@@ -126,6 +128,9 @@ const de: Dictionary = {
     newBadge: "Neu",
     casesTitle: "Fallstudien",
     casesSubtitle: "Problem, Entscheidung und Ergebnis hinter vier Projekten.",
+    casesEyebrow: "Hinter der Website",
+    launchedTitle: "Frisch gestartet",
+    launchedNote: "Schon online – öffne sie und schau dich live um.",
     nextTitle: "Deine Website könnte die nächste sein.",
     moreLabel: "weitere Projekte",
     descs: {
@@ -369,6 +374,7 @@ const de: Dictionary = {
       `Hallo, ich möchte mein Projekt per Überweisung bezahlen.\n\nPaket: ${plan}\nModule: ${modules}\nZahlungsart: ${mode}\nProjekt gesamt: ${total}\nJetzt fällig: ${payNow}`,
     modeFullLabel: "Vollzahlung",
     modeAdvanceLabel: "50 % Anzahlung",
+    viewSummary: "Zur Übersicht und bezahlen",
     none: "keine",
   },
   faq: {
@@ -429,6 +435,7 @@ const de: Dictionary = {
     inspirationLabel: "Was ich in die Arbeit einbringe",
     inspiration:
       "Mich inspirieren Hochleistungsautos – mein Favorit ist der Honda Civic Type R von 2016 –, japanische visuelle Kultur und die Logik eines gut aufgebauten Netzwerks. Ich klebe sie nicht als Dekoration auf, sondern übersetze sie in Präzision, Rhythmus und Verbindung.",
+    inspirationAccent: "Präzision, Rhythmus und Verbindung",
     chips: ["Design + Code", "Direkter Kontakt", "Performance mit Absicht"],
     principlesLabel: "Wie ich arbeite · Präzision, Rhythmus und Verbindung",
     principles: [
@@ -579,6 +586,7 @@ const de: Dictionary = {
     send: "Senden",
     open: "Chat mit Lumina öffnen",
     teaser: "Willst du eine Website erstellen? Frag mich nach Preisen, Zeitplänen oder wie wir starten ✨",
+    teaserShort: "Neue Website? Frag mich ✨",
     typing: "Tippt …",
     retry: "Erneut versuchen",
     languageInstruction: "Deutsch",

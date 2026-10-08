@@ -129,7 +129,7 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
       >
         <div
           className={cn(
-            "pointer-events-auto mx-auto flex h-[3.75rem] max-w-[1488px] items-center justify-between gap-3 rounded-full bg-white/95 pl-4 pr-2 ring-1 ring-ink/[0.06] transition-shadow duration-300 md:h-16 md:pl-5",
+            "pointer-events-auto mx-auto flex h-[3.75rem] max-w-[1488px] items-center justify-between gap-3 rounded-full bg-white pl-3 pr-2 ring-1 ring-ink/[0.06] transition-shadow duration-300 md:h-16 md:pl-4",
             scrolled || open
               ? "shadow-[0_18px_40px_-22px_hsl(var(--ink)/0.45)]"
               : "shadow-[0_8px_24px_-20px_hsl(var(--ink)/0.3)]"
@@ -138,7 +138,7 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
           <Link
             href="/"
             onClick={() => setOpen(false)}
-            className="flex shrink-0 items-center rounded-full"
+            className="flex h-11 shrink-0 items-center rounded-full px-1"
             aria-label="BryanF Design — inicio"
           >
             <Image
@@ -216,6 +216,9 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
           <motion.div
             ref={menuPanelRef}
             id="mobile-site-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label={t.nav.menu}
             initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -12, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.98 }}
@@ -292,6 +295,18 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
                 </div>
               </div>
             </nav>
+            {/* Con aria-modal el botón de la barra queda fuera del diálogo para
+                los lectores de pantalla: este cierre lo repite por dentro. */}
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                window.setTimeout(() => menuButtonRef.current?.focus());
+              }}
+              className="sr-only focus:not-sr-only focus:mx-5 focus:mb-5 focus:rounded-full focus:bg-ink focus:px-5 focus:py-3 focus:text-sm focus:font-semibold focus:text-white"
+            >
+              {t.nav.closeMenu}
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
