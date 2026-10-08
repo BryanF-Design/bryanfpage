@@ -292,7 +292,8 @@ export function MeetBryan() {
       {/* Criterios de trabajo: un solo panel blanco, el titular arriba y tres
           columnas separadas por filetes, cada una con su botón redondo. En
           teléfono son tarjetas menta en carrusel (la siguiente asoma por la
-          orilla del panel): icono y título en una fila, el resto debajo. */}
+          orilla del panel): icono y título en una fila, el resto debajo y las
+          etiquetas al pie, alineadas entre tarjetas. */}
       <div data-fx="up" className="min-w-0">
         <div className="panel p-5 shadow-soft sm:p-8 lg:p-10">
           <h3
@@ -314,7 +315,7 @@ export function MeetBryan() {
               return (
                 <li
                   key={principle.title}
-                  className="grid w-[80%] min-w-0 shrink-0 snap-start grid-cols-[2.75rem_minmax(0,1fr)] content-start items-center gap-x-3 rounded-card bg-mint p-4 ring-1 ring-inset ring-ink/[0.05] sm:w-[46%] md:flex md:w-auto md:flex-col md:items-stretch md:gap-6 md:rounded-none md:border-l md:border-border md:bg-transparent md:px-7 md:py-0 md:ring-0 md:first:border-l-0 md:first:pl-0 md:last:pr-0 lg:px-9"
+                  className="grid w-[80%] min-w-0 shrink-0 snap-start grid-cols-[2.75rem_minmax(0,1fr)] grid-rows-[auto_auto_1fr] items-center gap-x-3 rounded-card bg-mint p-4 ring-1 ring-inset ring-ink/[0.05] sm:w-[46%] md:flex md:w-auto md:flex-col md:items-stretch md:gap-6 md:rounded-none md:border-l md:border-border md:bg-transparent md:px-7 md:py-0 md:ring-0 md:first:border-l-0 md:first:pl-0 md:last:pr-0 lg:px-9"
                 >
                   <span
                     aria-hidden
@@ -330,7 +331,7 @@ export function MeetBryan() {
                     <p className="mt-3 text-pretty text-[0.9375rem] leading-relaxed text-muted-foreground max-md:col-span-2 md:mt-2 md:text-base">
                       {principle.body}
                     </p>
-                    <ul className="mt-3 flex flex-wrap gap-1.5 max-md:col-span-2 md:mt-4">
+                    <ul className="mt-3 flex flex-wrap gap-1.5 max-md:col-span-2 max-md:self-end md:mt-4">
                       {principle.detail.split(/\s*·\s*/).map((item) => (
                         <li
                           key={item}

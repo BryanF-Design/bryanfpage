@@ -140,6 +140,8 @@
   :lang(ja) {
     word-break: auto-phrase;
     line-break: strict;
+    /* Si una frase no cabe (títulos grandes en 360 px), que pueda partirse. */
+    overflow-wrap: anywhere;
   }
   :where(a, button, input, textarea, select, summary):focus-visible {
     outline: 2.5px solid hsl(var(--ring));

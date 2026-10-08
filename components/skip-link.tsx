@@ -14,7 +14,7 @@ export function SkipLink() {
   return (
     <a
       href="#main-content"
-      className="fixed left-4 top-4 z-[250] inline-flex min-h-11 -translate-y-24 items-center rounded-sm border border-primary bg-background px-4 py-3 font-mono text-xs font-medium uppercase tracking-[0.14em] text-primary transition-transform focus:translate-y-0"
+      className="fixed left-4 top-4 z-[250] inline-flex min-h-11 -translate-y-24 items-center rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white shadow-float transition-transform focus:translate-y-0"
     >
       {label}
     </a>

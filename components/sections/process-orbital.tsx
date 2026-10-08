@@ -111,12 +111,14 @@ export function ProcessOrbital() {
           </div>
 
           {/* La línea de tiempo: carrusel horizontal en teléfono (llega al
-              borde del panel), vertical en tableta y en fila desde xl. */}
+              borde del panel), vertical en tableta y en fila desde xl. En el
+              carrusel, el relleno inferior invade el del panel (-mb) para que
+              la sombra de la ficha lima no se corte en seco. */}
           <ol
             role="list"
             aria-label={t.process.stepsLabel}
             tabIndex={isCarousel ? 0 : undefined}
-            className="relative mt-9 grid gap-3 md:mt-12 md:gap-4 xl:mt-14 xl:grid-cols-5 xl:gap-gutter max-md:mt-7 max-md:flex max-md:snap-x max-md:snap-mandatory max-md:overflow-x-auto max-md:overscroll-x-contain max-md:pb-2 max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden max-sm:-mx-5 max-sm:scroll-px-5 max-sm:px-5 sm:max-md:-mx-7 sm:max-md:scroll-px-7 sm:max-md:px-7 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ink"
+            className="relative mt-9 grid gap-3 md:mt-12 md:gap-4 xl:mt-14 xl:grid-cols-5 xl:gap-gutter max-md:mt-7 max-md:flex max-md:snap-x max-md:snap-mandatory max-md:overflow-x-auto max-md:overscroll-x-contain max-md:-mb-5 max-md:pb-7 max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden max-sm:-mx-5 max-sm:scroll-px-5 max-sm:px-5 sm:max-md:-mx-7 sm:max-md:scroll-px-7 sm:max-md:px-7 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ink"
           >
             {steps.map((step, index) => {
               const Icon = ICONS[index] ?? Sparkle;

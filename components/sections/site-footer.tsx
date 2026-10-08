@@ -43,13 +43,13 @@ const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
 
 const linkClass =
   "group/link inline-flex min-h-11 items-center gap-1.5 text-[0.9375rem] text-white/70 transition-colors hover:text-white lg:min-h-10";
-// En teléfono las listas de enlaces son chips (como los filtros de las
-// referencias); desde sm vuelven a ser columnas de texto.
-const chipListClass = "flex flex-wrap gap-2 sm:flex-col sm:gap-0";
-const chipLinkClass =
-  "group/link inline-flex min-h-11 items-center gap-1.5 rounded-full bg-white/[0.06] px-4 text-[0.9375rem] text-white/80 ring-1 ring-white/10 transition-colors hover:text-white sm:rounded-none sm:bg-transparent sm:px-0 sm:text-white/70 sm:ring-0 lg:min-h-10";
+// Navegación y servicios van lado a lado en dos columnas de texto desde el
+// teléfono (antes eran chips que ocupaban media pantalla).
+const listClass = "flex flex-col";
+const columnLinkClass =
+  "group/link inline-flex min-h-11 min-w-11 items-center gap-1.5 text-[0.9375rem] leading-snug text-white/80 transition-colors hover:text-white sm:leading-[inherit] sm:text-white/70 lg:min-h-10";
 const headingClass =
-  "mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-lime";
+  "mb-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-lime sm:mb-3";
 
 /** Flecha que asoma al pasar el puntero por un enlace de columna. */
 function LinkArrow() {
@@ -66,6 +66,7 @@ function LinkArrow() {
  * Marca, frase y redes a la izquierda; navegación, servicios y contacto en
  * columnas; la reseña de Google como fila tipo app; el nombre a todo lo ancho
  * (ajustado con unidades de contenedor) y la barra legal con "volver arriba".
+ * En teléfono todo se compacta: listas en dos columnas, nombre en una línea.
  * `spanishOnly` fuerza el diccionario en español (páginas SEO en español).
  */
 export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
@@ -140,16 +141,16 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
       className="mx-auto w-full max-w-[1520px] px-[var(--gutter)] pb-[var(--gutter)]"
     >
       <div data-fx="panel">
-        <div className="panel panel-ink overflow-hidden px-5 pb-5 pt-8 sm:px-8 sm:pt-10 lg:px-12 lg:pb-8 lg:pt-14">
+        <div className="panel panel-ink overflow-hidden px-5 pb-4 pt-6 sm:px-8 sm:pt-10 md:pb-5 lg:px-12 lg:pb-8 lg:pt-14">
           <div aria-hidden className="mesh-glow-a opacity-60" />
 
-          <div className="relative grid gap-10 xl:grid-cols-12 xl:gap-8">
+          <div className="relative grid gap-7 sm:gap-10 xl:grid-cols-12 xl:gap-8">
             {/* Marca, frase, redes y reseña. */}
-            <div className="flex flex-col items-start gap-6 lg:flex-row lg:items-end lg:justify-between xl:col-span-4 xl:flex-col xl:items-start xl:justify-start">
-              <div className="flex flex-col items-start gap-6">
+            <div className="flex flex-col items-start gap-5 sm:gap-6 lg:flex-row lg:items-end lg:justify-between xl:col-span-4 xl:flex-col xl:items-start xl:justify-start">
+              <div className="flex flex-col items-start gap-4 sm:gap-6">
                 <Link
                   href="/"
-                  className="rounded-full"
+                  className="rounded-full max-md:inline-flex max-md:min-h-11 max-md:items-center"
                   aria-label="BryanF Design — inicio"
                 >
                   <Image
@@ -158,10 +159,10 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                     width={720}
                     height={253}
                     sizes="150px"
-                    className="h-11 w-auto md:h-12"
+                    className="h-9 w-auto sm:h-11 md:h-12"
                   />
                 </Link>
-                <p className="max-w-sm text-pretty text-lg leading-snug text-white/65">
+                <p className="max-w-sm text-pretty text-base leading-snug text-white/65 sm:text-lg sm:leading-snug">
                   <span className="font-serif text-[1.35em] italic leading-none text-lime">
                     {t.footer.tagline}
                   </span>
@@ -188,46 +189,48 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                 href={GOOGLE_MAPS_REVIEW}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative mt-1 flex w-full max-w-md items-center gap-4 rounded-card bg-white/[0.06] p-3 ring-1 ring-white/10 transition-colors hover:bg-white/[0.1] sm:p-3.5 lg:max-w-sm xl:max-w-md"
+                className="group relative flex w-full max-w-md items-center gap-3 rounded-card bg-white/[0.06] p-2.5 ring-1 ring-white/10 transition-colors hover:bg-white/[0.1] sm:mt-1 sm:gap-4 sm:p-3.5 lg:max-w-sm xl:max-w-md"
               >
-                <span className="grid size-12 shrink-0 place-items-center rounded-full bg-white">
-                  <FcGoogle aria-hidden className="h-6 w-6" />
+                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white sm:size-12">
+                  <FcGoogle aria-hidden className="h-5 w-5 sm:h-6 sm:w-6" />
                 </span>
-                <span className="flex min-w-0 flex-1 flex-col gap-1">
+                <span className="flex min-w-0 flex-1 flex-col gap-0.5 sm:gap-1">
                   <span aria-hidden className="flex gap-0.5">
                     {Array.from({ length: 5 }, (_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-lime text-lime" />
+                      <Star key={i} className="h-3.5 w-3.5 fill-lime text-lime sm:h-4 sm:w-4" />
                     ))}
                   </span>
-                  <span className="text-[0.9375rem] font-semibold leading-snug text-white">
+                  <span className="text-[0.9375rem] font-semibold leading-tight text-white sm:leading-snug">
                     {t.footer.reviewGoogle}
                   </span>
                 </span>
-                <span className="grid size-11 shrink-0 place-items-center rounded-full bg-lime text-ink transition-transform duration-300 group-hover:rotate-45">
+                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-lime text-ink transition-transform duration-300 group-hover:rotate-45 sm:size-11">
                   <ArrowUpRight aria-hidden className="h-5 w-5" />
                 </span>
               </a>
             </div>
 
-            <div className="grid gap-x-5 gap-y-9 sm:grid-cols-2 lg:grid-cols-[1fr_1.1fr_1.3fr] lg:gap-8 xl:col-span-8">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:gap-x-5 sm:gap-y-9 lg:grid-cols-[1fr_1.1fr_1.3fr] lg:gap-8 xl:col-span-8">
               {/* Navegación */}
               <nav aria-label={t.footer.navLabel} className="min-w-0">
                 <p className={headingClass}>{t.footer.navLabel}</p>
-                <ul className={chipListClass}>
+                <ul className={listClass}>
                   {nav.map((l) => (
                     <li key={l.href}>
-                      <Link href={l.href} className={chipLinkClass}>
+                      <Link href={l.href} className={columnLinkClass}>
                         {l.label}
                         <LinkArrow />
                       </Link>
                     </li>
                   ))}
                 </ul>
+                {/* Teléfono: la píldora cruza ambas columnas (200% + gap-x-4)
+                    y queda bajo las dos listas; desde sm vuelve a su ancho. */}
                 <Link
                   href={CLIENT_PORTAL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-full border border-lime/40 px-4 text-sm font-semibold text-lime transition-colors hover:bg-lime hover:text-ink"
+                  className="mt-2 inline-flex min-h-11 w-[calc(200%+1rem)] items-center justify-center gap-2 rounded-full border border-lime/40 px-4 text-sm font-semibold text-lime transition-colors hover:bg-lime hover:text-ink sm:mt-3 sm:w-auto sm:justify-start"
                 >
                   <LogIn aria-hidden className="h-4 w-4" />
                   {t.footer.clientQuestion}
@@ -237,10 +240,10 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
               {/* Servicios */}
               <nav aria-label={t.footer.servicesLabel} className="min-w-0">
                 <p className={headingClass}>{t.footer.servicesLabel}</p>
-                <ul className={chipListClass}>
+                <ul className={listClass}>
                   {services.map((l) => (
                     <li key={l.href}>
-                      <Link href={l.href} className={chipLinkClass}>
+                      <Link href={l.href} className={columnLinkClass}>
                         {l.label}
                         <LinkArrow />
                       </Link>
@@ -250,9 +253,9 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
               </nav>
 
               {/* Legal y contacto */}
-              <div className="min-w-0 sm:col-span-2 lg:col-span-1">
+              <div className="col-span-2 min-w-0 lg:col-span-1">
                 <p className={headingClass}>{t.footer.legalLabel}</p>
-                <ul className="flex flex-col gap-1">
+                <ul className="flex flex-col sm:gap-1">
                   {contact.map(({ Icon, label, href, external }) => (
                     <li key={href}>
                       <a
@@ -270,7 +273,9 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                     </li>
                   ))}
                 </ul>
-                <ul className="mt-3 flex flex-col border-t border-white/10 pt-2">
+                {/* Aviso/Términos ya están en la barra legal: en teléfono no se
+                    repiten aquí. */}
+                <ul className="mt-3 hidden flex-col border-t border-white/10 pt-2 sm:flex">
                   <li>
                     <Link href="/privacidad" className={linkClass}>
                       {t.footer.privacy}
@@ -289,26 +294,12 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
           </div>
 
           {/* El nombre a todo lo ancho; el tamaño sale del ancho del panel. */}
-          <div className="relative mt-12 [container-type:inline-size] lg:mt-16">
-            {/* Teléfono: dos líneas; desde sm: una sola. El tamaño en `cqw`
+          <div className="relative mt-7 [container-type:inline-size] sm:mt-12 lg:mt-16">
+            {/* Una sola línea en todos los anchos. El tamaño en `cqw`
                 sobrescribe al de `vw` donde el navegador lo soporta. */}
             <p
               aria-hidden
-              className="display-xl select-none whitespace-nowrap text-[28vw] leading-[0.8] sm:hidden"
-            >
-              <span
-                className="block text-white"
-                style={{ fontSize: "30.3cqw" }}
-              >
-                BryanF
-              </span>
-              <span className="block text-lime" style={{ fontSize: "31.8cqw" }}>
-                Design
-              </span>
-            </p>
-            <p
-              aria-hidden
-              className="display-xl hidden select-none whitespace-nowrap text-[14vw] leading-[0.8] sm:block"
+              className="display-xl select-none whitespace-nowrap text-[14vw] leading-[0.8]"
               style={{ fontSize: "15.25cqw" }}
             >
               <span className="text-white">BryanF </span>
@@ -316,10 +307,11 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
             </p>
           </div>
 
-          {/* Barra legal */}
-          <div className="relative mt-6 flex flex-col gap-4 border-t border-white/10 pt-5 text-sm text-white/55 md:flex-row md:items-center md:justify-between md:gap-6">
+          {/* Barra legal. Teléfono: la frase arriba y, debajo, derechos +
+              "volver arriba" en una sola fila; desde md, una fila de tres. */}
+          <div className="relative mt-5 grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-3 border-t border-white/10 pt-4 text-sm text-white/55 md:mt-6 md:flex md:flex-row md:justify-between md:gap-6 md:pt-5">
             <span>{t.footer.copyright(new Date().getFullYear())}</span>
-            <span className="md:text-right">
+            <span className="col-span-2 row-start-1 md:text-right">
               {t.footer.acceptPrefix}{" "}
               <Link
                 href="/privacidad"
