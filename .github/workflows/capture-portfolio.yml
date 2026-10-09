@@ -15,6 +15,9 @@ on:
         required: false
         default: ""
   push:
+    # En producción no se dispara sola: desde main se usa "Run workflow".
+    branches-ignore:
+      - main
     paths:
       - .github/capture-request.txt
 
