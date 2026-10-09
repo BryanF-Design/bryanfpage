@@ -1,0 +1,66 @@
+# Capturas del portafolio (escritorio, móvil y primera pantalla en WebP) con
+# scripts/capture-portfolio.mjs, en un runner con internet abierto, y las sube
+# como commit a la misma rama.
+#
+# - Desde GitHub: Actions → "Capturas del portafolio" → Run workflow, con los
+#   slugs separados por espacio (vacío = los proyectos que aún no tienen captura).
+# - Desde un commit: edita .github/capture-request.txt (un slug por línea).
+name: Capturas del portafolio
+
+on:
+  workflow_dispatch:
+    inputs:
+      slugs:
+        description: "Slugs separados por espacio (vacío = los que no tienen captura)"
+        required: false
+        default: ""
+  push:
+    paths:
+      - .github/capture-request.txt
+
+permissions:
+  contents: write
+
+concurrency:
+  group: capture-portfolio-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar Playwright
+        run: |
+          npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: Capturar
+        env:
+          INPUT_SLUGS: ${{ github.event.inputs.slugs }}
+        run: |
+          SLUGS="$INPUT_SLUGS"
+          if [ -z "$SLUGS" ] && [ "${{ github.event_name }}" = "push" ] && [ -f .github/capture-request.txt ]; then
+            SLUGS="$(grep -v '^\s*#' .github/capture-request.txt | xargs)"
+          fi
+          echo "Slugs: ${SLUGS:-(los que no tienen captura)}"
+          node scripts/capture-portfolio.mjs $SLUGS | tee capture.log
+          if grep -q "✗" capture.log; then echo "::warning::Algunas capturas fallaron (ver log)"; fi
+
+      - name: Subir capturas
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add public/img/portafolio
+          if git diff --cached --quiet; then
+            echo "Sin capturas nuevas."
+          else
+            git commit -m "chore(portafolio): capturas automáticas"
+            git push
+          fi
