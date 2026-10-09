@@ -46,6 +46,44 @@ const targets = args.length
     })
   : projects.filter((p) => !existsSync(join(desktopDir, `${p.slug}.png`)));
 
+
+// Cierra modales y avisos (campañas, cookies) que taparían la captura: Escape,
+// los botones de cerrar más comunes y, si queda algo fijo a pantalla completa
+// con fondo semitransparente, se oculta.
+async function dismissPopups(page) {
+  await page.keyboard.press("Escape").catch(() => {});
+  await page
+    .evaluate(() => {
+      const selectors = [
+        '[aria-label*="cerrar" i]',
+        '[aria-label*="close" i]',
+        '[data-dismiss="modal"]',
+        ".modal .close",
+        ".popup-close",
+        'button[class*="close" i]',
+      ];
+      for (const sel of selectors) {
+        for (const el of document.querySelectorAll(sel)) {
+          const r = el.getBoundingClientRect();
+          if (r.width > 0 && r.height > 0) el.click();
+        }
+      }
+      for (const el of document.querySelectorAll("body *")) {
+        const cs = getComputedStyle(el);
+        if (cs.position !== "fixed") continue;
+        const r = el.getBoundingClientRect();
+        const covers = r.width >= innerWidth * 0.9 && r.height >= innerHeight * 0.9;
+        if (covers && (el.querySelector('[role="dialog"], dialog') || el.matches('[role="dialog"], dialog') || /modal|popup|overlay|backdrop/i.test(el.className))) {
+          el.style.display = "none";
+        }
+      }
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+    })
+    .catch(() => {});
+  await page.waitForTimeout(600);
+}
+
 const browser = await chromium.launch();
 for (const { slug, url } of targets) {
   if (!url) {
@@ -56,6 +94,7 @@ for (const { slug, url } of targets) {
     const desktop = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
     await desktop.goto(url, { waitUntil: "networkidle", timeout: 60_000 });
     await desktop.waitForTimeout(2500);
+    await dismissPopups(desktop);
     await desktop.screenshot({ path: join(desktopDir, `${slug}.png`) });
     await desktop.close();
 
@@ -74,6 +113,7 @@ for (const { slug, url } of targets) {
       window.scrollTo(0, 0);
     });
     await mobile.waitForTimeout(1500);
+    await dismissPopups(mobile);
     await mobile.screenshot({ path: join(mobileDir, `${slug}.png`), fullPage: true });
     // Primera pantalla en WebP: Chromium la codifica desde un canvas, en una
     // pestaña en blanco (la CSP del sitio capturado podría bloquear data:).
