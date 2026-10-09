@@ -89,6 +89,14 @@ const RECENT_COUNT = recentGrid.length + 1;
 /** El teléfono del contador y su pila: sitios que no salen en el hero, el
  *  destacado, los recientes ni los casos, para no repetir caras. */
 const COUNT_PHONE = "ndt360-com-mx";
+/** El mismo teléfono rota por otros sitios en línea (la página se siente viva). */
+const COUNT_CYCLE = [
+  COUNT_PHONE,
+  "urban-flip-com",
+  "haften-lyart-vercel-app",
+  "bioslaboratorios-com",
+  "industriastritton-com",
+];
 const COUNT_AVATARS = ["mielyabejas-mx", "bravologix-com-mx", "gruposum-com"];
 /** La pila de "+N": tres del resto con cabecera oscura (se leen en el lima). */
 const MORE_AVATARS = ["grupocosma-com", "nezga-arquitectos-vercel-app", "distribuidorajemar-com"];
@@ -190,6 +198,52 @@ function BrowserBar({
   );
 }
 
+/**
+ * Pantalla que se releva sola: cada ~3 s entra la siguiente captura desde
+ * abajo, solo mientras está en pantalla.
+ */
+function CyclingScreens({ slugs, sizes }: { slugs: string[]; sizes: string }) {
+  const reduced = useReducedMotionPreference();
+  const boxRef = useRef<HTMLSpanElement>(null);
+  const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const node = boxRef.current;
+    if (!node) return;
+    const io = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting));
+    io.observe(node);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (reduced || !visible) return;
+    const id = window.setInterval(() => setIndex((i) => (i + 1) % slugs.length), 3200);
+    return () => window.clearInterval(id);
+  }, [reduced, visible, slugs.length]);
+
+  const prev = (index + slugs.length - 1) % slugs.length;
+  return (
+    <span ref={boxRef} className="absolute inset-0 overflow-hidden">
+      {slugs.map((slug, i) => (
+        <span
+          key={slug}
+          className={cn(
+            "absolute inset-0 transition-[opacity,transform] duration-700 [transition-timing-function:var(--ease-out)]",
+            i === index
+              ? "z-[1] translate-y-0 opacity-100"
+              : i === prev
+                ? "-translate-y-6 opacity-0"
+                : "translate-y-6 opacity-0"
+          )}
+        >
+          <Image src={mobileShot(slug)} alt="" fill sizes={sizes} quality={70} className="object-cover object-top" />
+        </span>
+      ))}
+    </span>
+  );
+}
+
 /** Teléfono con la captura móvil recortada desde arriba. */
 function PhoneMock({
   slug,
@@ -198,6 +252,7 @@ function PhoneMock({
   className,
   style,
   cover,
+  cycle,
 }: {
   slug: string;
   alt: string;
@@ -206,6 +261,8 @@ function PhoneMock({
   style?: CSSProperties;
   /** Sin captura todavía: la portada de marca (nombre y dominio). */
   cover?: { name: string; host: string };
+  /** Varias capturas que se relevan en la pantalla del teléfono. */
+  cycle?: string[];
 }) {
   return (
     <div
@@ -225,6 +282,8 @@ function PhoneMock({
         <span className="relative block flex-1">
           {cover ? (
             <SitePreview name={cover.name} host={cover.host} compact />
+          ) : cycle && cycle.length > 1 ? (
+            <CyclingScreens slugs={cycle} sizes={sizes} />
           ) : (
             <Image src={mobileShot(slug)} alt={alt} fill sizes={sizes} quality={70} className="object-cover object-top" />
           )}
@@ -499,7 +558,7 @@ function FeaturedProject({ project }: { project: Project }) {
             cover={live ? { name: project.name, host } : undefined}
             alt={`${project.name} — captura del sitio en móvil`}
             sizes="(min-width: 1024px) 15rem, 30vw"
-            className="absolute bottom-0 left-0 w-[27%] max-w-[15rem] md:w-[30%]"
+            className="scroll-float absolute bottom-0 left-0 w-[27%] max-w-[15rem] md:w-[30%]"
           />
           <Sparkle
             aria-hidden
@@ -822,6 +881,7 @@ export function ProjectsShowcase({ withCases = true }: { withCases?: boolean } =
             </div>
             <PhoneMock
               slug={COUNT_PHONE}
+              cycle={COUNT_CYCLE}
               alt=""
               sizes="(min-width: 1024px) 13rem, 9.5rem"
               className="absolute bottom-0 right-4 w-[30%] max-w-[8rem] translate-y-[48%] sm:right-8 md:w-[40%] md:max-w-[13rem] md:translate-y-[18%] lg:right-5 lg:w-[38%] xl:right-7"

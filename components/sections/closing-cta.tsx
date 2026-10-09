@@ -151,7 +151,7 @@ export function ClosingCta() {
               aria-hidden
               className="pointer-events-none relative z-[1] -mb-10 flex min-w-0 justify-center sm:-mb-12 xl:-mt-[10.25rem] xl:min-h-0 xl:items-end xl:[container-type:inline-size]"
             >
-              <div className="relative aspect-[10/9] w-full max-w-[20rem] sm:max-w-[26rem] xl:h-full xl:max-h-[min(31rem,90cqw)] xl:w-auto xl:max-w-none">
+              <div className="scroll-float relative aspect-[10/9] w-full max-w-[20rem] sm:max-w-[26rem] xl:h-full xl:max-h-[min(31rem,90cqw)] xl:w-auto xl:max-w-none">
                 <span className="absolute left-1/2 top-[4%] aspect-square w-[96%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,hsl(0_0%_100%/0.6),hsl(0_0%_100%/0)_100%)]" />
                 <svg
                   viewBox="0 0 400 140"

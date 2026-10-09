@@ -148,11 +148,11 @@ export default function HomePage() {
                   {[38, 62, 46, 84, 70, 100].map((h, i) => (
                     <span
                       key={i}
-                      style={{ height: `${h}%` }}
+                      style={{ height: `${h}%`, animationDelay: `${i * 220}ms` }}
                       className={
                         i === 5
-                          ? "w-2.5 rounded-full bg-lime sm:w-3.5"
-                          : "w-2.5 rounded-full bg-ink/10 sm:w-3.5"
+                          ? "meter-bar w-2.5 rounded-full bg-lime sm:w-3.5"
+                          : "meter-bar w-2.5 rounded-full bg-ink/10 sm:w-3.5"
                       }
                     />
                   ))}

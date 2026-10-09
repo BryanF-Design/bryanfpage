@@ -1132,3 +1132,73 @@ html.fx-on [data-fx="panel"]:not([data-fx-in]) > * {
     outline-offset: 6px;
   }
 }
+
+/* ——— Página viva ————————————————————————————————————————————————————
+   Movimiento continuo y ligero: todo es CSS (compositor) y respeta tanto
+   `prefers-reduced-motion` como el ajuste "Reducir movimiento" del panel
+   de accesibilidad. Usan `translate`/`scale` sueltos para no pisar los
+   `transform` de Tailwind del mismo elemento. */
+@media (prefers-reduced-motion: no-preference) {
+  /* Discos de color que respiran detrás de los recortes. */
+  :root:not(.a11y-reduce-motion) .breathe {
+    animation: breathe 7s ease-in-out infinite;
+  }
+  /* Parches de puntos que titilan. */
+  :root:not(.a11y-reduce-motion) .dot-cluster {
+    animation: twinkle 5.5s ease-in-out infinite;
+  }
+  /* Barras de "medidor" que laten. */
+  :root:not(.a11y-reduce-motion) .meter-bar {
+    transform-origin: bottom;
+    animation: meter 2.8s ease-in-out infinite;
+  }
+}
+@keyframes breathe {
+  50% {
+    scale: 1.05;
+  }
+}
+@keyframes twinkle {
+  50% {
+    opacity: 0.45;
+  }
+}
+@keyframes meter {
+  50% {
+    scale: 1 0.72;
+  }
+}
+
+/* Ligado al scroll: los recortes suben a su sitio al entrar (solo hacia
+   abajo, para que nunca asome su base recortada) y los teléfonos flotan en
+   sentido contrario al scroll. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    :root:not(.a11y-reduce-motion) .scroll-rise {
+      animation: scroll-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+    :root:not(.a11y-reduce-motion) .scroll-float {
+      animation: scroll-float linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+  }
+}
+@keyframes scroll-rise {
+  from {
+    translate: 0 9%;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+@keyframes scroll-float {
+  from {
+    translate: 0 6%;
+  }
+  to {
+    translate: 0 -6%;
+  }
+}

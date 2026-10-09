@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, CreditCard, Heart, Search, Sparkle, Timer } from "lucide-react";
@@ -17,6 +17,24 @@ const FEATURED = projects.find((p) => p.slug === "mixteca-web-vercel-app") ?? pr
 
 /** Miniaturas de la prueba social: tres sitios reales del portafolio. */
 const PROOF_SHOTS = ["koi-arquitectura-vercel-app", "ceahestructural-com-mx", "element-experiences-com"];
+
+/** Hora de CDMX en vivo (solo en el navegador; se refresca cada 20 s). */
+function useCdmxTime() {
+  const [time, setTime] = useState<string | null>(null);
+  useEffect(() => {
+    const format = new Intl.DateTimeFormat("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+      timeZone: "America/Mexico_City",
+    });
+    const update = () => setTime(format.format(new Date()));
+    update();
+    const id = window.setInterval(update, 20_000);
+    return () => window.clearInterval(id);
+  }, []);
+  return time;
+}
 
 function delay(ms: number) {
   return { "--hd": `${ms}ms` } as CSSProperties;
@@ -54,6 +72,7 @@ function wordEm(word: string) {
  */
 export function HeroPop() {
   const { t } = useLanguage();
+  const cdmxTime = useCdmxTime();
 
   // Ancho de cada palabra gigante; desde md comparten el tamaño de la mayor.
   const fitTitle = wordEm(t.hero.titleHighlight);
@@ -161,6 +180,11 @@ export function HeroPop() {
                 <span className="relative size-2 rounded-full bg-forest" />
               </span>
               {t.hero.available}
+              {cdmxTime && (
+                <span className="whitespace-nowrap tabular-nums text-ink/60">
+                  · CDMX {cdmxTime}
+                </span>
+              )}
             </span>
             <h2
               className="hero-in hero-in-up display-title max-w-[22ch] text-balance text-[clamp(1.75rem,3vw,2.75rem)] text-ink"

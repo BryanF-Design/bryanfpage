@@ -105,6 +105,29 @@ export function LuminaFeature() {
     if (wantedRef.current === index) setShown(index);
   }
 
+  // Viva: mientras la sección está en pantalla, Lumina cambia de ánimo sola
+  // cada pocos segundos (descarga el siguiente recorte un tiempo antes). Un
+  // toque de la persona pausa el ciclo un rato para no pelearle el gesto.
+  const sectionRef = useRef<HTMLElement>(null);
+  const sectionInView = useInView(sectionRef, { amount: 0.25 });
+  const lastTouch = useRef(0);
+  const pokeRef = useRef(poke);
+  pokeRef.current = poke;
+  useEffect(() => {
+    if (reduced || !sectionInView) return;
+    const preload = window.setTimeout(() => primeNext(), 2500);
+    const id = window.setInterval(() => {
+      if (Date.now() - lastTouch.current < 9000) return;
+      pokeRef.current();
+    }, 5200);
+    return () => {
+      window.clearTimeout(preload);
+      window.clearInterval(id);
+    };
+    // primeNext solo agrega a la lista: no hace falta re-armar el ciclo por ella.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduced, sectionInView]);
+
   // Con teclado, la pregunta enfocada se desliza completa a la vista: el
   // navegador no mueve la fila si la ficha asoma a medias. Solo actúa cuando
   // la fila de verdad se desliza (teléfono).
@@ -116,6 +139,7 @@ export function LuminaFeature() {
 
   return (
     <section
+      ref={sectionRef}
       id="lumina"
       aria-labelledby="lumina-title"
       className="relative isolate grid gap-gutter md:grid-cols-12"
@@ -128,7 +152,7 @@ export function LuminaFeature() {
           {/* Fondo: brillo, disco lima detrás de su cabeza y puntos. */}
           <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_28%_30%,hsl(var(--lime)/0.18),transparent_65%)]" />
-            <div className="absolute left-[19%] top-1 aspect-square w-[62%] rounded-full bg-lime sm:left-[22%] sm:top-2 sm:w-[56%] md:left-[27%] md:w-[46%] lg:left-[7%] lg:top-[-3.5rem] lg:w-[43%]" />
+            <div className="breathe absolute left-[19%] top-1 aspect-square w-[62%] rounded-full bg-lime sm:left-[22%] sm:top-2 sm:w-[56%] md:left-[27%] md:w-[46%] lg:left-[7%] lg:top-[-3.5rem] lg:w-[43%]" />
             <div className="absolute -bottom-24 -right-24 size-80 rounded-full border border-white/10" />
             <div className="absolute -bottom-10 -right-10 size-48 rounded-full border border-white/10" />
             <div className="dot-cluster absolute right-9 top-[5.5rem] hidden h-[4.125rem] w-[6.875rem] opacity-60 min-[1400px]:block" />
@@ -156,11 +180,14 @@ export function LuminaFeature() {
           <div className="relative h-[18rem] shrink-0 [clip-path:inset(-6rem_0_0_0)] sm:h-[27rem] lg:absolute lg:inset-y-0 lg:left-0 lg:h-auto lg:w-[54%] lg:[clip-path:inset(-100%_-100%_0_0_round_0_0_0_var(--r-panel))]">
             <button
               type="button"
-              onClick={poke}
+              onClick={() => {
+                lastTouch.current = Date.now();
+                poke();
+              }}
               onPointerEnter={primeNext}
               onFocus={primeNext}
               aria-label={`${t.luminaSection.hint} · ${moodLabel}`}
-              className="group absolute left-1/2 top-[-3rem] z-10 block w-[min(18.5rem,82%)] -translate-x-1/2 cursor-pointer rounded-[2rem] focus-visible:outline-offset-[-8px] sm:top-[-5rem] sm:w-[27rem] lg:bottom-[-2.75rem] lg:left-4 lg:top-auto lg:h-[calc(100%+8.5rem)] lg:w-auto lg:translate-x-0 min-[1400px]:h-[calc(100%+6.5rem)]"
+              className="scroll-rise group absolute left-1/2 top-[-3rem] z-10 block w-[min(18.5rem,82%)] -translate-x-1/2 cursor-pointer rounded-[2rem] focus-visible:outline-offset-[-8px] sm:top-[-5rem] sm:w-[27rem] lg:bottom-[-2.75rem] lg:left-4 lg:top-auto lg:h-[calc(100%+8.5rem)] lg:w-auto lg:translate-x-0 min-[1400px]:h-[calc(100%+6.5rem)]"
             >
               <motion.span
                 className="relative block aspect-[864/1121] origin-bottom lg:h-full"
@@ -474,35 +501,63 @@ function BadgeVisual({ index }: { index: number }) {
   );
 }
 
-/** Burbuja de Lumina: escribe una frase una vez y después queda quieta. */
+/**
+ * Burbuja de Lumina: escribe sus frases en ciclo (escribe, se queda, borra y
+ * pasa a la siguiente) mientras está en pantalla; fuera de ella se detiene.
+ * Con movimiento reducido muestra la primera frase completa y quieta.
+ */
 function TypedPhrases({ phrases }: { phrases: string[] }) {
   const reduced = useReducedMotionPreference();
   const [text, setText] = useState("");
-  // Escribe cuando alguien la ve, no durante la carga lejos del viewport.
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "0px 0px -15% 0px" });
+  const inView = useInView(ref, { margin: "0px 0px -15% 0px" });
 
   useEffect(() => {
-    const phrase = phrases[0] ?? "";
-    if (reduced || phrase.length === 0) {
-      setText(phrase);
+    const list = phrases.filter(Boolean);
+    if (reduced || list.length === 0) {
+      setText(list[0] ?? "");
       return;
     }
     if (!inView) return;
 
-    setText("");
+    let index = 0;
     let char = 0;
-    const timer = window.setInterval(() => {
-      char++;
-      setText(phrase.slice(0, char));
-      if (char >= phrase.length) window.clearInterval(timer);
-    }, 42);
-    return () => window.clearInterval(timer);
+    let deleting = false;
+    let timer = 0;
+    const tick = () => {
+      const phrase = list[index % list.length];
+      if (!deleting) {
+        char++;
+        setText(phrase.slice(0, char));
+        if (char >= phrase.length) {
+          deleting = true;
+          timer = window.setTimeout(tick, 2600);
+          return;
+        }
+        timer = window.setTimeout(tick, 42);
+      } else {
+        char--;
+        setText(phrase.slice(0, char));
+        if (char <= 0) {
+          deleting = false;
+          index++;
+          timer = window.setTimeout(tick, 380);
+          return;
+        }
+        timer = window.setTimeout(tick, 18);
+      }
+    };
+    setText("");
+    timer = window.setTimeout(tick, 300);
+    return () => window.clearTimeout(timer);
   }, [phrases, reduced, inView]);
 
   return (
     <div ref={ref} className="flex max-w-[90%] items-end gap-2 self-start">
-      <p className="min-h-[2.9rem] rounded-[1.35rem] rounded-bl-md bg-white px-4 py-3 text-[0.9375rem] font-semibold leading-relaxed text-ink shadow-[0_10px_24px_-18px_hsl(var(--ink)/0.5)]">
+      {/* El texto que se escribe y borra es decorativo; el lector de
+          pantalla recibe la primera frase completa, una sola vez. */}
+      <span className="sr-only">{phrases[0]}</span>
+      <p aria-hidden className="min-h-[2.9rem] rounded-[1.35rem] rounded-bl-md bg-white px-4 py-3 text-[0.9375rem] font-semibold leading-relaxed text-ink shadow-[0_10px_24px_-18px_hsl(var(--ink)/0.5)]">
         {text}
         <span
           aria-hidden

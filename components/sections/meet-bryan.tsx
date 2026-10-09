@@ -108,11 +108,13 @@ export function MeetBryan() {
             En teléfono es una cabecera de perfil baja: Bryan más chico a la
             derecha y la ubicación en el recorte de la esquina izquierda. */}
         <div data-fx="up" className="min-w-0 md:col-span-5 md:row-start-1">
-          <figure className="relative mx-auto max-w-[36rem] pt-5 md:max-w-none xl:pt-2">
+          {/* La base se recorta al canto del panel: al subir con el scroll, el
+              corte recto del recorte nunca asoma por debajo. */}
+          <figure className="relative mx-auto max-w-[36rem] pt-5 [clip-path:inset(-50%_-50%_0_-50%)] md:max-w-none xl:pt-2">
             <div className="panel panel-forest absolute inset-x-0 bottom-0 top-[30%] md:top-[25%]">
               {/* Decoración recortada por el panel; en teléfono el círculo sigue a la cabeza. */}
               <div aria-hidden className="absolute inset-0 overflow-hidden rounded-[inherit]">
-                <div className="absolute left-[68%] top-[12%] aspect-square w-[50%] -translate-x-1/2 rounded-full bg-lime md:left-1/2 md:w-[82%]" />
+                <div className="breathe absolute left-[68%] top-[12%] aspect-square w-[50%] -translate-x-1/2 rounded-full bg-lime md:left-1/2 md:w-[82%]" />
                 <div className="absolute left-[68%] top-[12%] aspect-square w-[50%] -translate-x-1/2 scale-[1.18] rounded-full border border-white/15 md:left-1/2 md:w-[82%]" />
                 <div className="dot-cluster absolute left-5 top-5 h-[2.75rem] w-[4.125rem] opacity-70 max-md:hidden sm:left-7 sm:top-7" />
               </div>
@@ -152,7 +154,7 @@ export function MeetBryan() {
               width={1122}
               height={1114}
               sizes="(min-width: 1280px) 34rem, (min-width: 768px) 40vw, (min-width: 640px) 21rem, 58vw"
-              className="relative z-10 ml-auto mr-[3%] h-auto w-[58%] drop-shadow-[0_24px_30px_hsl(160_40%_8%/0.35)] md:mx-auto md:w-[94%]"
+              className="scroll-rise relative z-10 ml-auto mr-[3%] h-auto w-[58%] drop-shadow-[0_24px_30px_hsl(160_40%_8%/0.35)] md:mx-auto md:w-[94%]"
             />
 
             <figcaption className="absolute bottom-3 left-3 z-20 inline-flex items-center gap-3 rounded-full bg-white py-1.5 pl-1.5 pr-5 shadow-pop sm:bottom-5 sm:left-5">
