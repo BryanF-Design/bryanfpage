@@ -19,13 +19,13 @@ export interface Project {
  */
 export const projects: Project[] = [
   // Lanzamientos recientes: van primero en el portafolio.
-  { slug: "mixteca-web-vercel-app", name: "Mixteca", url: "https://mixteca-web.vercel.app/", desc: "", shots: false },
-  { slug: "urban-flip-com", name: "Urban Flip", url: "https://urban-flip.com/", desc: "", shots: false },
+  { slug: "mixteca-web-vercel-app", name: "Mixteca", url: "https://mixteca-web.vercel.app/", desc: "Hortalizas y aromáticas de Puebla" },
+  { slug: "urban-flip-com", name: "Urban Flip", url: "https://urban-flip.com/", desc: "Compra y venta de propiedades" },
   { slug: "gecomex-web-vercel-app", name: "Gecomex", url: "https://www.geco-mex.com/", desc: "Logística y aduanas internacionales" },
   { slug: "ceahestructural-com-mx", name: "CEAH Estructural", url: "https://www.ceahestructural.com.mx/", desc: "Soluciones estructurales FRP y PVC" },
-  { slug: "bioslaboratorios-com", name: "Bios Laboratorios", url: "https://www.bioslaboratorios.com/", desc: "", shots: false },
-  { slug: "haften-lyart-vercel-app", name: "Haften", url: "https://haften-lyart.vercel.app/", desc: "", shots: false },
-  { slug: "sermaqro-com", name: "Sermaqro", url: "https://www.sermaqro.com/", desc: "", shots: false },
+  { slug: "bioslaboratorios-com", name: "Bios Laboratorios", url: "https://www.bioslaboratorios.com/", desc: "Laboratorio de análisis clínicos" },
+  { slug: "haften-lyart-vercel-app", name: "Haften", url: "https://haften-lyart.vercel.app/", desc: "Expertos en HVAC/R y BMS" },
+  { slug: "sermaqro-com", name: "Sermaqro", url: "https://www.sermaqro.com/", desc: "Renta y venta de maquinaria ligera" },
   { slug: "goldenrepublic-com-mx", name: "Golden Republic", url: "https://goldenrepublic.com.mx/", desc: "Bienes raíces" },
   { slug: "serviciosecem-com-mx", name: "Servicios ECEM", url: "https://serviciosecem.com.mx/", desc: "Asesoría contable y fiscal" },
   { slug: "industriastritton-com", name: "Industrias Tritton", url: "https://industriastritton.com/", desc: "Mezclado y molienda industrial" },

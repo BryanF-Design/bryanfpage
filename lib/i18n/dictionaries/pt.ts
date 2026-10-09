@@ -159,6 +159,11 @@ const pt: Dictionary = {
       "element-experiences-com": "Experiências e eventos",
       "gecomex-web-vercel-app": "Logística e despacho aduaneiro internacional",
       "ceahestructural-com-mx": "Soluções estruturais em PRFV e PVC",
+      "mixteca-web-vercel-app": "Hortaliças e ervas de Puebla",
+      "urban-flip-com": "Compra e venda de imóveis",
+      "bioslaboratorios-com": "Laboratório de análises clínicas",
+      "haften-lyart-vercel-app": "Especialistas em HVAC/R e BMS",
+      "sermaqro-com": "Aluguel e venda de máquinas leves",
     },
     caseLabels: {
       problem: "Problema",
@@ -204,20 +209,18 @@ const pt: Dictionary = {
     eyebrow: "Presença",
     title: "Onde já trabalhamos",
     subtitle:
-      "Projetos para clientes no México, Espanha e França. O Japão aparece como uma colaboração cultural que também faz parte do estúdio.",
+      "Projetos para clientes no México, Espanha e França: projetos reais, com clientes reais, em três fusos horários.",
     dragHint: "Arraste o globo para girá-lo",
     locations: {
       mexico: "México",
       spain: "Espanha",
       france: "França",
-      japan: "Japão",
     },
     listTitle: "Localizações",
     localTime: "Hora local",
     countries: "países",
     kinds: {
       work: "Projetos",
-      culture: "Cultura",
     },
   },
   clients: {
@@ -435,7 +438,7 @@ const pt: Dictionary = {
     photoAlt: "Bryan projetando e desenvolvendo em sua mesa",
     inspirationLabel: "O que levo para o trabalho",
     inspiration:
-      "Eu me inspiro em carros de alto desempenho —meu favorito é o Honda Civic Type R 2016—, na cultura visual japonesa e na lógica de uma rede bem construída. Não colo isso como decoração: traduzo em precisão, ritmo e conexão.",
+      "Eu me inspiro em carros de alto desempenho —meu favorito é o Honda Civic Type R 2016—, no ofício de fazer certo da primeira vez e na lógica de uma rede bem construída. Não colo isso como decoração: traduzo em precisão, ritmo e conexão.",
     inspirationAccent: "precisão, ritmo e conexão",
     chips: ["Design + código", "Contato direto", "Performance com propósito"],
     principlesLabel: "Como eu trabalho · precisão, ritmo e conexão",
@@ -481,7 +484,6 @@ const pt: Dictionary = {
     cards: [
       {
         index: "01",
-        jp: "精度",
         romaji: "seido",
         title: "Cada elemento tem uma razão.",
         body:
@@ -490,7 +492,6 @@ const pt: Dictionary = {
       },
       {
         index: "02",
-        jp: "流れ",
         romaji: "nagare",
         title: "Velocidade também se sente.",
         body:
@@ -499,7 +500,6 @@ const pt: Dictionary = {
       },
       {
         index: "03",
-        jp: "繋",
         romaji: "tsunagari",
         title: "Tudo trabalha como um sistema.",
         body:

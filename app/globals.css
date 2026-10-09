@@ -206,10 +206,6 @@
       round calc(var(--r-panel) * var(--fq))
     );
   }
-  /* El marco washi ya no existe: se conserva la clase vacía por si algo la usa. */
-  .sheet-frame {
-    display: none;
-  }
 
   /* ——— Superficies ——————————————————————————————————————————————————
      `.panel` es la pieza base: blanca por defecto. Las variantes invierten
@@ -547,12 +543,6 @@
     background-image: radial-gradient(hsl(var(--foreground) / 0.14) 1.1px, transparent 1.3px);
     background-size: 18px 18px;
   }
-  .japan-halftone {
-    background-image: radial-gradient(circle, hsl(var(--foreground) / 0.16) 0.9px, transparent 1px);
-    background-size: 6px 6px;
-    mask-image: radial-gradient(circle at 72% 34%, black 0, transparent 64%);
-    -webkit-mask-image: radial-gradient(circle at 72% 34%, black 0, transparent 64%);
-  }
   .route-grid,
   .bg-blueprint {
     background-image:
@@ -599,11 +589,6 @@
   }
   .font-jp {
     font-family: var(--font-jp);
-  }
-  .vertical-jp {
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    letter-spacing: 0.2em;
   }
   .tategaki-display {
     writing-mode: vertical-rl;

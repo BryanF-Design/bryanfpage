@@ -159,6 +159,11 @@ const fr: Dictionary = {
       "element-experiences-com": "Expériences et événements",
       "gecomex-web-vercel-app": "Logistique et douanes internationales",
       "ceahestructural-com-mx": "Solutions structurelles en PRV et PVC",
+      "mixteca-web-vercel-app": "Légumes et aromates de Puebla",
+      "urban-flip-com": "Achat et vente de biens immobiliers",
+      "bioslaboratorios-com": "Laboratoire d'analyses médicales",
+      "haften-lyart-vercel-app": "Experts en CVC/R et GTB",
+      "sermaqro-com": "Location et vente de petits engins",
     },
     caseLabels: {
       problem: "Problème",
@@ -204,20 +209,18 @@ const fr: Dictionary = {
     eyebrow: "Présence",
     title: "Où nous avons travaillé",
     subtitle:
-      "Nos projets clients couvrent le Mexique, l’Espagne et la France. Le Japon désigne une collaboration culturelle qui nourrit aussi le studio.",
+      "Nos projets clients couvrent le Mexique, l’Espagne et la France : de vrais projets, avec de vrais clients, sur trois fuseaux horaires.",
     dragHint: "Faites glisser le globe pour le faire tourner",
     locations: {
       mexico: "Mexique",
       spain: "Espagne",
       france: "France",
-      japan: "Japon",
     },
     listTitle: "Lieux",
     localTime: "Heure locale",
     countries: "pays",
     kinds: {
       work: "Projets",
-      culture: "Culture",
     },
   },
   clients: {
@@ -435,7 +438,7 @@ const fr: Dictionary = {
     photoAlt: "Bryan en train de concevoir et de développer à son bureau",
     inspirationLabel: "Ce que j'apporte au travail",
     inspiration:
-      "Je m'inspire des voitures hautes performances — ma préférée est la Honda Civic Type R 2016 —, de la culture visuelle japonaise et de la logique d'un réseau bien construit. Je ne les colle pas comme décoration : je les traduis en précision, rythme et connexion.",
+      "Je m'inspire des voitures hautes performances — ma préférée est la Honda Civic Type R 2016 —, du savoir-faire qui consiste à bien faire du premier coup et de la logique d'un réseau bien construit. Je ne les colle pas comme décoration : je les traduis en précision, rythme et connexion.",
     inspirationAccent: "précision, rythme et connexion",
     chips: ["Design + code", "Contact direct", "Performance intentionnelle"],
     principlesLabel: "Ma façon de travailler · précision, rythme et connexion",
@@ -481,7 +484,6 @@ const fr: Dictionary = {
     cards: [
       {
         index: "01",
-        jp: "精度",
         romaji: "seido",
         title: "Chaque élément a une raison d'être.",
         body:
@@ -490,7 +492,6 @@ const fr: Dictionary = {
       },
       {
         index: "02",
-        jp: "流れ",
         romaji: "nagare",
         title: "La vitesse se ressent aussi.",
         body:
@@ -499,7 +500,6 @@ const fr: Dictionary = {
       },
       {
         index: "03",
-        jp: "繋",
         romaji: "tsunagari",
         title: "Tout fonctionne comme un système.",
         body:

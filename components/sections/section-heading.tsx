@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
-import { ChapterMark } from "@/components/japan/chapter-mark";
+import { ChapterMark } from "@/components/sections/chapter-mark";
 
 interface SectionChapter {
   /** Se conservan por compatibilidad con las llamadas existentes. */

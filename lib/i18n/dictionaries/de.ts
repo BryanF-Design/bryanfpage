@@ -159,6 +159,11 @@ const de: Dictionary = {
       "element-experiences-com": "Erlebnisse und Events",
       "gecomex-web-vercel-app": "Internationale Logistik und Zollabwicklung",
       "ceahestructural-com-mx": "Tragwerkslösungen aus GFK und PVC",
+      "mixteca-web-vercel-app": "Gemüse und Kräuter aus Puebla",
+      "urban-flip-com": "Kauf und Verkauf von Immobilien",
+      "bioslaboratorios-com": "Labor für klinische Analysen",
+      "haften-lyart-vercel-app": "Experten für HLK/K und GLT",
+      "sermaqro-com": "Vermietung und Verkauf leichter Baumaschinen",
     },
     caseLabels: {
       problem: "Aufgabe",
@@ -204,20 +209,18 @@ const de: Dictionary = {
     eyebrow: "Präsenz",
     title: "Wo wir gearbeitet haben",
     subtitle:
-      "Kundenprojekte reichen von Mexiko über Spanien bis Frankreich. Japan steht für eine kulturelle Zusammenarbeit, die das Studio ebenfalls prägt.",
+      "Kundenprojekte reichen von Mexiko über Spanien bis Frankreich: echte Projekte mit echten Kunden in drei Zeitzonen.",
     dragHint: "Ziehe den Globus, um ihn zu drehen",
     locations: {
       mexico: "Mexiko",
       spain: "Spanien",
       france: "Frankreich",
-      japan: "Japan",
     },
     listTitle: "Standorte",
     localTime: "Ortszeit",
     countries: "Länder",
     kinds: {
       work: "Projekte",
-      culture: "Kultur",
     },
   },
   clients: {
@@ -435,7 +438,7 @@ const de: Dictionary = {
     photoAlt: "Bryan beim Gestalten und Entwickeln an seinem Schreibtisch",
     inspirationLabel: "Was ich in die Arbeit einbringe",
     inspiration:
-      "Mich inspirieren Hochleistungsautos – mein Favorit ist der Honda Civic Type R von 2016 –, japanische visuelle Kultur und die Logik eines gut aufgebauten Netzwerks. Ich klebe sie nicht als Dekoration auf, sondern übersetze sie in Präzision, Rhythmus und Verbindung.",
+      "Mich inspirieren Hochleistungsautos – mein Favorit ist der Honda Civic Type R von 2016 –, das Handwerk, Dinge gleich beim ersten Mal richtig zu machen, und die Logik eines gut aufgebauten Netzwerks. Ich klebe sie nicht als Dekoration auf, sondern übersetze sie in Präzision, Rhythmus und Verbindung.",
     inspirationAccent: "Präzision, Rhythmus und Verbindung",
     chips: ["Design + Code", "Direkter Kontakt", "Performance mit Absicht"],
     principlesLabel: "Wie ich arbeite · Präzision, Rhythmus und Verbindung",
@@ -481,7 +484,6 @@ const de: Dictionary = {
     cards: [
       {
         index: "01",
-        jp: "精度",
         romaji: "seido",
         title: "Jedes Element hat einen Grund.",
         body:
@@ -490,7 +492,6 @@ const de: Dictionary = {
       },
       {
         index: "02",
-        jp: "流れ",
         romaji: "nagare",
         title: "Geschwindigkeit ist spürbar.",
         body:
@@ -499,7 +500,6 @@ const de: Dictionary = {
       },
       {
         index: "03",
-        jp: "繋",
         romaji: "tsunagari",
         title: "Alles arbeitet als ein System.",
         body:

@@ -159,6 +159,11 @@ const en: Dictionary = {
       "element-experiences-com": "Experiences and events",
       "gecomex-web-vercel-app": "International logistics and customs",
       "ceahestructural-com-mx": "FRP and PVC structural solutions",
+      "mixteca-web-vercel-app": "Vegetables and herbs from Puebla",
+      "urban-flip-com": "Property buying and selling",
+      "bioslaboratorios-com": "Clinical testing laboratory",
+      "haften-lyart-vercel-app": "HVAC/R and BMS experts",
+      "sermaqro-com": "Light machinery rental and sales",
     },
     caseLabels: {
       problem: "Problem",
@@ -204,20 +209,18 @@ const en: Dictionary = {
     eyebrow: "Reach",
     title: "Where we've worked",
     subtitle:
-      "Client work spans Mexico, Spain, and France. Japan marks a cultural collaboration that also shapes the studio.",
+      "Client work spans Mexico, Spain, and France: real projects with real clients across three time zones.",
     dragHint: "Drag the globe to spin it",
     locations: {
       mexico: "Mexico",
       spain: "Spain",
       france: "France",
-      japan: "Japan",
     },
     listTitle: "Locations",
     localTime: "Local time",
     countries: "countries",
     kinds: {
       work: "Projects",
-      culture: "Culture",
     },
   },
   clients: {
@@ -435,7 +438,7 @@ const en: Dictionary = {
     photoAlt: "Bryan designing and developing at his desk",
     inspirationLabel: "What I bring to the work",
     inspiration:
-      "I'm inspired by high-performance cars—my favorite is the 2016 Honda Civic Type R—Japanese visual culture and the logic of a well-built network. I don't paste them on as decoration: I translate them into precision, rhythm and connection.",
+      "I'm inspired by high-performance cars—my favorite is the 2016 Honda Civic Type R—the craft of getting things right the first time and the logic of a well-built network. I don't paste them on as decoration: I translate them into precision, rhythm and connection.",
     inspirationAccent: "precision, rhythm and connection",
     chips: ["Design + code", "Direct contact", "Performance with purpose"],
     principlesLabel: "How I work · precision, rhythm and connection",
@@ -481,7 +484,6 @@ const en: Dictionary = {
     cards: [
       {
         index: "01",
-        jp: "精度",
         romaji: "seido",
         title: "Every element has a reason.",
         body:
@@ -490,7 +492,6 @@ const en: Dictionary = {
       },
       {
         index: "02",
-        jp: "流れ",
         romaji: "nagare",
         title: "Speed is something you feel.",
         body:
@@ -499,7 +500,6 @@ const en: Dictionary = {
       },
       {
         index: "03",
-        jp: "繋",
         romaji: "tsunagari",
         title: "Everything works as a system.",
         body:

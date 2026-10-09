@@ -167,6 +167,11 @@ const es = {
       "element-experiences-com": "Experiencias y eventos",
       "gecomex-web-vercel-app": "Logística y aduanas internacionales",
       "ceahestructural-com-mx": "Soluciones estructurales FRP y PVC",
+      "mixteca-web-vercel-app": "Hortalizas y aromáticas de Puebla",
+      "urban-flip-com": "Compra y venta de propiedades",
+      "bioslaboratorios-com": "Laboratorio de análisis clínicos",
+      "haften-lyart-vercel-app": "Expertos en HVAC/R y BMS",
+      "sermaqro-com": "Renta y venta de maquinaria ligera",
     } as Record<string, string>,
     caseLabels: {
       problem: "Problema",
@@ -212,20 +217,18 @@ const es = {
     eyebrow: "Presencia",
     title: "Dónde hemos trabajado",
     subtitle:
-      "El trabajo nos ha llevado por México, España y Francia. Japón entra por otra vía: una influencia cultural que atraviesa la manera de diseñar del estudio.",
+      "El trabajo nos ha llevado por México, España y Francia: proyectos reales, con clientes reales, en tres husos horarios.",
     dragHint: "Arrastra el globo para girarlo",
     locations: {
       mexico: "México",
       spain: "España",
       france: "Francia",
-      japan: "Japón",
     },
     listTitle: "Ubicaciones",
     localTime: "Hora local",
     countries: "países",
     kinds: {
       work: "Proyectos",
-      culture: "Cultura",
     },
   },
   clients: {
@@ -456,7 +459,7 @@ const es = {
     photoAlt: "Bryan diseñando y desarrollando en su escritorio",
     inspirationLabel: "Lo que llevo al trabajo",
     inspiration:
-      "Hay cosas que se me quedaron pegadas: el Type R que para mí siempre será el de 2016, la forma en que Japón une oficio y cultura de taller, y la lógica de una red bien hecha. En mi trabajo aparecen como atención al detalle, ritmo y sistemas que sí conectan.",
+      "Hay cosas que se me quedaron pegadas: el Type R que para mí siempre será el de 2016, el oficio de hacer las cosas bien a la primera y la lógica de una red bien hecha. En mi trabajo aparecen como atención al detalle, ritmo y sistemas que sí conectan.",
     // Fragmento final de `inspiration` que se resalta (debe aparecer tal cual).
     inspirationAccent: "sistemas que sí conectan",
     chips: ["Diseño + código", "Trato directo", "Performance con intención"],
@@ -504,7 +507,6 @@ const es = {
     cards: [
       {
         index: "01",
-        jp: "精度",
         romaji: "seido",
         title: "Cada elemento tiene una razón.",
         body:
@@ -513,7 +515,6 @@ const es = {
       },
       {
         index: "02",
-        jp: "流れ",
         romaji: "nagare",
         title: "La velocidad también se siente.",
         body:
@@ -522,7 +523,6 @@ const es = {
       },
       {
         index: "03",
-        jp: "繋",
         romaji: "tsunagari",
         title: "Todo trabaja como un sistema.",
         body:

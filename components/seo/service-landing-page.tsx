@@ -16,7 +16,6 @@ import {
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { MarqueeBand } from "@/components/sections/marquee-band";
-import { PageFrame } from "@/components/japan/page-frame";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { SiteHeader } from "@/components/sections/site-header";
 import { SpanishPageLanguage } from "@/components/seo/spanish-page-language";
@@ -236,7 +235,6 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
       <JsonLd data={buildFaqSchema(page)} />
       <SpanishPageLanguage />
 
-      <PageFrame />
       <ScrollProgress />
       <SiteHeader spanishOnly />
 

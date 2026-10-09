@@ -157,6 +157,11 @@ const ja: Dictionary = {
       "element-experiences-com": "体験・イベント",
       "gecomex-web-vercel-app": "国際物流・通関",
       "ceahestructural-com-mx": "FRP・PVCの構造ソリューション",
+      "mixteca-web-vercel-app": "プエブラ産の野菜とハーブ",
+      "urban-flip-com": "不動産の売買",
+      "bioslaboratorios-com": "臨床検査ラボ",
+      "haften-lyart-vercel-app": "HVAC/R・BMSの専門家",
+      "sermaqro-com": "小型建設機械のレンタル・販売",
     },
     caseLabels: {
       problem: "課題",
@@ -202,20 +207,18 @@ const ja: Dictionary = {
     eyebrow: "拠点",
     title: "これまでの実績エリア",
     subtitle:
-      "メキシコ、スペイン、フランスでクライアントワークを行ってきました。日本は、スタジオを形づくる文化的な協働を示しています。",
+      "メキシコ、スペイン、フランスでクライアントワークを行ってきました。3つのタイムゾーンで、実在のクライアントとの実際のプロジェクトです。",
     dragHint: "ドラッグして地球儀を回す",
     locations: {
       mexico: "メキシコ",
       spain: "スペイン",
       france: "フランス",
-      japan: "日本",
     },
     listTitle: "ロケーション",
     localTime: "現地時間",
     countries: "か国",
     kinds: {
       work: "プロジェクト",
-      culture: "カルチャー",
     },
   },
   clients: {
@@ -428,7 +431,7 @@ const ja: Dictionary = {
     photoAlt: "デスクでデザインと開発をするBryan",
     inspirationLabel: "仕事に持ち込む視点",
     inspiration:
-      "高性能な車（特に2016年のホンダ・シビック TYPE Rが好きです）、日本のビジュアル文化、そしてよく設計されたネットワークの論理に惹かれます。それらを飾りとして貼るのではなく、精度・リズム・つながりへと翻訳します。",
+      "高性能な車（特に2016年のホンダ・シビック TYPE Rが好きです）、一度で正しく仕上げる職人の姿勢、そしてよく設計されたネットワークの論理に惹かれます。それらを飾りとして貼るのではなく、精度・リズム・つながりへと翻訳します。",
     inspirationAccent: "精度・リズム・つながり",
     chips: ["デザイン + コード", "直接対応", "意図のあるパフォーマンス"],
     principlesLabel: "私の仕事の軸 · 精度、リズム、つながり",
@@ -474,7 +477,6 @@ const ja: Dictionary = {
     cards: [
       {
         index: "01",
-        jp: "精度",
         romaji: "seido",
         title: "すべての要素に理由があります。",
         body:
@@ -483,7 +485,6 @@ const ja: Dictionary = {
       },
       {
         index: "02",
-        jp: "流れ",
         romaji: "nagare",
         title: "速さは感覚にも表れます。",
         body:
@@ -492,7 +493,6 @@ const ja: Dictionary = {
       },
       {
         index: "03",
-        jp: "繋",
         romaji: "tsunagari",
         title: "すべてを一つの仕組みに。",
         body:

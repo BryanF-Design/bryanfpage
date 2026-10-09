@@ -144,6 +144,11 @@ const zh: Dictionary = {
       "element-experiences-com": "体验与活动",
       "gecomex-web-vercel-app": "国际物流与报关",
       "ceahestructural-com-mx": "FRP 与 PVC 结构解决方案",
+      "mixteca-web-vercel-app": "来自普埃布拉的蔬菜与香草",
+      "urban-flip-com": "房产买卖",
+      "bioslaboratorios-com": "临床检验实验室",
+      "haften-lyart-vercel-app": "暖通空调与楼宇自控专家",
+      "sermaqro-com": "轻型机械租赁与销售",
     },
     caseLabels: {
       problem: "问题",
@@ -189,20 +194,18 @@ const zh: Dictionary = {
     eyebrow: "服务足迹",
     title: "我们曾服务的地区",
     subtitle:
-      "客户项目覆盖墨西哥、西班牙和法国。日本代表一项同样影响工作室的文化合作。",
+      "客户项目覆盖墨西哥、西班牙和法国：跨三个时区，与真实客户合作的真实项目。",
     dragHint: "拖动地球仪旋转",
     locations: {
       mexico: "墨西哥",
       spain: "西班牙",
       france: "法国",
-      japan: "日本",
     },
     listTitle: "地点",
     localTime: "当地时间",
     countries: "个国家",
     kinds: {
       work: "项目",
-      culture: "文化",
     },
   },
   clients: {
@@ -380,7 +383,7 @@ const zh: Dictionary = {
     photoAlt: "Bryan在工作台前进行设计与开发",
     inspirationLabel: "我带入工作中的视角",
     inspiration:
-      "高性能汽车（我最喜欢的是2016款本田思域Type R）、日本视觉文化，以及结构良好的网络逻辑都给我灵感。我不会把它们当作装饰贴上去，而是把它们转化为精准、节奏与连接。",
+      "高性能汽车（我最喜欢的是2016款本田思域Type R）、一次就把事情做对的匠心，以及结构良好的网络逻辑都给我灵感。我不会把它们当作装饰贴上去，而是把它们转化为精准、节奏与连接。",
     inspirationAccent: "精准、节奏与连接",
     chips: ["设计 + 代码", "直接沟通", "有目的的性能"],
     principlesLabel: "我的工作方式 · 精准、节奏与连接",
@@ -426,7 +429,6 @@ const zh: Dictionary = {
     cards: [
       {
         index: "01",
-        jp: "精度",
         romaji: "seido",
         title: "每一个元素都有存在的理由。",
         body:
@@ -435,7 +437,6 @@ const zh: Dictionary = {
       },
       {
         index: "02",
-        jp: "流れ",
         romaji: "nagare",
         title: "速度也应该被感受到。",
         body:
@@ -444,7 +445,6 @@ const zh: Dictionary = {
       },
       {
         index: "03",
-        jp: "繋",
         romaji: "tsunagari",
         title: "一切都作为一个系统运作。",
         body:

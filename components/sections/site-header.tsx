@@ -18,6 +18,7 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { useLanguage } from "@/lib/i18n/context";
 import { DICTIONARIES } from "@/lib/i18n/dictionaries";
 import { useReducedMotionPreference } from "@/lib/motion-preference";
+import { useFooterInView } from "@/lib/use-footer-in-view";
 import { cn } from "@/lib/utils";
 
 const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
@@ -43,6 +44,10 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hovered, setHovered] = useState<number | null>(null);
+  // Al llegar al pie (que crece a pantalla completa) el header se retira
+  // hacia arriba; vuelve en cuanto se sube. Con el menú abierto no se va.
+  const footerInView = useFooterInView();
+  const hidden = footerInView && !open;
   const headerRef = useRef<HTMLElement>(null);
   const menuPanelRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -125,7 +130,10 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
     <>
       <header
         ref={headerRef}
-        className="pointer-events-none fixed inset-x-0 top-0 z-[100] px-[var(--gutter)] pt-[calc(var(--gutter)*0.75)] md:pt-[var(--gutter)]"
+        className={cn(
+          "pointer-events-none fixed inset-x-0 top-0 z-[100] px-[var(--gutter)] pt-[calc(var(--gutter)*0.75)] transition-[transform,visibility] duration-500 [transition-timing-function:var(--ease-out)] motion-reduce:transition-none md:pt-[var(--gutter)]",
+          hidden && "invisible -translate-y-[calc(100%+1rem)]"
+        )}
       >
         <div
           className={cn(

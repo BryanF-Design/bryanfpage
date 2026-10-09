@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Check, CodeXml, Crosshair, Gauge, Network, Sparkle, type LucideIcon } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
-import { ChapterMark } from "@/components/japan/chapter-mark";
+import { ChapterMark } from "@/components/sections/chapter-mark";
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n/context";
 import { cn } from "@/lib/utils";

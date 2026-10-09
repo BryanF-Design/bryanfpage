@@ -250,7 +250,7 @@ function Orbit() {
   );
 }
 
-const TIME_ZONES = ["America/Mexico_City", "Europe/Madrid", "Europe/Paris", "Asia/Tokyo"];
+const TIME_ZONES = ["America/Mexico_City", "Europe/Madrid", "Europe/Paris"];
 
 /** Hora local de cada sede. En el servidor (y antes de montar) va un guion:
  *  la hora real solo existe en el navegador. Se refresca cada 30 s. */
@@ -303,14 +303,6 @@ export function WorldPresence() {
       code: "FR",
       coords: "48.86° N · 2.35° E",
     },
-    {
-      lat: 35.6762,
-      lng: 139.6503,
-      label: t.world.locations.japan,
-      code: "JP",
-      coords: "35.68° N · 139.65° E",
-      accent: "signal" as const,
-    },
   ];
 
   return (
@@ -343,7 +335,6 @@ export function WorldPresence() {
             </div>
             <ol className="flex flex-col gap-2">
               {locations.map((l, i) => {
-                const culture = l.accent === "signal";
                 const time = times[i];
                 const TimeIcon = time?.day ? Sun : Moon;
                 return (
@@ -356,15 +347,9 @@ export function WorldPresence() {
                     <div className="flex items-center gap-3 rounded-[1.375rem] bg-canvas/70 p-2 pr-4 transition-colors duration-300 hover:bg-lime-soft">
                       <span
                         aria-hidden
-                        className={cn(
-                          "relative grid size-11 shrink-0 place-items-center rounded-full text-[0.8125rem] font-bold tracking-wide",
-                          culture ? "bg-white text-ink ring-1 ring-ink/15" : "bg-ink text-lime"
-                        )}
+                        className="relative grid size-11 shrink-0 place-items-center rounded-full bg-ink text-[0.8125rem] font-bold tracking-wide text-lime"
                       >
                         {l.code}
-                        {culture && (
-                          <span className="absolute right-0 top-0 size-2.5 rounded-full bg-signal ring-2 ring-white" />
-                        )}
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-base font-bold leading-tight text-foreground">
@@ -379,13 +364,8 @@ export function WorldPresence() {
                           <TimeIcon aria-hidden className="size-3.5 text-muted-foreground" />
                           {time?.text}
                         </span>
-                        <span
-                          className={cn(
-                            "mt-0.5 block text-xs font-semibold",
-                            culture ? "text-muted-foreground" : "text-forest"
-                          )}
-                        >
-                          {culture ? t.world.kinds.culture : t.world.kinds.work}
+                        <span className="mt-0.5 block text-xs font-semibold text-forest">
+                          {t.world.kinds.work}
                         </span>
                       </span>
                     </div>
