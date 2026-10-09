@@ -7,16 +7,13 @@ import { ArrowUpRight, CreditCard, Heart, Search, Sparkle, Timer } from "lucide-
 
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n/context";
-import { desktopShot, mobileShot } from "@/lib/projects";
+import { SitePreview } from "@/components/site-preview";
+import { desktopShot, mobileShot, projects } from "@/lib/projects";
 
 const FEATURE_ICONS = [Timer, Search, CreditCard];
 
-/** El proyecto que presume el hero: el lanzamiento más reciente con captura. */
-const FEATURED = {
-  slug: "gecomex-web-vercel-app",
-  name: "Gecomex",
-  url: "https://gecomex-web.vercel.app/",
-};
+/** El proyecto que presume el hero: el mismo destacado del portafolio. */
+const FEATURED = projects.find((p) => p.slug === "mixteca-web-vercel-app") ?? projects[0];
 
 /** Miniaturas de la prueba social: tres sitios reales del portafolio. */
 const PROOF_SHOTS = ["koi-arquitectura-vercel-app", "ceahestructural-com-mx", "element-experiences-com"];
@@ -118,7 +115,7 @@ export function HeroPop() {
               en xl la central y sube hasta el titular. Su ancho nunca pasa
               de su columna (`cqi`), así que no tapa el texto de al lado. */}
           <div className="hero-in hero-in-rise pointer-events-none relative -mt-24 [container-type:inline-size] md:order-2 md:mt-0 md:self-stretch">
-            <div className="relative mx-auto aspect-[704/1184] h-[16rem] sm:h-[19rem] md:absolute md:left-1/2 md:top-[-6rem] md:h-[min(calc(100%+6rem),calc(100cqi*1.68))] md:-translate-x-1/2 xl:bottom-[-2.5rem] xl:top-auto xl:h-[min(calc(100%+13rem),calc((100cqi+3rem)*1.68))]">
+            <div className="relative mx-auto aspect-[704/1184] h-[18rem] sm:h-[20rem] md:absolute md:left-1/2 md:top-[-6rem] md:h-[min(calc(100%+6rem),calc(100cqi*1.68))] md:-translate-x-1/2 xl:bottom-[-2.5rem] xl:top-auto xl:h-[min(calc(100%+13rem),calc((100cqi+3rem)*1.68))]">
               <svg
                 aria-hidden
                 viewBox="0 0 400 140"
@@ -135,7 +132,10 @@ export function HeroPop() {
                   transform="rotate(-9 200 70)"
                 />
               </svg>
-              <div className="absolute inset-0 [mask-image:linear-gradient(to_bottom,black_80%,transparent)] xl:[mask-image:none]">
+              {/* Hasta lg la foto termina en un arco con base redondeada (un
+                  marco limpio, sin difuminar el saco); en xl baja hasta el
+                  canto de la tarjeta lima. */}
+              <div className="absolute inset-0 overflow-hidden rounded-b-[1.75rem] xl:overflow-visible xl:rounded-none">
                 <span aria-hidden className="absolute inset-x-0 bottom-0 top-[19%] rounded-t-full bg-forest" />
                 <Image
                   src="/img/brand/bryan-hero.webp"
@@ -244,13 +244,20 @@ export function HeroPop() {
               style={delay(460)}
             >
               <span className="relative aspect-[4/3] w-32 shrink-0 overflow-hidden rounded-inner bg-mint sm:w-40 xl:w-full">
-                <Image
-                  src={desktopShot(FEATURED.slug)}
-                  alt={`${FEATURED.name} — captura del sitio`}
-                  fill
-                  sizes="(min-width: 1280px) 22rem, 10rem"
-                  className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
-                />
+                {FEATURED.shots === false ? (
+                  <SitePreview
+                    name={FEATURED.name}
+                    host={new URL(FEATURED.url).hostname.replace(/^www\./, "")}
+                  />
+                ) : (
+                  <Image
+                    src={desktopShot(FEATURED.slug)}
+                    alt={`${FEATURED.name} — captura del sitio`}
+                    fill
+                    sizes="(min-width: 1280px) 22rem, 10rem"
+                    className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
+                  />
+                )}
               </span>
               <span className="flex min-w-0 flex-1 flex-col justify-between gap-2 py-1 xl:flex-row xl:items-center xl:px-1">
                 <span className="min-w-0">

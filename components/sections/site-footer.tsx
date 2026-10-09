@@ -1,7 +1,9 @@
 "use client";
 
+import { useRef, type CSSProperties } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion, useScroll, type MotionStyle } from "framer-motion";
 import { ArrowUp, ArrowUpRight, LogIn, Mail, Phone, Star } from "lucide-react";
 import {
   FaWhatsapp,
@@ -62,7 +64,12 @@ function LinkArrow() {
 }
 
 /**
- * Pie de página — un panel de tinta dentro de los márgenes de la página.
+ * Pie de página — un panel de tinta que, al llegar a él, crece hasta ocupar
+ * toda la pantalla (sin márgenes ni esquinas) y se vuelve a encoger si se
+ * sube. El avance va ligado al scroll: `--fp` va de 0 (tarjeta dentro de los
+ * márgenes, como el resto de la página) a 1 (cuando su borde superior llega
+ * al techo de la pantalla). Mide al menos una pantalla, así que siempre llega
+ * a 1 al final de la página.
  * Marca, frase y redes a la izquierda; navegación, servicios y contacto en
  * columnas; la reseña de Google como fila tipo app; el nombre a todo lo ancho
  * (ajustado con unidades de contenedor) y la barra legal con "volver arriba".
@@ -73,6 +80,11 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
   const { t: localizedT } = useLanguage();
   const t = spanishOnly ? DICTIONARIES.es : localizedT;
   const reducedMotion = useReducedMotionPreference();
+  const footerRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: footerRef,
+    offset: ["start end", "start start"],
+  });
 
   const nav = [
     { label: t.nav.inicio, href: "/" },
@@ -136,14 +148,23 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
 
   return (
     <footer
+      ref={footerRef}
       id="site-footer"
       aria-label={t.footer.legalLabel}
-      className="mx-auto w-full max-w-[1520px] px-[var(--gutter)] pb-[var(--gutter)]"
+      className="w-full"
     >
-      <div data-fx="panel">
-        <div className="panel panel-ink overflow-hidden px-5 pb-4 pt-6 sm:px-8 sm:pt-10 md:pb-5 lg:px-12 lg:pb-8 lg:pt-14">
-          <div aria-hidden className="mesh-glow-a opacity-60" />
-
+      <motion.div
+        className="footer-grow panel panel-ink flex min-h-screen flex-col overflow-hidden rounded-none"
+        style={
+          {
+            minHeight: "100lvh",
+            "--fp": reducedMotion ? 0 : scrollYProgress,
+          } as MotionStyle & CSSProperties
+        }
+      >
+        <div aria-hidden className="mesh-glow-a opacity-60" />
+        {/* El contenido mantiene el ancho de la página aunque el panel crezca. */}
+        <div className="relative mx-auto flex w-full max-w-[1520px] flex-1 flex-col px-[calc(var(--gutter)+1.25rem)] pb-[calc(var(--gutter)+1rem)] pt-6 sm:px-[calc(var(--gutter)+2rem)] sm:pt-10 md:pb-[calc(var(--gutter)+1.25rem)] lg:px-[calc(var(--gutter)+3rem)] lg:pb-[calc(var(--gutter)+2rem)] lg:pt-14">
           <div className="relative grid gap-7 sm:gap-10 xl:grid-cols-12 xl:gap-8">
             {/* Marca, frase, redes y reseña. */}
             <div className="flex flex-col items-start gap-5 sm:gap-6 lg:flex-row lg:items-end lg:justify-between xl:col-span-4 xl:flex-col xl:items-start xl:justify-start">
@@ -294,7 +315,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
           </div>
 
           {/* El nombre a todo lo ancho; el tamaño sale del ancho del panel. */}
-          <div className="relative mt-7 [container-type:inline-size] sm:mt-12 lg:mt-16">
+          <div className="relative mt-auto pt-7 [container-type:inline-size] sm:pt-12 lg:pt-16">
             {/* Una sola línea en todos los anchos. El tamaño en `cqw`
                 sobrescribe al de `vw` donde el navegador lo soporta. */}
             <p
@@ -340,7 +361,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
             </button>
           </div>
         </div>
-      </div>
+      </motion.div>
     </footer>
   );
 }

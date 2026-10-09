@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 
 import { projects, desktopShot, mobileShot, type Project } from "@/lib/projects";
+import { SitePreview } from "@/components/site-preview";
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { SectionHeading } from "@/components/sections/section-heading";
 import { useLanguage } from "@/lib/i18n/context";
@@ -29,29 +30,29 @@ import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { cn } from "@/lib/utils";
 
 /**
- * Recientes: seis lanzamientos con captura (dos filas en escritorio). Gecomex
- * ya vive en el hero y CEAH es el destacado, así que no se repiten aquí.
+ * Recientes: seis lanzamientos con captura (dos filas en escritorio). Mixteca
+ * es el destacado (aquí y en el hero), así que no se repite aquí.
  * Van en su propia lista: mantener un múltiplo de seis para que llenen filas
  * completas de dos y de tres columnas.
  */
 const RECENT_SLUGS = [
+  "gecomex-web-vercel-app",
+  "ceahestructural-com-mx",
   "efficientplasticolors-com",
   "koi-arquitectura-vercel-app",
   "epiko-vercel-app",
   "goldenrepublic-com-mx",
-  "serviciosecem-com-mx",
-  "industriastritton-com",
 ];
 
 /** Solo los estrenos de verdad llevan "Nuevo": si todo es nuevo, nada lo es. */
 const NEW_SLUGS = new Set([
+  "gecomex-web-vercel-app",
+  "ceahestructural-com-mx",
   "efficientplasticolors-com",
-  "koi-arquitectura-vercel-app",
-  "epiko-vercel-app",
 ]);
 
-/** El protagonista (escritorio + teléfono). */
-const FEATURED_SLUG = "ceahestructural-com-mx";
+/** El protagonista (escritorio + teléfono); también es el destacado del hero. */
+const FEATURED_SLUG = "mixteca-web-vercel-app";
 
 /** Los cuatro casos con problema, decisión y resultado en el diccionario. */
 const CASE_SLUGS = [
@@ -196,12 +197,15 @@ function PhoneMock({
   sizes,
   className,
   style,
+  cover,
 }: {
   slug: string;
   alt: string;
   sizes: string;
   className?: string;
   style?: CSSProperties;
+  /** Sin captura todavía: la portada de marca (nombre y dominio). */
+  cover?: { name: string; host: string };
 }) {
   return (
     <div
@@ -219,7 +223,11 @@ function PhoneMock({
           <span className="absolute left-1/2 top-[30%] h-[52%] w-[34%] -translate-x-1/2 rounded-full bg-ink" />
         </span>
         <span className="relative block flex-1">
-          <Image src={mobileShot(slug)} alt={alt} fill sizes={sizes} quality={70} className="object-cover object-top" />
+          {cover ? (
+            <SitePreview name={cover.name} host={cover.host} compact />
+          ) : (
+            <Image src={mobileShot(slug)} alt={alt} fill sizes={sizes} quality={70} className="object-cover object-top" />
+          )}
         </span>
       </div>
     </div>
@@ -405,6 +413,7 @@ function FeaturedProject({ project }: { project: Project }) {
   const [lead, ...tail] = project.name.split(" ");
   const desc = t.projects.descs[project.slug] ?? project.desc;
   const host = hostname(project.url);
+  const live = project.shots === false;
 
   return (
     <article className="panel panel-forest relative grid items-center gap-6 overflow-hidden p-4 pt-[4.25rem] sm:p-7 sm:pt-20 md:gap-8 lg:grid-cols-12 lg:gap-6 lg:p-10 lg:pt-10">
@@ -425,7 +434,16 @@ function FeaturedProject({ project }: { project: Project }) {
 
       <div className="relative z-[1] flex flex-col items-start gap-4 md:gap-5 lg:col-span-5 lg:gap-6 lg:pt-16">
         <h3 className="text-white">
-          <span className="display-xl block text-[clamp(4.25rem,10.5vw,9.5rem)]">{lead}</span>
+          <span
+            className={cn(
+              "display-xl block",
+              // Nombres largos (p. ej. "Mixteca") bajan de tamaño para no
+              // invadir la columna de los dispositivos.
+              lead.length > 5 ? "text-[clamp(3.75rem,7.2vw,7rem)]" : "text-[clamp(4.25rem,10.5vw,9.5rem)]"
+            )}
+          >
+            {lead}
+          </span>
           {tail.length > 0 && (
             <span className="mt-1 block font-serif text-[clamp(2.5rem,4.8vw,4.5rem)] italic leading-[0.9] text-lime">
               {tail.join(" ")}
@@ -453,29 +471,35 @@ function FeaturedProject({ project }: { project: Project }) {
         </Button>
       </div>
 
-      {/* Dispositivos: navegador de escritorio y el teléfono encima. En
-          teléfono la franja es más baja y ambos suben desde el borde
-          inferior del panel, que los recorta. */}
-      <div className="relative -mb-4 h-[12rem] sm:-mb-7 sm:h-[15rem] md:mb-0 md:h-auto lg:col-span-7">
-        <div className="relative pb-12 pl-[17%] sm:pb-16 lg:pb-10 lg:pl-[13%]">
+      {/* Dispositivos: navegador de escritorio y el teléfono encima, a la
+          izquierda y un poco más abajo. En teléfono el navegador va a todo lo
+          ancho y el teléfono lo pisa desde abajo, sin recortarse. Sin captura
+          todavía, ambos muestran la portada de marca. */}
+      <div className="relative lg:col-span-7">
+        <div className="relative pb-10 pl-[15%] sm:pb-14 lg:pb-10 lg:pl-[13%]">
           <div className="surface-white rounded-card p-1.5 shadow-float sm:p-2">
             <BrowserBar host={host} />
             <div className="relative aspect-[1440/1000] overflow-hidden rounded-inner bg-mint">
-              <Image
-                src={desktopShot(project.slug)}
-                alt={`${project.name} — captura del sitio en escritorio`}
-                fill
-                sizes="(min-width: 1024px) 50vw, 86vw"
-                quality={75}
-                className="object-cover object-top"
-              />
+              {live ? (
+                <SitePreview name={project.name} host={host} />
+              ) : (
+                <Image
+                  src={desktopShot(project.slug)}
+                  alt={`${project.name} — captura del sitio en escritorio`}
+                  fill
+                  sizes="(min-width: 1024px) 50vw, 86vw"
+                  quality={75}
+                  className="object-cover object-top"
+                />
+              )}
             </div>
           </div>
           <PhoneMock
             slug={project.slug}
+            cover={live ? { name: project.name, host } : undefined}
             alt={`${project.name} — captura del sitio en móvil`}
-            sizes="(min-width: 1024px) 15rem, 36vw"
-            className="absolute left-0 top-10 w-[30%] max-w-[15rem] md:bottom-0 md:top-auto md:w-[34%] lg:w-[30%]"
+            sizes="(min-width: 1024px) 15rem, 30vw"
+            className="absolute bottom-0 left-0 w-[27%] max-w-[15rem] md:w-[30%]"
           />
           <Sparkle
             aria-hidden

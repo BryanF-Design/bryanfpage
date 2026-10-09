@@ -194,6 +194,18 @@
     padding: calc(var(--header-h) + 0.25rem) var(--gutter) var(--gutter);
     overflow-x: clip;
   }
+  /* Pie que crece: `--fp` (0 → 1, ligado al scroll) abre el recorte desde la
+     tarjeta con márgenes y esquinas de la página hasta toda la pantalla. A 0
+     coincide con el ancho de `.sheet-main` (máx. 1520px menos el canal). */
+  .footer-grow {
+    --fp: 0;
+    --fq: calc(1 - var(--fp));
+    --fx: max(var(--gutter), calc((100% - 1520px) / 2 + var(--gutter)));
+    clip-path: inset(
+      0 calc(var(--fx) * var(--fq)) calc(var(--gutter) * var(--fq))
+      round calc(var(--r-panel) * var(--fq))
+    );
+  }
   /* El marco washi ya no existe: se conserva la clase vacía por si algo la usa. */
   .sheet-frame {
     display: none;

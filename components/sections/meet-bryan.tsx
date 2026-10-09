@@ -265,20 +265,21 @@ export function MeetBryan() {
           style={fx(140)}
           className="min-w-0 md:col-span-7 md:col-start-6 md:row-start-1 xl:col-span-5 xl:col-start-1 xl:row-start-2"
         >
-          <figure className="group relative aspect-[16/7] overflow-hidden rounded-panel bg-ink md:aspect-auto md:h-full md:min-h-[16rem] xl:min-h-[18rem]">
-            <Image
-              src="/img/me/about-photo.png"
-              alt={t.about.photoAlt}
-              fill
-              sizes="(min-width: 1280px) 40vw, (min-width: 768px) 58vw, 100vw"
-              className="object-cover object-[50%_100%] transition-transform duration-700 [transition-timing-function:var(--ease-out)] group-hover:scale-[1.04] md:object-[50%_40%]"
-            />
-            <div
-              aria-hidden
-              className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/25 to-transparent"
-            />
-            <figcaption className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-4 sm:p-7">
-              <span className="max-w-[24ch] text-pretty text-lg font-semibold leading-snug text-white sm:text-xl">
+          {/* La foto completa arriba (su cara nunca queda bajo el texto) y el
+              pie en una franja de tinta que continúa el monitor oscuro. */}
+          <figure className="group relative flex flex-col overflow-hidden rounded-panel bg-ink md:h-full md:min-h-[16rem] xl:min-h-[18rem]">
+            <div className="relative aspect-[16/9] overflow-hidden md:aspect-auto md:min-h-[11rem] md:flex-1">
+              <Image
+                src="/img/me/about-photo.png"
+                alt={t.about.photoAlt}
+                fill
+                sizes="(min-width: 1280px) 40vw, (min-width: 768px) 58vw, 100vw"
+                className="object-cover object-[50%_40%] transition-transform duration-700 [transition-timing-function:var(--ease-out)] group-hover:scale-[1.04]"
+              />
+              <div aria-hidden className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-ink to-transparent" />
+            </div>
+            <figcaption className="relative -mt-5 flex items-end justify-between gap-4 px-4 pb-4 sm:-mt-6 sm:px-7 sm:pb-6">
+              <span className="max-w-[26ch] text-pretty text-lg font-semibold leading-snug text-white sm:text-xl">
                 {t.about.quote}
               </span>
               <span aria-hidden className="grid size-11 shrink-0 place-items-center rounded-full bg-lime text-ink">

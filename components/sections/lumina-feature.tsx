@@ -122,19 +122,19 @@ export function LuminaFeature() {
       {/* A · Escenario bosque: Lumina rompe el borde superior del panel. El
           relleno superior reserva exactamente lo que sube su cabeza, así nunca
           invade la sección anterior. */}
-      <div data-fx="panel" className="min-w-0 pt-12 sm:pt-20 md:col-span-12 md:pt-16 lg:pt-28 xl:col-span-8 xl:pt-[6.25rem] xl:row-start-1">
-        <div className="panel panel-forest relative flex h-full flex-col md:min-h-[32rem] md:flex-row xl:min-h-[33rem]">
+      <div data-fx="panel" className="min-w-0 pt-12 sm:pt-20 md:col-span-12 lg:pt-[5.5rem] min-[1400px]:col-span-8 min-[1400px]:row-start-1 min-[1400px]:pt-[3.5rem]">
+        <div className="panel panel-forest relative flex h-full flex-col lg:min-h-[32rem] lg:flex-row min-[1400px]:min-h-[33rem]">
           {/* Fondo: brillo, disco lima detrás de su cabeza y puntos. */}
           <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_28%_30%,hsl(var(--lime)/0.18),transparent_65%)]" />
-            <div className="absolute left-[19%] top-1 aspect-square w-[62%] rounded-full bg-lime sm:left-[22%] sm:top-2 sm:w-[56%] md:left-[7%] md:top-[-3.5rem] md:w-[43%]" />
+            <div className="absolute left-[19%] top-1 aspect-square w-[62%] rounded-full bg-lime sm:left-[22%] sm:top-2 sm:w-[56%] md:left-[27%] md:w-[46%] lg:left-[7%] lg:top-[-3.5rem] lg:w-[43%]" />
             <div className="absolute -bottom-24 -right-24 size-80 rounded-full border border-white/10" />
             <div className="absolute -bottom-10 -right-10 size-48 rounded-full border border-white/10" />
             <div className="dot-cluster absolute right-9 top-[5.5rem] hidden h-[4.125rem] w-[6.875rem] opacity-60 min-[1400px]:block" />
           </div>
 
           {/* Recorte cóncavo con la etiqueta de la sección (escritorio). */}
-          <div className="notch notch-tr hidden md:flex">
+          <div className="notch notch-tr hidden lg:flex">
             <span className="eyebrow bg-white pl-1.5 text-ink shadow-soft">
               <b aria-hidden>
                 <Sparkle className="h-3 w-3 fill-current" />
@@ -143,24 +143,26 @@ export function LuminaFeature() {
             </span>
           </div>
 
-          {/* Escenario: en teléfono encabeza el panel; en escritorio ocupa la
-              mitad izquierda y Lumina se asienta en el canto inferior. El
+          {/* Escenario: en teléfono y tableta encabeza el panel; desde lg ocupa
+              la mitad izquierda y Lumina se asienta en el canto inferior. El
               recorte solo corta la base (con la esquina redondeada del panel):
-              arriba y a la derecha el pelo sale libre, sin cantos rectos.
+              arriba y a la derecha el pelo sale libre, sin cantos rectos. Lumina
+              siempre cabe completa a lo ancho dentro del panel: nunca se corta
+              de lado (el pelo llega al borde del recorte).
               Cuánto sube = relleno superior del contenedor: alto extra − lo que
-              baja (3 · 5 · 4 · 7 · 6.25rem por breakpoint). En teléfono el escenario
-              y Lumina son más bajos para que la sección no se alargue. */}
-          <div className="relative h-[17rem] shrink-0 [clip-path:inset(-6rem_0_0_0)] sm:h-[27rem] md:absolute md:inset-y-0 md:left-0 md:h-auto md:w-[54%] md:[clip-path:inset(-100%_-100%_0_0_round_0_0_0_var(--r-panel))]">
+              baja (3 · 5 · 5.75 · 3.75rem por breakpoint). La base del recorte
+              (redonda) siempre queda bajo el canto del panel. */}
+          <div className="relative h-[18rem] shrink-0 [clip-path:inset(-6rem_0_0_0)] sm:h-[27rem] lg:absolute lg:inset-y-0 lg:left-0 lg:h-auto lg:w-[54%] lg:[clip-path:inset(-100%_-100%_0_0_round_0_0_0_var(--r-panel))]">
             <button
               type="button"
               onClick={poke}
               onPointerEnter={primeNext}
               onFocus={primeNext}
               aria-label={`${t.luminaSection.hint} · ${moodLabel}`}
-              className="group absolute left-1/2 top-[-3rem] z-10 block w-[min(18.5rem,82%)] -translate-x-[52%] cursor-pointer rounded-[2rem] focus-visible:outline-offset-[-8px] sm:top-[-5rem] sm:w-[27rem] md:bottom-[-3.25rem] md:left-0 md:top-auto md:h-[calc(100%+7.25rem)] md:w-auto md:-translate-x-[18%] lg:h-[calc(100%+10.25rem)] lg:-translate-x-[12%] xl:h-[calc(100%+9.5rem)]"
+              className="group absolute left-1/2 top-[-3rem] z-10 block w-[min(18.5rem,82%)] -translate-x-1/2 cursor-pointer rounded-[2rem] focus-visible:outline-offset-[-8px] sm:top-[-5rem] sm:w-[27rem] lg:bottom-[-2.75rem] lg:left-4 lg:top-auto lg:h-[calc(100%+8.5rem)] lg:w-auto lg:translate-x-0 min-[1400px]:h-[calc(100%+6.5rem)]"
             >
               <motion.span
-                className="relative block aspect-[864/1121] origin-bottom md:h-full"
+                className="relative block aspect-[864/1121] origin-bottom lg:h-full"
                 whileHover={reduced ? undefined : { y: -6 }}
                 whileTap={reduced ? undefined : { scale: 0.97 }}
                 transition={{ type: "spring", stiffness: 380, damping: 26 }}
@@ -174,7 +176,7 @@ export function LuminaFeature() {
                       aria-hidden={i === shown ? undefined : true}
                       width={m.width}
                       height={m.height}
-                      sizes="(min-width: 768px) 34rem, (min-width: 640px) 27rem, 22rem"
+                      sizes="(min-width: 1024px) 34rem, (min-width: 640px) 27rem, 19rem"
                       onLoad={() => onMoodLoad(i)}
                       className={cn(
                         // Alineadas arriba: la cabeza no salta entre ánimos; lo
@@ -190,10 +192,11 @@ export function LuminaFeature() {
           </div>
 
           {/* Ánimo actual + pista para tocarla: una ficha tipo app. En
-              teléfono cabalga la unión entre Lumina y la hoja; en escritorio
-              flota junto a su cabeza, fuera del panel, como un globo. */}
-          <div className="absolute right-3 top-[11.5rem] z-30 sm:right-6 sm:top-[22rem] md:left-[55%] md:right-auto md:top-[-4rem] lg:top-[-5.25rem]">
-            <span aria-hidden className="absolute -bottom-1 left-7 hidden size-3.5 rotate-45 rounded-[3px] bg-white md:block" />
+              teléfono cabalga la unión entre Lumina y la hoja, a la altura del
+              hombro (nunca sobre su cara); en escritorio flota junto a su
+              cabeza, fuera del panel, como un globo. */}
+          <div className="absolute right-3 top-[13.5rem] z-30 sm:right-6 sm:top-[22rem] lg:left-[52%] lg:right-auto lg:top-[-4.25rem]">
+            <span aria-hidden className="absolute -bottom-1 left-7 hidden size-3.5 rotate-45 rounded-[3px] bg-white lg:block" />
             <div className="relative flex items-center gap-2.5 rounded-[1.35rem] bg-white py-2 pl-2 pr-4 text-ink shadow-pop">
               <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-ink text-lime">
                 <Sparkle className="h-4 w-4 fill-current" />
@@ -236,8 +239,8 @@ export function LuminaFeature() {
 
           {/* Relato. En teléfono es una hoja blanca que tapa la base del
               recorte (como una app); en escritorio vive sobre el bosque. */}
-          <div className="relative z-20 -mt-14 mx-2 mb-2 flex flex-col items-start gap-4 rounded-[calc(var(--r-panel)-0.375rem)] bg-white p-5 pt-11 text-ink sm:mx-3 sm:mb-3 sm:gap-5 sm:p-7 sm:pt-12 md:z-10 md:m-0 md:ml-auto md:w-[47%] md:justify-end md:rounded-none md:bg-transparent md:p-10 md:pl-0 md:pt-24 md:text-white">
-            <span className="eyebrow bg-ink/[0.06] pl-1.5 text-ink md:hidden">
+          <div className="relative z-20 -mt-12 mx-2 mb-2 flex flex-col items-start gap-4 rounded-[calc(var(--r-panel)-0.375rem)] bg-white p-5 pt-11 text-ink sm:mx-3 sm:mb-3 sm:gap-5 sm:p-7 sm:pt-12 lg:z-10 lg:m-0 lg:ml-auto lg:w-[46%] lg:justify-end lg:rounded-none lg:bg-transparent lg:p-10 lg:pl-2 lg:pt-24 lg:text-white">
+            <span className="eyebrow bg-ink/[0.06] pl-1.5 text-ink lg:hidden">
               <b aria-hidden className="!bg-ink !text-lime">
                 <Sparkle className="h-3 w-3 fill-current" />
               </b>
@@ -249,13 +252,13 @@ export function LuminaFeature() {
                 <span className="display-italic block text-[clamp(1.75rem,3vw,3rem)] leading-none">
                   {t.luminaSection.titlePrefix}
                 </span>
-                <span className="display-xl mt-1 block text-[clamp(4.75rem,7.4vw,7rem)] text-forest md:text-lime">
+                <span className="display-xl mt-1 block text-[clamp(4.75rem,7.4vw,7rem)] text-forest lg:text-lime">
                   Lumina.
                 </span>
               </h2>
             </div>
 
-            <p className="max-w-md text-pretty text-[0.975rem] leading-relaxed text-ink/70 md:text-base md:text-white/80">
+            <p className="max-w-md text-pretty text-[0.975rem] leading-relaxed text-ink/70 md:text-base lg:text-white/80">
               {t.luminaSection.subtitle}
             </p>
 
@@ -266,10 +269,10 @@ export function LuminaFeature() {
                 <ButtonArrow tone="ink" className="ml-auto -mr-0.5 sm:ml-1" />
               </Button>
               {/* En teléfono el estado ya lo dice la cabecera del chat, justo abajo. */}
-              <span className="hidden h-11 items-center justify-center gap-2 rounded-full bg-mint px-4 text-sm font-semibold text-ink sm:inline-flex md:bg-white/10 md:text-white">
+              <span className="hidden h-11 items-center justify-center gap-2 rounded-full bg-mint px-4 text-sm font-semibold text-ink sm:inline-flex lg:bg-white/10 lg:text-white">
                 <span aria-hidden className="relative flex size-2.5">
-                  <span className="absolute inset-0 animate-ping rounded-full bg-forest/50 motion-reduce:animate-none md:bg-lime/60" />
-                  <span className="relative size-2.5 rounded-full bg-forest md:bg-lime" />
+                  <span className="absolute inset-0 animate-ping rounded-full bg-forest/50 motion-reduce:animate-none lg:bg-lime/60" />
+                  <span className="relative size-2.5 rounded-full bg-forest lg:bg-lime" />
                 </span>
                 {t.luminaSection.status}
               </span>
@@ -281,7 +284,7 @@ export function LuminaFeature() {
       {/* B · Vista previa del chat: tarjeta tipo app. */}
       <div
         data-fx="up"
-        className="min-w-0 md:col-span-7 md:row-span-2 xl:col-span-4 xl:col-start-9 xl:row-span-1 xl:row-start-1"
+        className="min-w-0 md:col-span-7 md:row-span-2 min-[1400px]:col-span-4 min-[1400px]:col-start-9 min-[1400px]:row-span-1 min-[1400px]:row-start-1"
         style={fxDelay(90)}
       >
         <div className="panel flex h-full flex-col gap-3 p-3 shadow-soft sm:gap-4 sm:p-4 lg:p-5">
@@ -367,7 +370,7 @@ export function LuminaFeature() {
       {/* C · Atajos al cotizador: cada uno lo abre ya preconfigurado. */}
       <div
         data-fx="up"
-        className="min-w-0 md:col-span-5 xl:col-span-4 xl:col-start-9 xl:row-start-2"
+        className="min-w-0 md:col-span-5 min-[1400px]:col-span-4 min-[1400px]:col-start-9 min-[1400px]:row-start-2"
         style={fxDelay(120)}
       >
         <div className="panel panel-lime flex h-full flex-col gap-4 p-5 sm:gap-5 sm:p-7">
@@ -403,20 +406,20 @@ export function LuminaFeature() {
           teléfono se omiten: el subtítulo del escenario ya dice las tres
           (al instante · todo el catálogo · tu web armada) y el recorrido de
           Lumina las desarrolla justo después. */}
-      <ul className="hidden min-w-0 gap-gutter sm:grid md:col-span-5 xl:col-span-8 xl:col-start-1 xl:row-start-2 xl:grid-cols-3">
+      <ul className="hidden min-w-0 gap-gutter sm:grid md:col-span-5 min-[1400px]:col-span-8 min-[1400px]:col-start-1 min-[1400px]:row-start-2 min-[1400px]:grid-cols-3">
         {t.luminaSection.badges.map((b, i) => {
           const Icon = BADGE_ICONS[i] ?? Zap;
           return (
             <li key={b.title} data-fx="up" style={fxDelay(i * 90)} className="min-w-0">
-              <div className="panel flex h-full items-center gap-4 p-5 shadow-soft xl:flex-col xl:items-start xl:justify-between xl:gap-10 xl:p-7">
-                <div className="flex shrink-0 items-center justify-between xl:w-full">
+              <div className="panel flex h-full items-center gap-4 p-5 shadow-soft min-[1400px]:flex-col min-[1400px]:items-start min-[1400px]:justify-between min-[1400px]:gap-10 min-[1400px]:p-7">
+                <div className="flex shrink-0 items-center justify-between min-[1400px]:w-full">
                   <span className="grid size-12 place-items-center rounded-full bg-ink text-lime">
                     <Icon aria-hidden className="h-5 w-5" />
                   </span>
                   <BadgeVisual index={i} />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="display-title text-[1.3rem] text-ink xl:text-[1.75rem]">{b.title}</h3>
+                  <h3 className="display-title text-[1.3rem] text-ink min-[1400px]:text-[1.75rem]">{b.title}</h3>
                   <p className="mt-1.5 text-[0.9375rem] leading-snug text-muted-foreground">{b.desc}</p>
                 </div>
               </div>
@@ -433,7 +436,7 @@ function BadgeVisual({ index }: { index: number }) {
   if (index === 0) {
     // Lumina escribiendo: la respuesta ya viene.
     return (
-      <span aria-hidden className="hidden h-9 items-center gap-1 rounded-full rounded-br-md bg-mint px-3.5 xl:flex">
+      <span aria-hidden className="hidden h-9 items-center gap-1 rounded-full rounded-br-md bg-mint px-3.5 min-[1400px]:flex">
         {[0, 160, 320].map((ms) => (
           <span
             key={ms}
@@ -447,7 +450,7 @@ function BadgeVisual({ index }: { index: number }) {
   if (index === 1) {
     // Precios, tiempos y módulos: todo el catálogo en una pila.
     return (
-      <span aria-hidden className="hidden -space-x-2 xl:flex">
+      <span aria-hidden className="hidden -space-x-2 min-[1400px]:flex">
         {[Tag, Clock, Layers].map((Icon, i) => (
           <span key={i} className="grid size-9 place-items-center rounded-full bg-lime text-ink ring-[3px] ring-white">
             <Icon className="h-4 w-4" />
@@ -458,7 +461,7 @@ function BadgeVisual({ index }: { index: number }) {
   }
   // Cotización armada: pasos completos y palomita.
   return (
-    <span aria-hidden className="hidden items-center gap-1 xl:flex">
+    <span aria-hidden className="hidden items-center gap-1 min-[1400px]:flex">
       {[0, 1, 2, 3].map((i) => (
         <span key={i} className={cn("h-2 w-4 rounded-full", i < 3 ? "bg-lime" : "bg-ink/10")} />
       ))}
