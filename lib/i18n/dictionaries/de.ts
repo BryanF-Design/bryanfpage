@@ -387,7 +387,7 @@ const de: Dictionary = {
     subtitle: "Tippe auf eine Frage, um die Antwort zu sehen.",
     items: [
       {
-        title: "Wie lange dauert die Lieferung?",
+        title: "Zeig mir Projekte wie meins",
         content: "Die Lieferung beginnt ab 3 Tagen, sobald du uns alle Informationen zu deinem Unternehmen gegeben hast.",
       },
       {
@@ -531,9 +531,9 @@ const de: Dictionary = {
     status: "Online 24/7",
     hint: "Tippe sie an, um ihre Stimmung zu ändern",
     badges: [
-      { title: "Sofortige Antworten", desc: "Jederzeit, ohne Warten." },
-      { title: "Kennt den ganzen Katalog", desc: "Preise, Zeiten, Module und Ablauf." },
-      { title: "Stellt dein Angebot zusammen", desc: "Füllt dein Angebot vor und führt dich zur Kasse." },
+      { title: "Bringt dich ans Ziel", desc: "Zeigt dir genau den richtigen Abschnitt, ohne Suchen." },
+      { title: "Zeigt Projekte wie deins", desc: "Wählt aus dem Portfolio die Websites, die deiner Branche am nächsten sind." },
+      { title: "Stellt dein Angebot zusammen", desc: "Konfiguriert das Angebot vor deinen Augen und schickt Bryan deine Zusammenfassung." },
     ],
     privacy: "Keine sensiblen Daten im Chat. Dein Gespräch bleibt nur auf diesem Gerät.",
     quotePresets: ["Website anfragen", "Onlineshop anfragen", "Wartung anfragen"],
@@ -591,6 +591,14 @@ const de: Dictionary = {
     teaserShort: "Neue Website? Frag mich ✨",
     typing: "Tippt …",
     retry: "Erneut versuchen",
+    actions: {
+      go: "Bring mich zu {section}",
+      quote: "Mein fertiges Angebot ansehen",
+      whatsapp: "Zusammenfassung an Bryan senden",
+      whatsappIntro: "Hallo Bryan, ich habe gerade auf deiner Website mit Lumina gesprochen. Das suche ich:",
+      visit: "Website öffnen",
+      cases: "Fallstudien",
+    },
     languageInstruction: "Deutsch",
     errorFallback:
       "Ich kann gerade nicht antworten, aber schreib uns auf <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a> — wir helfen dir sofort weiter.",

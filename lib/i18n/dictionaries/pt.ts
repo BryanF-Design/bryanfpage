@@ -531,9 +531,9 @@ const pt: Dictionary = {
     status: "Online 24/7",
     hint: "Toque nela para mudar o humor",
     badges: [
-      { title: "Respostas na hora", desc: "A qualquer hora, sem espera." },
-      { title: "Conhece todo o catálogo", desc: "Preços, prazos, módulos e processo." },
-      { title: "Monta o teu orçamento", desc: "Preenche o teu orçamento e leva-te ao pagamento." },
+      { title: "Leva você aonde precisa", desc: "Mostra a seção exata, sem procurar." },
+      { title: "Mostra projetos como o seu", desc: "Escolhe no portfólio os sites mais parecidos com o seu negócio." },
+      { title: "Monta o seu orçamento", desc: "Configura o orçamento na sua frente e envia seu resumo ao Bryan." },
     ],
     privacy: "Não pedimos dados sensíveis no chat. A tua conversa fica só neste dispositivo.",
     quotePresets: ["Orçar site sob medida", "Orçar loja online", "Orçar manutenção"],
@@ -579,7 +579,7 @@ const pt: Dictionary = {
     name: "Lumina",
     greeting:
       "Olá! Eu sou a <strong>Lumina</strong>, sua consultora na BryanF Design.<br>Posso ajudar com preços, prazos ou a montar seu site?",
-    quick: ["Quanto custa um site?", "Em quanto tempo entregam?", "Quero montar meu site"],
+    quick: ["Quanto custa um site?", "Mostre projetos como o meu", "Quero montar meu site"],
     online: "Consultora de IA · online",
     offline: "Sem conexão",
     thinking: "Pensando…",
@@ -591,6 +591,14 @@ const pt: Dictionary = {
     teaserShort: "Quer um site? Fale comigo ✨",
     typing: "Digitando…",
     retry: "Tentar novamente",
+    actions: {
+      go: "Leve-me a {section}",
+      quote: "Ver meu orçamento pronto",
+      whatsapp: "Enviar meu resumo ao Bryan",
+      whatsappIntro: "Olá Bryan, acabei de conversar com a Lumina no seu site. É isto que procuro:",
+      visit: "Abrir site",
+      cases: "Estudos de caso",
+    },
     languageInstruction: "português",
     errorFallback:
       "Agora não consigo responder, mas fale conosco pelo <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a> que te atendemos na hora.",

@@ -531,9 +531,9 @@ const fr: Dictionary = {
     status: "En ligne 24/7",
     hint: "Touchez-la pour changer son humeur",
     badges: [
-      { title: "Réponses instantanées", desc: "À toute heure, sans attente." },
-      { title: "Connaît tout le catalogue", desc: "Prix, délais, modules et processus." },
-      { title: "Prépare ton devis", desc: "Pré-remplit ton devis et t'amène au paiement." },
+      { title: "T'emmène où il faut", desc: "Te montre la section exacte, sans chercher." },
+      { title: "Te montre des projets comme le tien", desc: "Choisit dans le portfolio les sites les plus proches de ton activité." },
+      { title: "Prépare ton devis", desc: "Configure le devis sous tes yeux et envoie ton résumé à Bryan." },
     ],
     privacy: "Aucune donnée sensible dans le chat. Ta conversation reste sur cet appareil.",
     quotePresets: ["Devis site sur mesure", "Devis boutique en ligne", "Devis maintenance"],
@@ -579,7 +579,7 @@ const fr: Dictionary = {
     name: "Lumina",
     greeting:
       "Bonjour ! Je suis <strong>Lumina</strong>, votre conseillère chez BryanF Design.<br>Je peux vous aider sur les tarifs, les délais ou la création de votre site ?",
-    quick: ["Combien coûte un site web ?", "En combien de temps est-il livré ?", "Je veux créer mon site"],
+    quick: ["Combien coûte un site web ?", "Montre-moi des projets comme le mien", "Je veux créer mon site"],
     online: "Conseillère IA · en ligne",
     offline: "Hors ligne",
     thinking: "Réflexion en cours…",
@@ -591,6 +591,14 @@ const fr: Dictionary = {
     teaserShort: "Un site en vue ? Parlons-en ✨",
     typing: "En train d'écrire…",
     retry: "Réessayer",
+    actions: {
+      go: "Emmène-moi à {section}",
+      quote: "Voir mon devis prêt",
+      whatsapp: "Envoyer mon résumé à Bryan",
+      whatsappIntro: "Bonjour Bryan, je viens de discuter avec Lumina sur ton site. Voici ce que je cherche :",
+      visit: "Ouvrir le site",
+      cases: "Études de cas",
+    },
     languageInstruction: "français",
     errorFallback:
       "Je ne peux pas répondre pour l'instant, mais écrivez-nous sur <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a>, on vous répond tout de suite.",

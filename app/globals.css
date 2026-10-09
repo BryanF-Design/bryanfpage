@@ -1111,3 +1111,24 @@ html.fx-on [data-fx="panel"]:not([data-fx-in]) > * {
   outline: 3px solid hsl(var(--ring)) !important;
   outline-offset: 3px !important;
 }
+
+/* Lumina señala la sección a la que llevó: un halo lima que late dos veces. */
+.lumina-spot {
+  animation: lumina-spot 1.2s var(--ease-out, ease-out) 2;
+  border-radius: var(--r-panel);
+}
+@keyframes lumina-spot {
+  0% {
+    box-shadow: 0 0 0 0 hsl(var(--lime) / 0.75);
+  }
+  100% {
+    box-shadow: 0 0 0 18px hsl(var(--lime) / 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lumina-spot {
+    animation: none;
+    outline: 3px solid hsl(var(--lime));
+    outline-offset: 6px;
+  }
+}

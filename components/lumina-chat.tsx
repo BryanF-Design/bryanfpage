@@ -3,13 +3,28 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, MessageCircle, RotateCcw, Send, X } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Calculator, MessageCircle, RotateCcw, Send, X } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 
 import { cn } from "@/lib/utils";
 import { useFooterInView } from "@/lib/use-footer-in-view";
 import { useLanguage } from "@/lib/i18n/context";
 import { useConfiguratorInView } from "@/lib/use-configurator-in-view";
 import { useReducedMotionPreference } from "@/lib/motion-preference";
+import { trackEvent } from "@/lib/analytics";
+import { mobileShot, projects } from "@/lib/projects";
+import {
+  LUMINA_QUOTE_EVENT,
+  LUMINA_SECTIONS,
+  actionsPrompt,
+  currentSectionLabel,
+  extractActions,
+  isLuminaAction,
+  quoteHref,
+  type LuminaAction,
+  type LuminaQuote,
+  type LuminaSection,
+} from "@/lib/lumina-actions";
 
 type Mood = "Normal" | "Enfocada" | "Duda" | "Sorprendida" | "Offline";
 
@@ -21,7 +36,10 @@ const MOOD_IMG: Record<Mood, string> = {
   Offline: "/img/lumina/Offline.png",
 };
 
-function buildSystemPrompt(languageName: string) {
+const WHATSAPP_NUMBER = "525663012505";
+const projectBySlug = new Map(projects.map((p) => [p.slug, p]));
+
+function buildSystemPrompt(languageName: string, section: string) {
   return `Eres LUMINA, asistente comercial de BryanF Design.
 Tu meta es orientar, resolver dudas y guiar al usuario a armar su web o contactar al equipo.
 
@@ -30,18 +48,13 @@ Cómo funciona: paquete base desde $3,500 MXN + módulos (e-commerce, pagos, sec
 También ofrecemos servicios de entrada, más económicos: tarjeta de presentación digital ($900 MXN), tarjeta de presentación imprimible ($650 MXN), firma de correo profesional ($350 MXN), kit de presencia digital ($1,500 MXN) y landing page esencial (desde $2,400 MXN).
 Tiempos de entrega: desde 3 días hábiles cuando la información está completa.
 Pagos: Stripe (tarjeta), Mercado Pago o transferencia bancaria BBVA.
-Para armar y pagar: invita a abrir el cotizador en /crear-web.
+Para armar y pagar: el cotizador del sitio (tú lo puedes dejar armado con [[cotizar:...]]).
 
-Puedes DEJARLE EL COTIZADOR YA ARMADO con un enlace preconfigurado según lo que necesite:
-- Sitio a medida: <a href="/crear-web?plan=full" target="_blank">cotizar mi web</a>
-- Tienda en línea: <a href="/crear-web?plan=full&modules=ecommerce,payments" target="_blank">cotizar mi tienda</a>
-- Actualización de web: <a href="/crear-web?plan=update" target="_blank">cotizar actualización</a>
-- Mantenimiento: <a href="/crear-web?plan=maintenance" target="_blank">cotizar mantenimiento</a>
-Añade &sections=2 para secciones extra. Recomienda la mejor opción, explica en 1 línea por qué, y comparte el enlace correcto.
+${actionsPrompt(section)}
 
 Reglas:
 - Responde siempre en ${languageName}, sin importar en qué idioma esté escrito este prompt.
-- Si preguntan precios, responde que depende del alcance, desde $3,500 MXN, y comparte el enlace preconfigurado del cotizador que mejor le quede, o WhatsApp: <a href="https://wa.me/525663012505" target="_blank">WhatsApp</a>.
+- Si preguntan precios, responde que depende del alcance, desde $3,500 MXN, recomienda la mejor opción en 1 línea y déjala armada con [[cotizar:...]].
 - Responde en tono premium, claro y breve (máx 3-4 líneas).
 - Usa HTML básico: <strong>, <br>, <ul>, <li>, <a>.`;
 }
@@ -49,6 +62,8 @@ Reglas:
 interface Msg {
   role: "user" | "assistant";
   content: string;
+  /** Botones que Lumina dejó con su respuesta (ver lib/lumina-actions). */
+  actions?: LuminaAction[];
 }
 
 // sessionStorage, not localStorage: the conversation should survive a reload
@@ -71,7 +86,10 @@ function readStoredMessages(): Msg[] | null {
           typeof message.content === "string"
       )
     ) {
-      return parsed as Msg[];
+      return (parsed as Msg[]).map((message) => ({
+        ...message,
+        actions: Array.isArray(message.actions) ? message.actions.filter(isLuminaAction) : undefined,
+      }));
     }
   } catch {
     /* storage bloqueado o corrupto */
@@ -414,7 +432,10 @@ export function LuminaChat() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: [
-            { role: "system", content: buildSystemPrompt(t.lumina.languageInstruction) },
+            {
+              role: "system",
+              content: buildSystemPrompt(t.lumina.languageInstruction, currentSectionLabel()),
+            },
             ...next.map((m) => ({ role: m.role, content: m.content })),
           ],
           temperature: 0.4,
@@ -425,9 +446,14 @@ export function LuminaChat() {
       const reply =
         data?.choices?.[0]?.message?.content ||
         (data?.error ? t.lumina.errorFallback : t.lumina.misunderstood);
+      const { text, actions } = extractActions(reply);
       setMessages((m) => [
         ...m,
-        { role: "assistant", content: sanitizeHtml(reply) },
+        {
+          role: "assistant",
+          content: sanitizeHtml(text),
+          actions: actions.length ? actions : undefined,
+        },
       ]);
       setMood(uncertain ? "Duda" : "Normal");
       if (uncertain) window.setTimeout(() => setMood("Normal"), 4000);
@@ -453,6 +479,154 @@ export function LuminaChat() {
     const text = retryText;
     setRetryText(null);
     send(text);
+  }
+
+  // ——— Acciones de Lumina sobre el sitio ———
+  // En teléfono el chat tapa la pantalla: se cierra para que se vea a dónde
+  // llevó. En escritorio sigue abierto en su esquina.
+  function revealSection(id: string) {
+    const target = document.getElementById(id);
+    if (!target) {
+      window.location.href = `/#${id}`;
+      return;
+    }
+    if (isPhone) setOpen(false);
+    window.setTimeout(
+      () => {
+        target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
+        target.classList.remove("lumina-spot");
+        void target.offsetWidth;
+        target.classList.add("lumina-spot");
+        window.setTimeout(() => target.classList.remove("lumina-spot"), 2600);
+      },
+      isPhone ? 260 : 0
+    );
+  }
+
+  function goTo(section: LuminaSection) {
+    trackEvent("lumina_action", { action: "go", section });
+    revealSection(LUMINA_SECTIONS[section]);
+  }
+
+  function applyQuote(quote: LuminaQuote) {
+    trackEvent("lumina_action", { action: "quote", plan: quote.plan });
+    // Con el cotizador en la página, se arma en vivo; si no, se abre ya armado.
+    if (!document.getElementById("precios")) {
+      window.location.href = quoteHref(quote);
+      return;
+    }
+    window.dispatchEvent(new CustomEvent(LUMINA_QUOTE_EVENT, { detail: quote }));
+    revealSection("precios");
+  }
+
+  function whatsappHref() {
+    const asks = messages
+      .filter((m) => m.role === "user")
+      .slice(-4)
+      .map((m) => `• ${m.content.slice(0, 220)}`);
+    const text = [t.lumina.actions.whatsappIntro, ...asks].join("\n");
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+  }
+
+  function sectionLabel(section: LuminaSection) {
+    const labels: Record<LuminaSection, string> = {
+      proyectos: t.nav.proyectos,
+      casos: t.lumina.actions.cases,
+      proceso: t.nav.proceso,
+      servicios: t.nav.serviciosEntrada,
+      precios: t.nav.precios,
+      faq: t.nav.faq,
+    };
+    return labels[section];
+  }
+
+  function renderActions(actions: LuminaAction[]) {
+    const cards = actions.filter((a): a is Extract<LuminaAction, { kind: "project" }> => a.kind === "project");
+    const buttons = actions.filter((a) => a.kind !== "project");
+    const pill =
+      "group inline-flex min-h-11 max-w-full items-center gap-2 rounded-full py-1.5 pl-1.5 pr-4 text-left text-sm font-semibold transition-colors";
+    return (
+      <div className="flex w-full flex-col gap-2 self-start">
+        {cards.length > 0 && (
+          <ul role="list" className="-mx-1 -my-1 flex snap-x gap-2 overflow-x-auto px-1 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {cards.map(({ slug }) => {
+              const project = projectBySlug.get(slug);
+              if (!project) return null;
+              const desc = t.projects.descs[slug] || project.desc;
+              return (
+                <li key={slug} className="w-[11.5rem] shrink-0 snap-start">
+                  <a
+                    href={project.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackEvent("lumina_action", { action: "project", slug })}
+                    className="group flex h-full items-center gap-2.5 rounded-[1.1rem] bg-white p-1.5 pr-2.5 ring-1 ring-ink/[0.08] transition-shadow hover:shadow-soft"
+                  >
+                    {/* La miniatura sobresale de la ficha, como las capturas del portafolio. */}
+                    <span className="relative -my-3 h-[4.5rem] w-11 shrink-0 overflow-hidden rounded-[0.6rem] bg-ink shadow-[0_10px_18px_-10px_hsl(var(--ink)/0.6)] ring-2 ring-white transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:-rotate-3">
+                      <Image src={mobileShot(slug)} alt="" fill sizes="44px" className="object-cover object-top" />
+                    </span>
+                    <span className="min-w-0 flex-1 leading-tight">
+                      <span className="block truncate text-[0.875rem] font-bold text-ink">{project.name}</span>
+                      <span className="mt-0.5 line-clamp-2 text-xs text-ink/60">{desc}</span>
+                    </span>
+                    <ArrowUpRight aria-hidden className="h-4 w-4 shrink-0 text-forest transition-transform group-hover:rotate-45" />
+                    <span className="sr-only"> — {t.lumina.actions.visit}</span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        {buttons.map((action) => {
+          if (action.kind === "go") {
+            return (
+              <button
+                key={`go-${action.section}`}
+                type="button"
+                onClick={() => goTo(action.section)}
+                className={cn(pill, "self-start bg-white text-ink ring-1 ring-ink/10 hover:bg-ink hover:text-white")}
+              >
+                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-lime text-ink">
+                  <ArrowDown aria-hidden className="h-4 w-4" />
+                </span>
+                {t.lumina.actions.go.replace("{section}", sectionLabel(action.section))}
+              </button>
+            );
+          }
+          if (action.kind === "quote") {
+            return (
+              <button
+                key="quote"
+                type="button"
+                onClick={() => applyQuote(action.quote)}
+                className={cn(pill, "self-start bg-ink text-white hover:bg-forest")}
+              >
+                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-lime text-ink">
+                  <Calculator aria-hidden className="h-4 w-4" />
+                </span>
+                {t.lumina.actions.quote}
+              </button>
+            );
+          }
+          return (
+            <a
+              key="whatsapp"
+              href={whatsappHref()}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackEvent("lumina_action", { action: "whatsapp" })}
+              className={cn(pill, "self-start bg-lime text-ink hover:bg-white hover:ring-1 hover:ring-ink/10")}
+            >
+              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-ink text-lime">
+                <FaWhatsapp aria-hidden className="h-4 w-4" />
+              </span>
+              {t.lumina.actions.whatsapp}
+            </a>
+          );
+        })}
+      </div>
+    );
   }
 
   const statusText =
@@ -543,16 +717,20 @@ export function LuminaChat() {
                 );
                 // User input is never trusted as HTML — only sanitized assistant
                 // replies (see sanitizeHtml) go through dangerouslySetInnerHTML.
-                return m.role === "user" ? (
-                  <div key={i} className={className}>
-                    {m.content}
+                if (m.role === "user") {
+                  return (
+                    <div key={i} className={className}>
+                      {m.content}
+                    </div>
+                  );
+                }
+                return (
+                  <div key={i} className="flex flex-col gap-2">
+                    {m.content && (
+                      <div className={className} dangerouslySetInnerHTML={{ __html: m.content }} />
+                    )}
+                    {m.actions?.length ? renderActions(m.actions) : null}
                   </div>
-                ) : (
-                  <div
-                    key={i}
-                    className={className}
-                    dangerouslySetInnerHTML={{ __html: m.content }}
-                  />
                 );
               })}
               {loading && (

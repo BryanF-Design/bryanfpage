@@ -531,9 +531,9 @@ const en: Dictionary = {
     status: "Online 24/7",
     hint: "Tap her to change her mood",
     badges: [
-      { title: "Instant answers", desc: "Any time, no waiting." },
-      { title: "Knows the whole catalog", desc: "Prices, timelines, modules and process." },
-      { title: "Builds your quote", desc: "Pre-fills your quote and takes you to checkout." },
+      { title: "Takes you where you need", desc: "Shows you the exact section, no searching." },
+      { title: "Shows projects like yours", desc: "Picks the portfolio sites closest to your business." },
+      { title: "Builds your quote", desc: "Sets up the quote in front of you and sends your summary to Bryan." },
     ],
     privacy: "No sensitive data in the chat. Your conversation stays on this device only.",
     quotePresets: ["Quote a custom site", "Quote an online store", "Quote maintenance"],
@@ -579,7 +579,7 @@ const en: Dictionary = {
     name: "Lumina",
     greeting:
       "Hi! I'm <strong>Lumina</strong>, your advisor at BryanF Design.<br>Need help with pricing, timelines, or building your site?",
-    quick: ["How much does a website cost?", "How long does delivery take?", "I want to build my site"],
+    quick: ["How much does a website cost?", "Show me projects like mine", "I want to build my site"],
     online: "AI advisor · online",
     offline: "Offline",
     thinking: "Thinking…",
@@ -591,6 +591,14 @@ const en: Dictionary = {
     teaserShort: "Need a website? Ask me ✨",
     typing: "Typing…",
     retry: "Retry",
+    actions: {
+      go: "Take me to {section}",
+      quote: "See my ready quote",
+      whatsapp: "Send my summary to Bryan",
+      whatsappIntro: "Hi Bryan, I just talked with Lumina on your site. This is what I'm looking for:",
+      visit: "Open site",
+      cases: "Case studies",
+    },
     languageInstruction: "English",
     errorFallback:
       "I can't reply right now, but message us on <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a> and we'll help right away.",

@@ -5,27 +5,26 @@ import Image from "next/image";
 import { AnimatePresence, motion, useInView } from "framer-motion";
 import {
   ArrowUpRight,
+  ArrowDown,
   Check,
-  Clock,
-  Layers,
+  Compass,
+  Images,
   LayoutTemplate,
-  LibraryBig,
   MessageCircle,
   MousePointerClick,
   Send,
   ShieldCheck,
   ShoppingBag,
   Sparkle,
-  Tag,
   WandSparkles,
   Wrench,
-  Zap,
 } from "lucide-react";
 
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 import { useReducedMotionPreference } from "@/lib/motion-preference";
+import { mobileShot } from "@/lib/projects";
 
 type MoodKey = "normal" | "enfocada" | "duda" | "sorprendida";
 
@@ -45,7 +44,9 @@ const QUOTE_PRESET_HREFS = [
   "/crear-web?plan=maintenance",
 ] as const;
 const PRESET_ICONS = [LayoutTemplate, ShoppingBag, Wrench];
-const BADGE_ICONS = [Zap, LibraryBig, WandSparkles];
+const BADGE_ICONS = [Compass, Images, WandSparkles];
+/** Capturas reales para la capacidad "te enseña proyectos como el tuyo". */
+const BADGE_SHOTS = ["mixteca-web-vercel-app", "gecomex-web-vercel-app", "sermaqro-com"];
 
 /** Abre el chat de Lumina desde cualquier parte (lo escucha LuminaChat). */
 export function openLuminaChat(message?: string) {
@@ -408,7 +409,7 @@ export function LuminaFeature() {
           Lumina las desarrolla justo después. */}
       <ul className="hidden min-w-0 gap-gutter sm:grid md:col-span-5 min-[1400px]:col-span-8 min-[1400px]:col-start-1 min-[1400px]:row-start-2 min-[1400px]:grid-cols-3">
         {t.luminaSection.badges.map((b, i) => {
-          const Icon = BADGE_ICONS[i] ?? Zap;
+          const Icon = BADGE_ICONS[i] ?? Sparkle;
           return (
             <li key={b.title} data-fx="up" style={fxDelay(i * 90)} className="min-w-0">
               <div className="panel flex h-full items-center gap-4 p-5 shadow-soft min-[1400px]:flex-col min-[1400px]:items-start min-[1400px]:justify-between min-[1400px]:gap-10 min-[1400px]:p-7">
@@ -434,26 +435,27 @@ export function LuminaFeature() {
 /** Detalle tipo app de cada capacidad (decorativo). */
 function BadgeVisual({ index }: { index: number }) {
   if (index === 0) {
-    // Lumina escribiendo: la respuesta ya viene.
+    // Te lleva a la sección: la píldora del botón que deja en el chat.
     return (
-      <span aria-hidden className="hidden h-9 items-center gap-1 rounded-full rounded-br-md bg-mint px-3.5 min-[1400px]:flex">
-        {[0, 160, 320].map((ms) => (
-          <span
-            key={ms}
-            style={{ animationDelay: `${ms}ms` }}
-            className="size-1.5 animate-bounce rounded-full bg-forest motion-reduce:animate-none"
-          />
-        ))}
+      <span aria-hidden className="hidden h-9 items-center gap-1.5 rounded-full bg-mint pl-1 pr-3 text-xs font-bold text-ink min-[1400px]:flex">
+        <span className="grid size-7 place-items-center rounded-full bg-lime">
+          <ArrowDown className="h-3.5 w-3.5" />
+        </span>
+        #precios
       </span>
     );
   }
   if (index === 1) {
-    // Precios, tiempos y módulos: todo el catálogo en una pila.
+    // Proyectos reales: tres capturas que sobresalen de la tarjeta.
     return (
-      <span aria-hidden className="hidden -space-x-2 min-[1400px]:flex">
-        {[Tag, Clock, Layers].map((Icon, i) => (
-          <span key={i} className="grid size-9 place-items-center rounded-full bg-lime text-ink ring-[3px] ring-white">
-            <Icon className="h-4 w-4" />
+      <span aria-hidden className="relative hidden h-9 w-[6.5rem] min-[1400px]:block">
+        {BADGE_SHOTS.map((slug, i) => (
+          <span
+            key={slug}
+            style={{ left: `${i * 2}rem`, rotate: `${(i - 1) * 7}deg` }}
+            className="absolute -top-7 h-16 w-10 overflow-hidden rounded-[0.55rem] bg-ink shadow-[0_12px_20px_-10px_hsl(var(--ink)/0.6)] ring-2 ring-white"
+          >
+            <Image src={mobileShot(slug)} alt="" fill sizes="40px" className="object-cover object-top" />
           </span>
         ))}
       </span>

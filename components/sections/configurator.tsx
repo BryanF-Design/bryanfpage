@@ -33,6 +33,7 @@ import { SectionHeading } from "@/components/sections/section-heading";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 import { trackEvent } from "@/lib/analytics";
+import { LUMINA_QUOTE_EVENT, type LuminaQuote } from "@/lib/lumina-actions";
 import { isReducedMotionRequested } from "@/lib/motion-preference";
 import { useConfiguratorInView } from "@/lib/use-configurator-in-view";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
@@ -265,6 +266,25 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
       /* storage bloqueado o corrupto */
     }
     setRestored(true);
+  }, []);
+
+  // Lumina arma el cotizador en vivo: cuando recomienda un paquete desde el
+  // chat, dispara `lumina:quote` y aquí se aplica (ya validado por ella).
+  useEffect(() => {
+    function onLuminaQuote(event: Event) {
+      const quote = (event as CustomEvent<LuminaQuote>).detail;
+      if (!quote || !PLAN_META.some((p) => p.id === quote.plan)) return;
+      setPlanId(quote.plan);
+      setMods(
+        Object.fromEntries(
+          MODULE_META.filter((m) => quote.modules.includes(m.id)).map((m) => [m.id, true])
+        )
+      );
+      setSections(Math.max(0, Math.min(MAX_SECTIONS, Math.floor(quote.sections || 0))));
+      trackEvent("lumina_quote", { plan: quote.plan, modules: quote.modules.join(",") });
+    }
+    window.addEventListener(LUMINA_QUOTE_EVENT, onLuminaQuote);
+    return () => window.removeEventListener(LUMINA_QUOTE_EVENT, onLuminaQuote);
   }, []);
 
   useEffect(() => {

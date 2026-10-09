@@ -524,9 +524,9 @@ const ja: Dictionary = {
     status: "オンライン 24/7",
     hint: "タップで表情が変わります",
     badges: [
-      { title: "即時に回答", desc: "いつでも、待ち時間なし。" },
-      { title: "全カタログを把握", desc: "価格・納期・モジュール・工程。" },
-      { title: "見積もりを用意", desc: "見積もりを事前入力し、決済へ案内します。" },
+      { title: "必要な場所へ案内", desc: "探さなくても該当セクションへ。" },
+      { title: "似たプロジェクトを紹介", desc: "あなたの業種に近い制作実績を選びます。" },
+      { title: "見積もりを用意", desc: "目の前で見積もりを組み、要約をBryanへ送ります。" },
     ],
     privacy: "チャットで機微な情報は尋ねません。会話はこの端末にのみ残ります。",
     quotePresets: ["オーダーメイドのサイトを見積", "オンラインストアを見積", "保守を見積"],
@@ -571,7 +571,7 @@ const ja: Dictionary = {
   lumina: {
     name: "Lumina",
     greeting: "こんにちは！BryanF Designのアドバイザー、<strong>Lumina</strong>です。<br>料金や納期、サイト制作についてお手伝いしましょうか？",
-    quick: ["ウェブサイトの料金は？", "納期はどのくらい？", "サイトを作りたい"],
+    quick: ["ウェブサイトの料金は？", "私に近い制作実績を見せて", "サイトを作りたい"],
     online: "AIアドバイザー · オンライン",
     offline: "オフライン",
     thinking: "考え中…",
@@ -583,6 +583,14 @@ const ja: Dictionary = {
     teaserShort: "サイトの相談、気軽にどうぞ ✨",
     typing: "入力中…",
     retry: "再試行",
+    actions: {
+      go: "{section}へ移動",
+      quote: "用意した見積もりを見る",
+      whatsapp: "要約をBryanに送る",
+      whatsappIntro: "こんにちは、Bryanさん。サイトでLuminaと話しました。探しているのはこちらです：",
+      visit: "サイトを開く",
+      cases: "導入事例",
+    },
     languageInstruction: "日本語",
     errorFallback:
       "只今お答えできませんが、<a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a>でご連絡いただければすぐに対応いたします。",

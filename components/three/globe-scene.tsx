@@ -131,6 +131,8 @@ export function GlobeScene({ locations, arcs, className }: GlobeSceneProps) {
       arcs.forEach(([a, b], i) => {
         const start = markerVecs[a];
         const end = markerVecs[b];
+        // Un arco hacia una ubicación que ya no existe no debe tumbar la escena.
+        if (!start || !end) return;
         const mid = start
           .clone()
           .add(end)

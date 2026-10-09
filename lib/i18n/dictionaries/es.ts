@@ -549,14 +549,14 @@ const es = {
     eyebrow: "Tu asesora IA",
     titlePrefix: "Ella es",
     subtitle:
-      "Lumina vive en este sitio y conoce todo lo que hacemos: precios, tiempos, módulos y proceso. Pregúntale lo que sea — responde al instante, a cualquier hora, y te deja tu web armada.",
+      "Lumina vive en este sitio y conoce todo lo que hacemos: precios, tiempos, módulos y proceso. Pregúntale lo que sea: te lleva a la sección exacta, te enseña proyectos como el tuyo y te deja tu cotización armada.",
     cta: "Chatea con Lumina",
     status: "En línea 24/7",
     hint: "Tócala para cambiar su ánimo",
     badges: [
-      { title: "Responde al instante", desc: "A cualquier hora, sin esperas." },
-      { title: "Conoce todo el catálogo", desc: "Precios, tiempos, módulos y proceso." },
-      { title: "Te deja tu web armada", desc: "Preselecciona tu cotización y te lleva al pago." },
+      { title: "Te lleva a donde necesitas", desc: "Te muestra la sección exacta, sin que busques." },
+      { title: "Te enseña proyectos como el tuyo", desc: "Elige del portafolio los sitios más parecidos a tu giro." },
+      { title: "Te deja tu web armada", desc: "Arma el cotizador frente a ti y le pasa tu resumen a Bryan." },
     ],
     privacy: "No pedimos datos sensibles en el chat. Tu conversación vive sólo en este dispositivo.",
     quotePresets: ["Cotiza tu sitio a medida", "Cotiza tu tienda en línea", "Cotiza tu mantenimiento"],
@@ -604,7 +604,7 @@ const es = {
       "¡Hola! Soy <strong>Lumina</strong>, tu asesora en BryanF Design.<br>¿Te ayudo con precios, tiempos o a armar tu web?",
     quick: [
       "¿Cuánto cuesta una web?",
-      "¿En cuánto tiempo la entregan?",
+      "Muéstrame proyectos como el mío",
       "Quiero armar mi web",
     ],
     online: "Asesora IA · en línea",
@@ -618,6 +618,14 @@ const es = {
     teaserShort: "¿Dudas con tu web? Pregúntame ✨",
     typing: "Escribiendo…",
     retry: "Reintentar",
+    actions: {
+      go: "Llévame a {section}",
+      quote: "Ver mi cotización armada",
+      whatsapp: "Pasarle mi resumen a Bryan",
+      whatsappIntro: "Hola Bryan, vengo de platicar con Lumina en tu sitio. Esto es lo que busco:",
+      visit: "Abrir sitio",
+      cases: "Casos de estudio",
+    },
     languageInstruction: "español",
     errorFallback:
       "Ahorita no puedo responder, pero escríbenos por <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a> y te atendemos al instante.",

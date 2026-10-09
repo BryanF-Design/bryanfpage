@@ -21,7 +21,6 @@ const GlobeScene = dynamic(
 const ARCS: [number, number][] = [
   [0, 1],
   [0, 2],
-  [0, 3],
 ];
 
 /* ——— Globo estático ———————————————————————————————————————————————

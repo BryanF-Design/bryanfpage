@@ -476,9 +476,9 @@ const zh: Dictionary = {
     status: "在线 24/7",
     hint: "点击她即可切换表情",
     badges: [
-      { title: "即时回答", desc: "随时回复，无需等待。" },
-      { title: "熟悉全部服务", desc: "价格、周期、模块与流程。" },
-      { title: "帮你备好报价", desc: "预填报价并带你去付款。" },
+      { title: "带你直达所需", desc: "直接展示对应板块，无需查找。" },
+      { title: "展示与你相似的项目", desc: "从作品集中挑选与你行业最接近的网站。" },
+      { title: "帮你备好报价", desc: "当面配置报价，并把摘要发给 Bryan。" },
     ],
     privacy: "聊天中不会索取敏感信息。对话仅保存在本设备。",
     quotePresets: ["定制网站报价", "在线商店报价", "维护报价"],
@@ -523,7 +523,7 @@ const zh: Dictionary = {
   lumina: {
     name: "Lumina",
     greeting: "你好！我是<strong>Lumina</strong>，BryanF Design的顾问。<br>需要我帮您了解价格、交付时间，或是为您定制网站吗？",
-    quick: ["建一个网站需要多少钱？", "多久能交付？", "我想定制网站"],
+    quick: ["建一个网站需要多少钱？", "给我看看和我类似的项目", "我想定制网站"],
     online: "AI顾问 · 在线",
     offline: "离线",
     thinking: "思考中…",
@@ -535,6 +535,14 @@ const zh: Dictionary = {
     teaserShort: "网站有疑问？问我吧 ✨",
     typing: "正在输入…",
     retry: "重试",
+    actions: {
+      go: "带我去{section}",
+      quote: "查看我的报价",
+      whatsapp: "把摘要发给 Bryan",
+      whatsappIntro: "你好 Bryan，我刚在你的网站上和 Lumina 聊过。我需要的是：",
+      visit: "打开网站",
+      cases: "案例研究",
+    },
     languageInstruction: "中文",
     errorFallback:
       "现在暂时无法回复，请通过<a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a>联系我们，我们会立即为您处理。",

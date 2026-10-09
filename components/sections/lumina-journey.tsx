@@ -171,24 +171,32 @@ export function LuminaJourney() {
             </div>
           </div>
 
-          {/* Frase de Lumina: su voz, en serif. */}
+          {/* Frase de Lumina: su voz, en serif, en una tarjeta bosque de la que
+              ella se asoma por arriba (el recorte solo corta la base, que es
+              redonda en el PNG). El margen superior reserva lo que sube. */}
           <div
             data-fx="pop"
             style={{ "--fx-delay": "160ms" } as CSSProperties}
-            className="relative lg:col-span-5 lg:col-start-8 lg:row-start-2 lg:self-center"
+            className="relative mt-16 sm:mt-20 lg:col-span-5 lg:col-start-8 lg:row-start-2 lg:mt-24 lg:self-center"
           >
-            <div className="flex items-end gap-3">
-              <span
-                aria-hidden
-                className="grid size-11 shrink-0 place-items-center rounded-full bg-ink text-lime"
-              >
-                <Sparkle className="h-5 w-5 fill-lime" />
-              </span>
-              <div className="relative rounded-[1.5rem] rounded-bl-md bg-canvas px-5 py-4 pr-7">
-                <p className="font-serif text-[1.65rem] italic leading-[1.1] text-ink sm:text-[1.9rem]">
+            <div className="panel-forest relative rounded-[1.75rem] [clip-path:inset(-12rem_0_0_0_round_1.75rem)]">
+              <span aria-hidden className="absolute -right-6 bottom-0 size-40 rounded-full bg-lime/90 sm:size-44" />
+              <Image
+                src="/img/brand/lumina-enfocada.webp"
+                alt=""
+                width={852}
+                height={1162}
+                sizes="(min-width: 640px) 11rem, 9rem"
+                className="pointer-events-none absolute -bottom-6 right-1 h-auto w-[9rem] drop-shadow-[0_18px_24px_hsl(160_40%_6%/0.45)] sm:-bottom-7 sm:right-3 sm:w-[11rem]"
+              />
+              <div className="relative max-w-[60%] px-5 py-5 sm:max-w-[58%] sm:px-6 sm:py-6">
+                <p className="font-serif text-[1.55rem] italic leading-[1.1] text-white sm:text-[1.9rem]">
                   “{bubble}”
                 </p>
-                <p className="mt-1.5 text-xs font-semibold text-muted-foreground">{t.lumina.name}</p>
+                <p className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-lime">
+                  <Sparkle aria-hidden className="h-3.5 w-3.5 fill-lime" />
+                  {t.lumina.name}
+                </p>
               </div>
             </div>
           </div>
