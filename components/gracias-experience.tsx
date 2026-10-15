@@ -325,8 +325,10 @@ export function GraciasExperience() {
       <SiteHeader spanishOnly />
 
       <main id="main-content" tabIndex={-1} className="sheet-main">
-        <section aria-labelledby="gracias-title" className="panel p-4 pt-5 shadow-soft sm:p-8 lg:p-10">
-          <div className="mx-auto flex max-w-3xl flex-col gap-6">
+        {/* Alto mínimo: con el pie a la vista el encabezado se retira, y en
+            los estados cortos (cancelado, fallido) se quedaba sin él. */}
+        <section aria-labelledby="gracias-title" className="panel flex min-h-[72vh] flex-col justify-center p-4 pt-5 shadow-soft sm:p-8 lg:p-10">
+          <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
             <span className={cn("grid size-16 place-items-center rounded-full ring-1 ring-ink/10", hero.tone)}>
               {hero.badge}
             </span>

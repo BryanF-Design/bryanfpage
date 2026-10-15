@@ -3,7 +3,25 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowDown, ArrowUpRight, Calculator, MessageCircle, RotateCcw, Send, X } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUpRight,
+  Calculator,
+  Check,
+  CreditCard,
+  LayoutPanelTop,
+  MessageCircle,
+  RefreshCw,
+  Rocket,
+  RotateCcw,
+  Send,
+  ShieldCheck,
+  Sparkle,
+  Store,
+  Wrench,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
 import { cn } from "@/lib/utils";
@@ -14,17 +32,25 @@ import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { trackEvent } from "@/lib/analytics";
 import { mobileShot, projects } from "@/lib/projects";
 import {
+  LUMINA_PAGES,
   LUMINA_QUOTE_EVENT,
   LUMINA_SECTIONS,
   actionsPrompt,
   currentSectionLabel,
-  extractActions,
   isLuminaAction,
+  isLuminaBlock,
+  parseLuminaReply,
   quoteHref,
   type LuminaAction,
+  type LuminaBlock,
+  type LuminaDestination,
+  type LuminaPage,
   type LuminaQuote,
   type LuminaSection,
 } from "@/lib/lumina-actions";
+import { CONFIGURATOR_MODULES, CONFIGURATOR_PLANS, ENTRY_SERVICE_PRICES } from "@/lib/catalog";
+import { formatMoney } from "@/lib/currency";
+import { LEAD_FORM_ID, QUOTE_STORAGE_KEY, buildQuoteLinesMxn } from "@/lib/quote";
 
 type Mood = "Normal" | "Enfocada" | "Duda" | "Sorprendida" | "Offline";
 
@@ -48,15 +74,16 @@ Cómo funciona: paquete base desde $3,500 MXN + módulos (e-commerce, pagos, sec
 También ofrecemos servicios de entrada, más económicos: tarjeta de presentación digital ($900 MXN), tarjeta de presentación imprimible ($650 MXN), firma de correo profesional ($350 MXN), kit de presencia digital ($1,500 MXN) y landing page esencial (desde $2,400 MXN).
 Tiempos de entrega: desde 3 días hábiles cuando la información está completa.
 Pagos: Stripe (tarjeta), Mercado Pago o transferencia bancaria BBVA.
-Para armar y pagar: el cotizador del sitio (tú lo puedes dejar armado con [[cotizar:...]]).
+Para armar y pagar: el cotizador del sitio — tú misma lo armas con "package".
+Quien no quiere pagar en línea todavía: formulario de cotización (cta "cotizacion") o WhatsApp.
 
 ${actionsPrompt(section)}
 
 Reglas:
-- Responde siempre en ${languageName}, sin importar en qué idioma esté escrito este prompt.
-- Si preguntan precios, responde que depende del alcance, desde $3,500 MXN, recomienda la mejor opción en 1 línea y déjala armada con [[cotizar:...]].
-- Responde en tono premium, claro y breve (máx 3-4 líneas).
-- Usa HTML básico: <strong>, <br>, <ul>, <li>, <a>.`;
+- Todo el texto (say, bloques, why) va en ${languageName}, sin importar en qué idioma esté escrito este prompt. Las claves e ids del JSON no se traducen.
+- Si preguntan precios: recomienda la mejor opción, ármala con "package" y muestra el monto con un bloque "highlight". Nunca inventes precios fuera del catálogo.
+- Tono premium, cálido y breve. Nada de párrafos largos: usa bloques.
+- Si te piden ver algo del sitio, llévalo con "navigate" en vez de describirlo.`;
 }
 
 interface Msg {
@@ -64,7 +91,61 @@ interface Msg {
   content: string;
   /** Botones que Lumina dejó con su respuesta (ver lib/lumina-actions). */
   actions?: LuminaAction[];
+  /** Bloques con forma (viñetas, pasos, cifra, consejo). */
+  blocks?: LuminaBlock[];
 }
+
+/** Guía pendiente entre páginas: Lumina navegó y debe aparecer al llegar. */
+const GUIDE_KEY = "bryanf_lumina_guide_v1";
+
+interface Guide {
+  /** id del elemento a señalar (vacío: la parte de arriba de la página). */
+  id: string;
+  label: string;
+  text: string;
+  /** Borde izquierdo de la sección señalada (px), para pararse junto a ella. */
+  x?: number;
+}
+
+/** Texto plano de un mensaje (para el historial que va al modelo y la guía). */
+function plainText(html: string) {
+  return html
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Cómo recuerda el modelo lo que respondió (sin JSON, con lo que hizo). */
+function historyContent(m: Msg) {
+  if (m.role === "user") return m.content;
+  const parts = [plainText(m.content)];
+  m.blocks?.forEach((b) => {
+    if (b.kind === "bullets" || b.kind === "steps") parts.push(b.items.join("; "));
+    if (b.kind === "highlight") parts.push(`${b.label}: ${b.value}`);
+    if (b.kind === "tip") parts.push(b.text);
+  });
+  m.actions?.forEach((a) => {
+    if (a.kind === "quote")
+      parts.push(`(armé el paquete ${a.quote.plan}${a.quote.modules.length ? ` + ${a.quote.modules.join(", ")}` : ""}${a.quote.sections ? ` + ${a.quote.sections} secciones` : ""})`);
+    if (a.kind === "go") parts.push(`(lo llevé a ${a.section})`);
+    if (a.kind === "page") parts.push(`(lo llevé a /${a.page})`);
+  });
+  return parts.filter(Boolean).join(" ").slice(0, 900);
+}
+
+const PLAN_ICONS: Record<string, LucideIcon> = {
+  full: Rocket,
+  update: RefreshCw,
+  maintenance: ShieldCheck,
+};
+const MODULE_ICONS: Record<string, LucideIcon> = {
+  ecommerce: Store,
+  payments: CreditCard,
+  maintenance: Wrench,
+};
 
 // sessionStorage, not localStorage: the conversation should survive a reload
 // or a navigation within the site (tab close = fresh start), no backend involved.
@@ -89,6 +170,7 @@ function readStoredMessages(): Msg[] | null {
       return (parsed as Msg[]).map((message) => ({
         ...message,
         actions: Array.isArray(message.actions) ? message.actions.filter(isLuminaAction) : undefined,
+        blocks: Array.isArray(message.blocks) ? message.blocks.filter(isLuminaBlock) : undefined,
       }));
     }
   } catch {
@@ -436,28 +518,49 @@ export function LuminaChat() {
               role: "system",
               content: buildSystemPrompt(t.lumina.languageInstruction, currentSectionLabel()),
             },
-            ...next.map((m) => ({ role: m.role, content: m.content })),
+            // Las últimas 12 vueltas bastan para el contexto y caben en el límite.
+            ...next.slice(-12).map((m) => ({ role: m.role, content: historyContent(m) })),
           ],
           temperature: 0.4,
+          max_tokens: 700,
+          response_format: { type: "json_object" },
         }),
       });
       const data = await res.json();
-      const uncertain = !data?.choices?.[0]?.message?.content && !data?.error;
-      const reply =
-        data?.choices?.[0]?.message?.content ||
-        (data?.error ? t.lumina.errorFallback : t.lumina.misunderstood);
-      const { text, actions } = extractActions(reply);
+      const raw: string = data?.choices?.[0]?.message?.content || "";
+      const uncertain = !raw && !data?.error;
+      const reply = raw
+        ? parseLuminaReply(raw)
+        : {
+            text: data?.error ? t.lumina.errorFallback : t.lumina.misunderstood,
+            blocks: [],
+            actions: [],
+          };
+      const text = reply.text || (reply.blocks.length || reply.actions.length ? "" : t.lumina.misunderstood);
       setMessages((m) => [
         ...m,
         {
           role: "assistant",
           content: sanitizeHtml(text),
-          actions: actions.length ? actions : undefined,
+          actions: reply.actions.length ? reply.actions : undefined,
+          blocks: reply.blocks.length ? reply.blocks : undefined,
         },
       ]);
-      setMood(uncertain ? "Duda" : "Normal");
-      if (uncertain) window.setTimeout(() => setMood("Normal"), 4000);
+      const nextMood: Mood = uncertain ? "Duda" : ("mood" in reply && reply.mood) || "Normal";
+      setMood(nextMood);
+      if (nextMood !== "Normal") window.setTimeout(() => setMood("Normal"), 4000);
       if (data?.error) setRetryText(content);
+
+      // Lumina actúa sola: deja el paquete armado en el cotizador y, si lo
+      // decidió, se mueve con el usuario a la sección o página.
+      const quote = reply.actions.find(
+        (a): a is Extract<LuminaAction, { kind: "quote" }> => a.kind === "quote"
+      );
+      if (quote) buildPackage(quote.quote);
+      const destination = "navigate" in reply ? reply.navigate : undefined;
+      if (destination) {
+        window.setTimeout(() => moveTo(destination, plainText(text)), 900);
+      }
     } catch {
       setMessages((m) => [
         ...m,
@@ -482,41 +585,153 @@ export function LuminaChat() {
   }
 
   // ——— Acciones de Lumina sobre el sitio ———
-  // En teléfono el chat tapa la pantalla: se cierra para que se vea a dónde
-  // llevó. En escritorio sigue abierto en su esquina.
-  function revealSection(id: string) {
-    const target = document.getElementById(id);
-    if (!target) {
-      window.location.href = `/#${id}`;
-      return;
-    }
-    if (isPhone) setOpen(false);
-    window.setTimeout(
-      () => {
+  // Lumina "viaja": la página se desplaza a la sección, la sección se ilumina
+  // y una Lumina pequeña aparece ahí señalándola (la guía). En teléfono el
+  // chat se cierra para que se vea a dónde llevó; en escritorio sigue abierto.
+  const [guide, setGuide] = useState<Guide | null>(null);
+
+  const showGuide = useCallback(
+    (next: Guide) => {
+      const target = next.id ? document.getElementById(next.id) : null;
+      if (target) {
         target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
         target.classList.remove("lumina-spot");
         void target.offsetWidth;
         target.classList.add("lumina-spot");
         window.setTimeout(() => target.classList.remove("lumina-spot"), 2600);
-      },
-      isPhone ? 260 : 0
-    );
+      }
+      const x = target ? Math.round(target.getBoundingClientRect().left) : undefined;
+      setGuide(null);
+      window.setTimeout(() => setGuide({ ...next, x }), reducedMotion ? 0 : 450);
+    },
+    [reducedMotion]
+  );
+
+  // La guía se retira sola.
+  useEffect(() => {
+    if (!guide) return;
+    const hideAt = window.setTimeout(() => setGuide(null), 9_000);
+    return () => window.clearTimeout(hideAt);
+  }, [guide]);
+
+  // Llegada a otra página después de que Lumina navegó: aparece ahí.
+  useEffect(() => {
+    let pending: Guide | null = null;
+    try {
+      const raw = window.sessionStorage.getItem(GUIDE_KEY);
+      window.sessionStorage.removeItem(GUIDE_KEY);
+      const parsed = raw ? (JSON.parse(raw) as Guide) : null;
+      if (parsed && typeof parsed.id === "string" && typeof parsed.label === "string") {
+        pending = { id: parsed.id, label: parsed.label, text: String(parsed.text || "") };
+      }
+    } catch {
+      /* storage bloqueado */
+    }
+    if (!pending) return;
+    const guideNow = pending;
+    const timer = window.setTimeout(() => showGuide(guideNow), 700);
+    return () => window.clearTimeout(timer);
+  }, [showGuide]);
+
+  /** Lleva a una sección; si no existe en esta página, va a la home y aparece ahí. */
+  function revealSection(id: string, label = "", text = "") {
+    const next: Guide = { id, label, text };
+    const target = document.getElementById(id);
+    if (!target) {
+      try {
+        window.sessionStorage.setItem(GUIDE_KEY, JSON.stringify(next));
+      } catch {
+        /* storage bloqueado: igual navega */
+      }
+      window.location.href = `/#${id}`;
+      return;
+    }
+    if (isPhone) setOpen(false);
+    window.setTimeout(() => showGuide(next), isPhone ? 260 : 0);
   }
 
-  function goTo(section: LuminaSection) {
+  function sectionLabel(section: LuminaSection) {
+    return t.lumina.ui.sections[section] ?? section;
+  }
+
+  function pageLabel(page: LuminaPage) {
+    return t.lumina.ui.pages[page] ?? page;
+  }
+
+  function goTo(section: LuminaSection, text = "") {
     trackEvent("lumina_action", { action: "go", section });
-    revealSection(LUMINA_SECTIONS[section]);
+    revealSection(LUMINA_SECTIONS[section], sectionLabel(section), text);
   }
 
-  function applyQuote(quote: LuminaQuote) {
+  function goToPage(page: LuminaPage, text = "") {
+    trackEvent("lumina_action", { action: "page", page });
+    const path = LUMINA_PAGES[page];
+    if (window.location.pathname === path) {
+      showGuide({ id: "", label: pageLabel(page), text });
+      return;
+    }
+    try {
+      window.sessionStorage.setItem(GUIDE_KEY, JSON.stringify({ id: "", label: pageLabel(page), text }));
+    } catch {
+      /* storage bloqueado */
+    }
+    window.location.href = path;
+  }
+
+  function moveTo(destination: LuminaDestination, text: string) {
+    if (destination.kind === "section") goTo(destination.section, text);
+    else goToPage(destination.page, text);
+  }
+
+  /**
+   * Lumina arma el paquete: se aplica en vivo al cotizador si está en la
+   * página y se guarda en el dispositivo, así /crear-web (o la home) abre ya
+   * armado aunque el cotizador no esté a la vista.
+   */
+  function buildPackage(quote: LuminaQuote) {
     trackEvent("lumina_action", { action: "quote", plan: quote.plan });
-    // Con el cotizador en la página, se arma en vivo; si no, se abre ya armado.
+    try {
+      const prev = JSON.parse(window.localStorage.getItem(QUOTE_STORAGE_KEY) || "{}") as Record<string, unknown>;
+      window.localStorage.setItem(
+        QUOTE_STORAGE_KEY,
+        JSON.stringify({
+          planId: quote.plan,
+          mods: Object.fromEntries(quote.modules.map((id) => [id, true])),
+          sections: quote.sections,
+          mode: quote.mode ?? (prev.mode === "anticipo" ? "anticipo" : "liquidacion"),
+          currency: prev.currency === "USD" ? "USD" : "MXN",
+        })
+      );
+    } catch {
+      /* storage bloqueado */
+    }
+    window.dispatchEvent(new CustomEvent(LUMINA_QUOTE_EVENT, { detail: quote }));
+  }
+
+  /** "Pagar este paquete": lo arma y lleva al resumen del cotizador. */
+  function payPackage(quote: LuminaQuote) {
+    buildPackage(quote);
+    trackEvent("lumina_action", { action: "pay_package", plan: quote.plan });
+    const label = t.lumina.ui.packageApplied;
     if (!document.getElementById("precios")) {
+      try {
+        window.sessionStorage.setItem(GUIDE_KEY, JSON.stringify({ id: "precios", label, text: "" }));
+      } catch {
+        /* storage bloqueado */
+      }
       window.location.href = quoteHref(quote);
       return;
     }
-    window.dispatchEvent(new CustomEvent(LUMINA_QUOTE_EVENT, { detail: quote }));
-    revealSection("precios");
+    revealSection("precios", label);
+  }
+
+  function goToLeadForm() {
+    trackEvent("lumina_action", { action: "lead" });
+    revealSection(LEAD_FORM_ID, t.lumina.ui.sections.cotizacion);
+    window.setTimeout(
+      () => document.querySelector<HTMLInputElement>(`#${LEAD_FORM_ID} input[name='name']`)?.focus({ preventScroll: true }),
+      900
+    );
   }
 
   function whatsappHref() {
@@ -528,25 +743,193 @@ export function LuminaChat() {
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
   }
 
-  function sectionLabel(section: LuminaSection) {
-    const labels: Record<LuminaSection, string> = {
-      proyectos: t.nav.proyectos,
-      casos: t.lumina.actions.cases,
-      proceso: t.nav.proceso,
-      servicios: t.nav.serviciosEntrada,
-      precios: t.nav.precios,
-      faq: t.nav.faq,
-    };
-    return labels[section];
+  function renderBlocks(blocks: LuminaBlock[]) {
+    return blocks.map((block, i) => {
+      if (block.kind === "highlight") {
+        return (
+          <div
+            key={i}
+            className="relative max-w-[92%] self-start overflow-hidden rounded-[1.35rem] bg-ink px-4 py-3.5 text-white shadow-[0_14px_28px_-18px_hsl(var(--ink)/0.8)]"
+          >
+            <Sparkle aria-hidden className="absolute right-3 top-3 h-4 w-4 fill-lime text-lime" />
+            <p className="text-xs font-semibold text-white/65">{block.label}</p>
+            <p className="display-title mt-1 text-[1.9rem] leading-none tabular-nums text-lime">{block.value}</p>
+            {block.note && <p className="mt-2 text-[0.8125rem] leading-snug text-white/75">{block.note}</p>}
+          </div>
+        );
+      }
+      if (block.kind === "tip") {
+        return (
+          <p
+            key={i}
+            className="flex max-w-[92%] items-start gap-2.5 self-start rounded-[1.35rem] bg-lime px-4 py-3 text-[0.875rem] font-medium leading-snug text-ink"
+          >
+            <Sparkle aria-hidden className="mt-0.5 h-4 w-4 shrink-0 fill-ink text-ink" />
+            {block.text}
+          </p>
+        );
+      }
+      const steps = block.kind === "steps";
+      return (
+        <div
+          key={i}
+          className="max-w-[92%] self-start rounded-[1.35rem] bg-white px-4 py-3.5 text-ink shadow-[0_10px_24px_-18px_hsl(var(--ink)/0.5)]"
+        >
+          {block.title && <p className="mb-2 text-[0.8125rem] font-bold text-ink">{block.title}</p>}
+          <ol className="flex flex-col gap-2">
+            {block.items.map((item, n) => (
+              <li key={n} className="flex items-start gap-2.5 text-[0.875rem] leading-snug text-ink/85">
+                <span
+                  aria-hidden
+                  className={cn(
+                    "mt-px grid size-5 shrink-0 place-items-center rounded-full text-[0.6875rem] font-bold",
+                    steps ? "bg-ink text-lime" : "bg-lime text-ink"
+                  )}
+                >
+                  {steps ? n + 1 : <Check className="h-3 w-3" strokeWidth={3} />}
+                </span>
+                {item}
+              </li>
+            ))}
+          </ol>
+        </div>
+      );
+    });
+  }
+
+  function renderPackage(quote: LuminaQuote, why?: string) {
+    const plans = t.configurator.plans as Record<string, { name: string }>;
+    const moduleLabels = t.configurator.modules as Record<string, string>;
+    const lines = buildQuoteLinesMxn({ planId: quote.plan, moduleIds: quote.modules, sections: quote.sections });
+    const total = lines.reduce((sum, line) => sum + line.price, 0);
+    const advance = quote.mode === "anticipo";
+    const payNow = advance ? Math.ceil(total * 0.5) : total;
+    const rows = lines.map((line) => {
+      const [kind, id] = line.id.split(":");
+      if (kind === "plan") return { Icon: PLAN_ICONS[id] ?? Rocket, label: plans[id]?.name ?? id, price: line.price };
+      if (kind === "module") return { Icon: MODULE_ICONS[id] ?? Check, label: moduleLabels[id] ?? id, price: line.price };
+      return { Icon: LayoutPanelTop, label: t.configurator.additionalSectionsLabel(quote.sections), price: line.price };
+    });
+
+    return (
+      <div key="quote" className="w-full overflow-hidden rounded-[1.5rem] bg-ink text-white shadow-[0_18px_36px_-20px_hsl(var(--ink)/0.9)]">
+        <div className="flex items-center justify-between gap-2 px-4 pb-2 pt-3.5">
+          <p className="display-title text-[1.15rem] leading-tight">{t.lumina.ui.packageTitle}</p>
+          <span className="inline-flex items-center gap-1 rounded-full bg-lime/15 px-2.5 py-1 text-[0.6875rem] font-bold text-lime">
+            <Check aria-hidden className="h-3 w-3" strokeWidth={3} />
+            MXN
+          </span>
+        </div>
+        <ul className="mx-2 rounded-[1.1rem] bg-white/[0.06] px-3 ring-1 ring-inset ring-white/10">
+          {rows.map(({ Icon, label, price }, i) => (
+            <li key={i} className="flex items-center gap-2.5 border-b border-white/10 py-2.5 last:border-0">
+              <span
+                aria-hidden
+                className={cn(
+                  "grid size-7 shrink-0 place-items-center rounded-full",
+                  i === 0 ? "bg-lime text-ink" : "bg-white/10 text-lime"
+                )}
+              >
+                <Icon className="h-3.5 w-3.5" />
+              </span>
+              <span className="min-w-0 flex-1 text-[0.8125rem] leading-snug text-white/85">{label}</span>
+              <span className="shrink-0 text-[0.8125rem] font-bold tabular-nums">{formatMoney(price, "MXN")}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="flex items-end justify-between gap-3 px-4 pb-1 pt-3">
+          <span>
+            <span className="block text-[0.6875rem] font-semibold text-white/60">
+              {advance ? t.lumina.ui.packageAdvance : t.lumina.ui.packageFull}
+            </span>
+            <span className="display-title block text-[1.85rem] leading-none tabular-nums text-lime">
+              {formatMoney(payNow, "MXN")}
+            </span>
+          </span>
+          {advance && (
+            <span className="text-right text-[0.6875rem] leading-tight text-white/60">
+              {t.lumina.ui.packageTotal}
+              <span className="block text-[0.8125rem] font-bold tabular-nums text-white">{formatMoney(total, "MXN")}</span>
+            </span>
+          )}
+        </div>
+        {why && <p className="px-4 pt-2 text-[0.8125rem] leading-snug text-white/75">{why}</p>}
+        <p className="flex items-center gap-1.5 px-4 pt-2 text-[0.6875rem] font-semibold text-lime/90">
+          <Calculator aria-hidden className="h-3.5 w-3.5" />
+          {t.lumina.ui.packageApplied}
+        </p>
+        <div className="flex flex-col gap-1.5 p-2 pt-3">
+          <button
+            type="button"
+            onClick={() => payPackage(quote)}
+            className="group inline-flex min-h-11 items-center justify-between gap-2 rounded-full bg-lime py-1.5 pl-4 pr-1.5 text-sm font-bold text-ink transition-colors hover:bg-white"
+          >
+            {t.lumina.ui.packagePay}
+            <span className="grid size-8 place-items-center rounded-full bg-ink text-lime">
+              <ArrowUpRight aria-hidden className="h-4 w-4 transition-transform group-hover:rotate-45" />
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={goToLeadForm}
+            className="inline-flex min-h-11 items-center justify-center rounded-full px-4 text-sm font-semibold text-white/85 ring-1 ring-inset ring-white/20 transition-colors hover:bg-white/10"
+          >
+            {t.lumina.ui.packageContact}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  function renderService(id: string) {
+    const item = t.entryServices.items.find((s) => s.id === id);
+    const meta = ENTRY_SERVICE_PRICES.find((s) => s.id === id);
+    if (!item || !meta) return null;
+    const price = `${formatMoney(meta.price, "MXN")} MXN`;
+    const href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`${t.lumina.ui.serviceMessage} ${item.name} (${price})`)}`;
+    return (
+      <div key={`service-${id}`} className="w-full rounded-[1.35rem] bg-white p-3.5 text-ink ring-1 ring-ink/[0.08]">
+        <div className="flex items-start justify-between gap-3">
+          <p className="text-[0.875rem] font-bold leading-snug">{item.name}</p>
+          <span className="shrink-0 rounded-full bg-lime px-2.5 py-1 text-xs font-bold tabular-nums">
+            {meta.from ? t.entryServices.fromPrice(price) : price}
+          </span>
+        </div>
+        <p className="mt-1.5 text-[0.8125rem] leading-snug text-ink/65">{item.desc}</p>
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-track-service={`lumina-${id}`}
+            className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-ink px-3.5 text-[0.8125rem] font-semibold text-white transition-colors hover:bg-forest"
+          >
+            <FaWhatsapp aria-hidden className="h-3.5 w-3.5 text-lime" />
+            {t.lumina.ui.serviceCta}
+          </a>
+          <button
+            type="button"
+            onClick={() => goTo("servicios")}
+            className="inline-flex min-h-10 items-center gap-1.5 rounded-full px-3.5 text-[0.8125rem] font-semibold text-ink ring-1 ring-inset ring-ink/15 transition-colors hover:bg-ink/[0.05]"
+          >
+            <ArrowDown aria-hidden className="h-3.5 w-3.5" />
+            {sectionLabel("servicios")}
+          </button>
+        </div>
+      </div>
+    );
   }
 
   function renderActions(actions: LuminaAction[]) {
     const cards = actions.filter((a): a is Extract<LuminaAction, { kind: "project" }> => a.kind === "project");
-    const buttons = actions.filter((a) => a.kind !== "project");
+    const buttons = actions.filter((a) => a.kind === "go" || a.kind === "page" || a.kind === "lead" || a.kind === "whatsapp");
     const pill =
       "group inline-flex min-h-11 max-w-full items-center gap-2 rounded-full py-1.5 pl-1.5 pr-4 text-left text-sm font-semibold transition-colors";
     return (
       <div className="flex w-full flex-col gap-2 self-start">
+        {actions.map((action) =>
+          action.kind === "quote" ? renderPackage(action.quote, action.why) : action.kind === "service" ? renderService(action.id) : null
+        )}
         {cards.length > 0 && (
           <ul role="list" className="-mx-1 -my-1 flex snap-x gap-2 overflow-x-auto px-1 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {cards.map(({ slug }) => {
@@ -578,53 +961,61 @@ export function LuminaChat() {
             })}
           </ul>
         )}
-        {buttons.map((action) => {
-          if (action.kind === "go") {
-            return (
-              <button
-                key={`go-${action.section}`}
-                type="button"
-                onClick={() => goTo(action.section)}
-                className={cn(pill, "self-start bg-white text-ink ring-1 ring-ink/10 hover:bg-ink hover:text-white")}
-              >
-                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-lime text-ink">
-                  <ArrowDown aria-hidden className="h-4 w-4" />
-                </span>
-                {t.lumina.actions.go.replace("{section}", sectionLabel(action.section))}
-              </button>
-            );
-          }
-          if (action.kind === "quote") {
-            return (
-              <button
-                key="quote"
-                type="button"
-                onClick={() => applyQuote(action.quote)}
-                className={cn(pill, "self-start bg-ink text-white hover:bg-forest")}
-              >
-                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-lime text-ink">
-                  <Calculator aria-hidden className="h-4 w-4" />
-                </span>
-                {t.lumina.actions.quote}
-              </button>
-            );
-          }
-          return (
-            <a
-              key="whatsapp"
-              href={whatsappHref()}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackEvent("lumina_action", { action: "whatsapp" })}
-              className={cn(pill, "self-start bg-lime text-ink hover:bg-white hover:ring-1 hover:ring-ink/10")}
-            >
-              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-ink text-lime">
-                <FaWhatsapp aria-hidden className="h-4 w-4" />
-              </span>
-              {t.lumina.actions.whatsapp}
-            </a>
-          );
-        })}
+        {buttons.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {buttons.map((action) => {
+              if (action.kind === "go" || action.kind === "page") {
+                const label =
+                  action.kind === "go"
+                    ? t.lumina.actions.go.replace("{section}", sectionLabel(action.section))
+                    : t.lumina.ui.goPage.replace("{page}", pageLabel(action.page));
+                return (
+                  <button
+                    key={action.kind === "go" ? `go-${action.section}` : `page-${action.page}`}
+                    type="button"
+                    onClick={() => (action.kind === "go" ? goTo(action.section) : goToPage(action.page))}
+                    className={cn(pill, "bg-white text-ink ring-1 ring-ink/10 hover:bg-ink hover:text-white")}
+                  >
+                    <span className="grid size-8 shrink-0 place-items-center rounded-full bg-lime text-ink">
+                      <ArrowDown aria-hidden className="h-4 w-4" />
+                    </span>
+                    {label}
+                  </button>
+                );
+              }
+              if (action.kind === "lead") {
+                return (
+                  <button
+                    key="lead"
+                    type="button"
+                    onClick={goToLeadForm}
+                    className={cn(pill, "bg-ink text-white hover:bg-forest")}
+                  >
+                    <span className="grid size-8 shrink-0 place-items-center rounded-full bg-lime text-ink">
+                      <MessageCircle aria-hidden className="h-4 w-4" />
+                    </span>
+                    {t.lumina.ui.lead}
+                  </button>
+                );
+              }
+              return (
+                <a
+                  key="whatsapp"
+                  href={whatsappHref()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackEvent("lumina_action", { action: "whatsapp" })}
+                  className={cn(pill, "bg-lime text-ink hover:bg-white hover:ring-1 hover:ring-ink/10")}
+                >
+                  <span className="grid size-8 shrink-0 place-items-center rounded-full bg-ink text-lime">
+                    <FaWhatsapp aria-hidden className="h-4 w-4" />
+                  </span>
+                  {t.lumina.actions.whatsapp}
+                </a>
+              );
+            })}
+          </div>
+        )}
       </div>
     );
   }
@@ -729,6 +1120,7 @@ export function LuminaChat() {
                     {m.content && (
                       <div className={className} dangerouslySetInnerHTML={{ __html: m.content }} />
                     )}
+                    {m.blocks?.length ? renderBlocks(m.blocks) : null}
                     {m.actions?.length ? renderActions(m.actions) : null}
                   </div>
                 );
@@ -806,6 +1198,62 @@ export function LuminaChat() {
                 <Send aria-hidden className="h-[1.1rem] w-[1.1rem]" />
               </button>
             </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* La guía: Lumina "vuela" desde su botón hasta la sección a la que
+          llevó al usuario y la señala con una burbuja corta. */}
+      <AnimatePresence>
+        {guide && (
+          <motion.div
+            key={`${guide.id}-${guide.label}`}
+            role="status"
+            initial={
+              reducedMotion
+                ? { opacity: 0 }
+                : { opacity: 0, x: isPhone ? 120 : 260, y: isPhone ? 420 : 520, scale: 0.4, rotate: 12 }
+            }
+            animate={{ opacity: 1, x: 0, y: 0, scale: 1, rotate: 0 }}
+            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -12, scale: 0.92 }}
+            transition={reducedMotion ? { duration: 0.2 } : { type: "spring", stiffness: 170, damping: 20, mass: 0.9 }}
+            style={!isPhone && guide.x !== undefined ? { left: Math.max(16, guide.x + 16) } : undefined}
+            className="fixed left-3 right-3 top-[calc(var(--header-h,4.5rem)+0.75rem)] z-[125] sm:right-auto sm:w-[19rem]"
+          >
+            <div className="relative flex items-start gap-3 rounded-[1.5rem] rounded-tl-md bg-white p-2.5 pr-11 text-ink shadow-float ring-2 ring-lime">
+              <span aria-hidden className="relative size-12 shrink-0">
+                <span className="float-y absolute inset-0 overflow-hidden rounded-full bg-ink ring-[3px] ring-lime">
+                  <Image src={MOOD_IMG.Sorprendida} alt="" fill sizes="48px" className="object-cover" />
+                </span>
+                <Sparkle className="absolute -right-1 -top-1 h-4 w-4 fill-lime text-lime-deep" />
+              </span>
+              <span className="min-w-0 flex-1 pt-0.5">
+                <span className="block text-xs font-bold text-forest">{t.lumina.ui.guideHere}</span>
+                <span className="block text-[0.9375rem] font-bold leading-tight">{guide.label}</span>
+                {guide.text && (
+                  <span className="mt-1 line-clamp-2 block text-[0.8125rem] leading-snug text-ink/65">{guide.text}</span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setGuide(null);
+                    setOpen(true);
+                  }}
+                  className="mt-2 inline-flex min-h-9 items-center gap-1.5 rounded-full bg-ink px-3 text-xs font-semibold text-white transition-colors hover:bg-forest"
+                >
+                  <MessageCircle aria-hidden className="h-3.5 w-3.5 text-lime" />
+                  {t.lumina.ui.guideBack}
+                </button>
+              </span>
+              <button
+                type="button"
+                onClick={() => setGuide(null)}
+                aria-label={t.lumina.ui.guideClose}
+                className="absolute right-1 top-1 grid size-10 place-items-center rounded-full text-ink/55 transition-colors hover:text-ink"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

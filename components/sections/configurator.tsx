@@ -284,6 +284,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
         )
       );
       setSections(Math.max(0, Math.min(MAX_SECTIONS, Math.floor(quote.sections || 0))));
+      if (quote.mode === "anticipo" || quote.mode === "liquidacion") setMode(quote.mode);
       trackEvent("lumina_quote", { plan: quote.plan, modules: quote.modules.join(",") });
     }
     window.addEventListener(LUMINA_QUOTE_EVENT, onLuminaQuote);
@@ -436,9 +437,11 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
 
   // ¿Hay formulario de cotización en esta página? (home y /crear-web sí).
   const [hasLeadForm, setHasLeadForm] = useState(false);
+  // El formulario carga en su propio chunk, a veces después del cotizador:
+  // se revisa otra vez cuando el resumen entra a la vista.
   useEffect(() => {
     setHasLeadForm(!!document.getElementById(LEAD_FORM_ID));
-  }, []);
+  }, [summaryInView]);
 
   function contactMe() {
     const target = document.getElementById(LEAD_FORM_ID);
