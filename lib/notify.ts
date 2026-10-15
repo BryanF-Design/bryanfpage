@@ -9,9 +9,10 @@
  * estable: si el webhook se reintrega, el mismo pago produce el mismo folio.
  */
 
+import { describeAttribution, sanitizeAttribution, type Attribution } from "./attribution";
 import { getSiteUrl } from "./site-url";
 
-const INTERNAL_TO = "bryanf@bryanfdesign.com.mx";
+export const INTERNAL_TO = "bryanf@bryanfdesign.com.mx";
 
 export interface OrderConfirmation {
   provider: "stripe" | "mercadopago";
@@ -24,6 +25,8 @@ export interface OrderConfirmation {
   customerEmail?: string | null;
   customerName?: string | null;
   modalidad?: string | null;
+  /** Campaña de origen (gclid/utm) guardada en la metadata del pago. */
+  attribution?: Attribution;
 }
 
 function formatMoney(amount: number, currency: string) {
@@ -38,7 +41,7 @@ function formatMoney(amount: number, currency: string) {
   }
 }
 
-function escapeHtml(text: unknown) {
+export function escapeHtml(text: unknown) {
   return String(text ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -53,10 +56,11 @@ export function makeFolio(reference: string): string {
   return `BF-${tail || Date.now().toString(36).toUpperCase()}`;
 }
 
-async function sendEmail(
+export async function sendEmail(
   to: string | string[],
   subject: string,
-  html: string
+  html: string,
+  replyTo?: string
 ): Promise<{ ok: boolean; error?: string }> {
   if (!process.env.RESEND_API_KEY) return { ok: false, error: "RESEND_API_KEY missing" };
   const from =
@@ -68,7 +72,7 @@ async function sendEmail(
         Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ from, to, subject, html }),
+      body: JSON.stringify({ from, to, subject, html, ...(replyTo ? { reply_to: replyTo } : {}) }),
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok || (data as { error?: unknown }).error) {
@@ -96,6 +100,7 @@ export async function sendOrderConfirmation(
   const amount = formatMoney(order.amount, order.currency);
   const method = PROVIDER_LABEL[order.provider];
   const brief = `${getSiteUrl()}/gracias`;
+  const attribution = sanitizeAttribution(order.attribution);
 
   const internalHtml = `
     <div style="font-family:Inter,Arial,sans-serif;max-width:640px;margin:0 auto;color:#171717;">
@@ -111,6 +116,11 @@ export async function sendOrderConfirmation(
     order.customerEmail ? `(${escapeHtml(order.customerEmail)})` : ""
   }</li>
         <li><strong>Referencia:</strong> ${escapeHtml(order.reference)}</li>
+        <li><strong>Origen:</strong> ${escapeHtml(describeAttribution(attribution))}</li>${
+    attribution.gclid
+      ? `\n        <li><strong>GCLID:</strong> ${escapeHtml(attribution.gclid)}</li>`
+      : ""
+  }
       </ul>
     </div>`;
 

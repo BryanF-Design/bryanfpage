@@ -19,6 +19,8 @@ import { MarqueeBand } from "@/components/sections/marquee-band";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { SiteHeader } from "@/components/sections/site-header";
 import { SpanishPageLanguage } from "@/components/seo/spanish-page-language";
+import { LeadForm } from "@/components/sections/lead-form";
+import { LEAD_FORM_ID } from "@/lib/quote";
 import { TrackedWhatsAppLink } from "@/components/analytics/tracked-whatsapp-link";
 import { desktopShot, mobileShot, projects, tabletShot, type Project } from "@/lib/projects";
 import {
@@ -295,18 +297,20 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                 className="hero-in hero-in-up flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:flex-wrap"
                 style={hd(240)}
               >
+                {/* El tráfico de anuncios aterriza aquí: la acción principal
+                    es el formulario de esta misma página (conversión medible);
+                    WhatsApp queda como alternativa directa. */}
                 <Button asChild size="lg" variant="ink" className="pr-2.5">
-                  <TrackedWhatsAppLink href={WHATSAPP_URL} service={page.slug}>
-                    <MessageCircle aria-hidden className="h-[1.1rem] w-[1.1rem] text-lime" />
-                    Cotizar por WhatsApp
+                  <a href={`#${LEAD_FORM_ID}`} data-track-service={page.slug}>
+                    Pedir cotización gratis
                     <ButtonArrow tone="lime" className="ml-auto -mr-0.5 sm:ml-2" />
-                  </TrackedWhatsAppLink>
+                  </a>
                 </Button>
                 <Button asChild size="lg" variant="outline">
-                  <Link href="/#projects">
-                    Ver proyectos
-                    <ArrowRight aria-hidden className="h-4 w-4" />
-                  </Link>
+                  <TrackedWhatsAppLink href={WHATSAPP_URL} service={page.slug}>
+                    <MessageCircle aria-hidden className="h-[1.1rem] w-[1.1rem]" />
+                    Cotizar por WhatsApp
+                  </TrackedWhatsAppLink>
                 </Button>
               </div>
 
@@ -875,6 +879,8 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
           </div>
         </nav>
 
+        <LeadForm forceSpanish source={page.slug} />
+
         {/* ——— Cierre en lima, como el del home. ——— */}
         <section id="contacto" aria-labelledby="contacto-title" suppressHydrationWarning data-fx="panel">
           <div className="panel panel-lime relative overflow-hidden p-5 sm:p-8 lg:p-12">
@@ -921,7 +927,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                       </TrackedWhatsAppLink>
                     </Button>
                     <Button asChild size="lg" variant="outline" className="w-full border-white/25 text-white">
-                      <Link href="/#precios">Armar cotización</Link>
+                      <Link href="/crear-web">Armar y pagar en línea</Link>
                     </Button>
                   </div>
                 </div>

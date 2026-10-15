@@ -64,6 +64,7 @@ export async function POST(req: NextRequest) {
           customerEmail: session.customer_details?.email ?? null,
           customerName: session.customer_details?.name ?? null,
           modalidad: session.metadata?.modalidad ?? null,
+          attribution: session.metadata ?? undefined,
         });
       }
     }

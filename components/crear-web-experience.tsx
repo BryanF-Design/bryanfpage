@@ -10,6 +10,7 @@ import { SiMercadopago, SiStripe } from "react-icons/si";
 import { SiteHeader } from "@/components/sections/site-header";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { Configurator } from "@/components/sections/configurator";
+import { LeadForm } from "@/components/sections/lead-form";
 import { Button } from "@/components/ui/button";
 import { CONFIGURATOR_PLANS } from "@/lib/catalog";
 import { formatMoney } from "@/lib/currency";
@@ -212,6 +213,8 @@ export function CrearWebExperience() {
         </section>
 
         <Configurator hideHeading />
+
+        <LeadForm source="crear-web" />
       </main>
 
       <SiteFooter />

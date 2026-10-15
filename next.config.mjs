@@ -28,11 +28,13 @@ const nextConfig = {
     const devEval = process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : "";
     const csp = [
       "default-src 'self'",
-      `script-src 'self' 'unsafe-inline'${devEval} https://*.googletagmanager.com https://*.clarity.ms https://cdnjs.cloudflare.com`,
+      `script-src 'self' 'unsafe-inline'${devEval} https://*.googletagmanager.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://*.clarity.ms https://cdnjs.cloudflare.com`,
       "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com",
-      "img-src 'self' data: blob: https://*.google-analytics.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.google.com https://*.clarity.ms https://c.bing.com",
+      "img-src 'self' data: blob: https://*.google-analytics.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.google.com https://*.google.com.mx https://www.googleadservices.com https://*.clarity.ms https://c.bing.com",
       "font-src 'self' https://cdnjs.cloudflare.com data:",
-      "connect-src 'self' https://*.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://*.g.doubleclick.net https://*.google.com https://*.clarity.ms https://c.bing.com",
+      "connect-src 'self' https://*.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://*.g.doubleclick.net https://*.google.com https://*.google.com.mx https://www.googleadservices.com https://*.clarity.ms https://c.bing.com",
+      // Google Ads abre un iframe invisible para atribución y remarketing.
+      "frame-src 'self' https://td.doubleclick.net https://www.googletagmanager.com",
       "frame-ancestors 'self'",
       "object-src 'none'",
       "base-uri 'self'",

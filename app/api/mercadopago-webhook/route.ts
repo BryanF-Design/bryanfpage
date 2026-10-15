@@ -98,6 +98,7 @@ export async function POST(req: NextRequest) {
         modalidad:
           (payment.metadata as Record<string, unknown> | undefined)?.modalidad?.toString() ??
           null,
+        attribution: (payment.metadata as Record<string, unknown> | undefined) ?? undefined,
       });
     }
   } catch (err) {

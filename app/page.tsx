@@ -52,6 +52,9 @@ const EntryServices = dynamic(() =>
 const Configurator = dynamic(() =>
   import("@/components/sections/configurator").then((m) => m.Configurator)
 );
+const LeadForm = dynamic(() =>
+  import("@/components/sections/lead-form").then((m) => m.LeadForm)
+);
 const Faq = dynamic(() => import("@/components/sections/faq").then((m) => m.Faq));
 const SiteFooter = dynamic(() =>
   import("@/components/sections/site-footer").then((m) => m.SiteFooter)
@@ -193,6 +196,9 @@ export default function HomePage() {
         <EntryServices />
 
         <Configurator />
+
+        {/* Para quien no quiere pagar todavía: cotización por WhatsApp. */}
+        <LeadForm source="home" />
 
         {/* El recorrido con Lumina termina en el pago: va después del cotizador
             y así las dos secciones de Lumina no quedan seguidas. */}
