@@ -110,6 +110,20 @@ export async function POST(req: NextRequest) {
       "BryanF Design <no-reply@bryanfdesign.com.mx>";
     const to = ["bryanf@bryanfdesign.com.mx", "pandita250599@gmail.com"];
 
+    // Campos del briefing de /gracias que no tienen fila fija arriba.
+    const EXTRA_LABELS: Record<string, string> = {
+      projectType: "Tipo de proyecto",
+      deadline: "Plazo",
+      materials: "Materiales",
+      style: "Estilo visual",
+      sections: "Secciones",
+      notes: "Notas",
+    };
+    const extrasHtml = Object.entries(EXTRA_LABELS)
+      .filter(([key]) => form[key])
+      .map(([key, label]) => `<li><strong>${label}:</strong> ${escapeHtml(form[key])}</li>`)
+      .join("");
+
     const summaryHtml = summaryItems
       .map(
         (item) =>
@@ -140,11 +154,13 @@ export async function POST(req: NextRequest) {
           <li><strong>Objetivos:</strong> ${escapeHtml(form.mainGoal || "No especificado")}</li>
           <li><strong>Referencias:</strong> ${escapeHtml(form.references || "No especificado")}</li>
         </ul>
+        ${extrasHtml ? `<h3 style="margin:18px 0 8px;">Detalles</h3><ul style="margin:0 0 14px;padding-left:18px;">${extrasHtml}</ul>` : ""}
         <h3 style="margin:18px 0 8px;">Cotización</h3>
         <ul style="margin:0 0 14px;padding-left:18px;">
           <li><strong>Total proyecto:</strong> ${formatMoney(totals.projectTotal || 0)}</li>
           <li><strong>Pago ahora:</strong> ${formatMoney(totals.payableNow || 0)}</li>
           <li><strong>Método:</strong> ${escapeHtml(payment.method || "pendiente")}</li>
+          <li><strong>Referencia de pago:</strong> ${escapeHtml(payment.reference || "—")}</li>
           <li><strong>Cupón:</strong> ${escapeHtml(coupon.code || "Sin cupón")}</li>
         </ul>
         <h3 style="margin:18px 0 8px;">Servicios seleccionados</h3>
