@@ -38,6 +38,7 @@ interface Order {
   email?: string;
   name?: string;
   phone?: string;
+  subscription?: boolean;
 }
 
 /** Cuenta la compra una sola vez por transacción (GA4 + Google Ads). */
@@ -58,7 +59,11 @@ function countPurchase(order: Order) {
     value: order.value,
     currency: order.currency,
     payment_type: order.provider,
-    items: [{ item_id: "proyecto-web", item_name: "Proyecto web", price: order.value, quantity: 1 }],
+    items: [
+      order.subscription
+        ? { item_id: "suscripcion", item_name: "Suscripción Todo Digital", price: order.value, quantity: 1 }
+        : { item_id: "proyecto-web", item_name: "Proyecto web", price: order.value, quantity: 1 },
+    ],
   });
   trackAdsConversion("purchase", {
     value: order.value,
@@ -196,6 +201,7 @@ function Select({ id, name, options }: { id: string; name: string; options: stri
  */
 export function GraciasExperience() {
   const [view, setView] = useState<View>("checking");
+  const [isSubscription, setIsSubscription] = useState(false);
   const [order, setOrder] = useState<Order | null>(null);
   const [sendState, setSendState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [error, setError] = useState("");
@@ -208,7 +214,9 @@ export function GraciasExperience() {
     const status = params.get("status");
     const sessionId = params.get("session_id");
     const paymentId = params.get("payment_id") || params.get("collection_id");
-    paymentRef.current = sessionId || paymentId || "";
+    const preapprovalId = params.get("preapproval_id");
+    paymentRef.current = sessionId || paymentId || preapprovalId || "";
+    if (params.get("plan") === "suscripcion") setIsSubscription(true);
 
     if (status === "cancel") {
       trackEvent("checkout_cancelled", { payment_provider: provider || "unknown" });
@@ -219,6 +227,8 @@ export function GraciasExperience() {
     let query = "";
     if (provider === "stripe" && sessionId) {
       query = `provider=stripe&session_id=${encodeURIComponent(sessionId)}`;
+    } else if (provider === "mercadopago" && preapprovalId) {
+      query = `provider=mercadopago&preapproval_id=${encodeURIComponent(preapprovalId)}`;
     } else if (provider === "mercadopago" && paymentId && paymentId !== "null") {
       query = `provider=mercadopago&payment_id=${encodeURIComponent(paymentId)}`;
     } else if (status === "failure") {
@@ -236,6 +246,7 @@ export function GraciasExperience() {
       .then((data) => {
         if (!alive) return;
         setOrder(data);
+        if (data.subscription) setIsSubscription(true);
         if (data.state === "paid") {
           countPurchase(data);
           setView("paid");
@@ -310,7 +321,14 @@ export function GraciasExperience() {
     }
   }
 
-  const hero = HEROES[view];
+  const hero =
+    isSubscription && view === "paid"
+      ? {
+          ...HEROES.paid,
+          title: "¡Bienvenido a tu suscripción Todo Digital!",
+          body: "Ya está activa. Mándanos tu primera solicitud por WhatsApp: cada una se entrega en 1 a 2 días hábiles según su complejidad. Abajo puedes contarnos de tu negocio para arrancar con contexto.",
+        }
+      : HEROES[view];
   const showBrief = view === "paid" || view === "pending" || view === "unverified" || view === "brief";
   const waHref = (text: string) => `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(text)}`;
   const helpText =
@@ -347,11 +365,31 @@ export function GraciasExperience() {
                   <Check aria-hidden className="h-4 w-4" strokeWidth={3} />
                   {formatMoney(order.value, order.currency === "USD" ? "USD" : "MXN")}{" "}
                   {order.currency}
+                  {isSubscription ? " / mes" : ""}
                 </p>
               ) : null}
             </div>
 
-            {(view === "paid" || view === "pending" || view === "brief" || view === "unverified") && (
+            {isSubscription && view === "paid" && (
+              <div className="flex flex-col gap-2.5 sm:flex-row">
+                <Button asChild size="lg" variant="ink" className="justify-between pl-6 pr-2.5">
+                  <a
+                    href={waHref("Hola Bryan, ya me suscribí al plan Todo Digital. Mi primera solicitud es: ")}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <FaWhatsapp aria-hidden className="h-[1.1rem] w-[1.1rem] text-lime" />
+                    Mandar mi primera solicitud
+                    <ButtonArrow tone="lime" className="ml-3 -mr-0.5" />
+                  </a>
+                </Button>
+                <Button asChild size="lg" variant="outline">
+                  <Link href="/suscripcion#politica">Ver la política</Link>
+                </Button>
+              </div>
+            )}
+
+            {!isSubscription && (view === "paid" || view === "pending" || view === "brief" || view === "unverified") && (
               <Steps current={stepIndex} />
             )}
 

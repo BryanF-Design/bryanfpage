@@ -130,7 +130,7 @@ export function StackOrbit() {
 
             <div className="flex flex-col gap-2.5 sm:flex-row lg:flex-col xl:flex-row">
               <Button asChild size="lg" variant="ink" className="pr-2.5">
-                <Link href="#projects">
+                <Link href="/#projects">
                   {t.stack.ctaPrimary}
                   <ButtonArrow tone="lime" className="ml-auto -mr-0.5 sm:ml-2" />
                 </Link>

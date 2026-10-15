@@ -2,6 +2,8 @@ import type { Dictionary } from "./es";
 
 const fr: Dictionary = {
   nav: {
+    suscripcion: "Abonnement",
+    conoce: "Qui est Bryan",
     inicio: "Accueil",
     proceso: "Processus",
     proyectos: "Projets",
@@ -387,6 +389,10 @@ const fr: Dictionary = {
     subtitle: "Touchez une question pour voir la réponse.",
     items: [
       {
+        title: "Avez-vous une formule mensuelle ?",
+        content: "Oui : l'abonnement Tout Digital coûte 7 000 MXN par mois et comprend sites web, modifications illimitées, cartes de visite digitales et tout le digital dont votre entreprise a besoin. Chaque demande est livrée en 1 à 2 jours ouvrés selon sa complexité. Sans engagement.",
+      },
+      {
         title: "Quels sont les délais de livraison ?",
         content: "La livraison démarre dès 3 jours une fois que vous nous avez transmis toutes les informations sur votre entreprise.",
       },
@@ -428,6 +434,23 @@ const fr: Dictionary = {
     subtitle: "Créez votre site, choisissez comment payer (carte, Mercado Pago ou virement) et on démarre. Projets dès 3 500 $ MXN.",
     ctaPrimary: "Créer mon site",
     ctaSecondary: "WhatsApp direct",
+  },
+  homeTeasers: {
+    subscriptionEyebrow: "Nouveau · Formule mensuelle",
+    subscriptionTitle: "Tout le digital de votre entreprise, pour un forfait mensuel",
+    subscriptionBody: "Sites web, modifications illimitées, cartes de visite digitales et plus. Chaque demande livrée en 1 à 2 jours ouvrés selon sa complexité.",
+    perMonth: "/mois",
+    subscriptionItems: ["Tous les sites dont vous avez besoin", "Modifications illimitées", "Cartes digitales et signatures", "Sans engagement"],
+    subscriptionCta: "Voir l'abonnement",
+    aboutEyebrow: "Qui est derrière",
+    aboutTitle: "Je suis Bryan : je conçois et je code chaque site",
+    aboutBody: "Pas d'intermédiaire d'agence : vous parlez directement à celui qui conçoit et écrit le code. Découvrez mon parcours, ma méthode et mes outils.",
+    aboutCta: "Qui est Bryan",
+    luminaEyebrow: "Conseillère IA",
+    luminaTitle: "Lumina vous fait un devis et vous guide sur le site",
+    luminaBody: "Elle compose votre formule, montre des projets comme le vôtre et vous emmène là où il faut.",
+    luminaCta: "Découvrir Lumina",
+    luminaChat: "Discuter maintenant",
   },
   leadForm: {
     eyebrow: "Devis sans engagement",
@@ -631,6 +654,11 @@ const fr: Dictionary = {
       cases: "Études de cas",
     },
     ui: {
+      subscriptionTitle: "Abonnement Tout Digital",
+      subscriptionPerMonth: "par mois",
+      subscriptionIncludes: ["Tous les sites dont vous avez besoin", "Modifications illimitées", "Cartes digitales et signatures", "Livraison en 1 à 2 jours ouvrés"],
+      subscriptionCta: "Voir et m'abonner",
+      subscriptionNote: "Sans engagement",
       packageTitle: "Votre formule prête",
       packageTotal: "Total du projet",
       packageAdvance: "Acompte aujourd'hui (50 %)",
@@ -660,6 +688,9 @@ const fr: Dictionary = {
         "faq": "FAQ",
       },
       pages: {
+        "suscripcion": "Abonnement Tout Digital",
+        "lumina": "Lumina",
+        "conoce-a-bryan": "Qui est Bryan",
         "crear-web": "Devis en ligne",
         "desarrollo-web-mexico": "Développement web",
         "diseno-web-mexico": "Design web",

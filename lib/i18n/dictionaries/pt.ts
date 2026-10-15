@@ -2,6 +2,8 @@ import type { Dictionary } from "./es";
 
 const pt: Dictionary = {
   nav: {
+    suscripcion: "Assinatura",
+    conoce: "Conheça o Bryan",
     inicio: "Início",
     proceso: "Processo",
     proyectos: "Projetos",
@@ -387,6 +389,10 @@ const pt: Dictionary = {
     subtitle: "Toque em uma pergunta para ver a resposta.",
     items: [
       {
+        title: "Vocês têm um plano mensal?",
+        content: "Sim: a assinatura Tudo Digital custa $7.000 MXN por mês e inclui sites, alterações ilimitadas, cartões digitais e tudo o que for digital para o seu negócio. Cada pedido é entregue em 1 a 2 dias úteis, conforme a complexidade. Sem fidelidade.",
+      },
+      {
         title: "Quais são os prazos de entrega?",
         content: "Os prazos começam em 3 dias após você nos passar as informações completas da sua empresa.",
       },
@@ -428,6 +434,23 @@ const pt: Dictionary = {
     subtitle: "Monte seu site, escolha como pagar (cartão, Mercado Pago ou transferência) e vamos começar. Projetos a partir de $3.500 MXN.",
     ctaPrimary: "Monte seu site",
     ctaSecondary: "WhatsApp direto",
+  },
+  homeTeasers: {
+    subscriptionEyebrow: "Novo · Plano mensal",
+    subscriptionTitle: "Tudo o que é digital no seu negócio, por uma mensalidade",
+    subscriptionBody: "Sites, alterações ilimitadas, cartões digitais e mais. Cada pedido em 1 a 2 dias úteis, conforme a complexidade.",
+    perMonth: "/mês",
+    subscriptionItems: ["Os sites que você precisar", "Alterações ilimitadas", "Cartões digitais e assinaturas", "Sem fidelidade"],
+    subscriptionCta: "Ver a assinatura",
+    aboutEyebrow: "Quem está por trás",
+    aboutTitle: "Sou o Bryan: desenho e programo cada site",
+    aboutBody: "Sem camadas de agência: você fala direto com quem desenha e escreve o código. Conheça minha história, meu processo e minhas ferramentas.",
+    aboutCta: "Conheça o Bryan",
+    luminaEyebrow: "Consultora IA",
+    luminaTitle: "A Lumina faz seu orçamento e te guia pelo site",
+    luminaBody: "Monta seu pacote, mostra projetos como o seu e te leva aonde você precisa.",
+    luminaCta: "Conheça a Lumina",
+    luminaChat: "Conversar agora",
   },
   leadForm: {
     eyebrow: "Orçamento sem compromisso",
@@ -631,6 +654,11 @@ const pt: Dictionary = {
       cases: "Estudos de caso",
     },
     ui: {
+      subscriptionTitle: "Assinatura Tudo Digital",
+      subscriptionPerMonth: "por mês",
+      subscriptionIncludes: ["Os sites que você precisar", "Alterações ilimitadas", "Cartões digitais e assinaturas", "Entregas em 1 a 2 dias úteis"],
+      subscriptionCta: "Ver e assinar",
+      subscriptionNote: "Sem fidelidade",
       packageTitle: "Seu pacote montado",
       packageTotal: "Total do projeto",
       packageAdvance: "Entrada hoje (50%)",
@@ -660,6 +688,9 @@ const pt: Dictionary = {
         "faq": "Perguntas frequentes",
       },
       pages: {
+        "suscripcion": "Assinatura Tudo Digital",
+        "lumina": "Lumina",
+        "conoce-a-bryan": "Conheça o Bryan",
         "crear-web": "Orçamento online",
         "desarrollo-web-mexico": "Desenvolvimento web",
         "diseno-web-mexico": "Web design",

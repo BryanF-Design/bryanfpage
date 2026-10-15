@@ -6,7 +6,7 @@ El sitio ya mide y atribuye ventas para Google Ads. Falta conectar tu cuenta.
 
 | Evento GA4 | Cuándo ocurre | Uso en Ads |
 |---|---|---|
-| `purchase` | Pago **verificado** con Stripe o Mercado Pago en `/gracias` (monto real, una vez por transacción) | **Principal**: optimiza a ventas |
+| `purchase` | Pago **verificado** con Stripe o Mercado Pago en `/gracias` (monto real, una vez por transacción; la suscripción cuenta con valor $7,000 e item `suscripcion`) | **Principal**: optimiza a ventas |
 | `quote_request` | Formulario "¿Prefieres que te contactemos?" enviado | **Principal**: prospecto calificado |
 | `generate_lead` (method `whatsapp`) | Clic a WhatsApp | Secundaria (intención, no venta) |
 | `begin_checkout` | Abrió Stripe / Mercado Pago / transferencia | Observación |
@@ -43,6 +43,7 @@ No uses A y B para la misma conversión a la vez: contarías doble.
 | "diseño web" | `/diseno-web-mexico` |
 | "tienda en línea", "ecommerce" | `/crear-web?plan=full&modules=ecommerce,payments` |
 | "mantenimiento web" | `/mantenimiento-web-mexico` |
+| "diseño web mensual", "agencia web por suscripción", "mantenimiento y cambios ilimitados" | `/suscripcion` |
 | Remarketing (ya cotizó) | `/crear-web` (la cotización se recupera sola) |
 
 Plantilla de seguimiento recomendada (nivel cuenta):

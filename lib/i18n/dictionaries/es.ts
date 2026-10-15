@@ -3,6 +3,8 @@
 // a silent fallback to Spanish at runtime.
 const es = {
   nav: {
+    suscripcion: "Suscripción",
+    conoce: "Conoce a Bryan",
     inicio: "Inicio",
     proceso: "Proceso",
     proyectos: "Proyectos",
@@ -404,6 +406,10 @@ const es = {
     subtitle: "Toca una pregunta para ver la respuesta.",
     items: [
       {
+        title: "¿Tienen un plan mensual?",
+        content: "Sí: la suscripción Todo Digital cuesta $7,000 MXN al mes e incluye páginas web, cambios ilimitados, tarjetas digitales y todo lo digital que tu negocio necesite. Cada solicitud se entrega en 1 a 2 días hábiles según su complejidad. Sin plazo forzoso.",
+      },
+      {
         title: "¿Cuáles son los tiempos de entrega?",
         content:
           "Los tiempos de entrega empiezan desde 3 días una vez que nos hayas proporcionado la información completa de tu empresa.",
@@ -449,6 +455,23 @@ const es = {
       "Arma tu web, elige cómo pagar (tarjeta, Mercado Pago o transferencia) y arrancamos. Proyectos desde $3,500 MXN.",
     ctaPrimary: "Arma tu web",
     ctaSecondary: "WhatsApp directo",
+  },
+  homeTeasers: {
+    subscriptionEyebrow: "Nuevo · Plan mensual",
+    subscriptionTitle: "Todo lo digital de tu negocio, por una cuota al mes",
+    subscriptionBody: "Páginas web, cambios ilimitados, tarjetas digitales y más. Cada solicitud en 1 a 2 días hábiles, según su complejidad.",
+    perMonth: "/mes",
+    subscriptionItems: ["Páginas web que necesites", "Cambios ilimitados", "Tarjetas digitales y firmas", "Sin plazo forzoso"],
+    subscriptionCta: "Ver la suscripción",
+    aboutEyebrow: "Quién está detrás",
+    aboutTitle: "Soy Bryan: diseño y programo cada sitio",
+    aboutBody: "Sin capas de agencia: hablas directo con quien diseña y escribe el código. Conoce mi historia, mi proceso y con qué trabajo.",
+    aboutCta: "Conoce a Bryan",
+    luminaEyebrow: "Asesora IA",
+    luminaTitle: "Lumina te cotiza y te guía por el sitio",
+    luminaBody: "Arma tu paquete, te enseña proyectos como el tuyo y te lleva a donde necesitas.",
+    luminaCta: "Conoce a Lumina",
+    luminaChat: "Chatear ahora",
   },
   leadForm: {
     eyebrow: "Cotización sin compromiso",
@@ -658,6 +681,11 @@ const es = {
       cases: "Casos de estudio",
     },
     ui: {
+      subscriptionTitle: "Suscripción Todo Digital",
+      subscriptionPerMonth: "al mes",
+      subscriptionIncludes: ["Páginas web que necesites", "Cambios ilimitados", "Tarjetas digitales y firmas", "Entregas en 1 a 2 días hábiles"],
+      subscriptionCta: "Ver y suscribirme",
+      subscriptionNote: "Sin plazo forzoso",
       packageTitle: "Tu paquete armado",
       packageTotal: "Total del proyecto",
       packageAdvance: "Anticipo hoy (50 %)",
@@ -687,6 +715,9 @@ const es = {
         "faq": "Preguntas frecuentes",
       },
       pages: {
+        "suscripcion": "Suscripción Todo Digital",
+        "lumina": "Lumina",
+        "conoce-a-bryan": "Conoce a Bryan",
         "crear-web": "Cotizador en línea",
         "desarrollo-web-mexico": "Desarrollo web",
         "diseno-web-mexico": "Diseño web",

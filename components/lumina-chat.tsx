@@ -37,8 +37,11 @@ import {
   LUMINA_SECTIONS,
   actionsPrompt,
   currentSectionLabel,
+  SECTION_PAGE,
   isLuminaAction,
   isLuminaBlock,
+  markdownToHtml,
+  normalizeLuminaHref,
   parseLuminaReply,
   quoteHref,
   type LuminaAction,
@@ -48,7 +51,7 @@ import {
   type LuminaQuote,
   type LuminaSection,
 } from "@/lib/lumina-actions";
-import { CONFIGURATOR_MODULES, CONFIGURATOR_PLANS, ENTRY_SERVICE_PRICES } from "@/lib/catalog";
+import { ENTRY_SERVICE_PRICES, SUBSCRIPTION_PLAN } from "@/lib/catalog";
 import { formatMoney } from "@/lib/currency";
 import { LEAD_FORM_ID, QUOTE_STORAGE_KEY, buildQuoteLinesMxn } from "@/lib/quote";
 
@@ -132,6 +135,7 @@ function historyContent(m: Msg) {
       parts.push(`(armé el paquete ${a.quote.plan}${a.quote.modules.length ? ` + ${a.quote.modules.join(", ")}` : ""}${a.quote.sections ? ` + ${a.quote.sections} secciones` : ""})`);
     if (a.kind === "go") parts.push(`(lo llevé a ${a.section})`);
     if (a.kind === "page") parts.push(`(lo llevé a /${a.page})`);
+    if (a.kind === "subscription") parts.push("(le mostré la suscripción mensual)");
   });
   return parts.filter(Boolean).join(" ").slice(0, 900);
 }
@@ -204,17 +208,23 @@ function sanitizeHtml(html: string): string {
       el.replaceWith(...Array.from(el.childNodes));
       return;
     }
-    Array.from(el.attributes).forEach((attr) => {
-      const name = attr.name.toLowerCase();
-      const isSafeHref =
-        el.tagName === "A" &&
-        name === "href" &&
-        !/^\s*javascript:/i.test(attr.value);
-      if (!isSafeHref) el.removeAttribute(attr.name);
-    });
+    const rawHref = el.tagName === "A" ? el.getAttribute("href") || "" : "";
+    Array.from(el.attributes).forEach((attr) => el.removeAttribute(attr.name));
     if (el.tagName === "A") {
-      el.setAttribute("target", "_blank");
-      el.setAttribute("rel", "noopener noreferrer");
+      // Todo enlace se corrige y valida (ver normalizeLuminaHref): si no lleva
+      // a un destino real, queda como texto en vez de un enlace roto.
+      const link = normalizeLuminaHref(rawHref);
+      if (!link) {
+        el.replaceWith(...Array.from(el.childNodes));
+        return;
+      }
+      el.setAttribute("href", link.href);
+      if (link.internal) {
+        el.setAttribute("data-internal", "1");
+      } else {
+        el.setAttribute("target", "_blank");
+        el.setAttribute("rel", "noopener noreferrer");
+      }
     }
   });
   return tpl.innerHTML;
@@ -541,7 +551,7 @@ export function LuminaChat() {
         ...m,
         {
           role: "assistant",
-          content: sanitizeHtml(text),
+          content: sanitizeHtml(markdownToHtml(text)),
           actions: reply.actions.length ? reply.actions : undefined,
           blocks: reply.blocks.length ? reply.blocks : undefined,
         },
@@ -643,7 +653,10 @@ export function LuminaChat() {
       } catch {
         /* storage bloqueado: igual navega */
       }
-      window.location.href = `/#${id}`;
+      // La sección vive en otra página desde la división del sitio.
+      const section = (Object.keys(LUMINA_SECTIONS) as LuminaSection[]).find((k) => LUMINA_SECTIONS[k] === id);
+      const page = section ? SECTION_PAGE[section] : "/";
+      window.location.href = `${page === "/" ? "/" : page}#${id}`;
       return;
     }
     if (isPhone) setOpen(false);
@@ -661,6 +674,29 @@ export function LuminaChat() {
   function goTo(section: LuminaSection, text = "") {
     trackEvent("lumina_action", { action: "go", section });
     revealSection(LUMINA_SECTIONS[section], sectionLabel(section), text);
+  }
+
+  /** Enlace interno dentro de una respuesta: se sigue con la guía de Lumina. */
+  function followInternalLink(href: string) {
+    trackEvent("lumina_action", { action: "link", href });
+    const url = new URL(href, window.location.origin);
+    const id = url.hash.slice(1);
+    const samePage = url.pathname === window.location.pathname && !url.search;
+    const pageKey = (Object.keys(LUMINA_PAGES) as LuminaPage[]).find((k) => LUMINA_PAGES[k] === url.pathname);
+    const sectionKey = (Object.keys(LUMINA_SECTIONS) as LuminaSection[]).find((k) => LUMINA_SECTIONS[k] === id);
+    const label = sectionKey ? sectionLabel(sectionKey) : pageKey ? pageLabel(pageKey) : "";
+    if (samePage && id && document.getElementById(id)) {
+      revealSection(id, label);
+      return;
+    }
+    if (label) {
+      try {
+        window.sessionStorage.setItem(GUIDE_KEY, JSON.stringify({ id, label, text: "" }));
+      } catch {
+        /* storage bloqueado */
+      }
+    }
+    window.location.href = url.pathname + url.search + url.hash;
   }
 
   function goToPage(page: LuminaPage, text = "") {
@@ -881,6 +917,49 @@ export function LuminaChat() {
     );
   }
 
+  /** Tarjeta de la suscripción mensual (precio real del catálogo). */
+  function renderSubscription() {
+    const ui = t.lumina.ui;
+    return (
+      <div key="subscription" className="w-full overflow-hidden rounded-[1.5rem] bg-lime text-ink shadow-[0_18px_36px_-22px_hsl(var(--ink)/0.7)]">
+        <div className="flex items-start justify-between gap-3 px-4 pt-3.5">
+          <p className="display-title text-[1.15rem] leading-tight">{ui.subscriptionTitle}</p>
+          <span className="shrink-0 rounded-full bg-ink px-2.5 py-1 text-[0.6875rem] font-bold text-lime">{ui.subscriptionNote}</span>
+        </div>
+        <p className="flex items-baseline gap-1.5 px-4 pt-2">
+          <span className="display-title text-[2rem] leading-none tabular-nums">{formatMoney(SUBSCRIPTION_PLAN.price, "MXN")}</span>
+          <span className="text-sm font-bold text-ink/70">MXN · {ui.subscriptionPerMonth}</span>
+        </p>
+        <ul className="mx-2 mt-3 flex flex-col gap-1.5 rounded-[1.1rem] bg-white/60 p-3">
+          {ui.subscriptionIncludes.map((item) => (
+            <li key={item} className="flex items-center gap-2 text-[0.8125rem] font-medium leading-snug">
+              <span aria-hidden className="grid size-5 shrink-0 place-items-center rounded-full bg-ink text-lime">
+                <Check className="h-3 w-3" strokeWidth={3} />
+              </span>
+              {item}
+            </li>
+          ))}
+        </ul>
+        <div className="p-2 pt-2.5">
+          <button
+            type="button"
+            onClick={() => {
+              trackEvent("lumina_action", { action: "subscription" });
+              if (window.location.pathname === LUMINA_PAGES.suscripcion) revealSection("plan", ui.subscriptionTitle);
+              else goToPage("suscripcion");
+            }}
+            className="group inline-flex min-h-11 w-full items-center justify-between gap-2 rounded-full bg-ink py-1.5 pl-4 pr-1.5 text-sm font-bold text-white transition-colors hover:bg-forest"
+          >
+            {ui.subscriptionCta}
+            <span className="grid size-8 place-items-center rounded-full bg-lime text-ink">
+              <ArrowUpRight aria-hidden className="h-4 w-4 transition-transform group-hover:rotate-45" />
+            </span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   function renderService(id: string) {
     const item = t.entryServices.items.find((s) => s.id === id);
     const meta = ENTRY_SERVICE_PRICES.find((s) => s.id === id);
@@ -928,7 +1007,13 @@ export function LuminaChat() {
     return (
       <div className="flex w-full flex-col gap-2 self-start">
         {actions.map((action) =>
-          action.kind === "quote" ? renderPackage(action.quote, action.why) : action.kind === "service" ? renderService(action.id) : null
+          action.kind === "quote"
+            ? renderPackage(action.quote, action.why)
+            : action.kind === "service"
+              ? renderService(action.id)
+              : action.kind === "subscription"
+                ? renderSubscription()
+                : null
         )}
         {cards.length > 0 && (
           <ul role="list" className="-mx-1 -my-1 flex snap-x gap-2 overflow-x-auto px-1 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -1118,7 +1203,16 @@ export function LuminaChat() {
                 return (
                   <div key={i} className="flex flex-col gap-2">
                     {m.content && (
-                      <div className={className} dangerouslySetInnerHTML={{ __html: m.content }} />
+                      <div
+                        className={className}
+                        dangerouslySetInnerHTML={{ __html: m.content }}
+                        onClick={(event) => {
+                          const link = (event.target as Element).closest<HTMLAnchorElement>("a[data-internal]");
+                          if (!link) return;
+                          event.preventDefault();
+                          followInternalLink(link.getAttribute("href") || "/");
+                        }}
+                      />
                     )}
                     {m.blocks?.length ? renderBlocks(m.blocks) : null}
                     {m.actions?.length ? renderActions(m.actions) : null}

@@ -88,10 +88,12 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
 
   const nav = [
     { label: t.nav.inicio, href: "/" },
-    { label: t.nav.proceso, href: "/#proceso" },
     { label: t.nav.proyectos, href: "/#projects" },
-    { label: t.nav.serviciosEntrada, href: "/#servicios-entrada" },
     { label: t.nav.precios, href: "/#precios" },
+    { label: t.nav.suscripcion, href: "/suscripcion" },
+    { label: t.nav.lumina, href: "/lumina" },
+    { label: t.nav.conoce, href: "/conoce-a-bryan" },
+    { label: t.nav.proceso, href: "/conoce-a-bryan#proceso" },
     { label: t.nav.faq, href: "/#faq" },
   ];
 

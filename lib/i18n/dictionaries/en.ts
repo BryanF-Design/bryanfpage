@@ -2,6 +2,8 @@ import type { Dictionary } from "./es";
 
 const en: Dictionary = {
   nav: {
+    suscripcion: "Subscription",
+    conoce: "Meet Bryan",
     inicio: "Home",
     proceso: "Process",
     proyectos: "Projects",
@@ -387,6 +389,10 @@ const en: Dictionary = {
     subtitle: "Tap a question to see the answer.",
     items: [
       {
+        title: "Do you have a monthly plan?",
+        content: "Yes: the All-Digital subscription costs $7,000 MXN per month and includes websites, unlimited changes, digital business cards and everything digital your business needs. Each request is delivered in 1–2 business days depending on complexity. No lock-in contract.",
+      },
+      {
         title: "What are your delivery times?",
         content: "Delivery starts at 3 days once you've given us your business's complete information.",
       },
@@ -428,6 +434,23 @@ const en: Dictionary = {
     subtitle: "Build your site, choose how to pay (card, Mercado Pago, or transfer), and let's get started. Projects from $3,500 MXN.",
     ctaPrimary: "Build your site",
     ctaSecondary: "WhatsApp us directly",
+  },
+  homeTeasers: {
+    subscriptionEyebrow: "New · Monthly plan",
+    subscriptionTitle: "Everything digital for your business, one monthly fee",
+    subscriptionBody: "Websites, unlimited changes, digital business cards and more. Each request delivered in 1–2 business days, depending on complexity.",
+    perMonth: "/mo",
+    subscriptionItems: ["All the websites you need", "Unlimited changes", "Digital cards and signatures", "No lock-in contract"],
+    subscriptionCta: "See the subscription",
+    aboutEyebrow: "Who's behind it",
+    aboutTitle: "I'm Bryan: I design and code every site",
+    aboutBody: "No agency layers: you talk directly to the person who designs and writes the code. Get to know my story, process and tools.",
+    aboutCta: "Meet Bryan",
+    luminaEyebrow: "AI advisor",
+    luminaTitle: "Lumina quotes you and guides you around the site",
+    luminaBody: "She builds your package, shows projects like yours and takes you where you need to go.",
+    luminaCta: "Meet Lumina",
+    luminaChat: "Chat now",
   },
   leadForm: {
     eyebrow: "No-commitment quote",
@@ -631,6 +654,11 @@ const en: Dictionary = {
       cases: "Case studies",
     },
     ui: {
+      subscriptionTitle: "All-Digital Subscription",
+      subscriptionPerMonth: "per month",
+      subscriptionIncludes: ["All the websites you need", "Unlimited changes", "Digital cards and signatures", "Delivered in 1–2 business days"],
+      subscriptionCta: "See it and subscribe",
+      subscriptionNote: "No lock-in contract",
       packageTitle: "Your package, ready",
       packageTotal: "Project total",
       packageAdvance: "Deposit today (50%)",
@@ -660,6 +688,9 @@ const en: Dictionary = {
         "faq": "FAQ",
       },
       pages: {
+        "suscripcion": "All-Digital Subscription",
+        "lumina": "Lumina",
+        "conoce-a-bryan": "Meet Bryan",
         "crear-web": "Online quote builder",
         "desarrollo-web-mexico": "Web development",
         "diseno-web-mexico": "Web design",

@@ -107,3 +107,27 @@ export const PROPOSED_SERVICES: readonly ProposedService[] = [
   { id: "paqueteEmprendedor", infographicPrice: 999, from: true, status: "proposed" },
   { id: "paqueteEmpresa", infographicPrice: 2499, from: true, status: "proposed" },
 ] as const;
+
+// ---------------------------------------------------------------------------
+// SUSCRIPCIÓN MENSUAL "TODO DIGITAL" — precio real, en producción.
+// Un pago recurrente que cubre todo lo digital que el cliente necesite
+// (sitios, cambios ilimitados, tarjetas digitales, etc.), una solicitud a la
+// vez y entregas de 1 a 2 días hábiles según complejidad. La copia, la
+// política y las preguntas frecuentes viven en lib/subscription.ts.
+// ---------------------------------------------------------------------------
+
+export interface SubscriptionPlan {
+  id: string;
+  /** Cobro mensual en MXN. */
+  price: Mxn;
+  interval: "month";
+  /** Nombre del producto en Stripe / Mercado Pago y en los correos. */
+  productName: string;
+}
+
+export const SUBSCRIPTION_PLAN: SubscriptionPlan = {
+  id: "suscripcion",
+  price: 7000,
+  interval: "month",
+  productName: "BryanF Design · Suscripción Todo Digital",
+};

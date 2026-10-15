@@ -2,6 +2,8 @@ import type { Dictionary } from "./es";
 
 const zh: Dictionary = {
   nav: {
+    suscripcion: "订阅",
+    conoce: "认识 Bryan",
     inicio: "首页",
     proceso: "流程",
     proyectos: "作品",
@@ -337,6 +339,10 @@ const zh: Dictionary = {
     subtitle: "点击问题查看答案。",
     items: [
       {
+        title: "有月度方案吗？",
+        content: "有：全数字订阅每月 7,000 MXN，包含网站、无限次修改、电子名片以及企业所需的一切数字服务。每项需求按复杂度在 1–2 个工作日内交付。无最低合约期。",
+      },
+      {
         title: "交付周期是多久？",
         content: "在您提供完整的公司信息后，最快3天即可开始交付。",
       },
@@ -374,6 +380,23 @@ const zh: Dictionary = {
     subtitle: "定制您的网站，选择支付方式（信用卡、Mercado Pago或银行转账），我们即刻开始。项目起价3,500墨西哥比索。",
     ctaPrimary: "定制网站",
     ctaSecondary: "直接WhatsApp联系",
+  },
+  homeTeasers: {
+    subscriptionEyebrow: "新推出 · 月度方案",
+    subscriptionTitle: "企业所需的一切数字服务，按月付费",
+    subscriptionBody: "网站、无限次修改、电子名片等。每项需求按复杂度在 1–2 个工作日内交付。",
+    perMonth: "/月",
+    subscriptionItems: ["所需的全部网站", "无限次修改", "电子名片与签名", "无最低合约期"],
+    subscriptionCta: "查看订阅",
+    aboutEyebrow: "幕后之人",
+    aboutTitle: "我是 Bryan：每个网站都由我设计并编写代码",
+    aboutBody: "没有代理层级：您直接与负责设计和编码的人沟通。了解我的经历、流程和工具。",
+    aboutCta: "认识 Bryan",
+    luminaEyebrow: "AI 顾问",
+    luminaTitle: "Lumina 为您报价并带您浏览网站",
+    luminaBody: "她会为您配置套餐、展示相似项目，并带您去需要的地方。",
+    luminaCta: "认识 Lumina",
+    luminaChat: "立即聊天",
   },
   leadForm: {
     eyebrow: "免费报价",
@@ -575,6 +598,11 @@ const zh: Dictionary = {
       cases: "案例研究",
     },
     ui: {
+      subscriptionTitle: "全数字订阅",
+      subscriptionPerMonth: "每月",
+      subscriptionIncludes: ["所需的全部网站", "无限次修改", "电子名片与签名", "1–2 个工作日交付"],
+      subscriptionCta: "查看并订阅",
+      subscriptionNote: "无最低合约期",
       packageTitle: "为您配好的套餐",
       packageTotal: "项目总价",
       packageAdvance: "今日定金（50%）",
@@ -604,6 +632,9 @@ const zh: Dictionary = {
         "faq": "常见问题",
       },
       pages: {
+        "suscripcion": "全数字订阅",
+        "lumina": "Lumina",
+        "conoce-a-bryan": "认识 Bryan",
         "crear-web": "在线报价",
         "desarrollo-web-mexico": "网站开发",
         "diseno-web-mexico": "网页设计",

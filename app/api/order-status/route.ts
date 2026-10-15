@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { MercadoPagoConfig, Payment } from "mercadopago";
+import { MercadoPagoConfig, Payment, PreApproval } from "mercadopago";
 
 import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
 
@@ -29,10 +29,37 @@ interface OrderStatus {
   email?: string;
   name?: string;
   phone?: string;
+  /** Alta de la suscripción mensual (no un pago único). */
+  subscription?: boolean;
 }
 
 const STRIPE_SESSION_RE = /^cs_(test|live)_[A-Za-z0-9]{10,200}$/;
 const MP_PAYMENT_RE = /^\d{1,24}$/;
+const MP_PREAPPROVAL_RE = /^[A-Za-z0-9]{8,64}$/;
+
+/** Suscripción de Mercado Pago (preapproval): `authorized` = activa. */
+async function mercadoPagoSubscriptionStatus(preapprovalId: string): Promise<OrderStatus> {
+  if (!process.env.MP_ACCESS_TOKEN) return { state: "unknown", provider: "mercadopago", subscription: true };
+  const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
+  const sub = await new PreApproval(client).get({ id: preapprovalId });
+  const state: OrderState =
+    sub.status === "authorized"
+      ? "paid"
+      : sub.status === "pending"
+        ? "pending"
+        : sub.status === "cancelled" || sub.status === "paused"
+          ? "failed"
+          : "unknown";
+  return {
+    state,
+    provider: "mercadopago",
+    subscription: true,
+    transactionId: String(sub.id ?? preapprovalId),
+    value: Number(sub.auto_recurring?.transaction_amount ?? 0),
+    currency: (sub.auto_recurring?.currency_id || "MXN").toUpperCase(),
+    email: sub.payer_email || undefined,
+  };
+}
 
 function json(body: OrderStatus | { error: string }, status = 200) {
   return NextResponse.json(body, {
@@ -58,6 +85,7 @@ async function stripeStatus(sessionId: string): Promise<OrderStatus> {
   return {
     state,
     provider: "stripe",
+    subscription: session.mode === "subscription",
     transactionId: session.id,
     value: (session.amount_total ?? 0) / 100,
     currency: (session.currency || "mxn").toUpperCase(),
@@ -116,6 +144,11 @@ export async function GET(req: NextRequest) {
       const sessionId = params.get("session_id") || "";
       if (!STRIPE_SESSION_RE.test(sessionId)) return json({ error: "session_id inválido" }, 400);
       return json(await stripeStatus(sessionId));
+    }
+    if (provider === "mercadopago" && params.get("preapproval_id")) {
+      const preapprovalId = params.get("preapproval_id") || "";
+      if (!MP_PREAPPROVAL_RE.test(preapprovalId)) return json({ error: "preapproval_id inválido" }, 400);
+      return json(await mercadoPagoSubscriptionStatus(preapprovalId));
     }
     if (provider === "mercadopago") {
       const paymentId = params.get("payment_id") || params.get("collection_id") || "";

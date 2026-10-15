@@ -1,5 +1,6 @@
 import { CONFIGURATOR_MODULES, CONFIGURATOR_PLANS, ENTRY_SERVICE_PRICES } from "@/lib/catalog";
 import { projects } from "@/lib/projects";
+import { SUBSCRIPTION_PROMPT } from "@/lib/subscription";
 
 /**
  * EL CEREBRO DE ACCIONES DE LUMINA.
@@ -33,8 +34,30 @@ export const LUMINA_SECTIONS = {
 } as const;
 export type LuminaSection = keyof typeof LUMINA_SECTIONS;
 
+/**
+ * Página donde vive cada sección desde que el sitio se dividió: si no está en
+ * la página actual, Lumina lleva a `ruta#id`.
+ */
+export const SECTION_PAGE: Record<LuminaSection, string> = {
+  inicio: "/",
+  proyectos: "/",
+  casos: "/conoce-a-bryan",
+  bryan: "/conoce-a-bryan",
+  proceso: "/conoce-a-bryan",
+  stack: "/conoce-a-bryan",
+  lumina: "/lumina",
+  servicios: "/",
+  precios: "/",
+  cotizacion: "/",
+  presencia: "/conoce-a-bryan",
+  faq: "/",
+};
+
 /** Páginas del sitio a las que Lumina puede llevar (clave → ruta). */
 export const LUMINA_PAGES = {
+  suscripcion: "/suscripcion",
+  lumina: "/lumina",
+  "conoce-a-bryan": "/conoce-a-bryan",
   "crear-web": "/crear-web",
   "desarrollo-web-mexico": "/desarrollo-web-mexico",
   "diseno-web-mexico": "/diseno-web-mexico",
@@ -61,6 +84,7 @@ export type LuminaAction =
   | { kind: "project"; slug: string }
   | { kind: "quote"; quote: LuminaQuote; why?: string }
   | { kind: "service"; id: string }
+  | { kind: "subscription" }
   | { kind: "lead" }
   | { kind: "whatsapp" };
 
@@ -105,10 +129,21 @@ function str(value: unknown, max = 280): string {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
 }
 
+/** Los bloques se pintan como texto: sin Markdown ni URLs sueltas. */
+function stripMd(text: string): string {
+  return text
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/<[^>]+>/g, "")
+    .replace(/https?:\/\/\S+/g, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
 function strList(value: unknown, maxItems = 5, maxLen = 160): string[] {
   if (!Array.isArray(value)) return [];
   return value
-    .map((v) => str(v, maxLen))
+    .map((v) => stripMd(str(v, maxLen)))
     .filter(Boolean)
     .slice(0, maxItems);
 }
@@ -140,7 +175,7 @@ function toQuote(raw: unknown): LuminaQuote | null {
 function toBlock(raw: unknown): LuminaBlock | null {
   if (!raw || typeof raw !== "object") return null;
   const b = raw as Record<string, unknown>;
-  const title = str(b.title, 80) || undefined;
+  const title = stripMd(str(b.title, 80)) || undefined;
   switch (b.kind) {
     case "bullets":
     case "steps": {
@@ -150,10 +185,12 @@ function toBlock(raw: unknown): LuminaBlock | null {
     case "highlight": {
       const label = str(b.label, 60);
       const value = str(b.value, 40);
-      return label && value ? { kind: "highlight", label, value, note: str(b.note, 140) || undefined } : null;
+      return label && value
+        ? { kind: "highlight", label: stripMd(label), value: stripMd(value), note: stripMd(str(b.note, 140)) || undefined }
+        : null;
     }
     case "tip": {
-      const text = str(b.text, 240);
+      const text = stripMd(str(b.text, 240));
       return text ? { kind: "tip", text } : null;
     }
     default:
@@ -168,6 +205,7 @@ export function isLuminaAction(value: unknown): value is LuminaAction {
   switch (a.kind) {
     case "whatsapp":
     case "lead":
+    case "subscription":
       return true;
     case "go":
       return isSection(a.section);
@@ -213,6 +251,7 @@ export function parseLuminaJson(raw: string): LuminaReply | null {
     const why = str((data.package as Record<string, unknown>).why, 200) || undefined;
     actions.push({ kind: "quote", quote, why });
   }
+  if (data.subscription === true) actions.push({ kind: "subscription" });
   for (const id of strList(data.services, 2, 40)) {
     if (SERVICE_IDS.has(id)) actions.push({ kind: "service", id });
   }
@@ -336,6 +375,7 @@ export function actionsPrompt(section: string) {
     {"kind":"highlight","label":"Desde","value":"$3,500 MXN","note":"opcional"}
     {"kind":"tip","text":"un consejo breve"} ],
   "package": null o {"plan":"PLAN","modules":["MODULO"],"sections":0,"mode":"liquidacion"|"anticipo","why":"por qué le queda, 1 frase"},
+  "subscription": true o false — muestra la tarjeta de la suscripción mensual,
   "services": [ids de servicios de entrada, máx 2],
   "projects": [slugs del portafolio, máx 3],
   "navigate": null o una SECCIÓN o PÁGINA a la que TÚ lo llevas en ese momento,
@@ -344,12 +384,163 @@ export function actionsPrompt(section: string) {
 
 QUÉ PUEDES HACER EN EL SITIO:
 - "package": armas tú el paquete en el cotizador frente al usuario, con precios reales. Planes: ${plans}. Módulos: ${modules}. Secciones extra: 0 a 10 ($350 MXN c/u). Úsalo cuando pida precio, presupuesto o "armar" su web; si falta info, arma lo más probable y explica en "why".
+- "subscription": ${SUBSCRIPTION_PROMPT} Recomiéndala (con "subscription": true) cuando el cliente necesita varias cosas, cambios frecuentes, mantenimiento continuo, o pregunta por un plan mensual o "todo incluido". Aclara siempre que cada solicitud tarda 1 a 2 días hábiles según complejidad.
 - "services": servicios de entrada más económicos: ${services}.
 - "projects": proyectos reales parecidos a su giro (si no sabes su giro, pregúntalo).
 - "navigate": te mueves por el sitio y llevas al usuario. SECCIONES de la home: ${Object.keys(LUMINA_SECTIONS).join(", ")}. PÁGINAS: ${Object.keys(LUMINA_PAGES).join(", ")}. Úsalo cuando pida ver algo ("muéstrame", "llévame", "dónde") o cuando armes un paquete y quiera pagar ("precios"). No navegues en cada respuesta.
 - "cta": "cotizacion" lo lleva al formulario para que lo contacten (quien no quiere pagar todavía); "whatsapp" le pasa a Bryan el resumen de la plática.
+ENLACES: no escribas URLs ni enlaces en "say" ni en los bloques (ni Markdown). Para llevar al usuario a algún lado usa "navigate"; para contacto, "cta".
 Usa bloques para que la respuesta se vea ordenada: precios → "highlight"; cómo funciona → "steps"; qué incluye → "bullets".
 Portafolio (slug — nombre — giro):
 ${portfolio}
 El usuario está en: ${section}.`;
+}
+
+// ——— Enlaces dentro de las respuestas ———
+
+const SITE_HOSTS = /^(www\.)?bryanfdesign\.com(\.mx)?$/i;
+const WA_NUMBER = "525663012505";
+
+/** Rutas reales del sitio (lo demás no se enlaza). */
+const SITE_PATHS = new Set<string>([
+  "/",
+  ...Object.values(LUMINA_PAGES),
+  "/privacidad",
+  "/terminos",
+]);
+
+/** Rutas que el modelo suele inventar → la ruta real. */
+const PATH_ALIASES: Record<string, string> = {
+  "/precios": "/#precios",
+  "/cotizador": "/crear-web",
+  "/cotizacion": "/crear-web",
+  "/cotizar": "/crear-web",
+  "/configurador": "/crear-web",
+  "/contacto": "/#cotizacion",
+  "/proyectos": "/#projects",
+  "/portafolio": "/#projects",
+  "/portfolio": "/#projects",
+  "/faq": "/#faq",
+  "/preguntas-frecuentes": "/#faq",
+  "/servicios": "/#servicios-entrada",
+  "/suscripción": "/suscripcion",
+  "/subscription": "/suscripcion",
+  "/plan-mensual": "/suscripcion",
+  "/nosotros": "/conoce-a-bryan",
+  "/sobre-mi": "/conoce-a-bryan",
+  "/about": "/conoce-a-bryan",
+  "/bryan": "/conoce-a-bryan",
+  "/inicio": "/",
+  "/home": "/",
+  "/aviso-de-privacidad": "/privacidad",
+  "/terminos-y-condiciones": "/terminos",
+};
+
+/** Ids de sección conocidos (para validar `#ancla`). */
+const SECTION_IDS = new Set<string>([
+  ...Object.values(LUMINA_SECTIONS),
+  "plan",
+  "politica",
+  "preguntas",
+]);
+
+/** Hosts de los proyectos del portafolio (sí se pueden enlazar). */
+const PORTFOLIO_HOSTS = new Set(
+  projects
+    .map((p) => {
+      try {
+        return new URL(p.url).host.toLowerCase();
+      } catch {
+        return "";
+      }
+    })
+    .filter(Boolean)
+);
+
+export interface SafeLink {
+  href: string;
+  /** Enlace a una página del propio sitio (se abre con la guía de Lumina). */
+  internal: boolean;
+}
+
+/**
+ * Corrige y valida un enlace escrito por el modelo. Devuelve `null` si no es
+ * un destino real: dominio viejo (.com.mx) o sin "www" → ruta del sitio;
+ * rutas inventadas comunes → la real; WhatsApp siempre al número del
+ * estudio; externos sólo si son sitios del portafolio.
+ */
+export function normalizeLuminaHref(raw: string): SafeLink | null {
+  let href = raw.trim().replace(/[).,;:!?»"']+$/, "");
+  if (!href || /^\s*(javascript|data|vbscript):/i.test(href)) return null;
+
+  if (/^mailto:/i.test(href)) {
+    return /^mailto:bryanf@bryanfdesign\.com\.mx/i.test(href) ? { href, internal: false } : null;
+  }
+  if (/^tel:/i.test(href)) return { href: `tel:+${WA_NUMBER}`, internal: false };
+
+  if (/^www\./i.test(href) || /^bryanfdesign\.com/i.test(href) || /^wa\.me\//i.test(href)) {
+    href = `https://${href}`;
+  }
+
+  let path = "";
+  let hash = "";
+  if (/^https?:\/\//i.test(href)) {
+    let url: URL;
+    try {
+      url = new URL(href);
+    } catch {
+      return null;
+    }
+    const host = url.host.toLowerCase();
+    if (host === "wa.me" || host.endsWith("whatsapp.com")) {
+      const text = url.searchParams.get("text");
+      return {
+        href: `https://wa.me/${WA_NUMBER}${text ? `?text=${encodeURIComponent(text)}` : ""}`,
+        internal: false,
+      };
+    }
+    if (!SITE_HOSTS.test(host)) {
+      return PORTFOLIO_HOSTS.has(host) ? { href: url.toString(), internal: false } : null;
+    }
+    path = url.pathname;
+    hash = url.hash;
+    const query = url.search;
+    href = `${path}${query}${hash}`;
+  } else if (href.startsWith("#")) {
+    return SECTION_IDS.has(href.slice(1)) ? { href: `/${href}`, internal: true } : null;
+  } else if (href.startsWith("/")) {
+    const [beforeHash, h = ""] = href.split("#");
+    path = beforeHash.split("?")[0];
+    hash = h ? `#${h}` : "";
+  } else {
+    return null;
+  }
+
+  path = decodeURIComponent(path).replace(/\/+$/, "") || "/";
+  const lower = path.toLowerCase();
+  if (PATH_ALIASES[lower]) return { href: PATH_ALIASES[lower], internal: true };
+  if (!SITE_PATHS.has(lower)) return null;
+  const query = href.includes("?") && lower === "/crear-web" ? href.slice(href.indexOf("?")).split("#")[0] : "";
+  const anchor = hash && SECTION_IDS.has(hash.slice(1)) ? hash : "";
+  return { href: `${lower}${query}${anchor}`, internal: true };
+}
+
+/**
+ * Markdown que el modelo a veces mezcla (negritas, `[texto](url)`, URLs
+ * sueltas) → HTML mínimo. El saneado final lo hace el chat.
+ */
+export function markdownToHtml(text: string): string {
+  return text
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, label: string, url: string) => `<a href="${url.replace(/"/g, "")}">${label}</a>`)
+    .replace(
+      /(^|[\s(])((?:https?:\/\/|www\.)[^\s<]+|(?:www\.)?bryanfdesign\.com(?:\.mx)?\/[^\s<]*)/gi,
+      (_, lead: string, raw: string) => {
+        // El punto final de la oración no es parte del enlace.
+        const tail = raw.match(/[).,;:!?]+$/)?.[0] ?? "";
+        const url = raw.slice(0, raw.length - tail.length).replace(/"/g, "");
+        return `${lead}<a href="${url}">${url.replace(/^https?:\/\//, "")}</a>${tail}`;
+      }
+    )
+    .replace(/\n/g, "<br>");
 }

@@ -2,6 +2,8 @@ import type { Dictionary } from "./es";
 
 const ja: Dictionary = {
   nav: {
+    suscripcion: "サブスク",
+    conoce: "Bryanについて",
     inicio: "ホーム",
     proceso: "進め方",
     proyectos: "実績",
@@ -385,6 +387,10 @@ const ja: Dictionary = {
     subtitle: "質問をタップすると回答が表示されます。",
     items: [
       {
+        title: "月額プランはありますか？",
+        content: "はい。オールデジタル・サブスクは月額7,000 MXNで、ウェブサイト、修正し放題、デジタル名刺など、ビジネスに必要なデジタル業務をすべて含みます。各依頼は内容に応じて1〜2営業日で納品します。契約期間の縛りはありません。",
+      },
+      {
         title: "納品までの期間はどれくらいですか？",
         content: "会社の情報をすべてご提供いただいてから、最短3日で納品を開始します。",
       },
@@ -422,6 +428,23 @@ const ja: Dictionary = {
     subtitle: "サイトを作り、支払い方法（カード・Mercado Pago・銀行振込）を選んで、すぐに始めましょう。3,500メキシコペソから。",
     ctaPrimary: "サイトを作る",
     ctaSecondary: "WhatsAppで直接連絡",
+  },
+  homeTeasers: {
+    subscriptionEyebrow: "新登場 · 月額プラン",
+    subscriptionTitle: "ビジネスのデジタル業務をすべて、月額で",
+    subscriptionBody: "ウェブサイト、無制限の修正、デジタル名刺など。各依頼は内容に応じて1〜2営業日で納品します。",
+    perMonth: "/月",
+    subscriptionItems: ["必要なだけのウェブサイト", "修正し放題", "デジタル名刺と署名", "契約期間の縛りなし"],
+    subscriptionCta: "サブスクを見る",
+    aboutEyebrow: "制作者について",
+    aboutTitle: "Bryanです。すべてのサイトをデザインし、コードを書いています",
+    aboutBody: "代理店を挟まず、デザインしてコードを書く本人と直接話せます。経歴、制作プロセス、使用ツールをご覧ください。",
+    aboutCta: "Bryanについて",
+    luminaEyebrow: "AIアドバイザー",
+    luminaTitle: "Luminaが見積もりとサイト案内をします",
+    luminaBody: "パッケージを組み、似た事例を紹介し、必要な場所へご案内します。",
+    luminaCta: "Luminaについて",
+    luminaChat: "今すぐチャット",
   },
   leadForm: {
     eyebrow: "無料見積もり",
@@ -623,6 +646,11 @@ const ja: Dictionary = {
       cases: "導入事例",
     },
     ui: {
+      subscriptionTitle: "オールデジタル・サブスク",
+      subscriptionPerMonth: "月額",
+      subscriptionIncludes: ["必要なだけのウェブサイト", "修正し放題", "デジタル名刺と署名", "1〜2営業日で納品"],
+      subscriptionCta: "詳細を見て申し込む",
+      subscriptionNote: "契約期間の縛りなし",
       packageTitle: "ご提案パッケージ",
       packageTotal: "プロジェクト合計",
       packageAdvance: "本日の前金（50%）",
@@ -652,6 +680,9 @@ const ja: Dictionary = {
         "faq": "よくある質問",
       },
       pages: {
+        "suscripcion": "オールデジタル・サブスク",
+        "lumina": "Lumina",
+        "conoce-a-bryan": "Bryanについて",
         "crear-web": "オンライン見積もり",
         "desarrollo-web-mexico": "ウェブ開発",
         "diseno-web-mexico": "ウェブデザイン",

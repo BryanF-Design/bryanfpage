@@ -2,6 +2,8 @@ import type { Dictionary } from "./es";
 
 const de: Dictionary = {
   nav: {
+    suscripcion: "Abo",
+    conoce: "Über Bryan",
     inicio: "Start",
     proceso: "Ablauf",
     proyectos: "Projekte",
@@ -387,6 +389,10 @@ const de: Dictionary = {
     subtitle: "Tippe auf eine Frage, um die Antwort zu sehen.",
     items: [
       {
+        title: "Gibt es einen Monatsplan?",
+        content: "Ja: Das Abo Alles Digital kostet 7.000 MXN pro Monat und umfasst Websites, unbegrenzte Änderungen, digitale Visitenkarten und alles Digitale, was dein Unternehmen braucht. Jede Anfrage wird je nach Aufwand in 1–2 Werktagen geliefert. Keine Mindestlaufzeit.",
+      },
+      {
         title: "Zeig mir Projekte wie meins",
         content: "Die Lieferung beginnt ab 3 Tagen, sobald du uns alle Informationen zu deinem Unternehmen gegeben hast.",
       },
@@ -428,6 +434,23 @@ const de: Dictionary = {
     subtitle: "Gestalte deine Website, wähle deine Zahlungsart (Karte, Mercado Pago oder Überweisung) und wir legen los. Projekte ab $3.500 MXN.",
     ctaPrimary: "Website gestalten",
     ctaSecondary: "Direkt per WhatsApp",
+  },
+  homeTeasers: {
+    subscriptionEyebrow: "Neu · Monatsplan",
+    subscriptionTitle: "Alles Digitale für dein Unternehmen – eine Monatsgebühr",
+    subscriptionBody: "Websites, unbegrenzte Änderungen, digitale Visitenkarten und mehr. Jede Anfrage in 1–2 Werktagen, je nach Aufwand.",
+    perMonth: "/Monat",
+    subscriptionItems: ["Alle Websites, die du brauchst", "Unbegrenzte Änderungen", "Digitale Karten und Signaturen", "Keine Mindestlaufzeit"],
+    subscriptionCta: "Zum Abo",
+    aboutEyebrow: "Wer dahintersteht",
+    aboutTitle: "Ich bin Bryan: Ich gestalte und programmiere jede Website",
+    aboutBody: "Keine Agentur dazwischen: Du sprichst direkt mit dem, der gestaltet und den Code schreibt. Lerne meine Geschichte, meinen Prozess und meine Werkzeuge kennen.",
+    aboutCta: "Über Bryan",
+    luminaEyebrow: "KI-Beraterin",
+    luminaTitle: "Lumina erstellt dein Angebot und führt dich durch die Seite",
+    luminaBody: "Sie stellt dein Paket zusammen, zeigt ähnliche Projekte und bringt dich dorthin, wo du hinmusst.",
+    luminaCta: "Lumina kennenlernen",
+    luminaChat: "Jetzt chatten",
   },
   leadForm: {
     eyebrow: "Unverbindliches Angebot",
@@ -631,6 +654,11 @@ const de: Dictionary = {
       cases: "Fallstudien",
     },
     ui: {
+      subscriptionTitle: "Abo Alles Digital",
+      subscriptionPerMonth: "pro Monat",
+      subscriptionIncludes: ["Alle Websites, die du brauchst", "Unbegrenzte Änderungen", "Digitale Karten und Signaturen", "Lieferung in 1–2 Werktagen"],
+      subscriptionCta: "Ansehen und abonnieren",
+      subscriptionNote: "Keine Mindestlaufzeit",
       packageTitle: "Dein fertiges Paket",
       packageTotal: "Projektsumme",
       packageAdvance: "Anzahlung heute (50 %)",
@@ -660,6 +688,9 @@ const de: Dictionary = {
         "faq": "FAQ",
       },
       pages: {
+        "suscripcion": "Abo Alles Digital",
+        "lumina": "Lumina",
+        "conoce-a-bryan": "Über Bryan",
         "crear-web": "Online-Konfigurator",
         "desarrollo-web-mexico": "Webentwicklung",
         "diseno-web-mexico": "Webdesign",

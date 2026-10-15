@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { MercadoPagoConfig, Payment } from "mercadopago";
+import { MercadoPagoConfig, Payment, PreApproval } from "mercadopago";
 
-import { sendOrderConfirmation } from "@/lib/notify";
+import { SUBSCRIPTION_PLAN } from "@/lib/catalog";
+import { sendOrderConfirmation, sendSubscriptionNotice } from "@/lib/notify";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -64,6 +65,48 @@ export async function POST(req: NextRequest) {
     url.searchParams.get("data.id") ||
     url.searchParams.get("id") ||
     "";
+
+  // Suscripción (preapproval): alta o cancelación del plan mensual.
+  if (/subscription_preapproval|^preapproval$/i.test(type) && dataId) {
+    if (!verifySignature(req, dataId)) {
+      return NextResponse.json({ error: "Firma inválida" }, { status: 401 });
+    }
+    try {
+      const client = new MercadoPagoConfig({ accessToken: token });
+      const sub = await new PreApproval(client).get({ id: dataId });
+      const key = `pre:${dataId}:${sub.status}`;
+      if (!processed.has(key)) {
+        processed.add(key);
+        if (sub.status === "authorized") {
+          await sendOrderConfirmation({
+            provider: "mercadopago",
+            amount: Number(sub.auto_recurring?.transaction_amount ?? SUBSCRIPTION_PLAN.price),
+            currency: (sub.auto_recurring?.currency_id || "MXN").toUpperCase(),
+            reference: String(sub.id ?? dataId),
+            description: `${SUBSCRIPTION_PLAN.productName} (mensual)`,
+            customerEmail: sub.payer_email ?? null,
+            subscription: true,
+          });
+        } else if (sub.status === "cancelled") {
+          await sendSubscriptionNotice({
+            event: "cancelled",
+            provider: "mercadopago",
+            reference: String(sub.id ?? dataId),
+            customerEmail: sub.payer_email ?? null,
+          });
+        }
+      }
+    } catch (err) {
+      console.error("Mercado Pago preapproval webhook error:", err);
+    }
+    return NextResponse.json({ received: true });
+  }
+
+  // Los cobros mensuales de la suscripción también llegan como `payment`
+  // normal; el aviso de "authorized_payment" sería un duplicado.
+  if (/authorized_payment/i.test(type)) {
+    return NextResponse.json({ received: true, ignored: true });
+  }
 
   // Sólo nos interesan notificaciones de pago con id.
   if (!/payment/i.test(type) || !dataId) {

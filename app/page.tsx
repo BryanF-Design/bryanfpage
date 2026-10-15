@@ -7,6 +7,7 @@ import { HeroPop } from "@/components/sections/hero-pop";
 import { StatCounter } from "@/components/ui/stat-counter";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { SiteHeader } from "@/components/sections/site-header";
+import { ChapterOrder } from "@/components/sections/chapter-mark";
 import { MarqueeBand } from "@/components/sections/marquee-band";
 import { useLanguage } from "@/lib/i18n/context";
 import { DICTIONARIES } from "@/lib/i18n/dictionaries";
@@ -16,35 +17,14 @@ import { SITE_URL } from "@/lib/seo/service-pages";
 // small (main lever on mobile TBT). SSR stays on (default) for all of these
 // so their text/links are still present in the server HTML for SEO/crawlers
 // — only the client JS is deferred into separate chunks.
-const MeetBryan = dynamic(() =>
-  import("@/components/sections/meet-bryan").then((m) => m.MeetBryan)
-);
-const ClosingCta = dynamic(() =>
-  import("@/components/sections/closing-cta").then((m) => m.ClosingCta)
-);
-const ProcessOrbital = dynamic(() =>
-  import("@/components/sections/process-orbital").then((m) => m.ProcessOrbital)
-);
-const StackOrbit = dynamic(() =>
-  import("@/components/sections/stack-orbit").then((m) => m.StackOrbit)
-);
 const ProjectsShowcase = dynamic(() =>
   import("@/components/sections/projects-showcase").then((m) => m.ProjectsShowcase)
 );
-const ProjectCases = dynamic(() =>
-  import("@/components/sections/projects-showcase").then((m) => m.ProjectCases)
+const HomeTeasers = dynamic(() =>
+  import("@/components/sections/home-teasers").then((m) => m.HomeTeasers)
 );
-const WorldPresence = dynamic(() =>
-  import("@/components/sections/world-presence").then((m) => m.WorldPresence)
-);
-const ClientsMarquee = dynamic(() =>
-  import("@/components/sections/clients-marquee").then((m) => m.ClientsMarquee)
-);
-const LuminaFeature = dynamic(() =>
-  import("@/components/sections/lumina-feature").then((m) => m.LuminaFeature)
-);
-const LuminaJourney = dynamic(() =>
-  import("@/components/sections/lumina-journey").then((m) => m.LuminaJourney)
+const ClosingCta = dynamic(() =>
+  import("@/components/sections/closing-cta").then((m) => m.ClosingCta)
 );
 const EntryServices = dynamic(() =>
   import("@/components/sections/entry-services").then((m) => m.EntryServices)
@@ -177,40 +157,28 @@ export default function HomePage() {
           </section>
         </div>
 
-        <ProjectsShowcase withCases={false} />
+        {/* La home quedó corta: quién soy (hero), mi trabajo, puertas a las
+            subpáginas (suscripción, Conoce a Bryan, Lumina), cotización y
+            dudas. Proceso, herramientas, casos y presencia viven en
+            /conoce-a-bryan; todo lo de Lumina, en /lumina. */}
+        <ChapterOrder order={[2, 6, 7, 10]}>
+          <ProjectsShowcase withCases={false} />
 
-        <MarqueeBand words={t.marquee.words} outline />
+          <MarqueeBand words={t.marquee.words} outline />
 
-        {/* Casos de estudio: después de la cinta, para que el portafolio no
-            sea un solo bloque de tres pantallas. */}
-        <ProjectCases />
+          <HomeTeasers />
 
-        <MeetBryan />
+          <EntryServices />
 
-        <ProcessOrbital />
+          <Configurator />
 
-        <StackOrbit />
+          {/* Para quien no quiere pagar todavía: cotización por WhatsApp. */}
+          <LeadForm source="home" />
 
-        <LuminaFeature />
+          <Faq />
 
-        <EntryServices />
-
-        <Configurator />
-
-        {/* Para quien no quiere pagar todavía: cotización por WhatsApp. */}
-        <LeadForm source="home" />
-
-        {/* El recorrido con Lumina termina en el pago: va después del cotizador
-            y así las dos secciones de Lumina no quedan seguidas. */}
-        <LuminaJourney />
-
-        <WorldPresence />
-
-        <ClientsMarquee />
-
-        <Faq />
-
-        <ClosingCta />
+          <ClosingCta />
+        </ChapterOrder>
       </main>
 
       <LuminaChat />
