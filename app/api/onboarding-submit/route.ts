@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
 import { BRIEF_SECTIONS, LONG_BRIEF_FIELDS, detectLinkType, normalizeUrl, purposeLabel } from "@/lib/brief";
-import { briefReceived } from "@/lib/email-templates";
+import { briefNotice, briefReceived } from "@/lib/email-templates";
 import { mailConfigured, notificationEmail, sendMail } from "@/lib/mailer";
 
 export const runtime = "nodejs";
@@ -28,15 +28,6 @@ function formatMoney(value: unknown) {
   } catch {
     return `${value || 0} MXN`;
   }
-}
-
-function escapeHtml(text: unknown) {
-  return String(text || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
 }
 
 export async function OPTIONS() {
@@ -125,44 +116,6 @@ export async function POST(req: NextRequest) {
 
     const to = Array.from(new Set([notificationEmail(), "pandita250599@gmail.com"]));
 
-    // Briefing de /gracias: cada sección con sus campos (lib/brief.ts).
-    const li = (label: string, value: string) =>
-      `<li style="margin:0 0 6px;"><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value).replace(/\n/g, "<br>")}</li>`;
-    const briefHtml = BRIEF_SECTIONS.map((section) => {
-      const rows = section.fields
-        .filter((f) => !["fullName", "businessName", "contactPhone", "contactEmail"].includes(f.key) && form[f.key])
-        .map((f) => li(f.label, form[f.key]));
-      if (section.id === "proyecto" && form.features) rows.push(li("Funciones", form.features));
-      return rows.length
-        ? `<h3 style="margin:18px 0 8px;">${escapeHtml(section.title)}</h3><ul style="margin:0 0 14px;padding-left:18px;">${rows.join("")}</ul>`
-        : "";
-    }).join("");
-    const linksHtml = links.length
-      ? `<h3 style="margin:18px 0 8px;">Enlaces (${links.length})</h3><ul style="margin:0 0 14px;padding-left:18px;">${links
-          .map(
-            (l) =>
-              `<li style="margin:0 0 6px;"><strong>${escapeHtml(l.label)}</strong> · ${escapeHtml(l.purpose)}<br><a href="${escapeHtml(l.url)}">${escapeHtml(l.url)}</a></li>`
-          )
-          .join("")}</ul>`
-      : "";
-    const legacyHtml = [
-      form.secondaryContact && li("Contacto secundario", form.secondaryContact),
-      form.mainGoal && !form.projectType && li("Objetivos", form.mainGoal),
-      form.references && li("Referencias", form.references),
-      form.notes && li("Notas", form.notes),
-    ]
-      .filter(Boolean)
-      .join("");
-
-    const summaryHtml = summaryItems
-      .map(
-        (item) =>
-          `<li><strong>${escapeHtml(
-            item.source || "Módulo"
-          )}</strong> - ${formatMoney(item.price || 0)}</li>`
-      )
-      .join("");
-
     let totalAttachmentBytes = 0;
     const safeAttachments = attachments
       .filter((file) => file && file.name && typeof file.base64 === "string")
@@ -181,38 +134,48 @@ export async function POST(req: NextRequest) {
 
     const safeAttachmentsCount = safeAttachments.length;
 
-    const html = `
-      <div style="font-family:Inter,Arial,sans-serif;max-width:720px;margin:0 auto;color:#171717;">
-        <h2 style="margin:0 0 12px;">Nuevo onboarding de proyecto</h2>
-        <p style="margin:0 0 16px;">Se recibió un nuevo briefing${safeAttachmentsCount ? ` con ${safeAttachmentsCount} archivo(s) adjunto(s)` : ""}.</p>
-        <h3 style="margin:18px 0 8px;">Acción solicitada</h3>
-        <p style="margin:0 0 8px;"><strong>${escapeHtml(action)}</strong></p>
-        <h3 style="margin:18px 0 8px;">Datos de contacto</h3>
-        <ul style="margin:0 0 14px;padding-left:18px;">
-          <li><strong>Nombre:</strong> ${escapeHtml(form.fullName)}</li>
-          <li><strong>Negocio:</strong> ${escapeHtml(form.businessName)}</li>
-          <li><strong>WhatsApp:</strong> ${escapeHtml(form.contactPhone)}</li>
-          <li><strong>Correo:</strong> ${escapeHtml(form.contactEmail || "No compartido")}</li>
-        </ul>
-        ${briefHtml}
-        ${linksHtml}
-        ${legacyHtml ? `<h3 style="margin:18px 0 8px;">Más</h3><ul style="margin:0 0 14px;padding-left:18px;">${legacyHtml}</ul>` : ""}
-        <h3 style="margin:18px 0 8px;">Pago</h3>
-        <ul style="margin:0 0 14px;padding-left:18px;">
-          ${totals.projectTotal ? `<li><strong>Total proyecto:</strong> ${formatMoney(totals.projectTotal)}</li>` : ""}
-          ${totals.payableNow ? `<li><strong>Pagado / por pagar:</strong> ${formatMoney(totals.payableNow)} ${escapeHtml(totals.currency || "")}</li>` : ""}
-          <li><strong>Método:</strong> ${escapeHtml(payment.method || "pendiente")}</li>
-          <li><strong>Referencia de pago:</strong> ${escapeHtml(payment.reference || "—")}</li>
-          ${coupon.code ? `<li><strong>Cupón:</strong> ${escapeHtml(coupon.code)}</li>` : ""}
-        </ul>
-        ${summaryHtml ? `<h3 style="margin:18px 0 8px;">Servicios seleccionados</h3><ul style="margin:0 0 14px;padding-left:18px;">${summaryHtml}</ul>` : ""}
-      </div>
-    `;
+    // Brief armado por secciones (lib/brief.ts), con el mismo diseño que el sitio.
+    const CONTACT_KEYS = ["fullName", "businessName", "contactPhone", "contactEmail"];
+    const sections = BRIEF_SECTIONS.map((section) => ({
+      title: section.title,
+      rows: section.fields
+        .filter((f) => !CONTACT_KEYS.includes(f.key) && form[f.key])
+        .map((f) => [f.label, form[f.key]] as [string, string]),
+      chips:
+        section.id === "proyecto" && form.features
+          ? form.features.split(/\s*,\s*/).filter(Boolean)
+          : undefined,
+    }));
+    const legacy = [
+      form.secondaryContact && ["Contacto secundario", form.secondaryContact],
+      form.mainGoal && !form.projectType && ["Objetivos", form.mainGoal],
+      form.references && ["Referencias", form.references],
+    ].filter(Boolean) as Array<[string, string]>;
+    if (legacy.length) sections.push({ title: "Más", rows: legacy, chips: undefined });
+
+    const content = briefNotice({
+      fullName: form.fullName,
+      businessName: form.businessName,
+      phone: form.contactPhone,
+      email: form.contactEmail || null,
+      sections,
+      links,
+      files: safeAttachments.map((f) => f.filename),
+      notes: form.notes || null,
+      payment: [
+        ["Total del proyecto", totals.projectTotal ? formatMoney(totals.projectTotal) : null],
+        ["Pagado / por pagar", totals.payableNow ? `${formatMoney(totals.payableNow)} ${String(totals.currency || "")}`.trim() : null],
+        ["Método", payment.method ? String(payment.method) : null],
+        ["Referencia", payment.reference ? String(payment.reference) : null],
+        ["Cupón", coupon.code ? String(coupon.code) : null],
+        ["Acción", action !== "start" ? action : null],
+      ],
+      services: summaryItems.map((item) => [String(item.source || "Módulo"), formatMoney(item.price || 0)] as [string, string]),
+    });
 
     const sent = await sendMail({
       to,
-      subject: `Brief BryanF Design - ${form.businessName}`,
-      html,
+      ...content,
       replyTo: form.contactEmail || undefined,
       attachments: safeAttachments.map((file) => ({
         filename: file.filename,

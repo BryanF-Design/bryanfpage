@@ -481,6 +481,7 @@ const de: Dictionary = {
     emailLabel: "E-Mail (optional)",
     emailPlaceholder: "du@email.com",
     serviceLabel: "Was brauchst du?",
+    servicePlaceholder: "Bitte wählen",
     services: ["Website für mein Unternehmen", "Onlineshop", "Landingpage für Anzeigen", "Redesign oder Update", "Website-Wartung", "Etwas anderes"],
     timelineLabel: "Bis wann?",
     timelines: ["So bald wie möglich", "Diesen Monat", "Ich vergleiche nur Angebote"],

@@ -481,6 +481,7 @@ const pt: Dictionary = {
     emailLabel: "E-mail (opcional)",
     emailPlaceholder: "voce@email.com",
     serviceLabel: "Do que você precisa?",
+    servicePlaceholder: "Escolha uma opção",
     services: ["Site para o meu negócio", "Loja virtual", "Landing page para anúncios", "Redesign ou atualização", "Manutenção de site", "Outro"],
     timelineLabel: "Para quando?",
     timelines: ["O quanto antes", "Este mês", "Só estou orçando"],

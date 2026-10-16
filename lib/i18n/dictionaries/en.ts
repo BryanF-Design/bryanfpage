@@ -481,6 +481,7 @@ const en: Dictionary = {
     emailLabel: "Email (optional)",
     emailPlaceholder: "you@email.com",
     serviceLabel: "What do you need?",
+    servicePlaceholder: "Choose one",
     services: ["A website for my business", "Online store", "Landing page for ads", "Redesign or update", "Website maintenance", "Something else"],
     timelineLabel: "When do you need it?",
     timelines: ["As soon as possible", "This month", "Just getting quotes"],

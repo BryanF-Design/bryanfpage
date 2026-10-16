@@ -502,6 +502,7 @@ const es = {
     emailLabel: "Correo (opcional)",
     emailPlaceholder: "tu@correo.com",
     serviceLabel: "¿Qué necesitas?",
+    servicePlaceholder: "Elige una opción",
     services: ["Página web para mi negocio", "Tienda en línea", "Landing page para campañas", "Rediseño o actualización", "Mantenimiento web", "Otro"],
     timelineLabel: "¿Para cuándo?",
     timelines: ["Lo antes posible", "Este mes", "Sólo estoy cotizando"],

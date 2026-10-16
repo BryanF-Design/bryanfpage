@@ -475,6 +475,7 @@ const ja: Dictionary = {
     emailLabel: "メール（任意）",
     emailPlaceholder: "you@email.com",
     serviceLabel: "ご希望の内容",
+    servicePlaceholder: "選択してください",
     services: ["ビジネス用ウェブサイト", "オンラインストア", "広告用ランディングページ", "リニューアル・更新", "ウェブサイト保守", "その他"],
     timelineLabel: "ご希望の時期",
     timelines: ["できるだけ早く", "今月中", "見積もり比較中"],

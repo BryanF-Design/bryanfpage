@@ -4,7 +4,7 @@ import { MercadoPagoConfig, Payment, PreApproval } from "mercadopago";
 
 import { SUBSCRIPTION_PLAN } from "@/lib/catalog";
 import { briefUrl } from "@/lib/brief-access";
-import { sendOrderConfirmation, sendSubscriptionNotice } from "@/lib/notify";
+import { sendOrderConfirmation, sendPaymentPending, sendSubscriptionNotice } from "@/lib/notify";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -170,6 +170,29 @@ export async function POST(req: NextRequest) {
         attribution: (payment.metadata as Record<string, unknown> | undefined) ?? undefined,
         briefUrl: briefUrl({ provider: "mercadopago", paymentId: String(payment.id ?? dataId) }),
       });
+    } else if (!recurring && (payment.status === "pending" || payment.status === "in_process")) {
+      // Ficha de OXXO / SPEI por pagar, o pago en revisión. No se marca el id
+      // como procesado: cuando se apruebe llega otra notificación y se manda
+      // el comprobante normal.
+      const key = `${dataId}:pending`;
+      if (!processed.has(key)) {
+        processed.add(key);
+        const ticket =
+          payment.status === "pending" &&
+          ["ticket", "atm", "bank_transfer"].includes(String(payment.payment_type_id || ""));
+        await sendPaymentPending({
+          provider: "mercadopago",
+          reference: String(payment.id ?? dataId),
+          amount: Number(payment.transaction_amount ?? 0),
+          currency: (payment.currency_id || "MXN").toUpperCase(),
+          kind: ticket ? "ticket" : "review",
+          description: payment.description || "Proyecto web",
+          customerEmail: payment.payer?.email ?? null,
+          customerName: name,
+          ticketUrl: payment.transaction_details?.external_resource_url ?? null,
+          expiresAt: payment.date_of_expiration ?? null,
+        });
+      }
     }
   } catch (err) {
     // No forzamos reintentos por un fallo de correo/consulta transitorio: MP

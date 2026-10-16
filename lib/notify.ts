@@ -16,6 +16,7 @@ import {
   internalNotice,
   monthlyPaymentReceived,
   paymentFailed,
+  paymentPending,
   paymentReceived,
   renewalReminder,
   subscriptionCancelled,
@@ -97,6 +98,12 @@ export async function sendOrderConfirmation(
       ? "Un cliente se suscribió al plan mensual Todo Digital. Escríbele para recibir su primera solicitud."
       : "Se confirmó un pago. El cliente recibió su comprobante con el enlace para armar su brief.",
     tone: "lime",
+    eyebrow: order.subscription ? "Nueva suscripción" : "Nueva venta",
+    figure: amount,
+    figureNote: order.subscription ? "primer mes · Todo Digital" : order.description || "Proyecto web",
+    actions: order.customerEmail
+      ? [{ label: "Escribirle al cliente", href: `mailto:${order.customerEmail}?subject=${encodeURIComponent(`Tu proyecto con BryanF Design · ${folio}`)}` }]
+      : undefined,
     rows: [
       ["Folio", folio],
       ["Monto cobrado", amount],
@@ -194,7 +201,10 @@ export async function sendSubscriptionNotice(notice: {
     const content = internalNotice({
       title: `${titles[notice.event]} — ${notice.customerEmail || notice.reference}`,
       intro: notes[notice.event],
-      tone: notice.event === "payment_failed" ? "alert" : "ink",
+      tone: notice.event === "payment_failed" ? "alert" : notice.event === "renewal" ? "lime" : "ink",
+      eyebrow: "Suscripción",
+      figure: notice.amount != null ? formatMoney(amountNum, currency) : undefined,
+      actions: notice.customerEmail ? [{ label: "Escribirle al cliente", href: `mailto:${notice.customerEmail}` }] : undefined,
       rows: [
         ["Cliente", `${notice.customerName || "—"}${notice.customerEmail ? ` (${notice.customerEmail})` : ""}`],
         ["Monto", notice.amount != null ? formatMoney(amountNum, currency) : "—"],
@@ -245,4 +255,63 @@ export async function sendSubscriptionNotice(notice: {
   }
 
   return { internal: internalOk, customer: customerOk };
+}
+
+/**
+ * Pago que todavía no se acredita: ficha de OXXO / SPEI por pagar o pago en
+ * revisión antifraude. Le dice al cliente qué sigue y te avisa a ti. No lanza.
+ */
+export async function sendPaymentPending(p: {
+  provider: PaymentProvider;
+  reference: string;
+  amount: number;
+  currency: string;
+  kind: "review" | "ticket";
+  description?: string | null;
+  customerEmail?: string | null;
+  customerName?: string | null;
+  ticketUrl?: string | null;
+  expiresAt?: Date | string | number | null;
+}) {
+  const folio = makeFolio(p.reference);
+  const method = PROVIDER_LABEL[p.provider];
+  const amount = formatMoney(p.amount, p.currency);
+
+  const internal = internalNotice({
+    title: `${p.kind === "ticket" ? "Ficha de pago generada" : "Pago en revisión"} ${folio} — ${amount}`,
+    intro:
+      p.kind === "ticket"
+        ? "Un cliente generó una ficha de OXXO o transferencia. Todavía no paga: si en 24 h no se acredita, escríbele para ayudarle."
+        : "Mercado Pago está revisando un pago. Si lo aprueba, el cliente recibe su comprobante y el brief solo.",
+    eyebrow: "Pago pendiente",
+    tone: "white",
+    figure: amount,
+    figureNote: p.kind === "ticket" ? "por pagar" : "en revisión",
+    rows: [
+      ["Folio", folio],
+      ["Concepto", p.description || "Proyecto web"],
+      ["Cliente", `${p.customerName || "—"}${p.customerEmail ? ` (${p.customerEmail})` : ""}`],
+      ["Vence", p.expiresAt ? new Date(p.expiresAt).toISOString().slice(0, 10) : null],
+      ["Referencia", p.reference],
+    ],
+    actions: p.customerEmail ? [{ label: "Escribirle", href: `mailto:${p.customerEmail}` }] : undefined,
+  });
+  const internalOk = (await sendMail({ to: notificationEmail(), ...internal, replyTo: p.customerEmail || undefined })).ok;
+
+  let customerOk = false;
+  if (p.customerEmail) {
+    const content = paymentPending({
+      name: p.customerName,
+      folio,
+      amount: p.amount,
+      currency: p.currency,
+      concept: p.description,
+      kind: p.kind,
+      method,
+      ticketUrl: p.ticketUrl,
+      expiresAt: p.expiresAt,
+    });
+    customerOk = (await sendMail({ to: p.customerEmail, ...content, replyTo: notificationEmail() })).ok;
+  }
+  return { folio, internal: internalOk, customer: customerOk };
 }

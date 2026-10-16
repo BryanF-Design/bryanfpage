@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, type FormEvent } from "react";
-import { Check, Clock, Loader2, MessageCircle, ShieldCheck, Sparkle } from "lucide-react";
+import { Check, ChevronDown, Clock, Loader2, MessageCircle, ShieldCheck, Sparkle } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
 import { Button, ButtonArrow } from "@/components/ui/button";
@@ -83,6 +83,7 @@ export function LeadForm({ forceSpanish = false, source, className }: LeadFormPr
   const copy = t.leadForm;
 
   const [timeline, setTimeline] = useState("");
+  const [service, setService] = useState("");
   const [quote, setQuote] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [error, setError] = useState("");
@@ -104,7 +105,7 @@ export function LeadForm({ forceSpanish = false, source, className }: LeadFormPr
     const name = value("name");
     const phone = value("phone");
     const email = value("email");
-    const service = value("service");
+
     const message = value("message");
     const savedQuote = readSavedQuote(t);
 
@@ -294,14 +295,26 @@ export function LeadForm({ forceSpanish = false, source, className }: LeadFormPr
                   <label htmlFor="lead-service" className={labelClass}>
                     {copy.serviceLabel}
                   </label>
-                  <select id="lead-service" name="service" defaultValue="" className={cn(fieldClass, "cursor-pointer")}>
-                    <option value="">—</option>
-                    {copy.services.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      id="lead-service"
+                      name="service"
+                      value={service}
+                      onChange={(e) => setService(e.target.value)}
+                      className={cn(fieldClass, "cursor-pointer appearance-none pr-11", !service && "text-ink/45")}
+                    >
+                      <option value="">{copy.servicePlaceholder}</option>
+                      {copy.services.map((option) => (
+                        <option key={option} value={option} className="text-ink">
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown
+                      aria-hidden
+                      className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/60"
+                    />
+                  </div>
                 </div>
 
                 <fieldset className="sm:col-span-2">

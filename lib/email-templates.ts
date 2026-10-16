@@ -14,10 +14,15 @@
  *   paymentRequest         Recordatorio de pago con link (anticipo, saldo, etc.)
  *   subscriptionCancelled  Confirmación de cancelación
  *   briefReceived          Copia de que recibimos su brief
+ *   leadReceived           Respuesta automática al formulario de contacto
+ *   paymentPending         Pago en revisión / ficha de OXXO o SPEI por pagar
  *
- * Internos (a GOOGLE_NOTIFICATION_EMAIL): internalNotice.
+ * Internos (a GOOGLE_NOTIFICATION_EMAIL):
+ *   internalNotice         Pagos, suscripciones, cobros (genérico)
+ *   leadNotice             Nueva solicitud de contacto / cotización
+ *   briefNotice            Brief completo, por secciones, listo para trabajar
  *
- * Vista previa: `node --experimental-strip-types scripts/email-test.ts`.
+ * Vista previa: `node scripts/email-test.mjs` (escribe email-previews/).
  */
 
 export interface EmailContent {
@@ -628,7 +633,287 @@ export function briefReceived(d: {
   return build(`Recibimos tu brief · ${d.businessName}`, html);
 }
 
-// ——— Aviso interno ———
+export function leadReceived(d: { name?: string | null; service?: string | null }): EmailContent {
+  const html = layout({
+    preheader: "Recibimos tu solicitud. Te mandamos tu propuesta por WhatsApp en menos de 24 horas hábiles.",
+    eyebrow: "Mensaje recibido",
+    title: "¡Gracias! Ya tenemos tu solicitud",
+    tone: "lime",
+    body: [
+      paragraph(hello(d.name)),
+      paragraph(
+        `Recibimos tu solicitud${d.service ? ` para <strong>${escapeHtml(d.service)}</strong>` : ""}. Bryan la revisa personalmente y te escribe por WhatsApp con una propuesta clara en menos de 24 horas hábiles.`
+      ),
+      steps([
+        ["Revisamos tu idea", "Vemos qué necesitas y qué conviene para tu negocio."],
+        ["Te mandamos tu cotización", "Precio cerrado, tiempos y lo que incluye. Sin letras chiquitas."],
+        ["Arrancamos cuando digas", "Con el anticipo apartas tu lugar y armamos tu brief juntos."],
+      ]),
+      callout("¿Tienes prisa? Escríbenos directo por WhatsApp y lo vemos en el momento."),
+      button("Escribir por WhatsApp", `${BRAND.whatsappHref}?text=${encodeURIComponent("Hola Bryan, acabo de mandar una solicitud desde la página.")}`, "ink"),
+      button("Ver proyectos y precios", BRAND.site, "outline"),
+      muted("Si no fuiste tú quien llenó el formulario, ignora este correo."),
+    ].join(""),
+  });
+  return build("Recibimos tu solicitud · BryanF Design", html);
+}
+
+export interface PaymentPendingData {
+  name?: string | null;
+  folio: string;
+  amount: number;
+  currency: string;
+  concept?: string | null;
+  /** "review" = el banco/plataforma lo está revisando; "ticket" = falta pagar la ficha (OXXO/SPEI). */
+  kind: "review" | "ticket";
+  method: string;
+  ticketUrl?: string | null;
+  expiresAt?: Date | string | number | null;
+}
+
+export function paymentPending(d: PaymentPendingData): EmailContent {
+  const ticket = d.kind === "ticket";
+  const expires = formatDate(d.expiresAt);
+  const html = layout({
+    preheader: ticket
+      ? `Tu ficha de pago por ${formatMoney(d.amount, d.currency)} está lista${expires ? `; vence el ${expires}` : ""}.`
+      : `Tu pago de ${formatMoney(d.amount, d.currency)} está en revisión. Te avisamos en cuanto se acredite.`,
+    eyebrow: ticket ? "Pago por completar" : "Pago en revisión",
+    title: ticket ? "Tu ficha de pago está lista" : "Estamos revisando tu pago",
+    tone: "white",
+    figure: formatMoney(d.amount, d.currency),
+    figureNote: ticket ? (expires ? `paga antes del ${expires}` : "pendiente de pago") : "en revisión",
+    body: [
+      paragraph(hello(d.name)),
+      paragraph(
+        ticket
+          ? "Generaste una ficha para pagar en efectivo o por transferencia. En cuanto la pagues y se acredite, te llega tu comprobante y el enlace para armar tu brief."
+          : "Tu pago se registró y la plataforma lo está revisando por seguridad. Normalmente tarda unos minutos, a veces hasta 48 horas. No tienes que hacer nada más."
+      ),
+      details([
+        ["Folio", escapeHtml(d.folio)],
+        ["Concepto", escapeHtml(d.concept || "Proyecto web")],
+        ["Método", escapeHtml(d.method)],
+        ["Monto", escapeHtml(formatMoney(d.amount, d.currency))],
+        ["Fecha límite", ticket && expires ? escapeHtml(expires) : null],
+      ]),
+      ticket && d.ticketUrl ? button("Ver mi ficha de pago", d.ticketUrl, "ink") : "",
+      callout(
+        ticket
+          ? "Tu lugar en la agenda se aparta cuando el pago se acredita. OXXO tarda hasta 1 día hábil en reflejarse."
+          : "Si el banco necesita confirmar algo, te puede llegar un SMS o una notificación de tu app. Revísala para que el pago no se detenga."
+      ),
+      muted("Te avisamos por correo en cuanto se acredite. ¿Dudas? Responde este correo."),
+    ].join(""),
+  });
+  return build(
+    ticket ? `Tu ficha de pago está lista ${d.folio}` : `Tu pago está en revisión ${d.folio}`,
+    html
+  );
+}
+
+// ——— Avisos internos ———
+
+function sectionTitle(text: string, note?: string) {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:22px 0 10px;"><tr>
+    <td style="font-family:${DISPLAY};font-size:18px;font-weight:900;letter-spacing:-0.3px;color:${BRAND.ink};">${escapeHtml(text)}</td>
+    ${note ? `<td align="right" style="font-family:${FONT};font-size:12px;font-weight:700;color:${BRAND.muted};">${escapeHtml(note)}</td>` : ""}
+  </tr></table>`;
+}
+
+/** Bloque de texto largo (mensaje del cliente, descripción del proyecto). */
+function quoteBlock(text: string) {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px;"><tr>
+    <td style="background:${BRAND.mint};border-left:4px solid ${BRAND.lime};border-radius:12px;padding:14px 16px;font-family:${FONT};font-size:14px;line-height:1.6;color:${BRAND.ink};">${escapeHtml(text).replace(/\n/g, "<br>")}</td>
+  </tr></table>`;
+}
+
+/** Fila de chips (funciones, etiquetas). */
+function chips(items: string[]) {
+  return `<div style="margin:0 0 14px;line-height:2.2;">${items
+    .map(
+      (i) =>
+        `<span style="display:inline-block;margin:0 6px 0 0;padding:5px 12px;border-radius:999px;background:${BRAND.limeSoft};font-family:${FONT};font-size:12px;font-weight:700;color:${BRAND.ink};white-space:nowrap;">${escapeHtml(i)}</span>`
+    )
+    .join("")}</div>`;
+}
+
+/** Dos botones lado a lado (contestar por WhatsApp / por correo). */
+function buttonRow(items: Array<{ label: string; href: string; variant: "ink" | "lime" | "outline" }>) {
+  const cells = items
+    .map((b) => `<td style="padding:0 8px 0 0;vertical-align:top;">${button(b.label, b.href, b.variant)}</td>`)
+    .join("");
+  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 4px;"><tr>${cells}</tr></table>`;
+}
+
+function waLink(phone: string, text: string) {
+  const digits = phone.replace(/\D/g, "");
+  const full = digits.length === 10 ? `52${digits}` : digits;
+  return `https://wa.me/${full}?text=${encodeURIComponent(text)}`;
+}
+
+export interface LeadNoticeData {
+  name: string;
+  phone: string;
+  email?: string | null;
+  service?: string | null;
+  timeline?: string | null;
+  message?: string | null;
+  quote?: string | null;
+  page?: string | null;
+  campaign?: string | null;
+  gclid?: string | null;
+  receivedAt?: Date | string | number;
+}
+
+export function leadNotice(d: LeadNoticeData): EmailContent {
+  const first = d.name.split(/\s+/)[0];
+  const wa = waLink(
+    d.phone,
+    `Hola ${first}, soy Bryan de BryanF Design. Recibí tu solicitud${d.service ? ` para ${d.service}` : ""}. ¿Te parece si lo platicamos?`
+  );
+  const html = layout({
+    preheader: `${d.name}${d.service ? ` · ${d.service}` : ""}${d.timeline ? ` · ${d.timeline}` : ""}. Contesta pronto.`,
+    eyebrow: "Nuevo contacto",
+    title: `${d.name} quiere cotizar`,
+    tone: "lime",
+    figure: d.service || undefined,
+    figureNote: d.timeline ? `Para: ${d.timeline}` : undefined,
+    body: [
+      callout("<strong>Contesta en menos de 2 horas.</strong> Los prospectos de anuncios se enfrían rápido; el botón abre WhatsApp con el saludo ya escrito."),
+      buttonRow([
+        { label: "Responder por WhatsApp", href: wa, variant: "ink" },
+        ...(d.email
+          ? [{ label: "Responder por correo", href: `mailto:${d.email}?subject=${encodeURIComponent("Tu cotización con BryanF Design")}`, variant: "outline" as const }]
+          : []),
+      ]),
+      sectionTitle("Datos de contacto"),
+      details([
+        ["Nombre", escapeHtml(d.name)],
+        ["WhatsApp", escapeHtml(d.phone)],
+        ["Correo", d.email ? escapeHtml(d.email) : "No lo dejó"],
+        ["Le interesa", d.service ? escapeHtml(d.service) : null],
+        ["¿Para cuándo?", d.timeline ? escapeHtml(d.timeline) : null],
+        ["Recibido", formatDateTime(d.receivedAt ?? Date.now())],
+      ]),
+      d.message ? sectionTitle("Su mensaje") + quoteBlock(d.message) : "",
+      d.quote ? sectionTitle("Cotización que armó en el sitio") + quoteBlock(d.quote) : "",
+      sectionTitle("De dónde llegó"),
+      details([
+        ["Campaña", d.campaign ? escapeHtml(d.campaign) : "Directo / orgánico"],
+        ["GCLID", d.gclid ? escapeHtml(d.gclid) : null],
+        ["Formulario en", d.page ? escapeHtml(d.page) : null],
+      ]),
+    ].join(""),
+  });
+  return build(`Nuevo contacto: ${d.name}${d.service ? ` — ${d.service}` : ""}`, html);
+}
+
+export interface BriefNoticeData {
+  fullName: string;
+  businessName: string;
+  phone: string;
+  email?: string | null;
+  sections: Array<{ title: string; rows: Array<[string, string]>; chips?: string[] }>;
+  links: Array<{ label: string; purpose: string; url: string }>;
+  files: string[];
+  notes?: string | null;
+  payment?: Array<[string, string | null | undefined | false]>;
+  services?: Array<[string, string]>;
+  progress?: number;
+}
+
+export function briefNotice(d: BriefNoticeData): EmailContent {
+  const wa = waLink(
+    d.phone,
+    `Hola ${d.fullName.split(/\s+/)[0]}, soy Bryan. Ya recibí el brief de ${d.businessName}; lo reviso y te mando la ruta del proyecto.`
+  );
+  const sectionHtml = d.sections
+    .filter((s) => s.rows.length || s.chips?.length)
+    .map((s) => {
+      const short = s.rows.filter(([, v]) => v.length <= 90 && !v.includes("\n"));
+      const long = s.rows.filter(([, v]) => v.length > 90 || v.includes("\n"));
+      return [
+        sectionTitle(s.title),
+        short.length ? details(short.map(([k, v]) => [k, escapeHtml(v)])) : "",
+        long
+          .map(
+            ([k, v]) =>
+              `<div style="margin:0 0 6px;font-family:${FONT};font-size:12px;font-weight:800;letter-spacing:0.4px;text-transform:uppercase;color:${BRAND.muted};">${escapeHtml(k)}</div>${quoteBlock(v)}`
+          )
+          .join(""),
+        s.chips?.length ? chips(s.chips) : "",
+      ].join("");
+    })
+    .join("");
+  const linksHtml = d.links.length
+    ? sectionTitle("Enlaces", `${d.links.length}`) +
+      `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px;border-collapse:collapse;">${d.links
+        .map(
+          (l) => `<tr><td style="padding:10px 0;border-bottom:1px solid ${BRAND.border};font-family:${FONT};">
+            <div style="font-size:14px;font-weight:700;color:${BRAND.ink};">${escapeHtml(l.label)} <span style="font-weight:600;color:${BRAND.muted};">· ${escapeHtml(l.purpose)}</span></div>
+            <a href="${escapeHtml(l.url)}" style="font-size:13px;color:${BRAND.limeDeep};word-break:break-all;">${escapeHtml(l.url)}</a>
+          </td></tr>`
+        )
+        .join("")}</table>`
+    : "";
+  const filesHtml = d.files.length
+    ? sectionTitle("Archivos adjuntos", `${d.files.length}`) +
+      `<div style="margin:0 0 16px;">${d.files
+        .map(
+          (f) =>
+            `<div style="margin:0 0 6px;padding:10px 14px;border-radius:12px;background:${BRAND.mint};font-family:${FONT};font-size:13px;font-weight:700;color:${BRAND.ink};">📎 ${escapeHtml(f)}</div>`
+        )
+        .join("")}<div style="font-family:${FONT};font-size:12px;color:${BRAND.muted};">Vienen adjuntos en este correo.</div></div>`
+    : "";
+  const html = layout({
+    preheader: `${d.fullName} (${d.businessName}) mandó su brief${d.links.length ? `, ${d.links.length} enlace(s)` : ""}${d.files.length ? ` y ${d.files.length} archivo(s)` : ""}.`,
+    eyebrow: "Brief recibido",
+    title: `Brief de ${d.businessName}`,
+    tone: "ink",
+    figure: d.progress != null ? `${d.progress}%` : undefined,
+    figureNote: d.progress != null ? "del brief completo" : undefined,
+    body: [
+      paragraph(
+        `<strong>${escapeHtml(d.fullName)}</strong> terminó su brief. Promesa al cliente: ruta del proyecto en menos de 24 horas hábiles.`
+      ),
+      buttonRow([
+        { label: "WhatsApp al cliente", href: wa, variant: "ink" },
+        ...(d.email
+          ? [{ label: "Responder por correo", href: `mailto:${d.email}?subject=${encodeURIComponent(`Tu proyecto · ${d.businessName}`)}`, variant: "outline" as const }]
+          : []),
+      ]),
+      sectionTitle("Contacto"),
+      details([
+        ["Nombre", escapeHtml(d.fullName)],
+        ["Negocio", escapeHtml(d.businessName)],
+        ["WhatsApp", escapeHtml(d.phone)],
+        ["Correo", d.email ? escapeHtml(d.email) : "No lo compartió"],
+      ]),
+      sectionHtml,
+      linksHtml,
+      filesHtml,
+      d.notes ? sectionTitle("Notas") + quoteBlock(d.notes) : "",
+      d.payment?.some((r) => r[1]) ? sectionTitle("Pago") + details(d.payment.map(([k, v]) => [k, v ? escapeHtml(v) : v])) : "",
+      d.services?.length ? sectionTitle("Servicios seleccionados") + details(d.services.map(([k, v]) => [k, escapeHtml(v)])) : "",
+    ].join(""),
+  });
+  return build(`Brief: ${d.businessName} — ${d.fullName}`, html);
+}
+
+export function formatDateTime(date: Date | string | number) {
+  const d = new Date(date);
+  if (Number.isNaN(d.getTime())) return "";
+  return new Intl.DateTimeFormat("es-MX", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "America/Mexico_City",
+  }).format(d);
+}
+
+// ——— Aviso interno genérico ———
 
 export function internalNotice(d: {
   title: string;
@@ -636,14 +921,24 @@ export function internalNotice(d: {
   rows: Array<[string, string | null | undefined | false]>;
   tone?: Tone;
   extraHtml?: string;
+  eyebrow?: string;
+  figure?: string;
+  figureNote?: string;
+  /** Botones de acción (contestar al cliente, ver en la plataforma…). */
+  actions?: Array<{ label: string; href: string }>;
 }): EmailContent {
   const html = layout({
     preheader: d.intro,
-    eyebrow: "Aviso interno",
+    eyebrow: d.eyebrow ?? "Aviso interno",
     title: d.title,
     tone: d.tone ?? "ink",
+    figure: d.figure,
+    figureNote: d.figureNote,
     body: [
       paragraph(escapeHtml(d.intro)),
+      d.actions?.length
+        ? buttonRow(d.actions.map((a, i) => ({ label: a.label, href: a.href, variant: i ? "outline" : "ink" })))
+        : "",
       details(d.rows.map(([k, v]) => [k, v ? escapeHtml(v) : v] as [string, string | null | undefined | false])),
       d.extraHtml || "",
     ].join(""),

@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
 import { describeAttribution, sanitizeAttribution } from "@/lib/attribution";
-import { escapeHtml, sendEmail } from "@/lib/notify";
-import { notificationEmail } from "@/lib/mailer";
+import { leadNotice, leadReceived } from "@/lib/email-templates";
+import { notificationEmail, sendMail } from "@/lib/mailer";
 
 export const runtime = "nodejs";
 
@@ -13,7 +13,8 @@ export const runtime = "nodejs";
  * Es la conversión principal de la campaña para quien todavía no está listo
  * para pagar en línea: nombre + WhatsApp bastan. Llega a tu correo con la
  * cotización que haya armado en el configurador y la campaña de origen
- * (gclid/utm), lista para contestar por WhatsApp.
+ * (gclid/utm), lista para contestar por WhatsApp. Si dejó correo, le llega
+ * una respuesta automática con los siguientes pasos.
  */
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -56,62 +57,31 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Revisa tu correo." }, { status: 400 });
     }
 
-    const waText = encodeURIComponent(
-      `Hola ${name.split(" ")[0]}, soy Bryan de BryanF Design. Recibí tu solicitud de cotización${
-        service ? ` para ${service}` : ""
-      }. ¿Te parece si lo platicamos?`
-    );
-    const waLink = `https://wa.me/${phoneDigits.length === 10 ? `52${phoneDigits}` : phoneDigits}?text=${waText}`;
-
-    const row = (label: string, value: string) =>
-      value ? `<li><strong>${label}:</strong> ${escapeHtml(value)}</li>` : "";
-
-    const html = `
-      <div style="font-family:Inter,Arial,sans-serif;max-width:640px;margin:0 auto;color:#171717;">
-        <h2 style="margin:0 0 8px;">Nueva solicitud de cotización 🔔</h2>
-        <p style="margin:0 0 16px;">Contesta pronto: los prospectos de anuncios se enfrían en horas.</p>
-        <p style="margin:0 0 18px;">
-          <a href="${waLink}" style="display:inline-block;background:#25D366;color:#fff;padding:10px 16px;border-radius:999px;text-decoration:none;font-weight:700;">
-            Responder por WhatsApp
-          </a>
-        </p>
-        <ul style="margin:0 0 14px;padding-left:18px;">
-          ${row("Nombre", name)}
-          ${row("WhatsApp", phone)}
-          ${row("Correo", email)}
-          ${row("Le interesa", service)}
-          ${row("¿Para cuándo?", timeline)}
-        </ul>
-        ${
-          message
-            ? `<h3 style="margin:18px 0 8px;">Mensaje</h3><p style="margin:0 0 14px;white-space:pre-wrap;">${escapeHtml(message)}</p>`
-            : ""
-        }
-        ${
-          quote
-            ? `<h3 style="margin:18px 0 8px;">Cotización que armó en el sitio</h3><p style="margin:0 0 14px;white-space:pre-wrap;">${escapeHtml(quote)}</p>`
-            : ""
-        }
-        <h3 style="margin:18px 0 8px;">Origen</h3>
-        <ul style="margin:0 0 14px;padding-left:18px;">
-          ${row("Campaña", describeAttribution(attribution))}
-          ${row("GCLID", attribution.gclid || "")}
-          ${row("Formulario en", page)}
-        </ul>
-      </div>`;
-
-    const result = await sendEmail(
-      notificationEmail(),
-      `Cotización: ${name}${service ? ` — ${service}` : ""}`,
-      html,
-      email || undefined
-    );
+    const notice = leadNotice({
+      name,
+      phone,
+      email,
+      service,
+      timeline,
+      message,
+      quote,
+      page,
+      campaign: describeAttribution(attribution),
+      gclid: attribution.gclid || null,
+    });
+    const result = await sendMail({ to: notificationEmail(), ...notice, replyTo: email || undefined });
     if (!result.ok) {
       console.error("Lead email error:", result.error);
       return NextResponse.json(
         { error: "No se pudo enviar. Escríbenos por WhatsApp y te contestamos enseguida." },
         { status: 502 }
       );
+    }
+
+    // Respuesta automática al cliente (si dejó correo). Si falla, la
+    // solicitud ya está con nosotros: no se reporta como error.
+    if (email) {
+      await sendMail({ to: email, ...leadReceived({ name, service }), replyTo: notificationEmail() });
     }
 
     return NextResponse.json({ ok: true });

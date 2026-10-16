@@ -12,7 +12,10 @@
 | Cancelación | **Tu suscripción quedó cancelada** | Suscripción cancelada |
 | Cobro con link que tú mandas | **Tienes un pago pendiente** + *Pagar ahora* | — |
 | Transferencia que confirmas a mano | **Pago confirmado** + *Armar mi brief* | Pago confirmado |
-| Brief enviado | **Recibimos tu brief** | Brief completo con adjuntos |
+| Brief enviado | **Recibimos tu brief** | **Brief de [negocio]**: por secciones, chips, enlaces, adjuntos y botón de WhatsApp |
+| Formulario de contacto / cotización | **¡Gracias! Ya tenemos tu solicitud** (si dejó correo) | **[Nombre] quiere cotizar** + botón *Responder por WhatsApp* con saludo escrito |
+| Ficha OXXO / SPEI generada (Mercado Pago) | **Tu ficha de pago está lista** + *Ver mi ficha* | Ficha de pago generada |
+| Pago en revisión (Mercado Pago) | **Estamos revisando tu pago** | Pago en revisión |
 
 Plantillas: `lib/email-templates.ts`. Envío: `lib/mailer.ts` (Gmail API, con Resend de respaldo).
 
@@ -75,8 +78,12 @@ REMINDER_DAYS=3
 
 ```bash
 node scripts/email-test.mjs                           # vistas previas en email-previews/
-node scripts/email-test.mjs --send tu@correo.com      # las 10 plantillas por Gmail API
+node scripts/email-test.mjs --send tu@correo.com      # las 17 plantillas por Gmail API
 ```
+
+¿Está listo producción? `https://www.bryanfdesign.com/api/health` dice `"mail": "google"` (o `resend`)
+y qué integraciones tienen sus variables (sólo sí/no, nunca valores). Si dice `"none"`, faltan las
+variables `GOOGLE_*` en Vercel y **no sale ningún correo**.
 
 En producción (con `ADMIN_API_KEY`):
 ```bash

@@ -427,6 +427,7 @@ const zh: Dictionary = {
     emailLabel: "邮箱（可选）",
     emailPlaceholder: "you@email.com",
     serviceLabel: "您需要什么？",
+    servicePlaceholder: "请选择",
     services: ["企业网站", "网上商店", "广告落地页", "改版或更新", "网站维护", "其他"],
     timelineLabel: "什么时候需要？",
     timelines: ["越快越好", "本月内", "只是了解报价"],
