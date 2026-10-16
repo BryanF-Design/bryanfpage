@@ -43,6 +43,15 @@ export function manageSubscriptionUrl(provider: PaymentProvider): string | null 
   return null;
 }
 
+/**
+ * Portal de clientes (Bitácora). Sólo se enlaza en los correos cuando
+ * CLIENT_PORTAL_URL está configurado, es decir, cuando las cuentas de los
+ * clientes ya se crean solas al pagar.
+ */
+export function clientPortalUrl(): string | null {
+  return process.env.CLIENT_PORTAL_URL?.trim() || null;
+}
+
 /** Folio estable a partir de la referencia del proveedor. */
 export function makeFolio(reference: string): string {
   const tail = reference.replace(/[^a-zA-Z0-9]/g, "").slice(-8).toUpperCase();
@@ -135,6 +144,7 @@ export async function sendOrderConfirmation(
           briefUrl: briefLink,
           manageUrl: manageSubscriptionUrl(order.provider),
           policyUrl: `${getSiteUrl()}/suscripcion#politica`,
+          portalUrl: clientPortalUrl(),
         })
       : paymentReceived({
           name: order.customerName,
@@ -145,6 +155,7 @@ export async function sendOrderConfirmation(
           method,
           modalidad: order.modalidad,
           briefUrl: briefLink,
+          portalUrl: clientPortalUrl(),
         });
     const customerRes = await sendMail({ to: order.customerEmail, ...content, replyTo: notificationEmail() });
     customerOk = customerRes.ok;

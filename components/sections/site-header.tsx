@@ -21,7 +21,7 @@ import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { useFooterInView } from "@/lib/use-footer-in-view";
 import { cn } from "@/lib/utils";
 
-const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
+const CLIENT_PORTAL = "https://access.bryanfdesign.com/";
 
 const social = [
   { Icon: FaInstagram, href: "https://www.instagram.com/bryanf_design/", label: "Instagram" },

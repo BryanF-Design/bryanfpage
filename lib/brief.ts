@@ -463,7 +463,7 @@ export function briefToText(state: BriefState, paymentRef?: string): string {
 export const STUDIO_FACTS = {
   whatsapp: "+52 56 6301 2505",
   whatsappHref: "https://wa.me/525663012505",
-  email: "bryanf@bryanfdesign.com.mx",
+  email: "bryanf@bryanfdesign.com",
   phoneHref: "tel:+525663012505",
   instagram: "https://www.instagram.com/bryanf_design/",
   facebook: "https://www.facebook.com/share/1R1rS2ToKf/",

@@ -41,7 +41,7 @@ const social = [
   { Icon: FaGithub, href: "https://github.com/BryanF-Design", label: "GitHub" },
 ];
 
-const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
+const CLIENT_PORTAL = "https://access.bryanfdesign.com/";
 
 const linkClass =
   "group/link inline-flex min-h-11 items-center gap-1.5 text-[0.9375rem] text-white/70 transition-colors hover:text-white lg:min-h-10";
@@ -129,10 +129,10 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
         <>
           bryanf@
           <wbr />
-          bryanfdesign.com.mx
+          bryanfdesign.com
         </>
       ),
-      href: "mailto:bryanf@bryanfdesign.com.mx",
+      href: "mailto:bryanf@bryanfdesign.com",
       external: false,
     },
     {

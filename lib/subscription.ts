@@ -465,7 +465,7 @@ export const SUBSCRIPTION_FAQ_CATEGORIES: { id: string; title: string; items: Fa
       },
       {
         question: "¿Puedo hablar con alguien antes de suscribirme?",
-        answer: "Claro. Escríbenos por WhatsApp al +52 56 6301 2505 o a bryanf@bryanfdesign.com.mx, o pregúntale a Lumina en el sitio.",
+        answer: "Claro. Escríbenos por WhatsApp al +52 56 6301 2505 o a bryanf@bryanfdesign.com, o pregúntale a Lumina en el sitio.",
       },
     ],
   },

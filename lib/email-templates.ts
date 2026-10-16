@@ -34,7 +34,7 @@ export interface EmailContent {
 export const BRAND = {
   name: "BryanF Design",
   site: "https://www.bryanfdesign.com",
-  email: "bryanf@bryanfdesign.com.mx",
+  email: "bryanf@bryanfdesign.com",
   whatsapp: "+52 56 6301 2505",
   whatsappHref: "https://wa.me/525663012505",
   ink: "#10201a",
@@ -187,11 +187,61 @@ interface LayoutOptions {
   figure?: string;
   figureNote?: string;
   body: string;
+  /** "internal" = aviso para Bryan (pie distinto, sin ayuda al cliente). */
+  audience?: "client" | "internal";
 }
 
-export function layout({ preheader, eyebrow, title, tone = "ink", figure, figureNote, body }: LayoutOptions) {
+const LOGO_DARK = `${BRAND.site}/img/brand/logo-dark.png`;
+const LOGO_LIGHT = `${BRAND.site}/img/brand/logo-light.png`;
+
+/** Píldora pequeña de contacto (WhatsApp / correo / sitio). */
+function contactPill(label: string, href: string) {
+  return `<td style="padding:4px;"><a href="${escapeHtml(href)}" target="_blank" style="display:inline-block;padding:9px 14px;border-radius:999px;background:#ffffff;border:1px solid ${BRAND.border};font-family:${FONT};font-size:12px;font-weight:700;color:${BRAND.ink};text-decoration:none;white-space:nowrap;">${label}</a></td>`;
+}
+
+export function layout({ preheader, eyebrow, title, tone = "ink", figure, figureNote, body, audience = "client" }: LayoutOptions) {
   const t = TONES[tone];
   const year = new Date().getFullYear();
+  const internal = audience === "internal";
+  const accent = tone === "alert" ? BRAND.signal : tone === "lime" ? BRAND.ink : BRAND.lime;
+
+  const help = internal
+    ? ""
+    : `
+      <tr><td bgcolor="${BRAND.mint}" style="background:${BRAND.mint};padding:20px 24px 18px;border-top:1px solid ${BRAND.border};">
+        <div style="margin:0 0 10px;font-family:${FONT};font-size:13px;font-weight:700;color:${BRAND.ink};text-align:center;">¿Dudas? Te contestamos rápido</div>
+        <table role="presentation" align="center" cellpadding="0" cellspacing="0" style="margin:0 auto;"><tr>
+          ${contactPill("WhatsApp", `${BRAND.whatsappHref}?text=${encodeURIComponent("Hola Bryan, tengo una duda sobre mi proyecto.")}`)}
+          ${contactPill("Responder correo", `mailto:${BRAND.email}`)}
+          ${contactPill("bryanfdesign.com", BRAND.site)}
+        </tr></table>
+        <div style="margin:10px 0 0;font-family:${FONT};font-size:11px;color:${BRAND.muted};text-align:center;">Lunes a viernes, 9:00 a 19:00 (hora de Ciudad de México)</div>
+      </td></tr>`;
+
+  const footer = internal
+    ? `<tr><td style="padding:18px 12px 0;font-family:${FONT};font-size:11px;line-height:1.6;color:${BRAND.muted};text-align:center;">
+        Aviso automático de <a href="${BRAND.site}" style="color:${BRAND.muted};">bryanfdesign.com</a> · Sólo para ti
+      </td></tr>`
+    : `<tr><td style="padding:16px 0 0;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${BRAND.ink}" style="background:${BRAND.ink};border-radius:24px;">
+          <tr><td style="padding:26px 28px 24px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+              <td style="vertical-align:middle;">
+                <a href="${BRAND.site}" target="_blank" style="text-decoration:none;"><img src="${LOGO_LIGHT}" width="120" alt="BryanF Design" style="display:block;width:120px;max-width:120px;height:auto;border:0;font-family:${DISPLAY};font-size:16px;font-weight:900;color:#ffffff;"></a>
+              </td>
+              <td align="right" style="vertical-align:middle;font-family:${FONT};font-size:12px;line-height:1.5;color:#b9c4bd;">
+                Diseño y desarrollo web<br>Ciudad de México
+              </td>
+            </tr></table>
+            <div style="margin:18px 0 14px;height:1px;line-height:1px;background:#2b3d35;">&nbsp;</div>
+            <div style="font-family:${FONT};font-size:12px;line-height:1.9;color:#b9c4bd;">
+              <a href="${BRAND.site}" style="color:#ffffff;text-decoration:none;font-weight:700;">Sitio</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="${BRAND.site}/suscripcion" style="color:#ffffff;text-decoration:none;font-weight:700;">Suscripción</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="${BRAND.whatsappHref}" style="color:#ffffff;text-decoration:none;font-weight:700;">WhatsApp ${BRAND.whatsapp}</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="${BRAND.site}/privacidad.html" style="color:#ffffff;text-decoration:none;font-weight:700;">Privacidad</a>
+            </div>
+            <div style="margin:10px 0 0;font-family:${FONT};font-size:11px;color:#7f8f87;">© ${year} BryanF Design. Recibes este correo por una solicitud, compra o suscripción en bryanfdesign.com.</div>
+          </td></tr>
+        </table>
+      </td></tr>`;
+
   return `<!doctype html>
 <html lang="es">
 <head>
@@ -199,49 +249,57 @@ export function layout({ preheader, eyebrow, title, tone = "ink", figure, figure
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="x-apple-disable-message-reformatting">
 <meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light">
 <title>${escapeHtml(title)}</title>
+<style>
+  @media (max-width:620px){
+    .bf-pad{padding-left:22px!important;padding-right:22px!important;}
+    .bf-title{font-size:26px!important;}
+    .bf-figure{font-size:34px!important;}
+  }
+  a{color:${BRAND.ink};}
+</style>
 </head>
 <body style="margin:0;padding:0;background:${BRAND.canvas};-webkit-text-size-adjust:100%;">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">${escapeHtml(preheader)}&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${BRAND.canvas}" style="background:${BRAND.canvas};">
-  <tr><td align="center" style="padding:28px 12px;">
+  <tr><td align="center" style="padding:28px 12px 32px;">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;">
       <!-- Marca -->
-      <tr><td style="padding:0 8px 16px;">
+      <tr><td style="padding:0 6px 18px;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
-          <td style="font-family:${DISPLAY};font-size:19px;font-weight:900;letter-spacing:-0.4px;color:${BRAND.ink};">
-            <span style="display:inline-block;width:10px;height:10px;border-radius:999px;background:${BRAND.lime};margin-right:8px;vertical-align:middle;"></span>BryanF<span style="font-weight:500;"> Design</span>
+          <td style="vertical-align:middle;">
+            <a href="${BRAND.site}" target="_blank" style="text-decoration:none;"><img src="${LOGO_DARK}" width="150" alt="BryanF Design" style="display:block;width:150px;max-width:150px;height:auto;border:0;font-family:${DISPLAY};font-size:18px;font-weight:900;color:${BRAND.ink};"></a>
           </td>
-          <td align="right" style="font-family:${FONT};font-size:12px;color:${BRAND.muted};">
-            <a href="${BRAND.site}" style="color:${BRAND.muted};text-decoration:none;">bryanfdesign.com</a>
+          <td align="right" style="vertical-align:middle;font-family:${FONT};font-size:12px;font-weight:600;color:${BRAND.muted};">
+            ${internal ? "Aviso interno" : `<a href="${BRAND.site}" style="color:${BRAND.muted};text-decoration:none;">bryanfdesign.com</a>`}
           </td>
         </tr></table>
       </td></tr>
-      <!-- Encabezado -->
-      <tr><td bgcolor="${t.bg}" style="background:${t.bg};border-radius:28px 28px 0 0;padding:34px 32px 30px;">
-        <span style="display:inline-block;padding:6px 12px;border-radius:999px;background:${t.badgeBg};color:${t.badgeFg};font-family:${FONT};font-size:11px;font-weight:800;letter-spacing:0.6px;text-transform:uppercase;">${escapeHtml(eyebrow)}</span>
-        <h1 style="margin:16px 0 0;font-family:${DISPLAY};font-size:30px;line-height:1.08;font-weight:900;letter-spacing:-0.8px;color:${t.fg};">${escapeHtml(title)}</h1>
-        ${
-          figure
-            ? `<div style="margin:18px 0 0;font-family:${DISPLAY};font-size:40px;line-height:1;font-weight:900;letter-spacing:-1px;color:${t.fg};">${escapeHtml(figure)}</div>${
-                figureNote
-                  ? `<div style="margin:6px 0 0;font-family:${FONT};font-size:13px;color:${t.fg};opacity:0.75;">${escapeHtml(figureNote)}</div>`
-                  : ""
-              }`
-            : ""
-        }
+      <!-- Tarjeta -->
+      <tr><td>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="background:#ffffff;border-radius:28px;overflow:hidden;border:1px solid ${BRAND.border};">
+          <tr><td height="6" bgcolor="${accent}" style="background:${accent};height:6px;line-height:6px;font-size:0;">&nbsp;</td></tr>
+          <tr><td bgcolor="${t.bg}" class="bf-pad" style="background:${t.bg};padding:32px 34px 30px;">
+            <span style="display:inline-block;padding:6px 12px;border-radius:999px;background:${t.badgeBg};color:${t.badgeFg};font-family:${FONT};font-size:11px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;">${escapeHtml(eyebrow)}</span>
+            <h1 class="bf-title" style="margin:16px 0 0;font-family:${DISPLAY};font-size:31px;line-height:1.08;font-weight:900;letter-spacing:-0.8px;color:${t.fg};">${escapeHtml(title)}</h1>
+            ${
+              figure
+                ? `<div class="bf-figure" style="margin:18px 0 0;font-family:${DISPLAY};font-size:42px;line-height:1;font-weight:900;letter-spacing:-1.2px;color:${t.fg};">${escapeHtml(figure)}</div>${
+                    figureNote
+                      ? `<div style="margin:8px 0 0;font-family:${FONT};font-size:13px;font-weight:600;color:${t.fg};opacity:0.72;">${escapeHtml(figureNote)}</div>`
+                      : ""
+                  }`
+                : ""
+            }
+          </td></tr>
+          <tr><td class="bf-pad" style="padding:30px 34px 22px;">
+            ${body}
+          </td></tr>
+          ${help}
+        </table>
       </td></tr>
-      <!-- Cuerpo -->
-      <tr><td bgcolor="#ffffff" style="background:#ffffff;border-radius:0 0 28px 28px;padding:30px 32px 26px;">
-        ${body}
-      </td></tr>
-      <!-- Pie -->
-      <tr><td style="padding:22px 12px 0;font-family:${FONT};font-size:12px;line-height:1.6;color:${BRAND.muted};text-align:center;">
-        ¿Dudas? Responde este correo o escríbenos por
-        <a href="${BRAND.whatsappHref}" style="color:${BRAND.ink};font-weight:700;">WhatsApp ${BRAND.whatsapp}</a><br>
-        Lunes a viernes de 9:00 a 19:00 (hora de Ciudad de México)<br>
-        <span style="color:#8a958f;">© ${year} BryanF Design · Ciudad de México</span>
-      </td></tr>
+      ${footer}
     </table>
   </td></tr>
 </table>
@@ -290,6 +348,8 @@ export interface PaymentReceivedData {
   modalidad?: string | null;
   date?: Date | string | number;
   briefUrl: string;
+  /** Portal de clientes (Bitácora), si el cliente ya tiene cuenta. */
+  portalUrl?: string | null;
 }
 
 export function paymentReceived(d: PaymentReceivedData): EmailContent {
@@ -325,6 +385,7 @@ export function paymentReceived(d: PaymentReceivedData): EmailContent {
         "Son unos minutos: nos cuentas de tu negocio, qué quieres lograr y nos compartes logo, fotos o enlaces. Si prefieres, Lumina lo llena contigo platicando."
       ),
       button("Armar mi brief", d.briefUrl, "ink"),
+      d.portalUrl ? button("Ver mi proyecto en Bitácora", d.portalUrl, "outline") : "",
       steps([
         ["Armas tu brief", "Tu negocio, objetivos, estilo y materiales."],
         ["Lo revisamos en 24 h hábiles", "Te mandamos la ruta del proyecto y agendamos el arranque."],
@@ -379,6 +440,7 @@ export interface SubscriptionWelcomeData {
   briefUrl: string;
   manageUrl?: string | null;
   policyUrl: string;
+  portalUrl?: string | null;
 }
 
 export function subscriptionWelcome(d: SubscriptionWelcomeData): EmailContent {
@@ -408,6 +470,7 @@ export function subscriptionWelcome(d: SubscriptionWelcomeData): EmailContent {
         ["Recíbela en 1 a 2 días hábiles", "Según su complejidad. Una solicitud activa a la vez."],
       ]),
       button("Armar mi brief", d.briefUrl, "ink"),
+      d.portalUrl ? button("Entrar a mi portal", d.portalUrl, "outline") : "",
       muted(
         `Política y preguntas frecuentes: <a href="${escapeHtml(d.policyUrl)}" style="color:${BRAND.ink};">${escapeHtml(d.policyUrl.replace(/^https?:\/\//, ""))}</a>${
           d.manageUrl
@@ -774,6 +837,7 @@ export function leadNotice(d: LeadNoticeData): EmailContent {
   );
   const html = layout({
     preheader: `${d.name}${d.service ? ` · ${d.service}` : ""}${d.timeline ? ` · ${d.timeline}` : ""}. Contesta pronto.`,
+    audience: "internal",
     eyebrow: "Nuevo contacto",
     title: `${d.name} quiere cotizar`,
     tone: "lime",
@@ -868,6 +932,7 @@ export function briefNotice(d: BriefNoticeData): EmailContent {
     : "";
   const html = layout({
     preheader: `${d.fullName} (${d.businessName}) mandó su brief${d.links.length ? `, ${d.links.length} enlace(s)` : ""}${d.files.length ? ` y ${d.files.length} archivo(s)` : ""}.`,
+    audience: "internal",
     eyebrow: "Brief recibido",
     title: `Brief de ${d.businessName}`,
     tone: "ink",
@@ -929,6 +994,7 @@ export function internalNotice(d: {
 }): EmailContent {
   const html = layout({
     preheader: d.intro,
+    audience: "internal",
     eyebrow: d.eyebrow ?? "Aviso interno",
     title: d.title,
     tone: d.tone ?? "ink",

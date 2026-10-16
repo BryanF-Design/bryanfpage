@@ -318,11 +318,11 @@ export function ArmarBriefExperience() {
                 </a>
               </Button>
               <a
-                href="mailto:bryanf@bryanfdesign.com.mx"
+                href="mailto:bryanf@bryanfdesign.com"
                 className="inline-flex min-h-11 items-center justify-center gap-2 text-sm font-semibold text-ink underline-offset-4 hover:underline"
               >
                 <Mail aria-hidden className="h-4 w-4" />
-                bryanf@bryanfdesign.com.mx
+                bryanf@bryanfdesign.com
               </a>
             </div>
           </aside>

@@ -22,6 +22,8 @@ import {
 
 const SITE = "https://www.bryanfdesign.com";
 const DAY = 86_400_000;
+const MP_SUBSCRIPTIONS = "https://www.mercadopago.com.mx/subscriptions";
+const PORTAL = "https://access.bryanfdesign.com";
 
 export const EMAIL_SAMPLES: Record<string, () => EmailContent> = {
   paymentReceived: () =>
@@ -33,7 +35,8 @@ export const EMAIL_SAMPLES: Record<string, () => EmailContent> = {
       concept: "Desarrollo web — sitio de 5 secciones",
       method: "Mercado Pago",
       modalidad: "anticipo",
-      briefUrl: `${SITE}/armar-mi-brief?provider=mercadopago&payment_id=123456789`,
+      briefUrl: `${SITE}/armar-mi-brief`,
+      portalUrl: PORTAL,
     }),
   paymentReceivedBalance: () =>
     paymentReceived({
@@ -54,9 +57,10 @@ export const EMAIL_SAMPLES: Record<string, () => EmailContent> = {
       currency: "MXN",
       method: "Mercado Pago",
       nextChargeDate: Date.now() + 30 * DAY,
-      briefUrl: `${SITE}/armar-mi-brief?provider=mercadopago&preapproval_id=2c9380848f0a`,
-      manageUrl: "https://www.mercadopago.com.mx/subscriptions",
+      briefUrl: `${SITE}/armar-mi-brief`,
+      manageUrl: MP_SUBSCRIPTIONS,
       policyUrl: `${SITE}/suscripcion#politica`,
+      portalUrl: PORTAL,
     }),
   monthlyPaymentReceived: () =>
     monthlyPaymentReceived({
@@ -67,8 +71,7 @@ export const EMAIL_SAMPLES: Record<string, () => EmailContent> = {
       method: "Tarjeta (Stripe)",
       period: "16 oct 2026 – 16 nov 2026",
       nextChargeDate: Date.now() + 30 * DAY,
-      invoiceUrl: "https://invoice.stripe.com/i/acct_ejemplo",
-      manageUrl: "https://billing.stripe.com/p/login/ejemplo",
+      manageUrl: MP_SUBSCRIPTIONS,
     }),
   renewalReminder: () =>
     renewalReminder({
@@ -77,15 +80,15 @@ export const EMAIL_SAMPLES: Record<string, () => EmailContent> = {
       currency: "MXN",
       chargeDate: Date.now() + 3 * DAY,
       method: "Mercado Pago",
-      manageUrl: "https://www.mercadopago.com.mx/subscriptions",
+      manageUrl: MP_SUBSCRIPTIONS,
     }),
   paymentFailed: () =>
     paymentFailed({
       name: "Carlos Méndez",
       amount: 7000,
       currency: "MXN",
-      payUrl: "https://invoice.stripe.com/i/acct_ejemplo",
-      manageUrl: "https://billing.stripe.com/p/login/ejemplo",
+      payUrl: MP_SUBSCRIPTIONS,
+      manageUrl: MP_SUBSCRIPTIONS,
       nextAttempt: Date.now() + 3 * DAY,
     }),
   paymentRequest: () =>
@@ -97,9 +100,7 @@ export const EMAIL_SAMPLES: Record<string, () => EmailContent> = {
       folio: "BF-COBRO8QZ",
       dueDate: Date.now() + 5 * DAY,
       note: "Tu sitio ya está listo para publicarse; en cuanto se acredite el pago lo subimos.",
-      payUrl: "https://www.mercadopago.com.mx/checkout/v1/redirect?pref_id=ejemplo",
-      altPayUrl: "https://buy.stripe.com/ejemplo",
-      altPayLabel: "Pagar con tarjeta (Stripe)",
+      payUrl: "https://www.mercadopago.com.mx/",
     }),
   subscriptionCancelled: () => subscriptionCancelled({ name: "Carlos Méndez", endsAt: Date.now() + 12 * DAY }),
   briefReceived: () => briefReceived({ name: "Ana López", businessName: "Café La Esquina", links: 3, files: 2 }),
@@ -113,7 +114,7 @@ export const EMAIL_SAMPLES: Record<string, () => EmailContent> = {
       concept: "Desarrollo web — sitio de 5 secciones",
       kind: "ticket",
       method: "Mercado Pago (OXXO)",
-      ticketUrl: "https://www.mercadopago.com.mx/payments/123456789/ticket",
+      ticketUrl: "https://www.mercadopago.com.mx/activities",
       expiresAt: Date.now() + 3 * DAY,
     }),
   paymentPendingReview: () =>
@@ -179,7 +180,7 @@ export const EMAIL_SAMPLES: Record<string, () => EmailContent> = {
       ],
       links: [
         { label: "Instagram", purpose: "Mi red social actual", url: "https://instagram.com/cafelaesquina" },
-        { label: "Google Drive", purpose: "Materiales (logo, fotos)", url: "https://drive.google.com/drive/folders/ejemplo" },
+        { label: "Google Drive", purpose: "Materiales (logo, fotos)", url: "https://drive.google.com/" },
         { label: "Sitio web", purpose: "Referencia que me gusta", url: "https://www.bluebottlecoffee.com" },
       ],
       files: ["logo-cafe-la-esquina.png", "menu-otono-2026.pdf"],

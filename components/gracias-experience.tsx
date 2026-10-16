@@ -340,7 +340,7 @@ export function GraciasExperience() {
                 ) : (
                   <Button asChild size="lg" variant="outline">
                     <a
-                      href={`mailto:bryanf@bryanfdesign.com.mx?subject=${encodeURIComponent(
+                      href={`mailto:bryanf@bryanfdesign.com?subject=${encodeURIComponent(
                         view === "transfer" ? "Comprobante de transferencia - BryanF Design" : "Mi pago - BryanF Design"
                       )}`}
                     >

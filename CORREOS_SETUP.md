@@ -49,7 +49,7 @@ Plantillas: `lib/email-templates.ts`. Envío: `lib/mailer.ts` (Gmail API, con Re
    y PKCE, comprueba que autorizaste con esa cuenta y guarda `GOOGLE_REFRESH_TOKEN` **sólo en
    `.env.local`** (no lo imprime). Si dice que no llegó refresh token, quita el acceso de la app
    en https://myaccount.google.com/permissions y vuelve a correrlo.
-5. Si quieres enviar como otra dirección (p. ej. `@bryanfdesign.com.mx`), agrégala en Gmail →
+5. Si quieres enviar como otra dirección (p. ej. `@bryanfdesign.com`), agrégala en Gmail →
    Configuración → Cuentas → **Enviar como**, y ponla en `GOOGLE_SENDER_EMAIL`.
 
 ## 2. Variables en Vercel (Production)
