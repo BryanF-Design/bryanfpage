@@ -9,6 +9,7 @@ import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { SiteHeader } from "@/components/sections/site-header";
 import { ChapterOrder } from "@/components/sections/chapter-mark";
 import { MarqueeBand } from "@/components/sections/marquee-band";
+import { HomeTrackRecord } from "@/components/sections/home-track-record";
 import { useLanguage } from "@/lib/i18n/context";
 import { DICTIONARIES } from "@/lib/i18n/dictionaries";
 import { SITE_URL } from "@/lib/seo/service-pages";
@@ -117,7 +118,7 @@ export default function HomePage() {
                 <Sparkle aria-hidden className="relative h-6 w-6 self-end fill-lime text-lime sm:h-7 sm:w-7" />
                 <div className="relative">
                   <p className="display-xl text-[clamp(2.75rem,12vw,4.5rem)] leading-[0.82] text-lime sm:text-[clamp(3.5rem,7.5vw,7.5rem)] lg:text-[clamp(4.5rem,9vw,7.5rem)]">
-                    <StatCounter value={100} prefix="+" />
+                    <StatCounter value={150} prefix="+" />
                   </p>
                   <p className="mt-2 text-sm font-semibold text-white/80">
                     {t.trust.projects} {t.trust.projectsCaption}
@@ -155,6 +156,9 @@ export default function HomePage() {
               </div>
             </div>
           </section>
+
+          {/* Trayectoria: países, proyectos, software y estructuras, desde el inicio. */}
+          <HomeTrackRecord />
         </div>
 
         {/* La home quedó corta: quién soy (hero), mi trabajo, puertas a las

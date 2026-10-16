@@ -1202,3 +1202,27 @@ html.fx-on [data-fx="panel"]:not([data-fx-in]) > * {
     translate: 0 -6%;
   }
 }
+
+/* Briefing: el campo que Lumina acaba de llenar destella en lima. */
+.brief-flash {
+  animation: brief-flash 2.4s ease-out both;
+}
+@keyframes brief-flash {
+  0%,
+  35% {
+    box-shadow: 0 0 0 3px hsl(var(--lime)), 0 0 0 7px hsl(var(--lime) / 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 0 hsl(var(--lime) / 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brief-flash {
+    animation: none;
+    box-shadow: 0 0 0 3px hsl(var(--lime));
+  }
+}
+:root.a11y-reduce-motion .brief-flash {
+  animation: none;
+  box-shadow: 0 0 0 3px hsl(var(--lime));
+}

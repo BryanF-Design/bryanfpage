@@ -56,6 +56,7 @@ export const SECTION_PAGE: Record<LuminaSection, string> = {
 /** Páginas del sitio a las que Lumina puede llevar (clave → ruta). */
 export const LUMINA_PAGES = {
   suscripcion: "/suscripcion",
+  "suscripcion-preguntas": "/suscripcion/preguntas-frecuentes",
   lumina: "/lumina",
   "conoce-a-bryan": "/conoce-a-bryan",
   "crear-web": "/crear-web",
@@ -426,6 +427,8 @@ const PATH_ALIASES: Record<string, string> = {
   "/suscripción": "/suscripcion",
   "/subscription": "/suscripcion",
   "/plan-mensual": "/suscripcion",
+  "/suscripcion/preguntas": "/suscripcion/preguntas-frecuentes",
+  "/suscripcion/faq": "/suscripcion/preguntas-frecuentes",
   "/nosotros": "/conoce-a-bryan",
   "/sobre-mi": "/conoce-a-bryan",
   "/about": "/conoce-a-bryan",

@@ -37,3 +37,9 @@ llevas tú.
       reembolsos por meses parciales. Tampoco dice si el precio incluye IVA.
 - [ ] Haz una suscripción de prueba en modo test: `/gracias` debe decir
       "¡Bienvenido a tu suscripción Todo Digital!".
+
+## Centro de preguntas (/suscripcion/preguntas-frecuentes)
+58 preguntas por tema en `lib/subscription.ts` (`SUBSCRIPTION_FAQ_CATEGORIES`). Las
+marcadas con `// CONFIRMAR` responden cosas que la política aún no fija; revísalas y
+ajústalas a como lo vas a manejar: IVA, factura, dominio, correos con dominio, logo,
+redes sociales, fotos, apps nativas y si el precio se respeta a quien ya está suscrito.

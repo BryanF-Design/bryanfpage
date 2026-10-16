@@ -129,6 +129,12 @@ export function SubscriptionButtons() {
           <FaWhatsapp aria-hidden className="ml-auto mr-2 h-4 w-4 text-lime" />
         </a>
       </Button>
+      <a
+        href={`/gracias?via=transferencia&plan=${SUBSCRIPTION_PLAN.id}`}
+        className="inline-flex min-h-11 items-center justify-center text-center text-sm font-semibold text-white/80 underline underline-offset-4 hover:text-lime"
+      >
+        ¿Ya transferiste? Llena tu briefing aquí
+      </a>
       {status && (
         <p role="status" className="rounded-inner bg-white/[0.08] px-4 py-3 text-sm leading-snug text-white/85">
           {status}

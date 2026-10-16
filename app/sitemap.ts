@@ -8,9 +8,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // 2026-10-08: dominio www.bryanfdesign.com y rediseño 8-bit de todo el sitio.
   const releaseDate = new Date("2026-10-08T00:00:00.000Z");
   const restructureDate = new Date("2026-10-15T00:00:00.000Z");
+  // 2026-10-16: trayectoria en la home y centro de preguntas de la suscripción.
+  const faqDate = new Date("2026-10-16T00:00:00.000Z");
 
   return [
-    { url: SITE_URL, lastModified: restructureDate, changeFrequency: "weekly", priority: 1 },
+    { url: SITE_URL, lastModified: faqDate, changeFrequency: "weekly", priority: 1 },
     ...servicePages.map((page) => ({
       url: `${SITE_URL}/${page.slug}`,
       lastModified: releaseDate,
@@ -23,6 +25,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: restructureDate,
       changeFrequency: "monthly",
       priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/suscripcion/preguntas-frecuentes`,
+      lastModified: faqDate,
+      changeFrequency: "monthly",
+      priority: 0.7,
     },
     {
       url: `${SITE_URL}/conoce-a-bryan`,

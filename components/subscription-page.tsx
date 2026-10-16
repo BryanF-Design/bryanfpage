@@ -25,6 +25,7 @@ import { SUBSCRIPTION_PLAN } from "@/lib/catalog";
 import { SITE_URL } from "@/lib/seo/service-pages";
 import {
   SUBSCRIPTION_FAQ,
+  SUBSCRIPTION_FAQ_ALL,
   SUBSCRIPTION_INCLUDES,
   SUBSCRIPTION_POLICY,
   SUBSCRIPTION_PRICE_LABEL,
@@ -377,6 +378,12 @@ export function SubscriptionPage() {
                 </AccordionItem>
               ))}
             </Accordion>
+            <Button asChild size="lg" variant="ink" className="mt-2 w-full justify-between pl-6 pr-2.5 sm:w-fit">
+              <Link href="/suscripcion/preguntas-frecuentes">
+                Ver las {SUBSCRIPTION_FAQ_ALL.length} preguntas, por tema
+                <ButtonArrow tone="lime" className="ml-3 -mr-0.5" />
+              </Link>
+            </Button>
           </div>
         </section>
 

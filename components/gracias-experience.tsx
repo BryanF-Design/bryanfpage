@@ -6,11 +6,11 @@ import {
   AlertTriangle,
   Check,
   Clock,
+  Landmark,
   Loader2,
-  MessageCircle,
+  Mail,
   RefreshCw,
   Rocket,
-  Video,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
@@ -18,6 +18,17 @@ import { Button, ButtonArrow } from "@/components/ui/button";
 import { SiteHeader } from "@/components/sections/site-header";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { SpanishPageLanguage } from "@/components/seo/spanish-page-language";
+import { BriefForm } from "@/components/brief/brief-form";
+import { BriefLumina } from "@/components/brief/brief-lumina";
+import { StudioInfo } from "@/components/brief/studio-info";
+import {
+  EMPTY_BRIEF,
+  briefToText,
+  makeBriefLink,
+  sanitizeBriefState,
+  type BriefLuminaReply,
+  type BriefState,
+} from "@/lib/brief";
 import { trackAdsConversion, trackEvent } from "@/lib/analytics";
 import { formatMoney } from "@/lib/currency";
 import { cn } from "@/lib/utils";
@@ -27,7 +38,7 @@ const WA_PHONE = "525663012505";
 const COUNTED_KEY = "bryanf_purchases_counted_v1";
 
 type Provider = "stripe" | "mercadopago";
-type View = "checking" | "paid" | "pending" | "failed" | "cancelled" | "unverified" | "brief";
+type View = "checking" | "paid" | "pending" | "failed" | "cancelled" | "unverified" | "brief" | "transfer";
 
 interface Order {
   state: "paid" | "pending" | "failed" | "unknown";
@@ -118,7 +129,7 @@ const HEROES: Record<View, { badge: ReactNode; tone: string; title: string; body
     badge: <Check className="h-7 w-7" strokeWidth={3} />,
     tone: "bg-ink text-lime",
     title: "¡Pago recibido! Gracias por tu confianza.",
-    body: "Te llegará el comprobante por correo. Ahora cuéntanos de tu proyecto para arrancar de inmediato: toma menos de 3 minutos.",
+    body: "Te llegará el comprobante por correo. Ahora cuéntanos de tu proyecto para arrancar de inmediato. Si quieres, Lumina lo llena contigo.",
   },
   pending: {
     badge: <Clock className="h-7 w-7" />,
@@ -144,60 +155,55 @@ const HEROES: Record<View, { badge: ReactNode; tone: string; title: string; body
     title: "Recibimos tu regreso del pago",
     body: "No pudimos confirmarlo automáticamente; lo revisamos y te escribimos. Si ya pagaste, adelanta tu briefing aquí abajo.",
   },
+  transfer: {
+    badge: <Landmark className="h-7 w-7" />,
+    tone: "bg-lime text-ink",
+    title: "Gracias por elegir transferencia",
+    body: "Cuando la hagas, mándanos el comprobante por WhatsApp o correo y te confirmamos el pago. Mientras, llena tu briefing aquí abajo para arrancar en cuanto se acredite.",
+  },
   brief: {
     badge: <Rocket className="h-7 w-7" />,
     tone: "bg-ink text-lime",
     title: "Cuéntanos de tu proyecto",
-    body: "Con esta información personalizamos tu sitio y te mandamos la ruta de trabajo. Toma menos de 3 minutos.",
+    body: "Con esta información personalizamos tu sitio y te mandamos la ruta de trabajo. Si quieres, Lumina lo llena contigo.",
   },
 };
 
-const fieldClass =
-  "h-12 w-full rounded-inner bg-white px-4 text-[0.9375rem] font-medium text-ink outline-none ring-1 ring-inset ring-ink/10 transition-shadow placeholder:text-ink/45 focus-visible:ring-2 focus-visible:ring-ink";
-const labelClass = "mb-1.5 block px-1 text-xs font-semibold text-ink/70";
+/** Borrador del briefing en este dispositivo (sin archivos). */
+const DRAFT_KEY = "bryanf_brief_draft_v1";
 
-function Field({
-  id,
-  label,
-  full,
-  children,
-}: {
-  id: string;
-  label: string;
-  full?: boolean;
-  children: ReactNode;
-}) {
-  return (
-    <div className={cn(full && "sm:col-span-2")}>
-      <label htmlFor={id} className={labelClass}>
-        {label}
-      </label>
-      {children}
-    </div>
-  );
+function readDraft(): BriefState | null {
+  try {
+    const raw = window.localStorage.getItem(DRAFT_KEY);
+    return raw ? sanitizeBriefState(JSON.parse(raw)) : null;
+  } catch {
+    return null;
+  }
 }
 
-function Select({ id, name, options }: { id: string; name: string; options: string[] }) {
-  return (
-    <select id={id} name={name} defaultValue="" className={cn(fieldClass, "cursor-pointer")}>
-      <option value="">Selecciona…</option>
-      {options.map((o) => (
-        <option key={o} value={o}>
-          {o}
-        </option>
-      ))}
-    </select>
-  );
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(",")[1] || "");
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
 }
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
- * /gracias — a donde regresan Stripe y Mercado Pago.
+ * /gracias — a donde regresan Stripe y Mercado Pago (y a donde llega quien
+ * eligió transferencia, con `?via=transferencia`).
  *
  * No se cree el `status=success` de la URL: verifica el pago con
  * /api/order-status y sólo entonces dice "pago recibido" y cuenta la venta
  * (purchase) en GA4 y Google Ads, con el monto real. Si se canceló o falló, lo
- * dice y ofrece reintentar. El briefing se envía de verdad a /api/onboarding-submit
- * y, si falla, queda escrito en un WhatsApp.
+ * dice y ofrece reintentar.
+ *
+ * El briefing (lib/brief.ts) se guarda solo mientras se llena, reconoce los
+ * enlaces que pega el cliente y Lumina puede llenarlo platicando. Se envía a
+ * /api/onboarding-submit y, si falla, queda escrito en un WhatsApp.
  */
 export function GraciasExperience() {
   const [view, setView] = useState<View>("checking");
@@ -205,8 +211,11 @@ export function GraciasExperience() {
   const [order, setOrder] = useState<Order | null>(null);
   const [sendState, setSendState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [error, setError] = useState("");
-  const [briefText, setBriefText] = useState("");
+  const [brief, setBrief] = useState<BriefState>(EMPTY_BRIEF);
+  const [files, setFiles] = useState<File[]>([]);
+  const [flash, setFlash] = useState<Set<string>>(new Set());
   const paymentRef = useRef("");
+  const draftLoaded = useRef(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -223,6 +232,10 @@ export function GraciasExperience() {
       setView("cancelled");
       return;
     }
+    if (params.get("via") === "transferencia") {
+      setView("transfer");
+      return;
+    }
 
     let query = "";
     if (provider === "stripe" && sessionId) {
@@ -235,7 +248,7 @@ export function GraciasExperience() {
       setView("failed");
       return;
     } else {
-      // Sin datos de pago (enlace del correo, transferencia): sólo el briefing.
+      // Sin datos de pago (enlace del correo): sólo el briefing.
       setView(status === "success" || status === "pending" ? "unverified" : "brief");
       return;
     }
@@ -264,57 +277,128 @@ export function GraciasExperience() {
     };
   }, []);
 
+  // Recupera el borrador guardado en este dispositivo.
+  useEffect(() => {
+    const draft = readDraft();
+    if (draft) setBrief(draft);
+    draftLoaded.current = true;
+  }, []);
+
+  // Lo que ya sabemos por el pago (nombre, correo, teléfono) y el tipo de
+  // proyecto de la suscripción: solo llena lo que está vacío.
+  useEffect(() => {
+    const known: Record<string, string | undefined> = {
+      fullName: order?.name,
+      contactEmail: order?.email,
+      contactPhone: order?.phone,
+      projectType: isSubscription ? "Suscripción Todo Digital" : undefined,
+    };
+    setBrief((prev) => {
+      const values = { ...prev.values };
+      let changed = false;
+      for (const [key, value] of Object.entries(known)) {
+        if (value && !values[key]?.trim()) {
+          values[key] = value;
+          changed = true;
+        }
+      }
+      return changed ? { ...prev, values } : prev;
+    });
+  }, [order, isSubscription]);
+
+  // Autoguardado (sin archivos).
+  useEffect(() => {
+    if (!draftLoaded.current || sendState === "sent") return;
+    const id = window.setTimeout(() => {
+      try {
+        window.localStorage.setItem(DRAFT_KEY, JSON.stringify(brief));
+      } catch {
+        /* sin storage: se llena igual */
+      }
+    }, 400);
+    return () => window.clearTimeout(id);
+  }, [brief, sendState]);
+
+  /** Aplica lo que Lumina llenó; devuelve las claves que cambiaron. */
+  function applyLumina(reply: BriefLuminaReply): string[] {
+    const changed: string[] = [];
+    const current = brief;
+    const values = { ...current.values };
+    for (const [key, value] of Object.entries(reply.fill)) {
+      if (values[key] !== value) {
+        values[key] = value;
+        changed.push(key);
+      }
+    }
+    const newFeatures = reply.features.filter((f) => !current.features.includes(f));
+    if (newFeatures.length) changed.push("features");
+    const newLinks = reply.links
+      .filter((url) => !current.links.some((l) => l.url === url))
+      .map((url) => makeBriefLink(url));
+    if (newLinks.length) changed.push("links");
+    if (!changed.length) return [];
+    setBrief((prev) => ({
+      values: { ...prev.values, ...Object.fromEntries(changed.filter((k) => k in values).map((k) => [k, values[k]])) },
+      features: [...prev.features, ...newFeatures.filter((f) => !prev.features.includes(f))],
+      links: [...prev.links, ...newLinks.filter((l) => !prev.links.some((p) => p.url === l.url))].slice(0, 20),
+    }));
+    setFlash(new Set(changed));
+    window.setTimeout(() => setFlash(new Set()), 2600);
+    trackEvent("brief_lumina_fill", { fields: changed.length });
+    return changed.map((k) => (k === "features" ? "funciones" : k === "links" ? "enlaces" : k));
+  }
+
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const data = Object.fromEntries(new FormData(event.currentTarget)) as Record<string, string>;
-    const text = [
-      "*Nuevo briefing — BryanF Design*",
-      `*Nombre:* ${data.fullName || "—"}`,
-      `*Negocio:* ${data.businessName || "—"}`,
-      `*WhatsApp:* ${data.contactPhone || "—"}`,
-      data.contactEmail && `*Correo:* ${data.contactEmail}`,
-      data.projectType && `*Tipo de proyecto:* ${data.projectType}`,
-      data.deadline && `*Plazo:* ${data.deadline}`,
-      data.materials && `*Materiales:* ${data.materials}`,
-      data.style && `*Estilo:* ${data.style}`,
-      data.projectBrief && `\n${data.projectBrief}`,
-      data.sections && `*Secciones:* ${data.sections}`,
-      data.references && `*Referencias:* ${data.references}`,
-      data.notes && `*Notas:* ${data.notes}`,
-      paymentRef.current && `*Ref. pago:* ${paymentRef.current}`,
-    ]
-      .filter(Boolean)
-      .join("\n");
-    setBriefText(text);
-
-    if (!data.fullName?.trim() || !data.businessName?.trim() || !data.contactPhone?.trim()) {
+    const v = brief.values;
+    const missing = [
+      !v.fullName?.trim() && "gb-fullName",
+      !v.businessName?.trim() && "gb-businessName",
+      !v.contactPhone?.trim() && "gb-contactPhone",
+    ].filter(Boolean) as string[];
+    if (missing.length) {
       setError("Completa nombre, negocio y WhatsApp para continuar.");
       setSendState("error");
+      document.getElementById(missing[0])?.focus();
+      return;
+    }
+    if (v.contactEmail?.trim() && !EMAIL_RE.test(v.contactEmail.trim())) {
+      setError("Revisa tu correo: parece que le falta algo.");
+      setSendState("error");
+      document.getElementById("gb-contactEmail")?.focus();
       return;
     }
 
     setSendState("sending");
     setError("");
     try {
+      const attachments = await Promise.all(
+        files.map(async (file) => ({ name: file.name, type: file.type, base64: await fileToBase64(file) }))
+      );
       const res = await fetch("/api/onboarding-submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: `gracias-briefing (${view})`,
-          form: data,
+          action: `gracias-briefing (${view}${isSubscription ? ", suscripción" : ""})`,
+          form: { ...brief.values, features: brief.features.join(", ") },
+          links: brief.links.map((l) => ({ url: l.url, label: l.label, purpose: l.purpose })),
           payment: {
-            method: order?.provider || "pendiente",
+            method: view === "transfer" ? "transferencia" : order?.provider || "pendiente",
             reference: paymentRef.current,
           },
-          totals: order?.value
-            ? { payableNow: order.value, currency: order.currency }
-            : undefined,
+          totals: order?.value ? { payableNow: order.value, currency: order.currency } : undefined,
+          attachments,
         }),
       });
       const body = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
       if (!res.ok || !body.ok) throw new Error(body.error || String(res.status));
-      trackEvent("briefing_submit", { state: view });
+      trackEvent("briefing_submit", { state: view, links: brief.links.length, files: files.length });
       setSendState("sent");
+      try {
+        window.localStorage.removeItem(DRAFT_KEY);
+      } catch {
+        /* nada */
+      }
     } catch {
       setError("No se pudo enviar el briefing. Mándalo por WhatsApp: ya va escrito.");
       setSendState("error");
@@ -326,15 +410,19 @@ export function GraciasExperience() {
       ? {
           ...HEROES.paid,
           title: "¡Bienvenido a tu suscripción Todo Digital!",
-          body: "Ya está activa. Mándanos tu primera solicitud por WhatsApp: cada una se entrega en 1 a 2 días hábiles según su complejidad. Abajo puedes contarnos de tu negocio para arrancar con contexto.",
+          body: "Ya está activa. Cuéntanos de tu negocio aquí abajo (Lumina te ayuda) y mándanos tu primera solicitud por WhatsApp: cada una se entrega en 1 a 2 días hábiles según su complejidad.",
         }
       : HEROES[view];
-  const showBrief = view === "paid" || view === "pending" || view === "unverified" || view === "brief";
+  const showBrief = view !== "checking" && view !== "failed" && view !== "cancelled";
   const waHref = (text: string) => `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(text)}`;
+  const briefText = briefToText(brief, paymentRef.current);
   const helpText =
     view === "failed" || view === "cancelled"
       ? "Hola, intenté pagar mi proyecto web en el sitio y no se completó. ¿Me ayudas?"
-      : "Hola, acabo de pagar mi proyecto web. ¿Podemos hablar?";
+      : view === "transfer"
+        ? "Hola Bryan, te mando el comprobante de mi transferencia. Mi negocio es: "
+        : "Hola, acabo de pagar mi proyecto web. ¿Podemos hablar?";
+  // Transferencia: el pago aún no se confirma, así que "Pago" sigue en curso.
   const stepIndex = view === "paid" || view === "pending" ? 1 : 0;
 
   return (
@@ -345,7 +433,7 @@ export function GraciasExperience() {
       <main id="main-content" tabIndex={-1} className="sheet-main">
         {/* Alto mínimo: con el pie a la vista el encabezado se retira, y en
             los estados cortos (cancelado, fallido) se quedaba sin él. */}
-        <section aria-labelledby="gracias-title" className="panel flex min-h-[72vh] flex-col justify-center p-4 pt-5 shadow-soft sm:p-8 lg:p-10">
+        <section aria-labelledby="gracias-title" className="panel flex min-h-[60vh] flex-col justify-center p-4 pt-5 shadow-soft sm:p-8 lg:p-10">
           <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
             <span className={cn("grid size-16 place-items-center rounded-full ring-1 ring-ink/10", hero.tone)}>
               {hero.badge}
@@ -372,7 +460,7 @@ export function GraciasExperience() {
 
             {isSubscription && view === "paid" && (
               <div className="flex flex-col gap-2.5 sm:flex-row">
-                <Button asChild size="lg" variant="ink" className="justify-between pl-6 pr-2.5">
+                <Button asChild size="lg" variant="ink" className="justify-between whitespace-normal pl-6 pr-2.5 text-left leading-tight">
                   <a
                     href={waHref("Hola Bryan, ya me suscribí al plan Todo Digital. Mi primera solicitud es: ")}
                     target="_blank"
@@ -384,18 +472,34 @@ export function GraciasExperience() {
                   </a>
                 </Button>
                 <Button asChild size="lg" variant="outline">
-                  <Link href="/suscripcion#politica">Ver la política</Link>
+                  <Link href="/suscripcion/preguntas-frecuentes">Preguntas de la suscripción</Link>
                 </Button>
               </div>
             )}
 
-            {!isSubscription && (view === "paid" || view === "pending" || view === "brief" || view === "unverified") && (
-              <Steps current={stepIndex} />
+            {view === "transfer" && (
+              <div className="flex flex-col gap-2.5 sm:flex-row">
+                <Button asChild size="lg" variant="ink" className="justify-between whitespace-normal pl-6 pr-2.5 text-left leading-tight">
+                  <a href={waHref(helpText)} target="_blank" rel="noopener noreferrer">
+                    <FaWhatsapp aria-hidden className="h-[1.1rem] w-[1.1rem] text-lime" />
+                    Enviar comprobante
+                    <ButtonArrow tone="lime" className="ml-3 -mr-0.5" />
+                  </a>
+                </Button>
+                <Button asChild size="lg" variant="outline">
+                  <a href="mailto:bryanf@bryanfdesign.com.mx?subject=Comprobante%20de%20transferencia%20-%20BryanF%20Design">
+                    <Mail aria-hidden className="h-4 w-4" />
+                    Mandarlo por correo
+                  </a>
+                </Button>
+              </div>
             )}
+
+            {!isSubscription && showBrief && <Steps current={stepIndex} />}
 
             {(view === "failed" || view === "cancelled") && (
               <div className="flex flex-col gap-2.5 sm:flex-row">
-                <Button asChild size="lg" variant="ink" className="justify-between pl-6 pr-2.5">
+                <Button asChild size="lg" variant="ink" className="justify-between whitespace-normal pl-6 pr-2.5 text-left leading-tight">
                   <Link href="/crear-web#precios">
                     Retomar mi cotización
                     <ButtonArrow tone="lime" className="ml-3 -mr-0.5" />
@@ -413,18 +517,21 @@ export function GraciasExperience() {
         </section>
 
         {showBrief && (
-          <section aria-labelledby="brief-title" className="grid gap-gutter lg:grid-cols-12">
+          <section aria-labelledby="brief-title" className="grid items-start gap-gutter lg:grid-cols-12">
             <div className="panel p-4 pt-5 shadow-soft sm:p-7 lg:col-span-8 lg:p-9">
               <h2 id="brief-title" className="display-title px-1 text-[1.75rem] leading-tight text-ink sm:px-0">
-                Tu briefing
+                {isSubscription ? "Cuéntanos de tu negocio" : "Tu briefing"}
               </h2>
+              <p className="mt-2 px-1 text-pretty text-[0.9375rem] leading-relaxed text-muted-foreground sm:px-0">
+                Mientras más nos cuentes, más rápido arrancamos y menos vueltas damos. Solo nombre, negocio y WhatsApp son
+                obligatorios; lo demás, lo que tengas a la mano. ¿Prefieres platicarlo? Lumina lo llena contigo.
+              </p>
               {sendState === "sent" ? (
                 <div role="status" className="mt-5 flex flex-col gap-4 rounded-card bg-lime p-6">
-                  <p className="display-title text-[1.6rem] leading-tight text-ink">
-                    ¡Briefing recibido!
-                  </p>
+                  <p className="display-title text-[1.6rem] leading-tight text-ink">¡Briefing recibido!</p>
                   <p className="text-[0.975rem] leading-relaxed text-ink/80">
                     Lo revisamos en menos de 24 horas hábiles y te escribimos para agendar el arranque.
+                    {brief.values.contactEmail ? " Te mandamos una copia a tu correo." : ""}
                   </p>
                   <Button asChild size="lg" variant="ink" className="w-full sm:w-fit">
                     <a href={waHref(briefText)} target="_blank" rel="noopener noreferrer">
@@ -434,100 +541,47 @@ export function GraciasExperience() {
                   </Button>
                 </div>
               ) : (
-                <form
-                  noValidate
+                <BriefForm
+                  state={brief}
+                  onChange={setBrief}
+                  flash={flash}
+                  files={files}
+                  onFiles={setFiles}
+                  sendState={sendState}
+                  error={error}
+                  whatsappHref={waHref(briefText)}
                   onSubmit={onSubmit}
-                  className="mt-5 grid gap-4 rounded-card bg-mint p-3.5 ring-1 ring-inset ring-ink/[0.06] sm:grid-cols-2 sm:p-5"
-                >
-                  <Field id="gb-name" label="Nombre completo *">
-                    <input id="gb-name" name="fullName" required autoComplete="name" defaultValue={order?.name} className={fieldClass} />
-                  </Field>
-                  <Field id="gb-business" label="Nombre del negocio *">
-                    <input id="gb-business" name="businessName" required autoComplete="organization" className={fieldClass} />
-                  </Field>
-                  <Field id="gb-phone" label="WhatsApp *">
-                    <input id="gb-phone" name="contactPhone" type="tel" inputMode="tel" required autoComplete="tel" placeholder="55 1234 5678" defaultValue={order?.phone} className={fieldClass} />
-                  </Field>
-                  <Field id="gb-email" label="Correo">
-                    <input id="gb-email" name="contactEmail" type="email" inputMode="email" autoComplete="email" placeholder="tu@correo.com" defaultValue={order?.email} className={fieldClass} />
-                  </Field>
-                  <Field id="gb-type" label="Tipo de proyecto">
-                    <Select id="gb-type" name="projectType" options={["Landing page", "Sitio web corporativo", "Tienda en línea", "Portafolio / marca personal", "Blog o CMS", "Plataforma a medida"]} />
-                  </Field>
-                  <Field id="gb-deadline" label="¿Para cuándo lo necesitas?">
-                    <Select id="gb-deadline" name="deadline" options={["Lo antes posible", "En 2 semanas", "En 1 mes", "Soy flexible"]} />
-                  </Field>
-                  <Field id="gb-brief" label="¿Qué hace tu negocio y qué quieres lograr con el sitio?" full>
-                    <textarea id="gb-brief" name="projectBrief" rows={4} maxLength={4000} placeholder="A quién le vendes, qué quieres que haga la gente al entrar (comprar, escribirte, agendar)…" className={cn(fieldClass, "h-auto min-h-[7rem] resize-y py-3")} />
-                  </Field>
-                  <Field id="gb-sections" label="Secciones que quieres" full>
-                    <input id="gb-sections" name="sections" placeholder="Inicio, Servicios, Portafolio, Contacto…" className={fieldClass} />
-                  </Field>
-                  <Field id="gb-style" label="Estilo visual">
-                    <Select id="gb-style" name="style" options={["Oscuro / premium", "Limpio y minimalista", "Atrevido y colorido", "Corporativo / formal", "Moderno y divertido"]} />
-                  </Field>
-                  <Field id="gb-materials" label="¿Tienes materiales listos?">
-                    <Select id="gb-materials" name="materials" options={["Sí: logo, textos e imágenes", "Algunos, necesito ayuda", "Aún no, necesito orientación"]} />
-                  </Field>
-                  <Field id="gb-refs" label="Sitios de referencia (opcional)" full>
-                    <input id="gb-refs" name="references" placeholder="Pega links de sitios que te gusten" className={fieldClass} />
-                  </Field>
-                  <Field id="gb-notes" label="Notas adicionales (opcional)" full>
-                    <textarea id="gb-notes" name="notes" rows={2} maxLength={4000} className={cn(fieldClass, "h-auto min-h-[4.5rem] resize-y py-3")} />
-                  </Field>
-
-                  {sendState === "error" && error && (
-                    <div role="alert" className="flex flex-col gap-2 rounded-inner bg-white px-4 py-3 text-sm text-ink ring-1 ring-inset ring-signal/40 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
-                      <span>{error}</span>
-                      {briefText && (
-                        <a href={waHref(briefText)} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 font-semibold text-forest underline-offset-4 hover:underline">
-                          <FaWhatsapp aria-hidden className="h-4 w-4" />
-                          Enviar por WhatsApp
-                        </a>
-                      )}
-                    </div>
-                  )}
-
-                  <Button type="submit" size="lg" variant="ink" disabled={sendState === "sending"} className="w-full justify-between pl-6 pr-2.5 sm:col-span-2">
-                    {sendState === "sending" ? "Enviando…" : "Enviar briefing y arrancar"}
-                    {sendState === "sending" ? (
-                      <Loader2 aria-hidden className="mr-2.5 h-5 w-5 animate-spin" />
-                    ) : (
-                      <ButtonArrow tone="lime" className="-mr-0.5" />
-                    )}
-                  </Button>
-                </form>
+                />
               )}
             </div>
 
-            <aside className="panel panel-ink flex flex-col gap-5 p-5 sm:p-7 lg:col-span-4">
-              <p className="display-title text-[1.5rem] leading-tight text-white">¿Qué sigue?</p>
-              <ul className="flex flex-col gap-4">
-                {[
-                  { Icon: MessageCircle, title: "Revisamos tu briefing", body: "En menos de 24 horas hábiles te mandamos la ruta del proyecto." },
-                  { Icon: Video, title: "Arranque por videollamada", body: "Alineamos objetivos, tiempos y materiales en 20 minutos." },
-                  { Icon: Rocket, title: "Construimos", body: "Te enseñamos avances y ajustamos contigo hasta publicar." },
-                ].map(({ Icon, title, body }) => (
-                  <li key={title} className="flex items-start gap-3">
-                    <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-lime text-ink">
-                      <Icon className="h-4 w-4" />
-                    </span>
-                    <span>
-                      <span className="block text-[0.9375rem] font-semibold text-white">{title}</span>
-                      <span className="block text-sm leading-snug text-white/65">{body}</span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <Button asChild variant="outline" className="mt-auto w-full border-white/25 text-white">
-                <a href={waHref(helpText)} target="_blank" rel="noopener noreferrer">
-                  <FaWhatsapp aria-hidden className="h-4 w-4 text-lime" />
-                  Hablar con Bryan
+            {/* Lumina: en teléfono va primero (antes del formulario); en
+                escritorio acompaña al formulario pegada arriba. */}
+            <aside className="order-first flex flex-col gap-gutter lg:sticky lg:top-[calc(var(--header-h,4.5rem)+var(--gutter))] lg:order-none lg:col-span-4">
+              {sendState !== "sent" && (
+                <BriefLumina state={brief} subscription={isSubscription} view={view} onApply={applyLumina} />
+              )}
+              <div className="panel flex flex-col gap-3 p-5 shadow-soft">
+                <p className="text-sm font-bold text-ink">¿Dudas? Te contestamos directo</p>
+                <Button asChild variant="ink" className="w-full">
+                  <a href={waHref(helpText)} target="_blank" rel="noopener noreferrer">
+                    <FaWhatsapp aria-hidden className="h-4 w-4 text-lime" />
+                    Hablar con Bryan
+                  </a>
+                </Button>
+                <a
+                  href="mailto:bryanf@bryanfdesign.com.mx"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 text-sm font-semibold text-ink underline-offset-4 hover:underline"
+                >
+                  <Mail aria-hidden className="h-4 w-4" />
+                  bryanf@bryanfdesign.com.mx
                 </a>
-              </Button>
+              </div>
             </aside>
           </section>
         )}
+
+        {showBrief && <StudioInfo subscription={isSubscription} />}
       </main>
 
       <SiteFooter spanishOnly />

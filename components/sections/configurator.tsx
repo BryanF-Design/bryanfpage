@@ -1070,6 +1070,14 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                         {t.configurator.sendEmail}
                       </a>
                     </Button>
+                    {/* El briefing también espera a quien paga por transferencia. */}
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="w-full whitespace-normal border-lime/40 text-center leading-tight text-lime"
+                    >
+                      <a href="/gracias?via=transferencia">{t.configurator.fillBrief}</a>
+                    </Button>
                   </div>
                 </div>
               )}

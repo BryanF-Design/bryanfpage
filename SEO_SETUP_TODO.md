@@ -2,7 +2,7 @@
 
 ## Actualización de implementación — 2026-07-12
 
-- Completado: valores de confianza renderizados en SSR (`+5 años`, `+100 proyectos`, `desde 3 días`) para que crawlers y usuarios sin JavaScript no reciban ceros.
+- Completado: valores de confianza renderizados en SSR (`+5 años`, `+150 proyectos`, `desde 3 días`) para que crawlers y usuarios sin JavaScript no reciban ceros.
 - Completado: eliminado el texto editorial `Keyword principal` de las landings; el bloque ahora explica el enfoque del servicio.
 - Completado: corregida la plantilla de titles para evitar `BryanF Design` duplicado.
 - Completado: sitemap con `lastmod` fijo y verificable para las páginas modificadas; se omitió `lastmod` en páginas no modificadas.

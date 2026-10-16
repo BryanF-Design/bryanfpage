@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
+import { BRIEF_SECTIONS, LONG_BRIEF_FIELDS, detectLinkType, normalizeUrl, purposeLabel } from "@/lib/brief";
+import { sendEmail } from "@/lib/notify";
 
 export const runtime = "nodejs";
 
 const FIELD_MAX = 500;
 const LONG_FIELD_MAX = 4000;
-const LONG_FIELDS = new Set(["projectBrief", "references"]);
+const LONG_FIELDS = LONG_BRIEF_FIELDS;
 const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024; // 5MB per file (base64-decoded estimate)
 const MAX_TOTAL_ATTACHMENT_BYTES = 15 * 1024 * 1024;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -77,6 +79,21 @@ export async function POST(req: NextRequest) {
       body.coupon && typeof body.coupon === "object"
         ? (body.coupon as Record<string, unknown>)
         : {};
+    // Enlaces del briefing: se vuelven a validar y a clasificar aquí (no se
+    // confía en el tipo que manda el navegador).
+    const links = (Array.isArray(body.links) ? body.links : [])
+      .slice(0, 20)
+      .map((raw) => {
+        const l = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+        const norm = normalizeUrl(String(l.url || ""));
+        if (!("url" in norm)) return null;
+        return {
+          url: norm.url,
+          label: detectLinkType(norm.url).label,
+          purpose: purposeLabel(String(l.purpose || "")),
+        };
+      })
+      .filter((l): l is { url: string; label: string; purpose: string } => l !== null);
     const attachments = Array.isArray(body.attachments)
       ? (body.attachments as Array<Record<string, unknown>>).slice(0, 5)
       : [];
@@ -110,18 +127,33 @@ export async function POST(req: NextRequest) {
       "BryanF Design <no-reply@bryanfdesign.com.mx>";
     const to = ["bryanf@bryanfdesign.com.mx", "pandita250599@gmail.com"];
 
-    // Campos del briefing de /gracias que no tienen fila fija arriba.
-    const EXTRA_LABELS: Record<string, string> = {
-      projectType: "Tipo de proyecto",
-      deadline: "Plazo",
-      materials: "Materiales",
-      style: "Estilo visual",
-      sections: "Secciones",
-      notes: "Notas",
-    };
-    const extrasHtml = Object.entries(EXTRA_LABELS)
-      .filter(([key]) => form[key])
-      .map(([key, label]) => `<li><strong>${label}:</strong> ${escapeHtml(form[key])}</li>`)
+    // Briefing de /gracias: cada sección con sus campos (lib/brief.ts).
+    const li = (label: string, value: string) =>
+      `<li style="margin:0 0 6px;"><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value).replace(/\n/g, "<br>")}</li>`;
+    const briefHtml = BRIEF_SECTIONS.map((section) => {
+      const rows = section.fields
+        .filter((f) => !["fullName", "businessName", "contactPhone", "contactEmail"].includes(f.key) && form[f.key])
+        .map((f) => li(f.label, form[f.key]));
+      if (section.id === "proyecto" && form.features) rows.push(li("Funciones", form.features));
+      return rows.length
+        ? `<h3 style="margin:18px 0 8px;">${escapeHtml(section.title)}</h3><ul style="margin:0 0 14px;padding-left:18px;">${rows.join("")}</ul>`
+        : "";
+    }).join("");
+    const linksHtml = links.length
+      ? `<h3 style="margin:18px 0 8px;">Enlaces (${links.length})</h3><ul style="margin:0 0 14px;padding-left:18px;">${links
+          .map(
+            (l) =>
+              `<li style="margin:0 0 6px;"><strong>${escapeHtml(l.label)}</strong> · ${escapeHtml(l.purpose)}<br><a href="${escapeHtml(l.url)}">${escapeHtml(l.url)}</a></li>`
+          )
+          .join("")}</ul>`
+      : "";
+    const legacyHtml = [
+      form.secondaryContact && li("Contacto secundario", form.secondaryContact),
+      form.mainGoal && !form.projectType && li("Objetivos", form.mainGoal),
+      form.references && li("Referencias", form.references),
+      form.notes && li("Notas", form.notes),
+    ]
+      .filter(Boolean)
       .join("");
 
     const summaryHtml = summaryItems
@@ -132,48 +164,6 @@ export async function POST(req: NextRequest) {
           )}</strong> - ${formatMoney(item.price || 0)}</li>`
       )
       .join("");
-
-    const html = `
-      <div style="font-family:Inter,Arial,sans-serif;max-width:720px;margin:0 auto;color:#171717;">
-        <h2 style="margin:0 0 12px;">Nuevo onboarding de proyecto</h2>
-        <p style="margin:0 0 16px;">Se recibió un nuevo briefing desde el flujo de pago rápido.</p>
-        <h3 style="margin:18px 0 8px;">Acción solicitada</h3>
-        <p style="margin:0 0 8px;"><strong>${escapeHtml(action)}</strong></p>
-        <h3 style="margin:18px 0 8px;">Datos de contacto</h3>
-        <ul style="margin:0 0 14px;padding-left:18px;">
-          <li><strong>Nombre:</strong> ${escapeHtml(form.fullName)}</li>
-          <li><strong>Negocio:</strong> ${escapeHtml(form.businessName)}</li>
-          <li><strong>WhatsApp:</strong> ${escapeHtml(form.contactPhone)}</li>
-          <li><strong>Correo:</strong> ${escapeHtml(form.contactEmail || "No compartido")}</li>
-          <li><strong>Contacto secundario:</strong> ${escapeHtml(form.secondaryContact || "No compartido")}</li>
-        </ul>
-        <h3 style="margin:18px 0 8px;">Proyecto</h3>
-        <ul style="margin:0 0 14px;padding-left:18px;">
-          <li><strong>Productos/servicios:</strong> ${escapeHtml(form.services || "No especificado")}</li>
-          <li><strong>Descripción:</strong> ${escapeHtml(form.projectBrief || "No especificado")}</li>
-          <li><strong>Objetivos:</strong> ${escapeHtml(form.mainGoal || "No especificado")}</li>
-          <li><strong>Referencias:</strong> ${escapeHtml(form.references || "No especificado")}</li>
-        </ul>
-        ${extrasHtml ? `<h3 style="margin:18px 0 8px;">Detalles</h3><ul style="margin:0 0 14px;padding-left:18px;">${extrasHtml}</ul>` : ""}
-        <h3 style="margin:18px 0 8px;">Cotización</h3>
-        <ul style="margin:0 0 14px;padding-left:18px;">
-          <li><strong>Total proyecto:</strong> ${formatMoney(totals.projectTotal || 0)}</li>
-          <li><strong>Pago ahora:</strong> ${formatMoney(totals.payableNow || 0)}</li>
-          <li><strong>Método:</strong> ${escapeHtml(payment.method || "pendiente")}</li>
-          <li><strong>Referencia de pago:</strong> ${escapeHtml(payment.reference || "—")}</li>
-          <li><strong>Cupón:</strong> ${escapeHtml(coupon.code || "Sin cupón")}</li>
-        </ul>
-        <h3 style="margin:18px 0 8px;">Servicios seleccionados</h3>
-        <ul style="margin:0 0 14px;padding-left:18px;">${summaryHtml || "<li>Sin extras</li>"}</ul>
-      </div>
-    `;
-
-    const resendPayload: Record<string, unknown> = {
-      from: fromEmail,
-      to,
-      subject: `Onboarding BryanF Design - ${form.businessName}`,
-      html,
-    };
 
     let totalAttachmentBytes = 0;
     const safeAttachments = attachments
@@ -190,6 +180,44 @@ export async function POST(req: NextRequest) {
         content: file.base64,
         type: file.type || "application/octet-stream",
       }));
+
+    const safeAttachmentsCount = safeAttachments.length;
+
+    const html = `
+      <div style="font-family:Inter,Arial,sans-serif;max-width:720px;margin:0 auto;color:#171717;">
+        <h2 style="margin:0 0 12px;">Nuevo onboarding de proyecto</h2>
+        <p style="margin:0 0 16px;">Se recibió un nuevo briefing${safeAttachmentsCount ? ` con ${safeAttachmentsCount} archivo(s) adjunto(s)` : ""}.</p>
+        <h3 style="margin:18px 0 8px;">Acción solicitada</h3>
+        <p style="margin:0 0 8px;"><strong>${escapeHtml(action)}</strong></p>
+        <h3 style="margin:18px 0 8px;">Datos de contacto</h3>
+        <ul style="margin:0 0 14px;padding-left:18px;">
+          <li><strong>Nombre:</strong> ${escapeHtml(form.fullName)}</li>
+          <li><strong>Negocio:</strong> ${escapeHtml(form.businessName)}</li>
+          <li><strong>WhatsApp:</strong> ${escapeHtml(form.contactPhone)}</li>
+          <li><strong>Correo:</strong> ${escapeHtml(form.contactEmail || "No compartido")}</li>
+        </ul>
+        ${briefHtml}
+        ${linksHtml}
+        ${legacyHtml ? `<h3 style="margin:18px 0 8px;">Más</h3><ul style="margin:0 0 14px;padding-left:18px;">${legacyHtml}</ul>` : ""}
+        <h3 style="margin:18px 0 8px;">Pago</h3>
+        <ul style="margin:0 0 14px;padding-left:18px;">
+          ${totals.projectTotal ? `<li><strong>Total proyecto:</strong> ${formatMoney(totals.projectTotal)}</li>` : ""}
+          ${totals.payableNow ? `<li><strong>Pagado / por pagar:</strong> ${formatMoney(totals.payableNow)} ${escapeHtml(totals.currency || "")}</li>` : ""}
+          <li><strong>Método:</strong> ${escapeHtml(payment.method || "pendiente")}</li>
+          <li><strong>Referencia de pago:</strong> ${escapeHtml(payment.reference || "—")}</li>
+          ${coupon.code ? `<li><strong>Cupón:</strong> ${escapeHtml(coupon.code)}</li>` : ""}
+        </ul>
+        ${summaryHtml ? `<h3 style="margin:18px 0 8px;">Servicios seleccionados</h3><ul style="margin:0 0 14px;padding-left:18px;">${summaryHtml}</ul>` : ""}
+      </div>
+    `;
+
+    const resendPayload: Record<string, unknown> = {
+      from: fromEmail,
+      to,
+      subject: `Onboarding BryanF Design - ${form.businessName}`,
+      html,
+      ...(form.contactEmail ? { reply_to: form.contactEmail } : {}),
+    };
 
     if (safeAttachments.length) resendPayload.attachments = safeAttachments;
 
@@ -209,6 +237,29 @@ export async function POST(req: NextRequest) {
         { error: "No se pudo enviar el briefing. Intenta de nuevo o escríbenos por WhatsApp." },
         { status: 502 }
       );
+    }
+
+    // Copia para el cliente: confirma que llegó y qué sigue. Si falla, el
+    // briefing ya está con nosotros, así que no se reporta como error.
+    if (form.contactEmail) {
+      const firstName = escapeHtml(form.fullName.split(" ")[0]);
+      await sendEmail(
+        form.contactEmail,
+        "Recibimos tu briefing · BryanF Design",
+        `<div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto;color:#171717;">
+          <h2 style="margin:0 0 12px;">¡Gracias, ${firstName}!</h2>
+          <p style="margin:0 0 12px;">Recibimos el briefing de <strong>${escapeHtml(form.businessName)}</strong>${links.length ? ` con ${links.length} enlace(s)` : ""}${safeAttachmentsCount ? ` y ${safeAttachmentsCount} archivo(s)` : ""}.</p>
+          <p style="margin:0 0 8px;"><strong>Qué sigue:</strong></p>
+          <ol style="margin:0 0 14px;padding-left:18px;">
+            <li>Lo revisamos en menos de 24 horas hábiles y te mandamos la ruta del proyecto.</li>
+            <li>Agendamos una videollamada de arranque de 20 minutos.</li>
+            <li>Construimos y te enseñamos avances hasta publicar.</li>
+          </ol>
+          <p style="margin:0 0 12px;">¿Se te olvidó algo? Responde este correo o escríbenos por WhatsApp: <a href="https://wa.me/525663012505">+52 56 6301 2505</a>.</p>
+          <p style="margin:0;color:#555;">BryanF Design · Lunes a viernes de 9:00 a 19:00 (CDMX)</p>
+        </div>`,
+        "bryanf@bryanfdesign.com.mx"
+      ).catch(() => undefined);
     }
 
     return NextResponse.json({ ok: true, id: resendData.id || null });
