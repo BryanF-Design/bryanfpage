@@ -31,13 +31,21 @@ Plantillas: `lib/email-templates.ts`. Envío: `lib/mailer.ts` (Gmail API, con Re
    **APIs y servicios → Biblioteca → Gmail API → Habilitar**.
 2. **Pantalla de consentimiento de OAuth**: tipo *Interno* si es Google Workspace (así el token no caduca a los 7 días),
    y agrega el permiso `https://www.googleapis.com/auth/gmail.send`.
-3. **Credenciales → Crear credenciales → ID de cliente de OAuth → Aplicación web**, con el URI de redirección
-   `http://localhost:53682/oauth2callback`. Copia `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET` a `.env.local`.
-4. Saca el refresh token, entrando con la cuenta que envía (`bryanf@bryanfdesign.com`):
+3. **Credenciales → Crear credenciales → ID de cliente de OAuth → Aplicación web**. En
+   **URIs de redireccionamiento autorizados → Agregar URI** escribe exactamente
+   `http://localhost:3001/oauth2callback` (http, `localhost`, sin `/` final) y **Guardar**
+   (Google puede tardar unos minutos en aplicarlo). Copia `GOOGLE_CLIENT_ID` y
+   `GOOGLE_CLIENT_SECRET` a `.env.local` (está en `.gitignore`).
+4. Saca el refresh token **en tu computadora** (Google regresa a tu `localhost`), con
+   `npm run dev` detenido porque usa el mismo puerto 3001:
    ```bash
-   node scripts/google-refresh-token.mjs
+   npm install
+   npm run google:token
    ```
-   Copia el `GOOGLE_REFRESH_TOKEN=` que imprime.
+   Se abre el navegador; entra con `bryanf@bryanfdesign.com` y acepta. El script valida `state`
+   y PKCE, comprueba que autorizaste con esa cuenta y guarda `GOOGLE_REFRESH_TOKEN` **sólo en
+   `.env.local`** (no lo imprime). Si dice que no llegó refresh token, quita el acceso de la app
+   en https://myaccount.google.com/permissions y vuelve a correrlo.
 5. Si quieres enviar como otra dirección (p. ej. `@bryanfdesign.com.mx`), agrégala en Gmail →
    Configuración → Cuentas → **Enviar como**, y ponla en `GOOGLE_SENDER_EMAIL`.
 
