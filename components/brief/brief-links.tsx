@@ -9,7 +9,6 @@ import {
   SiBehance,
   SiBox,
   SiCalendly,
-  SiCanva,
   SiDribbble,
   SiDropbox,
   SiEtsy,
@@ -47,7 +46,7 @@ import {
   SiYelp,
   SiYoutube,
 } from "react-icons/si";
-import { FaAmazon, FaLinkedin } from "react-icons/fa";
+import { FaAmazon, FaLinkedin, FaPalette } from "react-icons/fa";
 import { FileText, Globe, Link2, MapPin, Plus, Store, X } from "lucide-react";
 
 import {
@@ -72,7 +71,9 @@ const ICONS: Record<string, IconType> = {
   behance: SiBehance,
   dribbble: SiDribbble,
   figma: SiFigma,
-  canva: SiCanva,
+  // react-icons 5.7 (la versión del pnpm-lock que usa Vercel) ya no trae el
+  // logo de Canva: una paleta lo representa.
+  canva: FaPalette,
   gdrive: SiGoogledrive,
   gdocs: SiGoogledocs,
   gsheets: SiGooglesheets,
