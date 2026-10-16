@@ -368,7 +368,7 @@ const ja: Dictionary = {
     copyLabel: (label) => `${label}をコピー`,
     sendWhatsapp: "WhatsAppで領収書を送る",
     sendEmail: "メールで領収書を送る",
-    fillBrief: "振込済み：ブリーフィングを記入",
+    fillBrief: "振込済み：支払いを確認",
     emailQuote: "見積もりをメールで送る",
     emailQuoteSubject: "私の見積もり — BryanF Design",
     securePaymentPrefix: "安全な決済です。続行すると、以下に同意したことになります：",

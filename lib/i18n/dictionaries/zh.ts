@@ -320,7 +320,7 @@ const zh: Dictionary = {
     copyLabel: (label) => `复制${label}`,
     sendWhatsapp: "通过WhatsApp发送凭证",
     sendEmail: "通过邮件发送凭证",
-    fillBrief: "已转账：填写项目简报",
+    fillBrief: "已转账：确认付款",
     emailQuote: "把报价发到我的邮箱",
     emailQuoteSubject: "我的报价 — BryanF Design",
     securePaymentPrefix: "安全支付。继续操作即表示您同意我们的",

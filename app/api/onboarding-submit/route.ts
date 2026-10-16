@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
 import { BRIEF_SECTIONS, LONG_BRIEF_FIELDS, detectLinkType, normalizeUrl, purposeLabel } from "@/lib/brief";
-import { sendEmail } from "@/lib/notify";
+import { briefReceived } from "@/lib/email-templates";
+import { mailConfigured, notificationEmail, sendMail } from "@/lib/mailer";
 
 export const runtime = "nodejs";
 
@@ -115,17 +116,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!process.env.RESEND_API_KEY) {
+    if (!mailConfigured()) {
       return NextResponse.json(
-        { error: "RESEND_API_KEY is missing in environment variables." },
+        { error: "El correo no está configurado (GOOGLE_* o RESEND_API_KEY)." },
         { status: 503 }
       );
     }
 
-    const fromEmail =
-      process.env.MAIL_FROM ||
-      "BryanF Design <no-reply@bryanfdesign.com.mx>";
-    const to = ["bryanf@bryanfdesign.com.mx", "pandita250599@gmail.com"];
+    const to = Array.from(new Set([notificationEmail(), "pandita250599@gmail.com"]));
 
     // Briefing de /gracias: cada sección con sus campos (lib/brief.ts).
     const li = (label: string, value: string) =>
@@ -211,28 +209,19 @@ export async function POST(req: NextRequest) {
       </div>
     `;
 
-    const resendPayload: Record<string, unknown> = {
-      from: fromEmail,
+    const sent = await sendMail({
       to,
-      subject: `Onboarding BryanF Design - ${form.businessName}`,
+      subject: `Brief BryanF Design - ${form.businessName}`,
       html,
-      ...(form.contactEmail ? { reply_to: form.contactEmail } : {}),
-    };
-
-    if (safeAttachments.length) resendPayload.attachments = safeAttachments;
-
-    const resendResponse = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(resendPayload),
+      replyTo: form.contactEmail || undefined,
+      attachments: safeAttachments.map((file) => ({
+        filename: file.filename,
+        content: String(file.content),
+        type: String(file.type),
+      })),
     });
-
-    const resendData = await resendResponse.json();
-    if (!resendResponse.ok || resendData.error) {
-      console.error("Resend error:", resendData?.error || resendResponse.status);
+    if (!sent.ok) {
+      console.error("Brief email error:", sent.error);
       return NextResponse.json(
         { error: "No se pudo enviar el briefing. Intenta de nuevo o escríbenos por WhatsApp." },
         { status: 502 }
@@ -242,27 +231,19 @@ export async function POST(req: NextRequest) {
     // Copia para el cliente: confirma que llegó y qué sigue. Si falla, el
     // briefing ya está con nosotros, así que no se reporta como error.
     if (form.contactEmail) {
-      const firstName = escapeHtml(form.fullName.split(" ")[0]);
-      await sendEmail(
-        form.contactEmail,
-        "Recibimos tu briefing · BryanF Design",
-        `<div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto;color:#171717;">
-          <h2 style="margin:0 0 12px;">¡Gracias, ${firstName}!</h2>
-          <p style="margin:0 0 12px;">Recibimos el briefing de <strong>${escapeHtml(form.businessName)}</strong>${links.length ? ` con ${links.length} enlace(s)` : ""}${safeAttachmentsCount ? ` y ${safeAttachmentsCount} archivo(s)` : ""}.</p>
-          <p style="margin:0 0 8px;"><strong>Qué sigue:</strong></p>
-          <ol style="margin:0 0 14px;padding-left:18px;">
-            <li>Lo revisamos en menos de 24 horas hábiles y te mandamos la ruta del proyecto.</li>
-            <li>Agendamos una videollamada de arranque de 20 minutos.</li>
-            <li>Construimos y te enseñamos avances hasta publicar.</li>
-          </ol>
-          <p style="margin:0 0 12px;">¿Se te olvidó algo? Responde este correo o escríbenos por WhatsApp: <a href="https://wa.me/525663012505">+52 56 6301 2505</a>.</p>
-          <p style="margin:0;color:#555;">BryanF Design · Lunes a viernes de 9:00 a 19:00 (CDMX)</p>
-        </div>`,
-        "bryanf@bryanfdesign.com.mx"
-      ).catch(() => undefined);
+      await sendMail({
+        to: form.contactEmail,
+        ...briefReceived({
+          name: form.fullName,
+          businessName: form.businessName,
+          links: links.length,
+          files: safeAttachmentsCount,
+        }),
+        replyTo: notificationEmail(),
+      });
     }
 
-    return NextResponse.json({ ok: true, id: resendData.id || null });
+    return NextResponse.json({ ok: true, id: sent.id || null });
   } catch (error) {
     console.error("Onboarding submit error:", error);
     return NextResponse.json(

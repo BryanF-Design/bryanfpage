@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
 import { describeAttribution, sanitizeAttribution } from "@/lib/attribution";
-import { INTERNAL_TO, escapeHtml, sendEmail } from "@/lib/notify";
+import { escapeHtml, sendEmail } from "@/lib/notify";
+import { notificationEmail } from "@/lib/mailer";
 
 export const runtime = "nodejs";
 
@@ -100,7 +101,7 @@ export async function POST(req: NextRequest) {
       </div>`;
 
     const result = await sendEmail(
-      INTERNAL_TO,
+      notificationEmail(),
       `Cotización: ${name}${service ? ` — ${service}` : ""}`,
       html,
       email || undefined

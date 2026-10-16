@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { MercadoPagoConfig, Payment, PreApproval } from "mercadopago";
 
 import { SUBSCRIPTION_PLAN } from "@/lib/catalog";
+import { briefUrl } from "@/lib/brief-access";
 import { sendOrderConfirmation, sendSubscriptionNotice } from "@/lib/notify";
 
 export const runtime = "nodejs";
@@ -86,6 +87,8 @@ export async function POST(req: NextRequest) {
             description: `${SUBSCRIPTION_PLAN.productName} (mensual)`,
             customerEmail: sub.payer_email ?? null,
             subscription: true,
+            briefUrl: briefUrl({ provider: "mercadopago", preapprovalId: String(sub.id ?? dataId) }),
+            nextChargeDate: sub.next_payment_date ?? null,
           });
         } else if (sub.status === "cancelled") {
           await sendSubscriptionNotice({
@@ -125,7 +128,33 @@ export async function POST(req: NextRequest) {
     const client = new MercadoPagoConfig({ accessToken: token });
     const payment = await new Payment(client).get({ id: dataId });
 
-    if (payment.status === "approved") {
+    const name =
+      [payment.payer?.first_name, payment.payer?.last_name].filter(Boolean).join(" ") || null;
+    // Cobro mensual de una suscripción (preapproval), no una compra nueva.
+    const recurring =
+      payment.operation_type === "recurring_payment" ||
+      /subscription/i.test(String(payment.point_of_interaction?.type || ""));
+
+    if (recurring && (payment.status === "approved" || payment.status === "rejected")) {
+      const key = `${dataId}:${payment.status}`;
+      if (!processed.has(key)) {
+        processed.add(key);
+        const approved = payment.status === "approved";
+        const next = new Date(payment.date_approved || payment.date_created || Date.now());
+        next.setMonth(next.getMonth() + 1);
+        await sendSubscriptionNotice({
+          event: approved ? "renewal" : "payment_failed",
+          provider: "mercadopago",
+          reference: String(payment.id ?? dataId),
+          amount: Number(payment.transaction_amount ?? SUBSCRIPTION_PLAN.price),
+          currency: (payment.currency_id || "MXN").toUpperCase(),
+          customerEmail: payment.payer?.email ?? null,
+          customerName: name,
+          nextChargeDate: approved ? next : null,
+          payUrl: approved ? null : "https://www.mercadopago.com.mx/subscriptions",
+        });
+      }
+    } else if (payment.status === "approved") {
       processed.add(dataId);
       await sendOrderConfirmation({
         provider: "mercadopago",
@@ -134,14 +163,12 @@ export async function POST(req: NextRequest) {
         reference: String(payment.id ?? dataId),
         description: payment.description || "Proyecto web",
         customerEmail: payment.payer?.email ?? null,
-        customerName:
-          [payment.payer?.first_name, payment.payer?.last_name]
-            .filter(Boolean)
-            .join(" ") || null,
+        customerName: name,
         modalidad:
           (payment.metadata as Record<string, unknown> | undefined)?.modalidad?.toString() ??
           null,
         attribution: (payment.metadata as Record<string, unknown> | undefined) ?? undefined,
+        briefUrl: briefUrl({ provider: "mercadopago", paymentId: String(payment.id ?? dataId) }),
       });
     }
   } catch (err) {

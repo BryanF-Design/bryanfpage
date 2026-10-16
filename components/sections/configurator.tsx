@@ -1070,7 +1070,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                         {t.configurator.sendEmail}
                       </a>
                     </Button>
-                    {/* El briefing también espera a quien paga por transferencia. */}
+                    {/* Transferencia: /gracias explica cómo confirmar el pago; el brief llega por correo al confirmarlo. */}
                     <Button
                       asChild
                       variant="outline"

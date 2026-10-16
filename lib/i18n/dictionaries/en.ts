@@ -370,7 +370,7 @@ const en: Dictionary = {
     copyLabel: (label) => `Copy ${label}`,
     sendWhatsapp: "Send receipt via WhatsApp",
     sendEmail: "Send receipt via email",
-    fillBrief: "Already paid: fill out my brief",
+    fillBrief: "Already paid: confirm my payment",
     emailQuote: "Email me this quote",
     emailQuoteSubject: "My quote — BryanF Design",
     securePaymentPrefix: "Secure payment. By continuing you accept our",

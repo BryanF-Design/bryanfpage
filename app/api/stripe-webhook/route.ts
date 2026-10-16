@@ -2,7 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
 import { SUBSCRIPTION_PLAN } from "@/lib/catalog";
+import { briefUrl } from "@/lib/brief-access";
 import { sendOrderConfirmation, sendSubscriptionNotice } from "@/lib/notify";
+
+/** Periodo "1 nov – 1 dic 2026" de una factura de suscripción. */
+function invoicePeriod(invoice: Stripe.Invoice) {
+  const line = invoice.lines?.data?.[0];
+  if (!line?.period) return { label: null, end: null };
+  const fmt = (s: number) =>
+    new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short", year: "numeric", timeZone: "America/Mexico_City" }).format(new Date(s * 1000));
+  return { label: `${fmt(line.period.start)} – ${fmt(line.period.end)}`, end: line.period.end * 1000 };
+}
 
 export const runtime = "nodejs";
 // El cuerpo crudo es obligatorio para verificar la firma de Stripe: nada de
@@ -54,6 +64,15 @@ export async function POST(req: NextRequest) {
       // Sólo confirmamos pagos realmente cobrados.
       if (session.payment_status === "paid" || session.status === "complete") {
         const isSubscription = session.mode === "subscription";
+        let nextChargeDate: number | null = null;
+        if (isSubscription && session.subscription) {
+          const sub =
+            typeof session.subscription === "string"
+              ? await stripe.subscriptions.retrieve(session.subscription).catch(() => null)
+              : session.subscription;
+          const end = sub?.items?.data?.[0]?.current_period_end;
+          nextChargeDate = end ? end * 1000 : null;
+        }
         await sendOrderConfirmation({
           provider: "stripe",
           amount: (session.amount_total ?? 0) / 100,
@@ -69,6 +88,8 @@ export async function POST(req: NextRequest) {
           customerName: session.customer_details?.name ?? null,
           modalidad: session.metadata?.modalidad ?? null,
           attribution: session.metadata ?? undefined,
+          briefUrl: briefUrl({ provider: "stripe", sessionId: session.id }),
+          nextChargeDate,
         });
       }
     }
@@ -79,17 +100,48 @@ export async function POST(req: NextRequest) {
       const invoice = event.data.object as Stripe.Invoice;
       // El primer cobro ya lo avisa checkout.session.completed.
       if (event.type === "invoice.payment_failed" || invoice.billing_reason === "subscription_cycle") {
+        const failed = event.type === "invoice.payment_failed";
+        const period = invoicePeriod(invoice);
         await sendSubscriptionNotice({
-          event: event.type === "invoice.paid" ? "renewal" : "payment_failed",
+          event: failed ? "payment_failed" : "renewal",
           provider: "stripe",
           reference: invoice.id ?? "",
-          amount: (event.type === "invoice.paid" ? invoice.amount_paid : invoice.amount_due) / 100,
+          amount: (failed ? invoice.amount_due : invoice.amount_paid) / 100,
           currency: (invoice.currency || "mxn").toUpperCase(),
           customerEmail: invoice.customer_email,
           customerName: invoice.customer_name,
+          period: period.label,
+          nextChargeDate: failed
+            ? invoice.next_payment_attempt
+              ? invoice.next_payment_attempt * 1000
+              : null
+            : period.end,
+          invoiceUrl: invoice.hosted_invoice_url,
+          // La factura hospedada de Stripe deja pagar el cobro fallido ahí mismo.
+          payUrl: failed ? invoice.hosted_invoice_url : null,
         });
       }
     }
+
+    // Recordatorio antes de la renovación: Stripe lo manda X días antes
+    // (Settings → Billing → Subscriptions → "Upcoming renewal events").
+    if (event.type === "invoice.upcoming") {
+      const invoice = event.data.object as Stripe.Invoice;
+      if (invoice.amount_due > 0) {
+        await sendSubscriptionNotice({
+          event: "upcoming",
+          provider: "stripe",
+          reference: invoice.id ?? `upcoming-${event.id}`,
+          amount: invoice.amount_due / 100,
+          currency: (invoice.currency || "mxn").toUpperCase(),
+          customerEmail: invoice.customer_email,
+          customerName: invoice.customer_name,
+          nextChargeDate: (invoice.next_payment_attempt ?? invoice.period_end) * 1000,
+          internal: false,
+        });
+      }
+    }
+
     if (event.type === "customer.subscription.deleted") {
       const subscription = event.data.object as Stripe.Subscription;
       const customer =
@@ -103,6 +155,7 @@ export async function POST(req: NextRequest) {
         reference: subscription.id,
         customerEmail: live?.email ?? null,
         customerName: live?.name ?? null,
+        endsAt: subscription.ended_at ? subscription.ended_at * 1000 : null,
       });
     }
   } catch (err) {

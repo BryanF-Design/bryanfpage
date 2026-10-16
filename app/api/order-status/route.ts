@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { MercadoPagoConfig, Payment, PreApproval } from "mercadopago";
 
 import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
+import { verifyBriefToken } from "@/lib/brief-access";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -21,7 +22,7 @@ type OrderState = "paid" | "pending" | "failed" | "unknown";
 
 interface OrderStatus {
   state: OrderState;
-  provider: "stripe" | "mercadopago";
+  provider: "stripe" | "mercadopago" | "transfer";
   transactionId?: string;
   value?: number;
   currency?: string;
@@ -140,6 +141,21 @@ export async function GET(req: NextRequest) {
   const provider = params.get("provider");
 
   try {
+    // Enlace firmado de un pago confirmado a mano (lib/brief-access.ts).
+    if (provider === "link") {
+      const access = verifyBriefToken(params.get("token") || "");
+      if (!access) return json({ state: "unknown", provider: "transfer" });
+      return json({
+        state: "paid",
+        provider: "transfer",
+        transactionId: access.reference,
+        value: access.amount,
+        currency: access.currency,
+        email: access.email,
+        name: access.name,
+        subscription: access.subscription,
+      });
+    }
     if (provider === "stripe") {
       const sessionId = params.get("session_id") || "";
       if (!STRIPE_SESSION_RE.test(sessionId)) return json({ error: "session_id inválido" }, 400);

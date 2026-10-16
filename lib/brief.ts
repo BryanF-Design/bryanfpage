@@ -1,5 +1,5 @@
 /**
- * EL BRIEFING DE ARRANQUE (/gracias).
+ * EL BRIEFING DE ARRANQUE (/armar-mi-brief).
  *
  * Fuente única de los campos del briefing que llena el cliente después de
  * pagar (o al elegir transferencia): el formulario, el asistente de Lumina,

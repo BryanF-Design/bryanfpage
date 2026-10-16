@@ -370,7 +370,7 @@ const pt: Dictionary = {
     copyLabel: (label) => `Copiar ${label}`,
     sendWhatsapp: "Enviar comprovante pelo WhatsApp",
     sendEmail: "Enviar comprovante por e-mail",
-    fillBrief: "Já transferi: preencher meu briefing",
+    fillBrief: "Já transferi: confirmar meu pagamento",
     emailQuote: "Enviar orçamento por e-mail",
     emailQuoteSubject: "Meu orçamento — BryanF Design",
     securePaymentPrefix: "Pagamento seguro. Ao continuar você aceita nossos",

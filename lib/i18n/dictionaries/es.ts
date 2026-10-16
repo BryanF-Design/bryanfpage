@@ -381,7 +381,7 @@ const es = {
     copyLabel: (label: string) => `Copiar ${label}`,
     sendWhatsapp: "Enviar comprobante por WhatsApp",
     sendEmail: "Enviar comprobante por correo",
-    fillBrief: "Ya transferí: llenar mi briefing",
+    fillBrief: "Ya transferí: confirmar mi pago",
     emailQuote: "Enviar cotización por correo",
     emailQuoteSubject: "Mi cotización — BryanF Design",
     securePaymentPrefix: "Pago seguro. Al continuar aceptas nuestros",

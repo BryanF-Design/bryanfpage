@@ -370,7 +370,7 @@ const de: Dictionary = {
     copyLabel: (label) => `${label} kopieren`,
     sendWhatsapp: "Beleg per WhatsApp senden",
     sendEmail: "Beleg per E-Mail senden",
-    fillBrief: "Schon überwiesen: Briefing ausfüllen",
+    fillBrief: "Schon überwiesen: Zahlung bestätigen",
     emailQuote: "Angebot per E-Mail senden",
     emailQuoteSubject: "Mein Angebot — BryanF Design",
     securePaymentPrefix: "Sichere Zahlung. Mit dem Fortfahren akzeptierst du unsere",
