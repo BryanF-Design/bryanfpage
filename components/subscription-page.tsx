@@ -111,7 +111,7 @@ export function SubscriptionPage() {
 
       <main id="main-content" tabIndex={-1} className="sheet-main">
         {/* ——— Portada: la promesa y la tarjeta de precio. ——— */}
-        <section aria-labelledby="sub-title" className="grid gap-gutter lg:grid-cols-12">
+        <section aria-labelledby="sub-title" data-lumina-topic="plan" className="grid gap-gutter lg:grid-cols-12">
           <div className="panel flex flex-col justify-between gap-8 p-5 pt-6 shadow-soft sm:p-8 lg:col-span-7 lg:p-10">
             <div className="flex flex-col items-start gap-5">
               <Eyebrow>Suscripción Todo Digital</Eyebrow>

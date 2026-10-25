@@ -1,6 +1,5 @@
 // Captura las webs del portafolio en el formato que usa el sitio:
 //   public/img/portafolio/escritorio/<slug>.png  → 1440×1000, primera pantalla
-//   public/img/portafolio/movil/<slug>.png       → 390 px de ancho, página completa
 //   public/img/portafolio/movil-top/<slug>.webp  → 390×845, primera pantalla (la que usa el sitio)
 //
 // Uso (necesita Playwright con Chromium):
@@ -31,10 +30,8 @@ const projects = [...source.matchAll(/slug:\s*"([^"]+)"[^}]*?url:\s*"([^"]+)"/g)
 );
 
 const desktopDir = join(root, "public/img/portafolio/escritorio");
-const mobileDir = join(root, "public/img/portafolio/movil");
 const mobileTopDir = join(root, "public/img/portafolio/movil-top");
 mkdirSync(desktopDir, { recursive: true });
-mkdirSync(mobileDir, { recursive: true });
 mkdirSync(mobileTopDir, { recursive: true });
 
 const args = process.argv.slice(2);
@@ -114,7 +111,6 @@ for (const { slug, url } of targets) {
     });
     await mobile.waitForTimeout(1500);
     await dismissPopups(mobile);
-    await mobile.screenshot({ path: join(mobileDir, `${slug}.png`), fullPage: true });
     // Primera pantalla en WebP: Chromium la codifica desde un canvas, en una
     // pestaña en blanco (la CSP del sitio capturado podría bloquear data:).
     const topPng = await mobile.screenshot({ clip: { x: 0, y: 0, width: 390, height: 845 } });

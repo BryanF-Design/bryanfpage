@@ -7,30 +7,30 @@ const nextConfig = {
       { protocol: "https", hostname: "lottie.host" },
     ],
   },
-  // Clean URLs for the legacy pages still served as static files from /public
-  // (legal pages, pending migration to Next routes). /gracias ya es ruta React.
-  // `/crear-web` ya NO se reescribe: ahora es una ruta React real
-  // (app/crear-web) con el Configurador nuevo y el catálogo centralizado.
-  async rewrites() {
+  // Las páginas viejas en HTML estático ya son rutas de Next: quien llegue
+  // con la URL antigua (buscadores, enlaces guardados) va a la nueva.
+  async redirects() {
     return [
-      { source: "/privacidad", destination: "/privacidad.html" },
-      { source: "/terminos", destination: "/terminos.html" },
+      { source: "/index.html", destination: "/", permanent: true },
+      { source: "/crear-web.html", destination: "/crear-web", permanent: true },
+      { source: "/terminos.html", destination: "/terminos", permanent: true },
+      { source: "/privacidad.html", destination: "/privacidad", permanent: true },
     ];
   },
   // Baseline security headers on every response.
   async headers() {
     // 'unsafe-inline' on script/style is required by GA/Clarity's inline init
-    // snippets, the JSON-LD block, and a legacy inline onload= swap on
-    // crear-web.html — none of them are attacker-controlled, and the real
+    // snippets, the bootstrap scripts in app/layout and the JSON-LD block —
+    // none of them are attacker-controlled, and the real
     // protection here is the origin allowlist (blocks injected <script src>
     // from a third-party domain) plus frame-ancestors/object-src/base-uri.
     const devEval = process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : "";
     const csp = [
       "default-src 'self'",
-      `script-src 'self' 'unsafe-inline'${devEval} https://*.googletagmanager.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://*.clarity.ms https://cdnjs.cloudflare.com`,
-      "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com",
+      `script-src 'self' 'unsafe-inline'${devEval} https://*.googletagmanager.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://*.clarity.ms`,
+      "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://*.google-analytics.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.google.com https://*.google.com.mx https://www.googleadservices.com https://*.clarity.ms https://c.bing.com",
-      "font-src 'self' https://cdnjs.cloudflare.com data:",
+      "font-src 'self' data:",
       "connect-src 'self' https://*.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://*.g.doubleclick.net https://*.google.com https://*.google.com.mx https://www.googleadservices.com https://*.clarity.ms https://c.bing.com",
       // Google Ads abre un iframe invisible para atribución y remarketing.
       "frame-src 'self' https://td.doubleclick.net https://www.googletagmanager.com",

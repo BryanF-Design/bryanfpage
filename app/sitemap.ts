@@ -10,6 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const restructureDate = new Date("2026-10-15T00:00:00.000Z");
   // 2026-10-16: trayectoria en la home y centro de preguntas de la suscripción.
   const faqDate = new Date("2026-10-16T00:00:00.000Z");
+  const legalDate = new Date("2026-10-25T00:00:00.000Z");
 
   return [
     { url: SITE_URL, lastModified: faqDate, changeFrequency: "weekly", priority: 1 },
@@ -50,7 +51,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.8,
     },
-    { url: `${SITE_URL}/privacidad`, changeFrequency: "yearly", priority: 0.3 },
-    { url: `${SITE_URL}/terminos`, lastModified: restructureDate, changeFrequency: "yearly", priority: 0.3 },
+    // 2026-10-25: las páginas legales pasaron a rutas de Next con el diseño del sitio.
+    { url: `${SITE_URL}/privacidad`, lastModified: legalDate, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${SITE_URL}/terminos`, lastModified: legalDate, changeFrequency: "yearly", priority: 0.3 },
   ];
 }

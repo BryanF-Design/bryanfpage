@@ -1,46 +1,25 @@
-# BryanF Page - Vercel Ready
+# BryanF Design — www.bryanfdesign.com
 
-Proyecto preparado para deploy automático en Vercel desde GitHub.
+Sitio del estudio en Next.js 14 (App Router), desplegado en Vercel.
 
-## Stack final
-- Frontend estático:
-  - `index.html`
-  - `privacidad.html`
-  - `terminos.html`
-  - `style.css`
-  - `fast-track.css`
-  - `script.js`
-  - `img/`
-- Backend serverless (Vercel Functions):
-  - `api/health.js`
-  - `api/stripe-checkout.js`
-  - `api/mercadopago.js`
-  - `api/openai-chat.js`
+## Comandos
+- `npm run dev` — desarrollo
+- `npm run build` / `npm start` — producción
+- `npm run google:token` — refresh token de Gmail API (ver `CORREOS_SETUP.md`)
 
-## Endpoints
-- `GET /api/health`
-- `POST /api/stripe-checkout`
-- `POST /api/mercadopago`
-- `POST /api/openai-chat`
+## Dónde vive cada cosa
+- `app/` — páginas y endpoints (`app/api/*`)
+- `components/` — secciones e interfaz; `components/lumina-chat.tsx` es Lumina,
+  montada una sola vez en `app/layout.tsx` para todo el sitio
+- `lib/catalog.ts` — precios; `lib/subscription.ts` — suscripción Todo Digital
+- `lib/lumina-*.ts` — prompt, acciones y comentarios por sección de Lumina
+- `public/` — imágenes y archivos estáticos
 
-## Variables de entorno (Vercel)
-Configura en Project Settings > Environment Variables:
-- `SITE_URL`
-- `STRIPE_SECRET`
-- `MP_ACCESS_TOKEN`
-- `OPENAI_API_KEY`
+## BryanF Access (`/access`)
+Panel privado con los suscriptores de Stripe y Mercado Pago: estado, próximo
+cobro y días que faltan. Se activa con `ADMIN_USER` y `ADMIN_PASSWORD`
+(mínimo 12 caracteres) en las variables de entorno de Vercel.
 
-Opcionales de frontend/metadata:
-- `STRIPE_PUBLIC`
-- `MP_PUBLIC_KEY`
-- `MP_CLIENT_ID`
-- `MP_CLIENT_SECRET`
-
-## Deploy
-1. Sube este proyecto a GitHub.
-2. En Vercel importa el repo.
-3. Agrega variables de entorno.
-4. Deploy.
-
-## Nota de seguridad
-No subir `.env` al repositorio.
+## Variables de entorno
+Todas están documentadas en `.env.example`. Guías: `SUSCRIPCION_SETUP.md`,
+`CORREOS_SETUP.md`, `GOOGLE_ADS_SETUP.md`, `SEARCH_CONSOLE_SITEMAP.md`.
