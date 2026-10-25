@@ -67,11 +67,11 @@ import {
 type Mood = "Normal" | "Enfocada" | "Duda" | "Sorprendida" | "Offline";
 
 const MOOD_IMG: Record<Mood, string> = {
-  Normal: "/img/lumina/Normal.png",
-  Enfocada: "/img/lumina/Enfocada.png",
-  Duda: "/img/lumina/Duda.png",
-  Sorprendida: "/img/lumina/Sorprendida.png",
-  Offline: "/img/lumina/Offline.png",
+  Normal: "/img/lumina/normal.webp",
+  Enfocada: "/img/lumina/enfocada.webp",
+  Duda: "/img/lumina/duda.webp",
+  Sorprendida: "/img/lumina/sorprendida.webp",
+  Offline: "/img/lumina/offline.webp",
 };
 
 const WHATSAPP_NUMBER = "525663012505";
@@ -317,8 +317,6 @@ function LuminaChatWidget({ pathname }: { pathname: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const fabRef = useRef<HTMLButtonElement>(null);
   const hasTeasedRef = useRef(false);
-  const openRef = useRef(open);
-  openRef.current = open;
   const footerInView = useFooterInView();
   const footerInViewRef = useRef(footerInView);
   footerInViewRef.current = footerInView;
@@ -405,15 +403,12 @@ function LuminaChatWidget({ pathname }: { pathname: string }) {
     }
   }, [footerInView]);
 
-  // El configurador concentra las acciones de compra. Si ocupa el viewport,
-  // cierra el panel grande, descarta el teaser y deja solo el acceso compacto.
+  // En el cotizador Lumina se queda (ahí es donde más ayuda): solo se retira
+  // la burbuja de saludo, que tapaba precios. La ayuda para pagar la da
+  // LuminaTips junto a los botones de pago.
   useEffect(() => {
-    if (configuratorInView) {
-      if (openRef.current) restoreChatFocus();
-      setOpen(false);
-      setTeaser(false);
-    }
-  }, [configuratorInView, restoreChatFocus]);
+    if (configuratorInView) setTeaser(false);
+  }, [configuratorInView]);
 
   // En teléfono la hoja tapa toda la pantalla: es modal (fondo inert y foco
   // atrapado). Desde `sm` es una tarjeta de esquina NO modal: la página sigue
@@ -507,10 +502,9 @@ function LuminaChatWidget({ pathname }: { pathname: string }) {
     setTeaser(true);
   }, [teaserDue, open, configuratorInView, isPhone, pastHero]);
 
-  // El botón se aparta con el footer, dentro del cotizador y, en teléfono,
-  // mientras el hero ocupa la pantalla (taparía el CTA principal).
-  const hideFab =
-    !open && (footerInView || configuratorInView || (isPhone && !pastHero));
+  // El botón se aparta con el footer y, en teléfono, mientras el hero ocupa
+  // la pantalla (taparía el CTA principal). En el cotizador se queda.
+  const hideFab = !open && (footerInView || (isPhone && !pastHero));
 
   // Se retira sola (un comentario se queda un poco más para alcanzar a leerlo).
   useEffect(() => {
@@ -717,7 +711,13 @@ function LuminaChatWidget({ pathname }: { pathname: string }) {
   );
 
   nudgeBlockedRef.current =
-    open || teaser || !!guide || configuratorInView || footerInView || (isPhone && !pastHero);
+    open ||
+    teaser ||
+    !!guide ||
+    configuratorInView ||
+    footerInView ||
+    (isPhone && !pastHero) ||
+    (typeof document !== "undefined" && document.documentElement.hasAttribute("data-lumina-tip"));
 
   // La guía se retira sola.
   useEffect(() => {
@@ -1494,8 +1494,8 @@ function LuminaChatWidget({ pathname }: { pathname: string }) {
       </AnimatePresence>
 
       {/* FAB: píldora blanca con el avatar de Lumina. Se aparta con el
-          footer y dentro del cotizador (ahí mandan los botones de pago), salvo
-          que el chat esté abierto. La etiqueta solo aparece desde escritorio. */}
+          footer, salvo que el chat esté abierto; en el cotizador se compacta.
+          La etiqueta solo aparece desde escritorio. */}
       <div
         className="fab-slot fixed bottom-[var(--fab-edge)] right-3 z-[120] sm:right-6"
         data-hidden={hideFab}

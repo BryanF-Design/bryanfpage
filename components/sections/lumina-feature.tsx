@@ -319,7 +319,7 @@ export function LuminaFeature() {
           <div className="flex items-center gap-3 px-1 pt-1">
             <span className="relative size-12 shrink-0">
               <span className="absolute inset-0 overflow-hidden rounded-full bg-ink ring-[3px] ring-lime">
-                <Image src="/img/lumina/Normal.png" alt="" fill sizes="48px" className="object-cover" />
+                <Image src="/img/lumina/normal.webp" alt="" fill sizes="48px" className="object-cover" />
               </span>
               <span aria-hidden className="absolute bottom-0 right-0 size-3.5 rounded-full border-[3px] border-white bg-forest" />
             </span>

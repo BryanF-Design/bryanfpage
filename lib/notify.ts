@@ -25,6 +25,7 @@ import {
 } from "./email-templates";
 import { notificationEmail, sendMail, type MailResult } from "./mailer";
 import { getSiteUrl } from "./site-url";
+import { dbConfigured, recordPurchase } from "./db";
 
 export { escapeHtml } from "./email-templates";
 
@@ -44,12 +45,12 @@ export function manageSubscriptionUrl(provider: PaymentProvider): string | null 
 }
 
 /**
- * Portal de clientes (Bitácora). Sólo se enlaza en los correos cuando
- * CLIENT_PORTAL_URL está configurado, es decir, cuando las cuentas de los
- * clientes ya se crean solas al pagar.
+ * Mi panel: cada pago (compra única o suscripción) abre la cuenta del cliente
+ * con su correo, así que los correos lo enlazan cuando hay base de datos.
+ * CLIENT_PORTAL_URL, si existe, lo sustituye.
  */
 export function clientPortalUrl(): string | null {
-  return process.env.CLIENT_PORTAL_URL?.trim() || null;
+  return process.env.CLIENT_PORTAL_URL?.trim() || (dbConfigured() ? `${getSiteUrl()}/mi-panel` : null);
 }
 
 /** Folio estable a partir de la referencia del proveedor. */
@@ -97,6 +98,19 @@ export async function sendOrderConfirmation(
 ): Promise<{ folio: string; internal: boolean; customer: boolean }> {
   const folio = makeFolio(order.reference);
   const amount = formatMoney(order.amount, order.currency);
+  if (order.customerEmail) {
+    await recordPurchase({
+      id: `${order.provider}:${order.reference}`,
+      email: order.customerEmail,
+      nombre: order.customerName || "",
+      proveedor: order.provider === "transfer" ? "transferencia" : order.provider,
+      descripcion: order.description || (order.subscription ? "Suscripción Todo Digital" : "Proyecto web"),
+      monto: order.amount,
+      moneda: order.currency,
+      meta: { folio, modalidad: order.modalidad || "" },
+      subscription: !!order.subscription,
+    });
+  }
   const method = PROVIDER_LABEL[order.provider];
   const attribution = sanitizeAttribution(order.attribution);
   const briefLink = order.briefUrl || `${getSiteUrl()}/armar-mi-brief`;

@@ -19,11 +19,9 @@ const WHATSAPP_URL = "https://wa.me/525663012505";
  * o el chat ocupan la pantalla. Entra y sale solo con transform + opacity.
  *
  * Además coordina a todos los botones flotantes (Lumina y Accesibilidad
- * incluidos) con dos clases en <html>, solo en teléfono:
- *  - `fab-tucked`: al bajar se esconden y vuelven al subir, para no tapar los
- *    CTA y controles pegados al borde derecho.
- *  - `fab-config`: dentro del cotizador se aparta Lumina (el dock ya se
- *    esconde ahí por su cuenta).
+ * incluidos) con la clase `fab-tucked` en <html>, solo en pantallas táctiles:
+ * al bajar se esconden y vuelven al subir, para no tapar los CTA y controles
+ * pegados al borde derecho.
  */
 export function FloatingDock() {
   const { t } = useLanguage();
@@ -97,12 +95,6 @@ export function FloatingDock() {
       root.classList.remove("fab-tucked");
     };
   }, []);
-
-  useEffect(() => {
-    const root = document.documentElement;
-    root.classList.toggle("fab-config", configuratorInView);
-    return () => root.classList.remove("fab-config");
-  }, [configuratorInView]);
 
   useEffect(() => {
     function onChatVisibility(e: Event) {

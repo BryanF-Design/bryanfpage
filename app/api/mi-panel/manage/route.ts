@@ -4,7 +4,7 @@ import Stripe from "stripe";
 import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
 import { CLIENT_COOKIE, readClientSession } from "@/lib/client-session";
 import { getSiteUrl } from "@/lib/site-url";
-import { findSubscriptionsByEmail } from "@/lib/subscribers";
+import { loadClientPanel } from "@/lib/client-panel";
 
 export const runtime = "nodejs";
 
@@ -21,20 +21,27 @@ export async function POST(req: NextRequest) {
   const email = readClientSession(req.cookies.get(CLIENT_COOKIE)?.value);
   if (!email) return NextResponse.json({ error: "Tu sesión terminó. Vuelve a entrar." }, { status: 401 });
 
-  const subs = await findSubscriptionsByEmail(email);
-  const current = subs[0];
+  const panel = await loadClientPanel(email);
+  const current = panel?.subscription;
   if (!current) return NextResponse.json({ error: "No encontramos tu suscripción." }, { status: 404 });
 
   if (current.provider === "mercadopago") {
     return NextResponse.json({ url: "https://www.mercadopago.com.mx/subscriptions" });
   }
+  // Mensualidad por transferencia: se arregla directo con Bryan.
+  if (current.provider === "transferencia") {
+    const text = `Hola Bryan, soy ${panel.name || email}. Quiero pagar o hacer un cambio en mi plan mensual.`;
+    return NextResponse.json({ url: `https://wa.me/525663012505?text=${encodeURIComponent(text)}` });
+  }
 
   const fallback = process.env.NEXT_PUBLIC_STRIPE_PORTAL_URL || "";
   try {
-    if (!current.customerId || !process.env.STRIPE_SECRET) throw new Error("sin cliente de Stripe");
+    if (!process.env.STRIPE_SECRET) throw new Error("sin Stripe");
     const stripe = new Stripe(process.env.STRIPE_SECRET);
+    const customer = (await stripe.customers.list({ email, limit: 1 })).data[0];
+    if (!customer) throw new Error("sin cliente de Stripe");
     const session = await stripe.billingPortal.sessions.create({
-      customer: current.customerId,
+      customer: customer.id,
       return_url: `${getSiteUrl()}/mi-panel`,
     });
     return NextResponse.json({ url: session.url });

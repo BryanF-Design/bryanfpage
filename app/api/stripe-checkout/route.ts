@@ -4,6 +4,8 @@ import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from
 import { sanitizeAttribution } from "@/lib/attribution";
 import { getUsdMxnRate, isCurrency } from "@/lib/currency";
 import { normalizeSelection, quotePayableNow, quoteProjectTotal } from "@/lib/quote";
+import { discountFor } from "@/lib/seasons";
+import { getSiteSettings } from "@/lib/site-settings";
 import { getSiteUrl } from "@/lib/site-url";
 
 export const runtime = "nodejs";
@@ -55,23 +57,23 @@ export async function POST(req: NextRequest) {
     const attribution = sanitizeAttribution((body as Record<string, unknown>).attribution);
     const siteUrl = getSiteUrl();
 
-    // Precio autoritativo del lado del servidor: si el cliente manda la
-    // selección estructurada (plan + módulos + secciones), el total se
-    // recompone desde el catálogo y se cobra ESE número — nunca el que venga
-    // calculado en el navegador. Sin selección, se conserva el flujo previo
-    // validando el monto en un rango sano (compatibilidad hacia atrás).
+    // Precio autoritativo del lado del servidor: con la selección
+    // estructurada (plan + módulos + secciones) el total se recompone desde
+    // el catálogo y se cobra ESE número, nunca el que calcule el navegador.
     const rawSelection = (body as Record<string, unknown>).selection;
-    let projectTotal: number;
-    if (rawSelection && typeof rawSelection === "object") {
-      const selection = normalizeSelection(rawSelection);
-      projectTotal = quoteProjectTotal(
-        selection,
-        currency,
-        getUsdMxnRate(process.env.NEXT_PUBLIC_USD_MXN_RATE)
-      );
-    } else {
-      projectTotal = monto;
+    if (!rawSelection || typeof rawSelection !== "object") {
+      return NextResponse.json({ error: "Falta la selección del cotizador" }, { status: 400 });
     }
+    // El descuento vigente (Panel BryanF) se aplica aquí, con el mismo dato
+    // que pinta el cotizador.
+    const settings = await getSiteSettings();
+    const now = Date.now();
+    const projectTotal = quoteProjectTotal(
+      normalizeSelection(rawSelection),
+      currency,
+      getUsdMxnRate(process.env.NEXT_PUBLIC_USD_MXN_RATE),
+      (key) => discountFor(settings, key, now)
+    );
 
     if (!Number.isFinite(projectTotal) || projectTotal <= 0 || projectTotal > 2_000_000) {
       return NextResponse.json({ error: "Monto invalido" }, { status: 400 });

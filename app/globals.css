@@ -274,7 +274,8 @@
   }
   .panel-lime,
   .surface-lime {
-    --background: 76 76% 54%;
+    /* Sigue a --lime: en temporada toma el color de la temporada. */
+    --background: var(--lime);
     --foreground: 160 30% 9%;
     --muted-foreground: 160 26% 20%;
     --card: 0 0% 100%;
@@ -288,7 +289,7 @@
     --primary: 160 30% 9%;
     --primary-foreground: 76 76% 58%;
     --ring: 160 30% 9%;
-    background-color: hsl(76 76% 54%);
+    background-color: hsl(var(--lime));
     color: hsl(var(--foreground));
   }
 
@@ -790,23 +791,10 @@
       opacity 180ms linear,
       visibility 0s linear 240ms;
   }
-  /* Teléfono: los flotantes se guardan al bajar (`fab-tucked`), y dentro del
-     cotizador (`fab-config`) se aparta Lumina, que tapaba precios y botones
-     del borde derecho; las clases las pone FloatingDock en <html>. */
+  /* Teléfono: los flotantes se guardan al bajar (`fab-tucked`, la pone
+     FloatingDock en <html>). */
   @media (max-width: 1279px), (pointer: coarse) {
     html.fab-tucked .fab-slot {
-      transform: translateY(16px) scale(0.92);
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      transition:
-        transform 240ms var(--ease-out),
-        opacity 180ms linear,
-        visibility 0s linear 240ms;
-    }
-  }
-  @media (max-width: 639px) {
-    html.fab-config .fab-slot:has(> [aria-controls="lumina-chat-panel"]) {
       transform: translateY(16px) scale(0.92);
       opacity: 0;
       visibility: hidden;
@@ -1611,17 +1599,22 @@ html.dark ::selection {
   color: hsl(160 30% 9%);
 }
 
-/* Al cambiar de tema, todo se funde (sin saltos). */
-html.theme-fade,
-html.theme-fade *,
-html.theme-fade *::before,
-html.theme-fade *::after {
-  transition:
-    background-color 0.35s ease,
-    border-color 0.35s ease,
-    color 0.35s ease,
-    fill 0.35s ease,
-    box-shadow 0.35s ease !important;
+/* Cambio de tema (lib/theme.ts): círculo con View Transitions, o instantáneo.
+   `theme-instant` apaga las transiciones de color un cuadro para que nada
+   se quede "persiguiendo" al tema nuevo. */
+html.theme-instant,
+html.theme-instant *,
+html.theme-instant *::before,
+html.theme-instant *::after {
+  transition: none !important;
+}
+html.theme-vt::view-transition-old(root),
+html.theme-vt::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html.theme-vt::view-transition-new(root) {
+  z-index: 1;
 }
 
 /* Velos blancos semitransparentes: en oscuro toman la superficie menta
@@ -1632,3 +1625,325 @@ html.dark .bg-white\/60 { background-color: hsl(var(--mint) / 0.6); }
 html.dark .bg-white\/70 { background-color: hsl(var(--mint) / 0.7); }
 html.dark .bg-white\/80 { background-color: hsl(var(--mint) / 0.8); }
 html.dark .hover\:bg-white\/70:hover { background-color: hsl(var(--mint) / 0.7); }
+
+/* ════════════════════════════════════════════════════════════════════════
+   TEMPORADAS (Panel BryanF → Temporadas). `html[data-season]` la pone
+   SiteSettingsProvider; `data-season-palette` cambia el lima de marca por el
+   color de la temporada en todo el sitio (botones, acentos, chips).
+   ════════════════════════════════════════════════════════════════════════ */
+
+html[data-season-palette="muertos"] {
+  --lime: 33 94% 55%;
+  --primary: 33 94% 55%;
+  --lime-soft: 36 100% 89%;
+  --lime-deep: 24 86% 36%;
+  --accent: 36 100% 91%;
+  --signal: 330 74% 52%;
+}
+html[data-season-palette="navidad"] {
+  --lime: 44 92% 56%;
+  --primary: 44 92% 56%;
+  --lime-soft: 46 100% 88%;
+  --lime-deep: 40 95% 28%;
+  --accent: 46 100% 90%;
+  --signal: 356 78% 52%;
+}
+html[data-season-palette="buen-fin"] {
+  --lime: 352 92% 64%;
+  --primary: 352 92% 64%;
+  --lime-soft: 352 100% 92%;
+  --lime-deep: 350 70% 38%;
+  --accent: 352 100% 94%;
+}
+html[data-season-palette="black-friday"] {
+  --lime: 53 100% 54%;
+  --primary: 53 100% 54%;
+  --lime-soft: 53 100% 87%;
+  --lime-deep: 42 95% 28%;
+  --accent: 53 100% 90%;
+}
+
+/* Dentro de los paneles de color, los tonos de apoyo siguen a la temporada. */
+html[data-season-palette] :is(.panel-lime, .surface-lime) {
+  --secondary: var(--lime-soft);
+  --accent: var(--lime-soft);
+  --border: var(--lime-deep);
+}
+
+/* Guirnalda: cuelga justo debajo del header flotante, sobre la parte de
+   arriba de la página; se va con el scroll y no recibe clics. */
+.season-decor {
+  position: absolute;
+  inset: calc(var(--gutter) * 0.75 + 3.4rem) 0 auto 0;
+  height: 0;
+  z-index: 90;
+  pointer-events: none;
+}
+.season-picado,
+.season-lights {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 5.5rem;
+  overflow: hidden;
+}
+.season-picado-rope {
+  position: absolute;
+  inset: 0.15rem 0 auto 0;
+  width: 100%;
+  height: 0.6rem;
+}
+.season-picado-row,
+.season-lights-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.35rem;
+  padding: 0 0.25rem;
+}
+.season-flag {
+  flex: 0 1 auto;
+  min-width: 0;
+  width: clamp(1.9rem, 4.6vw, 3rem);
+  margin-top: 0.3rem;
+  transform-origin: 50% 0;
+  animation: season-sway 4.6s ease-in-out infinite alternate;
+  animation-delay: calc(var(--i) * -0.37s);
+  opacity: 0.95;
+}
+.season-pennants .season-flag {
+  width: clamp(1.4rem, 3.2vw, 2.1rem);
+}
+.season-flag:nth-child(n + 13) {
+  display: none;
+}
+@media (min-width: 640px) {
+  .season-flag:nth-child(n + 13) {
+    display: block;
+  }
+}
+@media (min-width: 768px) {
+  .season-decor {
+    top: calc(var(--gutter) + 3.6rem);
+  }
+}
+@keyframes season-sway {
+  from {
+    transform: rotate(-3.5deg);
+  }
+  to {
+    transform: rotate(3.5deg);
+  }
+}
+.season-bulb {
+  flex: 0 0 auto;
+  width: 0.7rem;
+  height: 1.05rem;
+  margin-top: 0.55rem;
+  border-radius: 50% 50% 46% 46% / 60% 60% 40% 40%;
+  background: var(--c);
+  box-shadow: 0 0 0.9rem 0.15rem color-mix(in srgb, var(--c) 70%, transparent);
+  animation: season-twinkle 2.4s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.29s);
+}
+.season-bulb:nth-child(n + 15) {
+  display: none;
+}
+@media (min-width: 640px) {
+  .season-bulb:nth-child(n + 15) {
+    display: block;
+  }
+}
+@keyframes season-twinkle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* Lluvia de pétalos / nieve / etiquetas: solo al llegar, unos segundos. */
+.season-fall {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 95;
+  animation: season-fall-out 22s linear forwards;
+}
+.season-drop {
+  position: absolute;
+  top: -2.5rem;
+  will-change: transform;
+  animation-name: season-drop;
+  animation-timing-function: linear;
+  animation-iteration-count: 2;
+  animation-fill-mode: both;
+}
+.season-drop > svg {
+  scale: var(--s, 1);
+}
+@keyframes season-drop {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.95;
+  }
+  50% {
+    transform: translate3d(2.2rem, 52vh, 0) rotate(160deg);
+  }
+  92% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate3d(-1.2rem, 108vh, 0) rotate(320deg);
+    opacity: 0;
+  }
+}
+@keyframes season-fall-out {
+  0%,
+  88% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Aviso de temporada bajo el header. */
+.season-strip {
+  background: hsl(var(--lime));
+  color: hsl(160 30% 9%);
+}
+[data-season-strip="muertos"] {
+  background: linear-gradient(100deg, #fbb423, #f39012 55%, #e2307a);
+}
+[data-season-strip="navidad"] {
+  background: linear-gradient(100deg, #f6d36b, #f6c21a);
+}
+[data-season-strip="buen-fin"] {
+  background: linear-gradient(100deg, #ffd1d8, #ff6f87);
+}
+[data-season-strip="black-friday"] {
+  background: #101a16;
+  color: #fff;
+}
+[data-season-strip="black-friday"] a {
+  background: hsl(var(--lime));
+  color: #101a16;
+}
+
+/* Pop-up: un halo del color de la temporada. */
+.season-popup-glow {
+  position: absolute;
+  inset: -40% -30% auto auto;
+  width: 18rem;
+  height: 18rem;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, hsl(var(--lime) / 0.55), transparent);
+  pointer-events: none;
+}
+
+/* Insignia junto al logo. */
+.season-badge {
+  animation: season-peek 0.7s var(--ease-pop) 0.6s both;
+}
+@keyframes season-peek {
+  from {
+    transform: translateY(6px) rotate(-18deg) scale(0.4);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .season-flag,
+  .season-bulb,
+  .season-badge {
+    animation: none;
+  }
+}
+html.a11y-reduce-motion :is(.season-flag, .season-bulb, .season-badge) {
+  animation: none;
+}
+
+/* Menú del teléfono (site-header): botón que pasa de ☰ a × y halo de marca. */
+.menu-toggle-lines {
+  position: relative;
+  display: block;
+  width: 1.15rem;
+  height: 0.8rem;
+}
+.menu-toggle-lines > span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition:
+    transform 0.38s var(--ease-out),
+    opacity 0.2s linear,
+    top 0.38s var(--ease-out);
+}
+.menu-toggle-lines > span:nth-child(1) {
+  top: 0;
+}
+.menu-toggle-lines > span:nth-child(2) {
+  top: calc(50% - 1px);
+  transform-origin: right;
+}
+.menu-toggle-lines > span:nth-child(3) {
+  top: calc(100% - 2px);
+}
+.menu-toggle[data-open="true"] .menu-toggle-lines > span:nth-child(1) {
+  top: calc(50% - 1px);
+  transform: rotate(45deg);
+}
+.menu-toggle[data-open="true"] .menu-toggle-lines > span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.menu-toggle[data-open="true"] .menu-toggle-lines > span:nth-child(3) {
+  top: calc(50% - 1px);
+  transform: rotate(-45deg);
+}
+.mobile-menu {
+  background-color: hsl(var(--ink-solid));
+}
+.mobile-menu-glow {
+  position: absolute;
+  right: -6rem;
+  top: -6rem;
+  width: 18rem;
+  height: 18rem;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, hsl(var(--lime) / 0.28), transparent);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .menu-toggle-lines > span {
+    transition: none;
+  }
+}
+
+/* Panel BryanF: el cajón del cliente entra desde la derecha. */
+.admin-drawer {
+  animation: admin-drawer-in 0.38s var(--ease-out) both;
+}
+@keyframes admin-drawer-in {
+  from {
+    transform: translateX(2.5rem);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-drawer {
+    animation: none;
+  }
+}

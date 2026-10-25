@@ -5,15 +5,16 @@ import { LOGIN_LINK_MINUTES, clientSessionConfigured, createLoginToken } from "@
 import { clientLoginLink } from "@/lib/email-templates";
 import { mailConfigured, notificationEmail, sendMail } from "@/lib/mailer";
 import { getSiteUrl } from "@/lib/site-url";
-import { findSubscriptionsByEmail } from "@/lib/subscribers";
+import { loadClientPanel } from "@/lib/client-panel";
 
 export const runtime = "nodejs";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 /**
- * Pide el enlace de acceso a Mi panel. La respuesta es la misma exista o no
- * la suscripción, para no revelar quién es cliente.
+ * Pide el enlace de acceso a Mi panel (suscriptores y clientes de compras
+ * únicas). La respuesta es la misma exista o no la cuenta, para no revelar
+ * quién es cliente.
  */
 export async function POST(req: NextRequest) {
   if (!isSameOrigin(req)) return forbidden();
@@ -35,10 +36,10 @@ export async function POST(req: NextRequest) {
   // Un correo no recibe más de 3 enlaces cada 15 minutos.
   if (!rateLimit(`mi-panel-login:${email}`, { limit: 3, windowMs: 15 * 60 * 1000 }).ok) return tooManyRequests();
 
-  const subscriptions = await findSubscriptionsByEmail(email);
-  if (subscriptions.length) {
+  const panel = await loadClientPanel(email);
+  if (panel) {
     const url = `${getSiteUrl()}/api/mi-panel/verify?t=${encodeURIComponent(createLoginToken(email))}`;
-    const content = clientLoginLink({ url, minutes: LOGIN_LINK_MINUTES });
+    const content = clientLoginLink({ url, validFor: `${LOGIN_LINK_MINUTES} minutos` });
     const sent = await sendMail({ to: email, ...content, replyTo: notificationEmail() });
     if (!sent.ok) console.error("Mi panel: no se pudo enviar el enlace", sent.error);
   }

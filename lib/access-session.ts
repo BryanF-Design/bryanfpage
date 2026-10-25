@@ -1,7 +1,7 @@
 import crypto from "crypto";
 
 /**
- * BRYANF ACCESS — sesión del panel de administración (/access).
+ * PANEL BRYANF — sesión del panel de administración (/admin).
  *
  * Un solo usuario administrador definido por variables de entorno:
  *   ADMIN_USER      (por defecto "bryanf")
@@ -67,4 +67,9 @@ export function verifySessionToken(token: string | undefined | null): boolean {
   if (Number(expires) < Date.now()) return false;
   if (!safeEqual(signature, sign(`${user}.${expires}`))) return false;
   return safeEqual(user, adminUser());
+}
+
+/** Para las APIs del panel: sesión de /admin válida (cookie). */
+export function hasAdminSession(req: { cookies: { get(name: string): { value: string } | undefined } }) {
+  return verifySessionToken(req.cookies.get(ACCESS_COOKIE)?.value);
 }

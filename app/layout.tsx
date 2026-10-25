@@ -11,6 +11,13 @@ import { SkipLink } from "@/components/skip-link";
 import { SITE_URL } from "@/lib/seo/service-pages";
 import { SUBSCRIPTION_PLAN } from "@/lib/catalog";
 import { THEME_COLORS, themeBootstrap } from "@/lib/theme";
+import { activeSeason } from "@/lib/seasons";
+import { getSiteSettings } from "@/lib/site-settings";
+import { SiteSettingsProvider } from "@/components/season/site-settings-provider";
+
+// Las temporadas empiezan y terminan por fecha: cada página se regenera al
+// menos cada hora (guardar en el panel la renueva al instante).
+export const revalidate = 3600;
 
 // Client-only widget, no SEO content: skip SSR entirely to shave initial payload.
 const AccessibilityPanel = dynamic(
@@ -29,6 +36,21 @@ const FloatingDock = dynamic(
 // misma plática al cambiar de página (incluye suscripción, brief y 404).
 const LuminaChat = dynamic(
   () => import("@/components/lumina-chat").then((m) => m.LuminaChat),
+  { ssr: false }
+);
+// Lumina "salta" junto a lo que estás viendo: ayuda en los pagos, el modo
+// oscuro, saludos de temporada (components/lumina-tips.tsx).
+const LuminaTips = dynamic(
+  () => import("@/components/lumina-tips").then((m) => m.LuminaTips),
+  { ssr: false }
+);
+// Decoración y pop-up de temporada (Panel BryanF → Temporadas).
+const SeasonDecor = dynamic(
+  () => import("@/components/season/season-decor").then((m) => m.SeasonDecor),
+  { ssr: false }
+);
+const PromoPopup = dynamic(
+  () => import("@/components/season/promo-popup").then((m) => m.PromoPopup),
   { ssr: false }
 );
 
@@ -333,15 +355,20 @@ const fxBootstrap = `
   })();
 `;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const settings = await getSiteSettings();
+  const season = activeSeason(settings, Date.now());
+  const palette = season && settings.season.ranges[season].palette ? season : undefined;
   return (
     <html
       lang="es"
       className={`${jakarta.variable} ${archivo.variable} ${instrumentSerif.variable}`}
+      data-season={season ?? undefined}
+      data-season-palette={palette}
       suppressHydrationWarning
     >
       <head>
@@ -367,14 +394,19 @@ export default function RootLayout({
         </div>
         <ClickTracking />
         <MotionPreferenceProvider>
-          <LanguageProvider>
-            <SkipLink />
-            {children}
-            <LanguageNotice />
-            <LuminaChat />
-            <FloatingDock />
-          </LanguageProvider>
-          <AccessibilityPanel />
+          <SiteSettingsProvider settings={settings} serverSeason={season}>
+            <LanguageProvider>
+              <SkipLink />
+              <SeasonDecor />
+              {children}
+              <LanguageNotice />
+              <LuminaChat />
+              <LuminaTips />
+              <FloatingDock />
+              <PromoPopup />
+            </LanguageProvider>
+            <AccessibilityPanel />
+          </SiteSettingsProvider>
         </MotionPreferenceProvider>
       </body>
     </html>

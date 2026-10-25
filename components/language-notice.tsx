@@ -70,7 +70,7 @@ export function LanguageNotice() {
     // Teléfono y tableta: tira compacta bajo el header (abajo tapaba los CTA
     // del hero y chocaba con los flotantes). Desktop: tarjeta a la derecha
     // del botón de accesibilidad, sin encimarse con él.
-    <div className="fixed left-3 right-3 top-[calc(var(--header-h)+0.5rem)] z-[115] sm:left-6 sm:right-6 md:top-auto md:bottom-[var(--fab-edge)] md:left-[calc(var(--fab-size)+2.5rem)] md:right-auto md:max-w-[36rem] md:gap-4 md:p-3 md:pl-3.5 flex items-center gap-3 rounded-card bg-white p-2 pl-3 text-ink shadow-float ring-1 ring-ink/[0.06] max-md:animate-in max-md:fade-in max-md:slide-in-from-top-2">
+    <div className="[html.menu-open_&]:hidden fixed left-3 right-3 top-[calc(var(--header-h)+0.5rem)] z-[115] sm:left-6 sm:right-6 md:top-auto md:bottom-[var(--fab-edge)] md:left-[calc(var(--fab-size)+2.5rem)] md:right-auto md:max-w-[36rem] md:gap-4 md:p-3 md:pl-3.5 flex items-center gap-3 rounded-card bg-white p-2 pl-3 text-ink shadow-float ring-1 ring-ink/[0.06] max-md:animate-in max-md:fade-in max-md:slide-in-from-top-2">
       <span
         aria-hidden
         className="hidden size-10 shrink-0 place-items-center rounded-full bg-ink text-lime sm:grid"

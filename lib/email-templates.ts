@@ -348,7 +348,7 @@ export interface PaymentReceivedData {
   modalidad?: string | null;
   date?: Date | string | number;
   briefUrl: string;
-  /** Portal de clientes (Bitácora), si el cliente ya tiene cuenta. */
+  /** Mi panel, si el cliente ya tiene cuenta. */
   portalUrl?: string | null;
 }
 
@@ -385,7 +385,7 @@ export function paymentReceived(d: PaymentReceivedData): EmailContent {
         "Son unos minutos: nos cuentas de tu negocio, qué quieres lograr y nos compartes logo, fotos o enlaces. Si prefieres, Lumina lo llena contigo platicando."
       ),
       button("Armar mi brief", d.briefUrl, "ink"),
-      d.portalUrl ? button("Ver mi proyecto en Bitácora", d.portalUrl, "outline") : "",
+      d.portalUrl ? button("Entrar a mi panel", d.portalUrl, "outline") : "",
       steps([
         ["Armas tu brief", "Tu negocio, objetivos, estilo y materiales."],
         ["Lo revisamos en 24 h hábiles", "Te mandamos la ruta del proyecto y agendamos el arranque."],
@@ -1013,22 +1013,38 @@ export function internalNotice(d: {
 }
 
 /** Enlace de acceso a Mi panel (suscriptores). */
-export function clientLoginLink(d: { url: string; minutes: number }): EmailContent {
+export function clientLoginLink(d: {
+  url: string;
+  /** "30 minutos", "7 días". */
+  validFor: string;
+  /** Invitación desde el Panel BryanF: "tu panel ya está listo". */
+  welcome?: { name?: string | null; password?: string | null } | null;
+}): EmailContent {
+  const welcome = d.welcome;
   const html = layout({
-    preheader: "Tu enlace para entrar a tu panel de BryanF Design.",
+    preheader: welcome ? "Tu panel de BryanF Design ya está listo." : "Tu enlace para entrar a tu panel de BryanF Design.",
     eyebrow: "Mi panel",
-    title: "Entra a tu panel",
+    title: welcome ? "Tu panel ya está listo" : "Entra a tu panel",
     tone: "ink",
     body: [
-      paragraph("Hola:"),
+      paragraph(welcome ? hello(welcome.name) : "Hola:"),
       paragraph(
-        "Usa este botón para entrar a tu panel de la suscripción Todo Digital: ahí ves tu plan, tu próximo cobro y pides lo que necesites."
+        "Usa este botón para entrar a tu panel de BryanF Design: ahí ves tu proyecto o tu plan, tus pagos, tu próximo cobro y pides lo que necesites."
       ),
       button("Entrar a mi panel", d.url, "ink"),
+      welcome?.password
+        ? details(
+            [
+              ["Correo", "el mismo en el que recibes este mensaje"],
+              ["Contraseña temporal", `<strong>${escapeHtml(welcome.password)}</strong>`],
+            ],
+            "Contraseña temporal"
+          ) + muted("Puedes cambiarla cuando quieras desde tu panel.")
+        : "",
       muted(
-        `El enlace vale ${d.minutes} minutos. Si tú no lo pediste, ignora este correo.`
+        `El botón vale ${d.validFor}; después entra desde bryanfdesign.com/mi-panel. Si tú no lo pediste, ignora este correo.`
       ),
     ].join(""),
   });
-  return build("Tu enlace para entrar a Mi panel", html);
+  return build(welcome ? "Tu panel de BryanF Design ya está listo" : "Tu enlace para entrar a Mi panel", html);
 }

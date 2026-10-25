@@ -26,6 +26,8 @@ import { ENTRY_SERVICE_PRICES } from "@/lib/catalog";
 import { formatMoney } from "@/lib/currency";
 import { useLanguage } from "@/lib/i18n/context";
 import { isReducedMotionRequested } from "@/lib/motion-preference";
+import { applyPct } from "@/lib/seasons";
+import { useSiteSettings } from "@/components/season/site-settings-provider";
 
 /** Ícono de cada producto, por id del catálogo. */
 const ICONS: Record<string, LucideIcon> = {
@@ -40,6 +42,26 @@ const ICONS: Record<string, LucideIcon> = {
 const STARTING_PRICE = Math.min(...ENTRY_SERVICE_PRICES.map((p) => p.price));
 
 const pad = (n: number) => String(n).padStart(2, "0");
+
+/**
+ * Precio de la ficha: el texto traducido, o tachado junto al precio con el
+ * descuento vigente (Panel BryanF → Descuentos).
+ */
+function EntryPrice({ id, label }: { id: string; label: string }) {
+  const { pct } = useSiteSettings();
+  const { t } = useLanguage();
+  const percent = pct(`entry:${id}`);
+  const base = ENTRY_SERVICE_PRICES.find((p) => p.id === id);
+  if (!base || percent <= 0) return <>{label}</>;
+  return (
+    <>
+      <s className="mr-1.5 text-[0.8em] font-semibold opacity-55">{label}</s>
+      {base.from
+        ? t.entryServices.fromPrice(formatMoney(applyPct(base.price, percent), "MXN"))
+        : formatMoney(applyPct(base.price, percent), "MXN")}
+    </>
+  );
+}
 
 function fxDelay(ms: number) {
   return { "--fx-delay": `${ms}ms` } as CSSProperties;
@@ -321,7 +343,7 @@ export function EntryServices() {
                   {item.name}
                 </h3>
                 <p className="mt-3 inline-flex h-10 w-fit items-center rounded-full bg-lime px-4 text-base font-bold tabular-nums text-ink max-md:absolute max-md:right-4 max-md:top-5 max-md:mt-0 sm:max-md:right-6 sm:max-md:top-7">
-                  {item.price}
+                  <EntryPrice id={item.id} label={item.price} />
                 </p>
                 <p className="mt-2 text-pretty text-[0.9375rem] leading-relaxed text-muted-foreground md:mt-4">
                   {item.desc}
@@ -375,7 +397,7 @@ export function EntryServices() {
                 </span>
               </div>
               <p className="mt-2 inline-flex h-10 w-fit items-center rounded-full bg-ink px-4 text-base font-bold tabular-nums text-lime">
-                {featured.price}
+                <EntryPrice id={featured.id} label={featured.price} />
               </p>
               <p className="mt-2.5 text-pretty text-[0.9375rem] leading-relaxed text-ink/75">{featured.desc}</p>
 
@@ -441,7 +463,7 @@ export function EntryServices() {
                   {featured.desc}
                 </p>
                 <p className="mt-5 inline-flex h-11 items-center rounded-full bg-ink px-5 text-lg font-bold tabular-nums text-lime">
-                  {featured.price}
+                  <EntryPrice id={featured.id} label={featured.price} />
                 </p>
               </div>
 

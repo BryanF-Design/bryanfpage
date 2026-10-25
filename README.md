@@ -16,12 +16,29 @@ Sitio del estudio en Next.js 14 (App Router), desplegado en Vercel.
 - `public/` — imágenes y archivos estáticos
 
 ## Panel BryanF (`/admin`) y Mi panel (`/mi-panel`)
-`/admin` es el panel privado de Bryan con los suscriptores de Stripe y Mercado
-Pago: estado, próximo cobro y días que faltan. Se activa con `ADMIN_USER` y
-`ADMIN_PASSWORD` (mínimo 12 caracteres) en las variables de entorno de Vercel.
+`/admin` es el panel privado de Bryan (`ADMIN_USER` + `ADMIN_PASSWORD`, mínimo
+12 caracteres). Pestañas:
+- **Resumen**: ingreso recurrente, ventas del mes, próximos cobros, temporada y descuento vigentes.
+- **Clientes**: todos los que pagaron (suscripción, compra o transferencia), unidos por correo.
+  Crear cuenta, poner o generar contraseña, mandar el acceso por correo, registrar pagos
+  por transferencia y **ver su panel como lo ve el cliente** (`/admin/vista?email=`).
+- **Suscripciones** y **Pagos**: en vivo de Stripe y Mercado Pago, más lo registrado a mano.
+- **Temporadas**: Día de Muertos, El Buen Fin, Black Friday y Navidad, cada una con fechas
+  (se prende y se apaga sola), colores, decoración y aviso. Vista previa con `/?temporada=muertos`
+  (`/?temporada=fin` la quita).
+- **Descuentos**: % general y por servicio. Se muestran tachados y el servidor cobra con descuento.
+- **Avisos y pop-up**: la píldora bajo el menú y el pop-up de promoción.
 
-`/mi-panel` es el panel de cada suscriptor: entra con un enlace que le llega al
-correo (sin contraseña), ve su plan, su próximo cobro y pide cosas por WhatsApp.
+`/mi-panel` es el panel de cada cliente, de compra única o de suscripción: entra con su correo
+(enlace) o con contraseña, ve su servicio o su plan, sus pagos y pide cosas por WhatsApp.
+
+Los datos viven en Supabase (proyecto BryanF-Access, esquema `sitio`, ver `lib/db.ts`); sin
+la base, el sitio funciona con la temporada por fecha y sin descuentos.
+
+## Lumina
+`components/lumina-chat.tsx` es el chat; `components/lumina-tips.tsx` son los avisos que
+"saltan" junto a lo que estás viendo: ayuda si alguien titubea en los pagos, el modo
+oscuro / claro y el saludo de temporada.
 
 ## Variables de entorno
 Todas están documentadas en `.env.example`. Guías: `SUSCRIPCION_SETUP.md`,

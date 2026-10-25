@@ -13,6 +13,7 @@ import {
   SECTION_PRICE,
 } from "./catalog";
 import { mxnToUsd, type Currency } from "./currency";
+import { applyPct } from "./seasons";
 
 /**
  * Llave de localStorage donde el Configurador guarda la cotización en curso
@@ -32,8 +33,25 @@ export interface QuoteSelection {
 export interface QuoteLineMxn {
   /** Identificador estable de la partida (p. ej. "plan:full", "module:payments"). */
   id: string;
-  /** Precio en MXN (moneda fuente). */
+  /** Precio en MXN (moneda fuente), ya con descuento si lo hay. */
   price: number;
+  /** Precio de lista, antes del descuento. */
+  original: number;
+  /** % de descuento aplicado (0 si ninguno). */
+  discount: number;
+}
+
+/**
+ * % de descuento por partida (llaves de lib/seasons `DISCOUNTABLE`:
+ * "plan:full", "module:payments", "sections"). Sin función, no hay descuento.
+ */
+export type DiscountLookup = (key: string) => number;
+
+const noDiscount: DiscountLookup = () => 0;
+
+function line(id: string, key: string, price: number, pctFor: DiscountLookup): QuoteLineMxn {
+  const discount = Math.min(90, Math.max(0, pctFor(key) || 0));
+  return { id, price: applyPct(price, discount), original: price, discount };
 }
 
 /** Normaliza una selección arbitraria (posiblemente del cliente) a algo seguro. */
@@ -58,20 +76,20 @@ export function normalizeSelection(raw: unknown): QuoteSelection {
 }
 
 /** Partidas en MXN a partir de una selección ya normalizada. */
-export function buildQuoteLinesMxn(sel: QuoteSelection): QuoteLineMxn[] {
+export function buildQuoteLinesMxn(sel: QuoteSelection, pctFor: DiscountLookup = noDiscount): QuoteLineMxn[] {
   const lines: QuoteLineMxn[] = [];
   const plan =
     CONFIGURATOR_PLANS.find((p) => p.id === sel.planId) ?? CONFIGURATOR_PLANS[0];
-  lines.push({ id: `plan:${plan.id}`, price: plan.price });
+  lines.push(line(`plan:${plan.id}`, `plan:${plan.id}`, plan.price, pctFor));
 
   for (const m of CONFIGURATOR_MODULES) {
     if (sel.moduleIds.includes(m.id)) {
-      lines.push({ id: `module:${m.id}`, price: m.price });
+      lines.push(line(`module:${m.id}`, `module:${m.id}`, m.price, pctFor));
     }
   }
 
   if (sel.sections > 0) {
-    lines.push({ id: `sections:${sel.sections}`, price: sel.sections * SECTION_PRICE });
+    lines.push(line(`sections:${sel.sections}`, "sections", sel.sections * SECTION_PRICE, pctFor));
   }
   return lines;
 }
@@ -84,9 +102,10 @@ export function buildQuoteLinesMxn(sel: QuoteSelection): QuoteLineMxn[] {
 export function quoteProjectTotal(
   sel: QuoteSelection,
   currency: Currency,
-  usdMxnRate: number
+  usdMxnRate: number,
+  pctFor: DiscountLookup = noDiscount
 ): number {
-  const lines = buildQuoteLinesMxn(sel);
+  const lines = buildQuoteLinesMxn(sel, pctFor);
   const toCurrency = (mxn: number) =>
     currency === "MXN" ? mxn : mxnToUsd(mxn, usdMxnRate);
   return Math.max(0, Math.round(lines.reduce((a, b) => a + toCurrency(b.price), 0)));

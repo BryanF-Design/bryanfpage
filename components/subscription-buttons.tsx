@@ -72,7 +72,7 @@ export function SubscriptionButtons() {
   );
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div data-lumina-pay="suscripcion" className="flex flex-col gap-2.5">
       <Button
         size="lg"
         onClick={() => subscribe("stripe")}

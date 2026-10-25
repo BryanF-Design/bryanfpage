@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, LogIn, Menu, X } from "lucide-react";
+import { ArrowUpRight, LogIn } from "lucide-react";
 import {
   FaWhatsapp,
   FaInstagram,
@@ -21,6 +22,8 @@ import { DICTIONARIES } from "@/lib/i18n/dictionaries";
 import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { useFooterInView } from "@/lib/use-footer-in-view";
 import { cn } from "@/lib/utils";
+import { SeasonBadge } from "@/components/season/season-badge";
+import { SeasonStrip } from "@/components/season/season-strip";
 
 // Panel de los suscriptores, dentro del mismo sitio.
 const CLIENT_PORTAL = "/mi-panel";
@@ -36,13 +39,14 @@ const social = [
 /**
  * Barra flotante: una píldora blanca con la marca, la navegación y las
  * acciones, como la cabecera de las referencias. Gana sombra al hacer
- * scroll. Por debajo de 1024 px la navegación vive en una hoja que baja
- * desde la barra, con los enlaces en rótulo grande.
+ * scroll. Por debajo de 1024 px la navegación vive en una hoja tinta que se
+ * revela desde el botón del menú, con los enlaces numerados en rótulo grande.
  */
 export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
   const { t: localizedT } = useLanguage();
   const t = spanishOnly ? DICTIONARIES.es : localizedT;
   const reducedMotion = useReducedMotionPreference();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hovered, setHovered] = useState<number | null>(null);
@@ -151,8 +155,9 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
           <Link
             href="/"
             onClick={() => setOpen(false)}
-            className="flex h-11 shrink-0 items-center rounded-full px-1"
+            className="relative flex h-11 shrink-0 items-center rounded-full px-1"
             aria-label="BryanF Design — inicio"
+            data-lumina="logo"
           >
             <Image
               src="/img/brand/logo-dark.png"
@@ -160,9 +165,10 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
               width={720}
               height={253}
               priority
-              sizes="120px"
-              className="logo-invert h-7 w-auto md:h-8"
+              sizes="(min-width: 768px) 128px, 112px"
+              className="logo-invert h-[2.1rem] w-auto md:h-10"
             />
+            <SeasonBadge />
           </Link>
 
           <nav
@@ -219,12 +225,19 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
               aria-label={open ? t.nav.closeMenu : t.nav.menu}
               aria-controls="mobile-site-menu"
               aria-expanded={open}
-              className="grid size-11 place-items-center rounded-full bg-ink text-white transition-transform active:scale-95 lg:hidden"
+              className="menu-toggle relative grid size-11 place-items-center rounded-full bg-ink text-white transition-transform active:scale-95 lg:hidden"
+              data-open={open}
             >
-              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {/* Tres líneas que se vuelven una ×. */}
+              <span aria-hidden className="menu-toggle-lines">
+                <span />
+                <span />
+                <span />
+              </span>
             </button>
           </div>
         </div>
+        <SeasonStrip hidden={scrolled || open} />
       </header>
 
       <AnimatePresence>
@@ -235,64 +248,85 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
             role="dialog"
             aria-modal="true"
             aria-label={t.nav.menu}
-            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -12, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.98 }}
-            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-            style={{ transformOrigin: "50% 0%" }}
-            className="fixed inset-x-[var(--gutter)] bottom-[var(--gutter)] top-[calc(var(--gutter)*0.75+4.25rem)] z-[99] flex flex-col overflow-y-auto rounded-panel bg-white shadow-[0_30px_80px_-30px_hsl(var(--shade)/0.5)] lg:hidden"
+            // Se revela en un círculo que nace del botón del menú (arriba a la
+            // derecha) y se recoge hacia él al cerrar.
+            initial={reducedMotion ? { opacity: 0 } : { clipPath: "circle(0% at calc(100% - 2.6rem) -1.6rem)" }}
+            animate={reducedMotion ? { opacity: 1 } : { clipPath: "circle(150% at calc(100% - 2.6rem) -1.6rem)" }}
+            exit={reducedMotion ? { opacity: 0 } : { clipPath: "circle(0% at calc(100% - 2.6rem) -1.6rem)" }}
+            transition={{ duration: reducedMotion ? 0.15 : 0.55, ease: [0.22, 1, 0.36, 1] }}
+            className="mobile-menu fixed inset-x-[var(--gutter)] bottom-[var(--gutter)] top-[calc(var(--gutter)*0.75+4.25rem)] z-[99] flex flex-col overflow-y-auto overscroll-contain rounded-panel bg-ink text-white shadow-[0_30px_80px_-30px_hsl(var(--shade)/0.6)] lg:hidden"
           >
-            <nav aria-label={t.nav.menu} className="flex flex-1 flex-col px-5 pb-6 pt-4 sm:px-8">
+            <span aria-hidden className="mobile-menu-glow" />
+            <nav aria-label={t.nav.menu} className="relative flex flex-1 flex-col px-5 pb-6 pt-5 sm:px-8">
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-white/45">{t.nav.menu}</p>
               <ul className="flex flex-col">
-                {links.map((l, i) => (
-                  <motion.li
-                    key={l.href}
-                    initial={reducedMotion ? false : { opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      delay: reducedMotion ? 0 : 0.04 + i * 0.04,
-                      duration: 0.3,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
-                    className="border-b border-ink/[0.07]"
-                  >
-                    <Link
-                      ref={i === 0 ? firstMenuLinkRef : undefined}
-                      href={l.href}
-                      onClick={() => setOpen(false)}
-                      className="group flex min-h-[4.25rem] items-center justify-between gap-4 py-2"
+                {links.map((l, i) => {
+                  const current = l.href.startsWith("/#") ? false : pathname === l.href;
+                  return (
+                    <motion.li
+                      key={l.href}
+                      initial={reducedMotion ? false : { opacity: 0, x: 28 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{
+                        delay: reducedMotion ? 0 : 0.12 + i * 0.05,
+                        duration: 0.42,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+                      className="border-b border-white/[0.08]"
                     >
-                      <span className="display-title text-[clamp(2rem,9vw,3.25rem)] text-ink">
-                        {l.label}
-                      </span>
-                      <span className="grid size-11 shrink-0 place-items-center rounded-full bg-ink/[0.05] text-ink transition-colors group-hover:bg-lime">
-                        <ArrowUpRight className="h-5 w-5" />
-                      </span>
-                    </Link>
-                  </motion.li>
-                ))}
+                      <Link
+                        ref={i === 0 ? firstMenuLinkRef : undefined}
+                        href={l.href}
+                        onClick={() => setOpen(false)}
+                        aria-current={current ? "page" : undefined}
+                        className="group flex min-h-[4.25rem] items-center gap-4 py-2"
+                      >
+                        <span className="w-7 shrink-0 text-xs font-bold tabular-nums text-lime/80">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span
+                          className={cn(
+                            "display-title flex-1 text-[clamp(2rem,9vw,3.25rem)] transition-[color,transform] duration-300 [transition-timing-function:var(--ease-out)] group-hover:translate-x-1 group-active:translate-x-1",
+                            current ? "text-lime" : "text-white"
+                          )}
+                        >
+                          {l.label}
+                        </span>
+                        <span className="grid size-11 shrink-0 place-items-center rounded-full bg-white/[0.08] text-white transition-[background-color,color,transform] duration-300 group-hover:rotate-45 group-hover:bg-lime group-hover:text-ink">
+                          <ArrowUpRight className="h-5 w-5" />
+                        </span>
+                      </Link>
+                    </motion.li>
+                  );
+                })}
               </ul>
 
-              <div className="mt-auto flex flex-col gap-3 pt-8 sm:flex-row">
-                <Button asChild size="lg" variant="ink" className="w-full pr-2 sm:flex-1">
-                  <Link href="/#precios" onClick={() => setOpen(false)}>
-                    {t.nav.armaTuWeb}
-                    <ButtonArrow tone="lime" className="ml-auto -mr-0.5" />
-                  </Link>
-                </Button>
-                <Button asChild size="lg" variant="outline" className="w-full sm:flex-1">
-                  <Link
-                    href={CLIENT_PORTAL}
-                    onClick={() => setOpen(false)}
-                  >
-                    <LogIn className="h-4 w-4" />
-                    {t.nav.cliente}
-                  </Link>
-                </Button>
-              </div>
+              <motion.div
+                initial={reducedMotion ? false : { opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: reducedMotion ? 0 : 0.38, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="mt-auto grid grid-cols-2 gap-2.5 pt-8"
+              >
+                <Link
+                  href="/#precios"
+                  onClick={() => setOpen(false)}
+                  className="group flex min-h-[6.5rem] flex-col justify-between rounded-card bg-lime p-4 text-ink transition-transform active:scale-[0.98]"
+                >
+                  <ButtonArrow tone="ink" className="ml-0 self-end transition-transform group-hover:-rotate-45" />
+                  <span className="text-[1.0625rem] font-bold leading-tight">{t.nav.armaTuWeb}</span>
+                </Link>
+                <Link
+                  href={CLIENT_PORTAL}
+                  onClick={() => setOpen(false)}
+                  className="group flex min-h-[6.5rem] flex-col justify-between rounded-card bg-white/[0.08] p-4 text-white ring-1 ring-inset ring-white/10 transition-[transform,background-color] hover:bg-white/[0.12] active:scale-[0.98]"
+                >
+                  <LogIn className="h-5 w-5 self-end text-lime" />
+                  <span className="text-[1.0625rem] font-bold leading-tight">{t.nav.cliente}</span>
+                </Link>
+              </motion.div>
 
               <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-                <span className="text-sm font-medium text-ink/55">CDMX · México</span>
+                <span className="text-sm font-medium text-white/55">CDMX · México</span>
                 <div className="flex gap-2">
                   {social.map(({ Icon, href, label }) => (
                     <Link
@@ -301,7 +335,7 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={label}
-                      className="grid size-11 place-items-center rounded-full bg-ink/[0.05] text-ink/70 transition-colors hover:bg-lime hover:text-ink"
+                      className="grid size-11 place-items-center rounded-full bg-white/[0.08] text-white/75 transition-colors hover:bg-lime hover:text-ink"
                     >
                       <Icon className="h-4 w-4" />
                     </Link>
@@ -317,7 +351,7 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
                 setOpen(false);
                 window.setTimeout(() => menuButtonRef.current?.focus());
               }}
-              className="sr-only focus:not-sr-only focus:mx-5 focus:mb-5 focus:rounded-full focus:bg-ink focus:px-5 focus:py-3 focus:text-sm focus:font-semibold focus:text-white"
+              className="sr-only focus:not-sr-only focus:mx-5 focus:mb-5 focus:rounded-full focus:bg-lime focus:px-5 focus:py-3 focus:text-sm focus:font-semibold focus:text-ink"
             >
               {t.nav.closeMenu}
             </button>

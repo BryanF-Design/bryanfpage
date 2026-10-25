@@ -51,6 +51,8 @@ import {
   SECTION_PRICE,
 } from "@/lib/catalog";
 import { LEAD_FORM_ID, QUOTE_STORAGE_KEY } from "@/lib/quote";
+import { applyPct } from "@/lib/seasons";
+import { useSiteSettings } from "@/components/season/site-settings-provider";
 
 /**
  * Tope de secciones adicionales: el mismo que aplica el servidor al recomponer
@@ -181,6 +183,10 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
   const [copied, setCopied] = useState("");
 
   const plan = PLANS.find((p) => p.id === planId)!;
+  // Descuento vigente por partida (Panel BryanF → Descuentos). El servidor
+  // aplica el mismo % al cobrar.
+  const { pct } = useSiteSettings();
+  const off = (key: string, mxn: number) => applyPct(mxn, pct(key));
 
   // Teléfono: mientras se arma la cotización y el resumen aún no está a la
   // vista, una píldora flotante muestra el total en vivo y lleva al resumen.
@@ -307,20 +313,22 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
   // según la moneda elegida, con redondeo hacia arriba por partida en USD
   // para que la suma mostrada siempre cuadre con el total mostrado.
   const items = useMemo(() => {
-    const list: { source: string; price: number }[] = [
-      { source: plan.name, price: plan.price },
+    const list: { source: string; price: number; original: number }[] = [
+      { source: plan.name, price: off(`plan:${plan.id}`, plan.price), original: plan.price },
     ];
     MODULES.forEach((m) => {
-      if (mods[m.id]) list.push({ source: m.label, price: m.price });
+      if (mods[m.id]) list.push({ source: m.label, price: off(`module:${m.id}`, m.price), original: m.price });
     });
     if (sections > 0)
       list.push({
         source: t.configurator.additionalSectionsLabel(sections),
-        price: sections * SECTION_PRICE,
+        price: off("sections", sections * SECTION_PRICE),
+        original: sections * SECTION_PRICE,
       });
     return list;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [plan, mods, sections, t]);
+  }, [plan, mods, sections, t, pct]);
+  const savedMxn = items.reduce((a, b) => a + b.original - b.price, 0);
 
   const inCurrency = (mxn: number) =>
     currency === "MXN" ? mxn : mxnToUsd(mxn, USD_MXN_RATE);
@@ -566,7 +574,12 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                         )}
                       </span>
                       <span className="display-title mt-1 block text-[1.6rem] tabular-nums sm:mt-0 sm:text-[1.75rem] lg:mt-1.5 lg:text-[2rem]">
-                        {display(p.price)}
+                        {pct(`plan:${p.id}`) > 0 && (
+                          <s className="mr-2 align-middle font-sans text-base font-semibold text-ink/45">
+                            {display(p.price)}
+                          </s>
+                        )}
+                        {display(off(`plan:${p.id}`, p.price))}
                       </span>
                     </span>
                     <span
@@ -621,7 +634,10 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                     <span className="flex min-w-0 flex-1 flex-col gap-0.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                       <span className="text-[0.9375rem] font-semibold leading-snug text-ink">{m.label}</span>
                       <span className="shrink-0 text-sm font-bold tabular-nums text-forest sm:text-base">
-                        +{display(m.price)}
+                        {pct(`module:${m.id}`) > 0 && (
+                          <s className="mr-1.5 font-semibold text-ink/40">{display(m.price)}</s>
+                        )}
+                        +{display(off(`module:${m.id}`, m.price))}
                       </span>
                     </span>
                     <span className="relative ml-1 inline-flex shrink-0">
@@ -662,7 +678,8 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                     {t.configurator.extraSections}
                   </span>
                   <span className="block text-sm tabular-nums text-muted-foreground">
-                    +{display(SECTION_PRICE)} · {t.configurator.perUnit}
+                    {pct("sections") > 0 && <s className="mr-1 text-ink/40">{display(SECTION_PRICE)}</s>}
+                    +{display(off("sections", SECTION_PRICE))} · {t.configurator.perUnit}
                   </span>
                 </span>
                 <span className="ml-auto flex items-center gap-1 rounded-full bg-mint p-1 ring-1 ring-inset ring-ink/[0.06]">
@@ -853,7 +870,10 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                         <Icon className="h-4 w-4" />
                       </span>
                       <span className="min-w-0 flex-1 text-sm leading-snug text-white/80">{it.source}</span>
-                      <span className="shrink-0 text-[0.9375rem] font-bold tabular-nums text-white">
+                      <span className="shrink-0 text-right text-[0.9375rem] font-bold tabular-nums text-white">
+                        {it.original > it.price && (
+                          <s className="mr-1.5 text-xs font-semibold text-white/45">{display(it.original)}</s>
+                        )}
                         {display(it.price)}
                       </span>
                     </li>
@@ -908,6 +928,12 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                   </span>
                 </div>
 
+                {savedMxn > 0 && (
+                  <p className="relative mt-4 inline-flex items-center gap-1.5 rounded-full bg-lime px-3 py-1 text-xs font-black text-ink">
+                    <TicketPercent aria-hidden className="h-3.5 w-3.5" />
+                    Ahorras {display(savedMxn)}
+                  </p>
+                )}
                 <div className="relative mt-4 flex items-center justify-between gap-3 border-t border-dashed border-white/15 pt-4 text-sm">
                   <span className="text-white/65">{t.configurator.totalProject}</span>
                   <span className="font-bold tabular-nums text-white">
@@ -919,7 +945,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
 
             <div className="relative flex min-w-0 flex-col gap-5">
               {/* Botones de pago. */}
-              <div data-lumina="pagar" className="relative flex flex-col gap-2.5">
+              <div data-lumina="pagar" data-lumina-pay="cotizador" className="relative flex flex-col gap-2.5">
                 <Button
                   size="lg"
                   onClick={() => pay("/api/stripe-checkout", "Stripe")}
@@ -1110,11 +1136,11 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
       </div>
 
       {/* Teléfono: el total en vivo, flotando en la fila de los botones
-          flotantes (a la derecha del de accesibilidad; Lumina y WhatsApp se
-          apartan dentro del cotizador). Se va cuando el resumen ya se ve. */}
+          flotantes, entre el de accesibilidad y Lumina (que se queda para
+          ayudar a pagar). Se va cuando el resumen ya se ve. */}
       <div
         className={cn(
-          "fixed bottom-[var(--fab-edge)] left-[calc(0.75rem+var(--fab-size)+var(--fab-gap))] right-3 z-[118] transition-[transform,opacity,visibility] duration-300 [transition-timing-function:var(--ease-out)] motion-reduce:transition-none sm:hidden [html.menu-open_&]:invisible [html.menu-open_&]:opacity-0",
+          "fixed bottom-[var(--fab-edge)] left-[calc(0.75rem+var(--fab-size)+var(--fab-gap))] right-[calc(0.75rem+var(--fab-size)+var(--fab-gap))] z-[118] transition-[transform,opacity,visibility] duration-300 [transition-timing-function:var(--ease-out)] motion-reduce:transition-none sm:hidden [html.menu-open_&]:invisible [html.menu-open_&]:opacity-0",
           showTotalDock
             ? "visible translate-y-0 opacity-100"
             : "pointer-events-none invisible translate-y-4 opacity-0"

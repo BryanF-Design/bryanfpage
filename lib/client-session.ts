@@ -57,6 +57,10 @@ function read(kind: string, token: string | null | undefined): string | null {
 export const createLoginToken = (email: string) => make("link", email, LINK_MINUTES * 60 * 1000);
 export const readLoginToken = (token: string | null | undefined) => read("link", token);
 
+/** Invitación desde el Panel BryanF (vale más: el cliente no la pidió). */
+export const INVITE_DAYS = 7;
+export const createInviteToken = (email: string) => make("link", email, INVITE_DAYS * 24 * 60 * 60 * 1000);
+
 /** Cookie de sesión. */
 export const createClientSession = (email: string) => make("session", email, CLIENT_MAX_AGE * 1000);
 export const readClientSession = (token: string | null | undefined) => read("session", token);

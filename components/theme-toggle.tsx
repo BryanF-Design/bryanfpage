@@ -38,7 +38,8 @@ export function ThemeToggle({ className }: { className?: string }) {
   return (
     <button
       type="button"
-      onClick={() => applyTheme(dark ? "light" : "dark")}
+      onClick={(e) => applyTheme(dark ? "light" : "dark", true, e.currentTarget)}
+      data-lumina="tema"
       aria-label={dark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
       aria-pressed={dark}
       title={dark ? "Modo claro" : "Modo oscuro"}

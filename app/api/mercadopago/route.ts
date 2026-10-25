@@ -4,6 +4,8 @@ import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from
 import { sanitizeAttribution } from "@/lib/attribution";
 import { getUsdMxnRate, isCurrency, usdToMxn } from "@/lib/currency";
 import { normalizeSelection, quotePayableNow, quoteProjectTotal } from "@/lib/quote";
+import { discountFor } from "@/lib/seasons";
+import { getSiteSettings } from "@/lib/site-settings";
 import { getSiteUrl } from "@/lib/site-url";
 
 export const runtime = "nodejs";
@@ -30,7 +32,6 @@ export async function POST(req: NextRequest) {
     if (!ok) return tooManyRequests();
 
     const body = await req.json().catch(() => ({}) as Record<string, unknown>);
-    const monto = Number((body as Record<string, unknown>).monto || 0);
     // Moneda elegida en el configurador; MXN por defecto (comportamiento previo).
     const rawCurrency = (body as Record<string, unknown>).currency;
     const currency = isCurrency(rawCurrency) ? rawCurrency : "MXN";
@@ -44,21 +45,21 @@ export async function POST(req: NextRequest) {
     const attribution = sanitizeAttribution((body as Record<string, unknown>).attribution);
     const siteUrl = getSiteUrl();
 
-    // Precio autoritativo del lado del servidor (ver stripe-checkout): con la
-    // selección estructurada, el total se recompone desde el catálogo; sin
-    // ella, se valida el monto en rango sano (compatibilidad hacia atrás).
+    // Precio autoritativo del lado del servidor (ver stripe-checkout).
     const rawSelection = (body as Record<string, unknown>).selection;
-    let projectTotal: number;
-    if (rawSelection && typeof rawSelection === "object") {
-      const selection = normalizeSelection(rawSelection);
-      projectTotal = quoteProjectTotal(
-        selection,
-        currency,
-        getUsdMxnRate(process.env.NEXT_PUBLIC_USD_MXN_RATE)
-      );
-    } else {
-      projectTotal = monto;
+    if (!rawSelection || typeof rawSelection !== "object") {
+      return NextResponse.json({ error: "Falta la selección del cotizador" }, { status: 400 });
     }
+    // El descuento vigente (Panel BryanF) se aplica aquí, con el mismo dato
+    // que pinta el cotizador.
+    const settings = await getSiteSettings();
+    const now = Date.now();
+    const projectTotal = quoteProjectTotal(
+      normalizeSelection(rawSelection),
+      currency,
+      getUsdMxnRate(process.env.NEXT_PUBLIC_USD_MXN_RATE),
+      (key) => discountFor(settings, key, now)
+    );
 
     if (!Number.isFinite(projectTotal) || projectTotal <= 0 || projectTotal > 2_000_000) {
       return NextResponse.json({ error: "Monto invalido" }, { status: 400 });

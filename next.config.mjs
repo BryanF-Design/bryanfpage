@@ -1,12 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  images: {
-    remotePatterns: [
-      { protocol: "https", hostname: "images.unsplash.com" },
-      { protocol: "https", hostname: "lottie.host" },
-    ],
-  },
   // Las páginas viejas en HTML estático ya son rutas de Next: quien llegue
   // con la URL antigua (buscadores, enlaces guardados) va a la nueva.
   async redirects() {

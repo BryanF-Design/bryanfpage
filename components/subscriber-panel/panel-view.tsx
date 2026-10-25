@@ -23,26 +23,13 @@ import { FaWhatsapp } from "react-icons/fa";
 
 import { cn } from "@/lib/utils";
 import { SUBSCRIPTION_INCLUDES } from "@/lib/subscription";
+import type { PanelData } from "./panel-types";
 
 const DAY = 86_400_000;
 const WHATSAPP = "525663012505";
 const TZ = "America/Mexico_City";
 
-export interface PanelData {
-  name: string;
-  email: string;
-  status: "active" | "trialing" | "past_due" | "paused" | "pending" | "canceled" | "other";
-  provider: "stripe" | "mercadopago";
-  amount: number;
-  currency: string;
-  startedAt: number | null;
-  periodStart: number | null;
-  nextChargeAt: number | null;
-  cancelAtPeriodEnd: boolean;
-  charges: number | null;
-  /** Momento de la consulta: servidor y navegador cuentan igual. */
-  now: number;
-}
+export type { PanelData } from "./panel-types";
 
 const STATUS: Record<PanelData["status"], { label: string; tone: string }> = {
   active: { label: "Activa", tone: "bg-lime text-ink" },
@@ -231,7 +218,11 @@ export function SubscriberPanelView({
                 className="inline-flex min-h-11 items-center gap-2 rounded-full bg-white/10 px-4 text-sm font-semibold text-white transition-colors hover:bg-white/20"
               >
                 {managing ? <Loader2 aria-hidden className="h-4 w-4 animate-spin" /> : <CreditCard aria-hidden className="h-4 w-4 text-lime" />}
-                {data.provider === "stripe" ? "Tarjeta, facturas o cancelar" : "Administrar en Mercado Pago"}
+                {data.provider === "stripe"
+                  ? "Tarjeta, facturas o cancelar"
+                  : data.provider === "mercadopago"
+                    ? "Administrar en Mercado Pago"
+                    : "Pagar o cambiar mi plan"}
               </button>
             </div>
           </section>
