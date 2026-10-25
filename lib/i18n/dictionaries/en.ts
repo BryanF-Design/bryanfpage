@@ -579,7 +579,7 @@ const en: Dictionary = {
     name: "Lumina",
     greeting:
       "Hi! I'm <strong>Lumina</strong>, your advisor at BryanF Design.<br>Need help with pricing, timelines, or building your site?",
-    quick: ["How much does a website cost?", "Show me projects like mine", "I want to build my site"],
+    quick: ["How much does a website cost?", "Show me projects like mine", "I want to build my site", "Take me to where I pay a deposit"],
     online: "AI advisor · online",
     offline: "Offline",
     thinking: "Thinking…",
@@ -598,6 +598,11 @@ const en: Dictionary = {
       whatsappIntro: "Hi Bryan, I just talked with Lumina on your site. This is what I'm looking for:",
       visit: "Open site",
       cases: "Case studies",
+      show: "Show me",
+      fill: "Fill it for me",
+      filled: "Done, I filled it in for you",
+      lang: "Switch to {lang}",
+      here: "Right here",
     },
     languageInstruction: "English",
     errorFallback:

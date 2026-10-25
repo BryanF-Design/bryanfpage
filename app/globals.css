@@ -1202,3 +1202,213 @@ html.fx-on [data-fx="panel"]:not([data-fx-in]) > * {
     translate: 0 -6%;
   }
 }
+
+/* ——— Recortes sin mordida ——————————————————————————————————————————
+   La pestaña del recorte ya pinta la esquina del panel con el color del
+   lienzo, así que esa esquina no necesita radio. Con radio, el panel (que
+   suele llevar overflow-hidden) recortaba en diagonal la píldora de dentro
+   ("Proyecto destacado" se veía mordida). */
+.panel:has(> .notch-tl) {
+  border-top-left-radius: 0;
+}
+.panel:has(> .notch-tr) {
+  border-top-right-radius: 0;
+}
+.panel:has(> .notch-br) {
+  border-bottom-right-radius: 0;
+}
+.panel:has(> .notch-bl) {
+  border-bottom-left-radius: 0;
+}
+
+/* En pantallas táctiles el :hover se queda "pegado" después del toque: el
+   flotante quedaba levantado. Solo con mouse se eleva. */
+@media (hover: none) {
+  .fab:hover {
+    transform: none;
+  }
+  .fab-dock-btn:hover {
+    background-color: transparent;
+  }
+}
+
+/* ——— Preloader ————————————————————————————————————————————————————
+   Solo en la primera visita de la sesión (lo decide un script en <head>
+   antes del primer frame). El logo se dibuja de izquierda a derecha, la
+   diagonal lima barre encima y el telón sube. Sin JS, nunca aparece. */
+.preloader {
+  display: none;
+}
+html.preload .preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  background: hsl(var(--ink));
+  pointer-events: none;
+}
+html.preload body {
+  overflow: hidden;
+}
+.preloader-mark {
+  position: relative;
+  width: min(62vw, 18rem);
+  overflow: hidden;
+}
+.preloader-mark img {
+  display: block;
+  width: 100%;
+  height: auto;
+  clip-path: inset(0 100% 0 0);
+  animation: pre-draw 900ms cubic-bezier(0.65, 0, 0.35, 1) 120ms forwards;
+}
+.preloader-mark::after {
+  content: "";
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: 0;
+  width: 18%;
+  background: linear-gradient(90deg, transparent, hsl(var(--lime) / 0.85), transparent);
+  transform: translateX(-120%) skewX(-18deg);
+  animation: pre-sweep 900ms cubic-bezier(0.65, 0, 0.35, 1) 120ms forwards;
+}
+.preloader-bar {
+  position: absolute;
+  left: 50%;
+  bottom: calc(18vh + env(safe-area-inset-bottom));
+  width: 7rem;
+  height: 3px;
+  border-radius: 999px;
+  translate: -50% 0;
+  background: hsl(0 0% 100% / 0.12);
+  overflow: hidden;
+}
+.preloader-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: hsl(var(--lime));
+  transform-origin: left;
+  animation: pre-bar 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+html.preload-out .preloader {
+  animation: pre-lift 620ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+html.preload-out .preloader-mark {
+  animation: pre-mark-out 420ms ease-in forwards;
+}
+@keyframes pre-draw {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes pre-sweep {
+  to {
+    transform: translateX(620%) skewX(-18deg);
+  }
+}
+@keyframes pre-bar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes pre-lift {
+  to {
+    clip-path: inset(0 0 100% 0 round 0 0 40% 40%);
+  }
+}
+@keyframes pre-mark-out {
+  to {
+    opacity: 0;
+    translate: 0 -24px;
+    scale: 0.96;
+  }
+}
+
+/* ——— Lumina señala ————————————————————————————————————————————————
+   Un foco que oscurece la página y deja a la vista solo el elemento que
+   Lumina quiere enseñar, con su nota encima. Se quita al tocar cualquier
+   parte o solo a los pocos segundos. */
+.lumina-focus {
+  position: fixed;
+  z-index: 125;
+  border-radius: 1.25rem;
+  box-shadow:
+    0 0 0 4px hsl(var(--lime)),
+    0 0 0 9999px hsl(var(--ink) / 0.55);
+  pointer-events: none;
+  transition:
+    top 380ms var(--ease-out, ease-out),
+    left 380ms var(--ease-out, ease-out),
+    width 380ms var(--ease-out, ease-out),
+    height 380ms var(--ease-out, ease-out),
+    opacity 220ms linear;
+  animation: lumina-focus-in 360ms var(--ease-out, ease-out);
+}
+.lumina-focus::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  animation: lumina-spot 1.2s var(--ease-out, ease-out) 3;
+}
+.lumina-focus-note {
+  position: fixed;
+  z-index: 126;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: min(20rem, calc(100vw - 1.5rem));
+  padding: 0.4rem 0.9rem 0.4rem 0.4rem;
+  border-radius: 999px;
+  background: hsl(0 0% 100%);
+  color: hsl(var(--ink));
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25;
+  box-shadow: 0 18px 40px -16px hsl(var(--ink) / 0.6);
+  animation: lumina-focus-in 360ms var(--ease-out, ease-out) 120ms both;
+}
+@keyframes lumina-focus-in {
+  from {
+    opacity: 0;
+  }
+}
+/* Campo que Lumina acaba de llenar. */
+.lumina-filled {
+  animation: lumina-filled 1.6s var(--ease-out, ease-out);
+}
+@keyframes lumina-filled {
+  0%,
+  40% {
+    box-shadow: 0 0 0 4px hsl(var(--lime));
+  }
+  100% {
+    box-shadow: 0 0 0 4px hsl(var(--lime) / 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.preload .preloader {
+    display: none;
+  }
+  html.preload body {
+    overflow: auto;
+  }
+  .lumina-focus,
+  .lumina-focus::after,
+  .lumina-focus-note,
+  .lumina-filled {
+    animation: none;
+  }
+}
+/* La entrada del hero espera a que suba el telón del preloader. */
+html.preload:not(.preload-out) .hero-in,
+html.preload:not(.preload-out) .hero-line > span {
+  animation-play-state: paused;
+}

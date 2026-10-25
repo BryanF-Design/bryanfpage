@@ -119,7 +119,7 @@ export function FloatingDock() {
       className="fab-slot fixed bottom-[calc(var(--fab-edge)+var(--lumina-fab,0px))] right-3 z-[119] sm:right-6"
       data-hidden={hidden}
     >
-      <div className="fab-dock">
+      <div className="fab-dock" data-lumina="whatsapp">
         <a
           href={WHATSAPP_URL}
           target="_blank"

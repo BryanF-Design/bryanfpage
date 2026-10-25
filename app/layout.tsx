@@ -232,6 +232,34 @@ const a11yBootstrap = `
   } catch (_) {}
 `;
 
+// Preloader: solo en la primera visita de la sesión y sin "reducir
+// movimiento". Se decide antes del primer frame (clase `preload` en <html>)
+// para que nunca parpadee. Sale al cargar la página, con un mínimo para que
+// el logo alcance a dibujarse y un máximo para no retener a nadie.
+const preloadBootstrap = `
+  (function () {
+    try {
+      var d = document.documentElement;
+      if (sessionStorage.getItem("bfd-preloaded") === "1") return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+        d.classList.contains("a11y-reduce-motion")) return;
+      sessionStorage.setItem("bfd-preloaded", "1");
+      d.classList.add("preload");
+      var start = Date.now(), done = false;
+      var finish = function () {
+        if (done) return;
+        done = true;
+        d.classList.add("preload-out");
+        setTimeout(function () { d.classList.remove("preload", "preload-out"); }, 640);
+      };
+      var onLoad = function () { setTimeout(finish, Math.max(0, 1150 - (Date.now() - start))); };
+      if (document.readyState === "complete") onLoad();
+      else window.addEventListener("load", onLoad);
+      setTimeout(finish, 2600);
+    } catch (_) {}
+  })();
+`;
+
 // Entradas de escena. Un solo IntersectionObserver para todo el sitio marca
 // con `data-fx-in` cada elemento `[data-fx]` que entra en pantalla; el CSS hace
 // el resto. Vive fuera de React a propósito: no depende de la hidratación, no
@@ -295,6 +323,7 @@ export default function RootLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: a11yBootstrap }} />
+        <script dangerouslySetInnerHTML={{ __html: preloadBootstrap }} />
         <script dangerouslySetInnerHTML={{ __html: fxBootstrap }} />
         {/* Google tag (gtag.js) */}
         <GoogleAnalytics />
@@ -305,6 +334,13 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans">
+        <div className="preloader" aria-hidden>
+          <span className="preloader-mark">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/img/brand/logo-light.png" alt="" width={720} height={253} fetchPriority="high" />
+          </span>
+          <span className="preloader-bar" />
+        </div>
         <ClickTracking />
         <MotionPreferenceProvider>
           <LanguageProvider>

@@ -598,6 +598,11 @@ const pt: Dictionary = {
       whatsappIntro: "Olá Bryan, acabei de conversar com a Lumina no seu site. É isto que procuro:",
       visit: "Abrir site",
       cases: "Estudos de caso",
+      show: "Mostre-me",
+      fill: "Preencher por mim",
+      filled: "Pronto, preenchi para você",
+      lang: "Mudar para {lang}",
+      here: "Está aqui",
     },
     languageInstruction: "português",
     errorFallback:

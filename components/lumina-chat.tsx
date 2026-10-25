@@ -3,7 +3,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowDown, ArrowUpRight, Calculator, MessageCircle, RotateCcw, Send, X } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUpRight,
+  Calculator,
+  Languages,
+  MessageCircle,
+  PenLine,
+  RotateCcw,
+  ScanEye,
+  Send,
+  X,
+} from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
 import { cn } from "@/lib/utils";
@@ -13,18 +24,27 @@ import { useConfiguratorInView } from "@/lib/use-configurator-in-view";
 import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { trackEvent } from "@/lib/analytics";
 import { mobileShot, projects } from "@/lib/projects";
+import { LOCALE_META, type Locale } from "@/lib/i18n/locales";
+import { clearSpotlight, flashFilled, spotlight } from "@/lib/lumina-spotlight";
 import {
+  LUMINA_FILL_EVENT,
   LUMINA_QUOTE_EVENT,
   LUMINA_SECTIONS,
   actionsPrompt,
   currentSectionLabel,
   extractActions,
+  findLuminaTarget,
   isLuminaAction,
   quoteHref,
   type LuminaAction,
+  type LuminaFill,
   type LuminaQuote,
   type LuminaSection,
+  type LuminaTarget,
 } from "@/lib/lumina-actions";
+
+/** La API acepta hasta 30 mensajes: se manda solo lo más reciente. */
+const HISTORY_LIMIT = 18;
 
 type Mood = "Normal" | "Enfocada" | "Duda" | "Sorprendida" | "Offline";
 
@@ -170,7 +190,7 @@ function usePastHero() {
 }
 
 export function LuminaChat() {
-  const { t } = useLanguage();
+  const { t, setLocale } = useLanguage();
   const reducedMotion = useReducedMotionPreference();
   const [open, setOpen] = useState(false);
   const configuratorInView = useConfiguratorInView();
@@ -436,7 +456,7 @@ export function LuminaChat() {
               role: "system",
               content: buildSystemPrompt(t.lumina.languageInstruction, currentSectionLabel()),
             },
-            ...next.map((m) => ({ role: m.role, content: m.content })),
+            ...next.slice(-HISTORY_LIMIT).map((m) => ({ role: m.role, content: m.content })),
           ],
           temperature: 0.4,
         }),
@@ -456,6 +476,8 @@ export function LuminaChat() {
         },
       ]);
       setMood(uncertain ? "Duda" : "Normal");
+      // Lumina actúa sola: ejecuta lo que propuso sin esperar al botón.
+      if (actions.length) autoRun(actions);
       if (uncertain) window.setTimeout(() => setMood("Normal"), 4000);
       if (data?.error) setRetryText(content);
     } catch {
@@ -483,32 +505,38 @@ export function LuminaChat() {
 
   // ——— Acciones de Lumina sobre el sitio ———
   // En teléfono el chat tapa la pantalla: se cierra para que se vea a dónde
-  // llevó. En escritorio sigue abierto en su esquina.
-  function revealSection(id: string) {
-    const target = document.getElementById(id);
-    if (!target) {
-      window.location.href = `/#${id}`;
-      return;
+  // llevó (el botón de Lumina la trae de vuelta con la conversación intacta).
+  // En escritorio sigue abierto en su esquina.
+  const stepAside = () => {
+    if (!isPhone) return 0;
+    setOpen(false);
+    return 280;
+  };
+
+  function point(target: LuminaTarget, note?: string, fallbackId?: string) {
+    const el = findLuminaTarget(target);
+    if (!el) {
+      // No está en esta página (p. ej. el cotizador fuera del home).
+      if (fallbackId) window.location.href = `/#${fallbackId}`;
+      return false;
     }
-    if (isPhone) setOpen(false);
-    window.setTimeout(
-      () => {
-        target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
-        target.classList.remove("lumina-spot");
-        void target.offsetWidth;
-        target.classList.add("lumina-spot");
-        window.setTimeout(() => target.classList.remove("lumina-spot"), 2600);
-      },
-      isPhone ? 260 : 0
-    );
+    const delay = stepAside();
+    window.setTimeout(() => spotlight(el, note, { reducedMotion, delay: reducedMotion ? 0 : 420 }), delay);
+    return true;
   }
 
   function goTo(section: LuminaSection) {
     trackEvent("lumina_action", { action: "go", section });
-    revealSection(LUMINA_SECTIONS[section]);
+    point(section, sectionLabel(section), LUMINA_SECTIONS[section]);
   }
 
-  function applyQuote(quote: LuminaQuote) {
+  function mark(target: LuminaTarget, note?: string) {
+    trackEvent("lumina_action", { action: "mark", target });
+    const fallback = target in LUMINA_SECTIONS ? LUMINA_SECTIONS[target as LuminaSection] : "precios";
+    point(target, note || t.lumina.actions.here, fallback);
+  }
+
+  function applyQuote(quote: LuminaQuote, withSpot = true) {
     trackEvent("lumina_action", { action: "quote", plan: quote.plan });
     // Con el cotizador en la página, se arma en vivo; si no, se abre ya armado.
     if (!document.getElementById("precios")) {
@@ -516,8 +544,60 @@ export function LuminaChat() {
       return;
     }
     window.dispatchEvent(new CustomEvent(LUMINA_QUOTE_EVENT, { detail: quote }));
-    revealSection("precios");
+    flashFilled(findLuminaTarget("planes"));
+    flashFilled(findLuminaTarget("modulos"));
+    if (withSpot) point("resumen", t.lumina.actions.filled);
   }
+
+  function applyFill(fill: LuminaFill, withSpot = true) {
+    trackEvent("lumina_action", { action: "fill" });
+    if (!document.getElementById("precios")) {
+      window.location.href = "/#precios";
+      return;
+    }
+    window.dispatchEvent(new CustomEvent(LUMINA_FILL_EVENT, { detail: fill }));
+    const fields: LuminaTarget[] = [];
+    if (fill.mode) fields.push("modalidad");
+    if (fill.currency) fields.push("moneda");
+    if (fill.coupon) fields.push("cupon");
+    window.setTimeout(() => fields.forEach((f) => flashFilled(findLuminaTarget(f))), 60);
+    if (withSpot) point(fields[0] ?? "resumen", t.lumina.actions.filled);
+  }
+
+  function switchLanguage(locale: Locale) {
+    trackEvent("lumina_action", { action: "lang", locale });
+    setLocale(locale);
+  }
+
+  /**
+   * Lo que Lumina propone se ejecuta solo: primero los cambios de estado
+   * (idioma, cotizador) y luego un único movimiento (foco o sección), para no
+   * marear con varios saltos seguidos.
+   */
+  function autoRun(actions: LuminaAction[]) {
+    const quote = actions.find((a): a is Extract<LuminaAction, { kind: "quote" }> => a.kind === "quote");
+    const fill = actions.find((a): a is Extract<LuminaAction, { kind: "fill" }> => a.kind === "fill");
+    const lang = actions.find((a): a is Extract<LuminaAction, { kind: "lang" }> => a.kind === "lang");
+    const move = actions.find(
+      (a): a is Extract<LuminaAction, { kind: "mark" | "go" }> => a.kind === "mark" || a.kind === "go"
+    );
+    // Si hay que salir de la página, no se hace solo (el visitante decide).
+    const offPage = (quote || fill) && !document.getElementById("precios");
+    if (offPage) return;
+    window.setTimeout(() => {
+      if (lang) switchLanguage(lang.locale);
+      if (quote) applyQuote(quote.quote, false);
+      if (fill) applyFill(fill.fill, false);
+      if (move?.kind === "mark") mark(move.target, move.note);
+      else if (move?.kind === "go") goTo(move.section);
+      else if (fill) point(fill.fill.mode ? "modalidad" : fill.fill.currency ? "moneda" : "cupon", t.lumina.actions.filled);
+      else if (quote) point("resumen", t.lumina.actions.filled);
+      // En teléfono, un respiro para leer la respuesta antes de cerrar el chat.
+    }, isPhone ? 1500 : 650);
+  }
+
+  // Al cerrar el chat o cambiar de página se quita cualquier foco pendiente.
+  useEffect(() => clearSpotlight, []);
 
   function whatsappHref() {
     const asks = messages
@@ -530,12 +610,18 @@ export function LuminaChat() {
 
   function sectionLabel(section: LuminaSection) {
     const labels: Record<LuminaSection, string> = {
+      inicio: "Inicio",
       proyectos: t.nav.proyectos,
       casos: t.lumina.actions.cases,
+      bryan: "Bryan",
       proceso: t.nav.proceso,
+      stack: "Stack",
+      lumina: t.lumina.name,
       servicios: t.nav.serviciosEntrada,
       precios: t.nav.precios,
+      presencia: "🌎",
       faq: t.nav.faq,
+      contacto: "✉️",
     };
     return labels[section];
   }
@@ -591,6 +677,51 @@ export function LuminaChat() {
                   <ArrowDown aria-hidden className="h-4 w-4" />
                 </span>
                 {t.lumina.actions.go.replace("{section}", sectionLabel(action.section))}
+              </button>
+            );
+          }
+          if (action.kind === "mark") {
+            return (
+              <button
+                key={`mark-${action.target}`}
+                type="button"
+                onClick={() => mark(action.target, action.note)}
+                className={cn(pill, "self-start bg-white text-ink ring-1 ring-ink/10 hover:bg-ink hover:text-white")}
+              >
+                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-lime text-ink">
+                  <ScanEye aria-hidden className="h-4 w-4" />
+                </span>
+                {action.note || t.lumina.actions.show}
+              </button>
+            );
+          }
+          if (action.kind === "fill") {
+            return (
+              <button
+                key="fill"
+                type="button"
+                onClick={() => applyFill(action.fill)}
+                className={cn(pill, "self-start bg-ink text-white hover:bg-forest")}
+              >
+                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-lime text-ink">
+                  <PenLine aria-hidden className="h-4 w-4" />
+                </span>
+                {t.lumina.actions.fill}
+              </button>
+            );
+          }
+          if (action.kind === "lang") {
+            return (
+              <button
+                key="lang"
+                type="button"
+                onClick={() => switchLanguage(action.locale)}
+                className={cn(pill, "self-start bg-white text-ink ring-1 ring-ink/10 hover:bg-ink hover:text-white")}
+              >
+                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-lime text-ink">
+                  <Languages aria-hidden className="h-4 w-4" />
+                </span>
+                {t.lumina.actions.lang.replace("{lang}", LOCALE_META[action.locale].name)}
               </button>
             );
           }

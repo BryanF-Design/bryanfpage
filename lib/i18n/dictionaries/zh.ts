@@ -542,6 +542,11 @@ const zh: Dictionary = {
       whatsappIntro: "你好 Bryan，我刚在你的网站上和 Lumina 聊过。我需要的是：",
       visit: "打开网站",
       cases: "案例研究",
+      show: "给我看看",
+      fill: "帮我填写",
+      filled: "好了，已帮你填好",
+      lang: "切换到{lang}",
+      here: "就在这里",
     },
     languageInstruction: "中文",
     errorFallback:

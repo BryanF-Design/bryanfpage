@@ -475,7 +475,7 @@ function FeaturedProject({ project }: { project: Project }) {
   const live = project.shots === false;
 
   return (
-    <article className="panel panel-forest relative grid items-center gap-6 overflow-hidden p-4 pt-[4.25rem] sm:p-7 sm:pt-20 md:gap-8 lg:grid-cols-12 lg:gap-6 lg:p-10 lg:pt-10">
+    <article data-lumina="destacado" className="panel panel-forest relative grid items-center gap-6 overflow-hidden p-4 pt-[4.25rem] sm:p-7 sm:pt-20 md:gap-8 lg:grid-cols-12 lg:gap-6 lg:p-10 lg:pt-10">
       {/* Fondo: un parche de puntos lima. */}
       <span
         aria-hidden

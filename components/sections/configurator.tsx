@@ -33,7 +33,7 @@ import { SectionHeading } from "@/components/sections/section-heading";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 import { trackEvent } from "@/lib/analytics";
-import { LUMINA_QUOTE_EVENT, type LuminaQuote } from "@/lib/lumina-actions";
+import { LUMINA_FILL_EVENT, LUMINA_QUOTE_EVENT, type LuminaFill, type LuminaQuote } from "@/lib/lumina-actions";
 import { isReducedMotionRequested } from "@/lib/motion-preference";
 import { useConfiguratorInView } from "@/lib/use-configurator-in-view";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
@@ -287,6 +287,22 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
     return () => window.removeEventListener(LUMINA_QUOTE_EVENT, onLuminaQuote);
   }, []);
 
+  // Lumina llena por el usuario modalidad, moneda y cupón.
+  useEffect(() => {
+    function onLuminaFill(event: Event) {
+      const fill = (event as CustomEvent<LuminaFill>).detail;
+      if (!fill) return;
+      if (fill.mode === "anticipo" || fill.mode === "liquidacion") setMode(fill.mode);
+      if (fill.currency === "MXN" || fill.currency === "USD") setCurrency(fill.currency);
+      if (typeof fill.coupon === "string") {
+        setCoupon(fill.coupon);
+        setCouponMsg(t.configurator.couponNoneActive);
+      }
+    }
+    window.addEventListener(LUMINA_FILL_EVENT, onLuminaFill);
+    return () => window.removeEventListener(LUMINA_FILL_EVENT, onLuminaFill);
+  }, [t.configurator.couponNoneActive]);
+
   useEffect(() => {
     if (!restored) return;
     try {
@@ -479,6 +495,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
             {/* Elección única: radios nativos (flechas del teclado incluidas).
                 Filas horizontales hasta lg; desde lg, tres fichas. */}
             <div
+              data-lumina="planes"
               role="radiogroup"
               aria-labelledby="configurator-plan-label"
               className="mt-4 grid gap-2.5 sm:mt-5 sm:pl-14 lg:grid-cols-3 lg:gap-3"
@@ -555,6 +572,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
               <StepHeader n={2} id="configurator-modules-label" label={t.configurator.step2} />
             </p>
             <div
+              data-lumina="modulos"
               role="group"
               aria-labelledby="configurator-modules-label"
               className="mt-4 flex flex-col gap-1.5 rounded-card bg-mint p-1.5 ring-1 ring-inset ring-ink/[0.06] sm:ml-14 sm:mt-5"
@@ -656,7 +674,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
               <legend className="px-1 sm:px-0">
                 <StepHeader n={3} label={t.configurator.step3} />
               </legend>
-              <div className="mt-4 grid grid-cols-2 gap-1 rounded-full bg-mint p-1 ring-1 ring-inset ring-ink/[0.06] sm:ml-14 sm:mt-5">
+              <div data-lumina="modalidad" className="mt-4 grid grid-cols-2 gap-1 rounded-full bg-mint p-1 ring-1 ring-inset ring-ink/[0.06] sm:ml-14 sm:mt-5">
                 {[
                   { v: "liquidacion", label: t.configurator.paymentFull },
                   { v: "anticipo", label: t.configurator.paymentAdvance },
@@ -685,6 +703,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                   {t.configurator.currencyLabel}
                 </p>
                 <div
+                  data-lumina="moneda"
                   role="group"
                   aria-label={t.configurator.currencyLabel}
                   className="grid grid-cols-2 gap-1 rounded-full bg-mint p-1 ring-1 ring-inset ring-ink/[0.06] sm:inline-grid"
@@ -714,7 +733,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                 >
                   {t.configurator.couponLabel}
                 </label>
-                <div className="flex items-center gap-1 rounded-full bg-mint p-1 pl-4 ring-1 ring-inset ring-ink/[0.06] focus-within:ring-2 focus-within:ring-ink">
+                <div data-lumina="cupon" className="flex items-center gap-1 rounded-full bg-mint p-1 pl-4 ring-1 ring-inset ring-ink/[0.06] focus-within:ring-2 focus-within:ring-ink">
                   <TicketPercent aria-hidden className="h-5 w-5 shrink-0 text-ink/45" />
                   <input
                     id="configurator-coupon"
@@ -766,6 +785,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
       >
         <div
           ref={summaryRef}
+          data-lumina="resumen"
           className="scroll-mt-[calc(var(--header-h)+var(--gutter))] xl:sticky xl:top-[calc(var(--header-h)+var(--gutter))]"
         >
           <div className="panel panel-ink relative grid gap-5 overflow-hidden p-4 pt-5 sm:p-7 md:grid-cols-2 md:gap-x-7 lg:gap-x-10 lg:p-9 xl:grid-cols-1 xl:p-7">
@@ -871,7 +891,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
 
             <div className="relative flex min-w-0 flex-col gap-5">
               {/* Botones de pago. */}
-              <div className="relative flex flex-col gap-2.5">
+              <div data-lumina="pagar" className="relative flex flex-col gap-2.5">
                 <Button
                   size="lg"
                   onClick={() => pay("/api/stripe-checkout", "Stripe")}

@@ -188,7 +188,11 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
           </nav>
 
           <div className="flex items-center gap-1.5">
-            {!spanishOnly && <LanguageSwitcher />}
+            {!spanishOnly && (
+              <span data-lumina="idioma" className="contents">
+                <LanguageSwitcher />
+              </span>
+            )}
             <Link
               href={CLIENT_PORTAL}
               target="_blank"
@@ -199,7 +203,7 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
               {t.nav.cliente}
             </Link>
             <Button asChild variant="ink" className="hidden h-11 pl-5 pr-2 sm:inline-flex">
-              <Link href="/#precios">
+              <Link href="/#precios" data-lumina="arma-tu-web">
                 {t.nav.armaTuWeb}
                 <ButtonArrow tone="lime" className="-mr-0.5" />
               </Link>

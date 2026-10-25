@@ -590,6 +590,11 @@ const ja: Dictionary = {
       whatsappIntro: "こんにちは、Bryanさん。サイトでLuminaと話しました。探しているのはこちらです：",
       visit: "サイトを開く",
       cases: "導入事例",
+      show: "見せて",
+      fill: "代わりに入力",
+      filled: "入力しておきました",
+      lang: "{lang}に切り替え",
+      here: "ここです",
     },
     languageInstruction: "日本語",
     errorFallback:

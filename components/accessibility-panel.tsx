@@ -331,11 +331,11 @@ export function AccessibilityPanel() {
         )}
       </AnimatePresence>
 
-      {/* En teléfono el disparador es una pestaña delgada pegada al canto
-          izquierdo: queda sobre el margen del lienzo y no tapa el texto ni
-          los botones de las secciones. Desde sm vuelve a ser un flotante. */}
+      {/* En teléfono es un botón redondo compacto (la pestaña pegada al canto
+          se veía cortada); se guarda al bajar junto con los demás flotantes. */}
       <div
-        className="fab-slot fixed bottom-[var(--fab-edge)] left-0 z-[120] sm:left-6"
+        data-lumina="accesibilidad"
+        className="fab-slot fixed bottom-[var(--fab-edge)] left-3 z-[120] sm:left-6"
         data-hidden={footerInView}
       >
         <button
@@ -349,7 +349,7 @@ export function AccessibilityPanel() {
           tabIndex={footerInView ? -1 : 0}
           className={cn(
             "fab",
-            "max-sm:h-12 max-sm:w-7 max-sm:min-w-0 max-sm:rounded-l-none max-sm:rounded-r-full max-sm:bg-ink max-sm:p-0 max-sm:pr-0.5 max-sm:text-lime",
+            "max-sm:size-11 max-sm:min-w-0 max-sm:bg-ink max-sm:p-0 max-sm:text-lime",
             open && "fab-ink"
           )}
         >
