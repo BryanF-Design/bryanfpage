@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
+import { BRIEF_SECTIONS, LONG_BRIEF_FIELDS, detectLinkType, normalizeUrl, purposeLabel } from "@/lib/brief";
+import { briefNotice, briefReceived } from "@/lib/email-templates";
+import { mailConfigured, notificationEmail, sendMail } from "@/lib/mailer";
 
 export const runtime = "nodejs";
 
 const FIELD_MAX = 500;
 const LONG_FIELD_MAX = 4000;
-const LONG_FIELDS = new Set(["projectBrief", "references"]);
+const LONG_FIELDS = LONG_BRIEF_FIELDS;
 const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024; // 5MB per file (base64-decoded estimate)
 const MAX_TOTAL_ATTACHMENT_BYTES = 15 * 1024 * 1024;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -25,15 +28,6 @@ function formatMoney(value: unknown) {
   } catch {
     return `${value || 0} MXN`;
   }
-}
-
-function escapeHtml(text: unknown) {
-  return String(text || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
 }
 
 export async function OPTIONS() {
@@ -77,6 +71,21 @@ export async function POST(req: NextRequest) {
       body.coupon && typeof body.coupon === "object"
         ? (body.coupon as Record<string, unknown>)
         : {};
+    // Enlaces del briefing: se vuelven a validar y a clasificar aquí (no se
+    // confía en el tipo que manda el navegador).
+    const links = (Array.isArray(body.links) ? body.links : [])
+      .slice(0, 20)
+      .map((raw) => {
+        const l = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+        const norm = normalizeUrl(String(l.url || ""));
+        if (!("url" in norm)) return null;
+        return {
+          url: norm.url,
+          label: detectLinkType(norm.url).label,
+          purpose: purposeLabel(String(l.purpose || "")),
+        };
+      })
+      .filter((l): l is { url: string; label: string; purpose: string } => l !== null);
     const attachments = Array.isArray(body.attachments)
       ? (body.attachments as Array<Record<string, unknown>>).slice(0, 5)
       : [];
@@ -98,66 +107,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!process.env.RESEND_API_KEY) {
+    if (!mailConfigured()) {
       return NextResponse.json(
-        { error: "RESEND_API_KEY is missing in environment variables." },
+        { error: "El correo no está configurado (GOOGLE_* o RESEND_API_KEY)." },
         { status: 503 }
       );
     }
 
-    const fromEmail =
-      process.env.MAIL_FROM ||
-      "BryanF Design <no-reply@bryanfdesign.com.mx>";
-    const to = ["bryanf@bryanfdesign.com.mx", "pandita250599@gmail.com"];
-
-    const summaryHtml = summaryItems
-      .map(
-        (item) =>
-          `<li><strong>${escapeHtml(
-            item.source || "Módulo"
-          )}</strong> - ${formatMoney(item.price || 0)}</li>`
-      )
-      .join("");
-
-    const html = `
-      <div style="font-family:Inter,Arial,sans-serif;max-width:720px;margin:0 auto;color:#171717;">
-        <h2 style="margin:0 0 12px;">Nuevo onboarding de proyecto</h2>
-        <p style="margin:0 0 16px;">Se recibió un nuevo briefing desde el flujo de pago rápido.</p>
-        <h3 style="margin:18px 0 8px;">Acción solicitada</h3>
-        <p style="margin:0 0 8px;"><strong>${escapeHtml(action)}</strong></p>
-        <h3 style="margin:18px 0 8px;">Datos de contacto</h3>
-        <ul style="margin:0 0 14px;padding-left:18px;">
-          <li><strong>Nombre:</strong> ${escapeHtml(form.fullName)}</li>
-          <li><strong>Negocio:</strong> ${escapeHtml(form.businessName)}</li>
-          <li><strong>WhatsApp:</strong> ${escapeHtml(form.contactPhone)}</li>
-          <li><strong>Correo:</strong> ${escapeHtml(form.contactEmail || "No compartido")}</li>
-          <li><strong>Contacto secundario:</strong> ${escapeHtml(form.secondaryContact || "No compartido")}</li>
-        </ul>
-        <h3 style="margin:18px 0 8px;">Proyecto</h3>
-        <ul style="margin:0 0 14px;padding-left:18px;">
-          <li><strong>Productos/servicios:</strong> ${escapeHtml(form.services || "No especificado")}</li>
-          <li><strong>Descripción:</strong> ${escapeHtml(form.projectBrief || "No especificado")}</li>
-          <li><strong>Objetivos:</strong> ${escapeHtml(form.mainGoal || "No especificado")}</li>
-          <li><strong>Referencias:</strong> ${escapeHtml(form.references || "No especificado")}</li>
-        </ul>
-        <h3 style="margin:18px 0 8px;">Cotización</h3>
-        <ul style="margin:0 0 14px;padding-left:18px;">
-          <li><strong>Total proyecto:</strong> ${formatMoney(totals.projectTotal || 0)}</li>
-          <li><strong>Pago ahora:</strong> ${formatMoney(totals.payableNow || 0)}</li>
-          <li><strong>Método:</strong> ${escapeHtml(payment.method || "pendiente")}</li>
-          <li><strong>Cupón:</strong> ${escapeHtml(coupon.code || "Sin cupón")}</li>
-        </ul>
-        <h3 style="margin:18px 0 8px;">Servicios seleccionados</h3>
-        <ul style="margin:0 0 14px;padding-left:18px;">${summaryHtml || "<li>Sin extras</li>"}</ul>
-      </div>
-    `;
-
-    const resendPayload: Record<string, unknown> = {
-      from: fromEmail,
-      to,
-      subject: `Onboarding BryanF Design - ${form.businessName}`,
-      html,
-    };
+    const to = Array.from(new Set([notificationEmail(), "pandita250599@gmail.com"]));
 
     let totalAttachmentBytes = 0;
     const safeAttachments = attachments
@@ -175,27 +132,81 @@ export async function POST(req: NextRequest) {
         type: file.type || "application/octet-stream",
       }));
 
-    if (safeAttachments.length) resendPayload.attachments = safeAttachments;
+    const safeAttachmentsCount = safeAttachments.length;
 
-    const resendResponse = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(resendPayload),
+    // Brief armado por secciones (lib/brief.ts), con el mismo diseño que el sitio.
+    const CONTACT_KEYS = ["fullName", "businessName", "contactPhone", "contactEmail"];
+    const sections = BRIEF_SECTIONS.map((section) => ({
+      title: section.title,
+      rows: section.fields
+        .filter((f) => !CONTACT_KEYS.includes(f.key) && form[f.key])
+        .map((f) => [f.label, form[f.key]] as [string, string]),
+      chips:
+        section.id === "proyecto" && form.features
+          ? form.features.split(/\s*,\s*/).filter(Boolean)
+          : undefined,
+    }));
+    const legacy = [
+      form.secondaryContact && ["Contacto secundario", form.secondaryContact],
+      form.mainGoal && !form.projectType && ["Objetivos", form.mainGoal],
+      form.references && ["Referencias", form.references],
+    ].filter(Boolean) as Array<[string, string]>;
+    if (legacy.length) sections.push({ title: "Más", rows: legacy, chips: undefined });
+
+    const content = briefNotice({
+      fullName: form.fullName,
+      businessName: form.businessName,
+      phone: form.contactPhone,
+      email: form.contactEmail || null,
+      sections,
+      links,
+      files: safeAttachments.map((f) => f.filename),
+      notes: form.notes || null,
+      payment: [
+        ["Total del proyecto", totals.projectTotal ? formatMoney(totals.projectTotal) : null],
+        ["Pagado / por pagar", totals.payableNow ? `${formatMoney(totals.payableNow)} ${String(totals.currency || "")}`.trim() : null],
+        ["Método", payment.method ? String(payment.method) : null],
+        ["Referencia", payment.reference ? String(payment.reference) : null],
+        ["Cupón", coupon.code ? String(coupon.code) : null],
+        ["Acción", action !== "start" ? action : null],
+      ],
+      services: summaryItems.map((item) => [String(item.source || "Módulo"), formatMoney(item.price || 0)] as [string, string]),
     });
 
-    const resendData = await resendResponse.json();
-    if (!resendResponse.ok || resendData.error) {
-      console.error("Resend error:", resendData?.error || resendResponse.status);
+    const sent = await sendMail({
+      to,
+      ...content,
+      replyTo: form.contactEmail || undefined,
+      attachments: safeAttachments.map((file) => ({
+        filename: file.filename,
+        content: String(file.content),
+        type: String(file.type),
+      })),
+    });
+    if (!sent.ok) {
+      console.error("Brief email error:", sent.error);
       return NextResponse.json(
         { error: "No se pudo enviar el briefing. Intenta de nuevo o escríbenos por WhatsApp." },
         { status: 502 }
       );
     }
 
-    return NextResponse.json({ ok: true, id: resendData.id || null });
+    // Copia para el cliente: confirma que llegó y qué sigue. Si falla, el
+    // briefing ya está con nosotros, así que no se reporta como error.
+    if (form.contactEmail) {
+      await sendMail({
+        to: form.contactEmail,
+        ...briefReceived({
+          name: form.fullName,
+          businessName: form.businessName,
+          links: links.length,
+          files: safeAttachmentsCount,
+        }),
+        replyTo: notificationEmail(),
+      });
+    }
+
+    return NextResponse.json({ ok: true, id: sent.id || null });
   } catch (error) {
     console.error("Onboarding submit error:", error);
     return NextResponse.json(

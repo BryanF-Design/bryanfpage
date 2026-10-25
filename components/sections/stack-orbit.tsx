@@ -2,52 +2,16 @@
 
 import { useState, type CSSProperties } from "react";
 import Link from "next/link";
-import type { IconType } from "react-icons";
-import {
-  SiCss,
-  SiFigma,
-  SiGit,
-  SiGithub,
-  SiHtml5,
-  SiJavascript,
-  SiNextdotjs,
-  SiNodedotjs,
-  SiPhp,
-  SiReact,
-  SiStripe,
-  SiTailwindcss,
-  SiThreedotjs,
-  SiTypescript,
-  SiVercel,
-  SiWordpress,
-} from "react-icons/si";
 import { Sparkle } from "lucide-react";
 
 import { SectionHeading } from "@/components/sections/section-heading";
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
+import { STACK, type StackCategory } from "@/lib/stack";
 
-type Category = "front" | "back" | "tools";
-
-const stack: { Icon: IconType; label: string; category: Category }[] = [
-  { Icon: SiNextdotjs, label: "Next.js", category: "front" },
-  { Icon: SiReact, label: "React", category: "front" },
-  { Icon: SiTypescript, label: "TypeScript", category: "front" },
-  { Icon: SiJavascript, label: "JavaScript", category: "front" },
-  { Icon: SiTailwindcss, label: "Tailwind CSS", category: "front" },
-  { Icon: SiHtml5, label: "HTML5", category: "front" },
-  { Icon: SiCss, label: "CSS3", category: "front" },
-  { Icon: SiThreedotjs, label: "Three.js", category: "front" },
-  { Icon: SiNodedotjs, label: "Node.js", category: "back" },
-  { Icon: SiPhp, label: "PHP", category: "back" },
-  { Icon: SiWordpress, label: "WordPress", category: "back" },
-  { Icon: SiStripe, label: "Stripe", category: "back" },
-  { Icon: SiFigma, label: "Figma", category: "tools" },
-  { Icon: SiVercel, label: "Vercel", category: "tools" },
-  { Icon: SiGit, label: "Git", category: "tools" },
-  { Icon: SiGithub, label: "GitHub", category: "tools" },
-];
+type Category = StackCategory;
+const stack = STACK;
 
 const FILTERS = ["all", "front", "back", "tools"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -130,7 +94,7 @@ export function StackOrbit() {
 
             <div className="flex flex-col gap-2.5 sm:flex-row lg:flex-col xl:flex-row">
               <Button asChild size="lg" variant="ink" className="pr-2.5">
-                <Link href="#projects">
+                <Link href="/#projects">
                   {t.stack.ctaPrimary}
                   <ButtonArrow tone="lime" className="ml-auto -mr-0.5 sm:ml-2" />
                 </Link>

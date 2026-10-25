@@ -195,7 +195,7 @@ export function ClosingCta() {
                   size="lg"
                   className="w-full bg-lime pr-2.5 text-ink sm:w-auto sm:flex-1 sm:pl-6"
                 >
-                  <Link href="#precios">
+                  <Link href="/#precios">
                     {t.closingCta.ctaPrimary}
                     <ButtonArrow
                       tone="ink"

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const SITE_URL = "https://www.bryanfdesign.com";
 export const BRAND_NAME = "BryanF Design";
-export const CONTACT_EMAIL = "bryanf@bryanfdesign.com.mx";
+export const CONTACT_EMAIL = "bryanf@bryanfdesign.com";
 export const WHATSAPP_URL = "https://wa.me/525663012505";
 
 export interface ServicePage {

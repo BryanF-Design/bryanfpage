@@ -14,6 +14,15 @@ import {
 } from "./catalog";
 import { mxnToUsd, type Currency } from "./currency";
 
+/**
+ * Llave de localStorage donde el Configurador guarda la cotización en curso
+ * (para retomarla y para adjuntarla al formulario de contacto).
+ */
+export const QUOTE_STORAGE_KEY = "bryanf_quote_v1";
+
+/** Ancla del formulario de cotización (components/sections/lead-form.tsx). */
+export const LEAD_FORM_ID = "cotizacion";
+
 export interface QuoteSelection {
   planId: string;
   moduleIds: string[];

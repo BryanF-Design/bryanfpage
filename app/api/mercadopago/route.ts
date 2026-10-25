@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MercadoPagoConfig, Preference } from "mercadopago";
 import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
+import { sanitizeAttribution } from "@/lib/attribution";
 import { getUsdMxnRate, isCurrency, usdToMxn } from "@/lib/currency";
 import { normalizeSelection, quotePayableNow, quoteProjectTotal } from "@/lib/quote";
 import { getSiteUrl } from "@/lib/site-url";
@@ -40,6 +41,7 @@ export async function POST(req: NextRequest) {
     const descripcion = String(
       (body as Record<string, unknown>).descripcion || "Servicio web - BryanF Design"
     ).slice(0, 200);
+    const attribution = sanitizeAttribution((body as Record<string, unknown>).attribution);
     const siteUrl = getSiteUrl();
 
     // Precio autoritativo del lado del servidor (ver stripe-checkout): con la
@@ -95,7 +97,8 @@ export async function POST(req: NextRequest) {
           // correo). external_reference correlaciona la preferencia con el pago.
           notification_url: `${siteUrl}/api/mercadopago-webhook`,
           external_reference: externalReference,
-          metadata: { modalidad, moneda: currency },
+          // Campaña de origen (gclid/utm), para atribuir la venta (ver Stripe).
+          metadata: { modalidad, moneda: currency, ...attribution },
         },
       });
 

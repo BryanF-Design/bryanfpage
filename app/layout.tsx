@@ -9,6 +9,7 @@ import { LanguageProvider } from "@/lib/i18n/context";
 import { MotionPreferenceProvider } from "@/components/motion-preference-provider";
 import { SkipLink } from "@/components/skip-link";
 import { SITE_URL } from "@/lib/seo/service-pages";
+import { SUBSCRIPTION_PLAN } from "@/lib/catalog";
 
 // Client-only widget, no SEO content: skip SSR entirely to shave initial payload.
 const AccessibilityPanel = dynamic(
@@ -153,7 +154,7 @@ const jsonLd = {
         height: 1016,
       },
       image: `${SITE_URL}/img/og-bryanf-apex.png`,
-      email: "bryanf@bryanfdesign.com.mx",
+      email: "bryanf@bryanfdesign.com",
       telephone: "+525663012505",
       priceRange: "Desde $3,500 MXN",
       currenciesAccepted: "MXN, USD",
@@ -177,7 +178,7 @@ const jsonLd = {
         "@type": "ContactPoint",
         contactType: "sales",
         telephone: "+525663012505",
-        email: "bryanf@bryanfdesign.com.mx",
+        email: "bryanf@bryanfdesign.com",
         availableLanguage: ["Spanish", "English"],
         areaServed: "MX",
       },
@@ -205,7 +206,19 @@ const jsonLd = {
           priceCurrency: "MXN",
           price: service.price,
           itemOffered: { "@type": "Service", name: service.name, provider: { "@id": ORG_ID } },
-        })),
+        })).concat([
+          {
+            "@type": "Offer",
+            url: `${SITE_URL}/suscripcion`,
+            priceCurrency: "MXN",
+            price: SUBSCRIPTION_PLAN.price,
+            itemOffered: {
+              "@type": "Service",
+              name: "Suscripción Todo Digital (mensual)",
+              provider: { "@id": ORG_ID },
+            },
+          },
+        ]),
       },
     },
     {

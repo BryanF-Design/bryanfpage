@@ -21,7 +21,7 @@ import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { useFooterInView } from "@/lib/use-footer-in-view";
 import { cn } from "@/lib/utils";
 
-const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
+const CLIENT_PORTAL = "https://access.bryanfdesign.com/";
 
 const social = [
   { Icon: FaInstagram, href: "https://www.instagram.com/bryanf_design/", label: "Instagram" },
@@ -54,11 +54,13 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
   const firstMenuLinkRef = useRef<HTMLAnchorElement>(null);
 
   const links = [
+    // El sitio se dividió en páginas: la home (trabajo, cotización y dudas),
+    // la suscripción, Lumina y Conoce a Bryan.
     { label: t.nav.proyectos, href: "/#projects" },
-    { label: t.nav.servicios, href: "/#servicios-entrada" },
-    { label: t.nav.lumina, href: "/#lumina" },
     { label: t.nav.precios, href: "/#precios" },
-    { label: t.nav.faq, href: "/#faq" },
+    { label: t.nav.suscripcion, href: "/suscripcion" },
+    { label: t.nav.lumina, href: "/lumina" },
+    { label: t.nav.conoce, href: "/conoce-a-bryan" },
   ];
 
   useEffect(() => {

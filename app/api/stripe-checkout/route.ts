@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { forbidden, getClientIp, isSameOrigin, rateLimit, tooManyRequests } from "@/lib/api-guard";
+import { sanitizeAttribution } from "@/lib/attribution";
 import { getUsdMxnRate, isCurrency } from "@/lib/currency";
 import { normalizeSelection, quotePayableNow, quoteProjectTotal } from "@/lib/quote";
 import { getSiteUrl } from "@/lib/site-url";
@@ -49,6 +50,9 @@ export async function POST(req: NextRequest) {
               ])
           )
         : {};
+    // Campaña de origen (gclid/utm): queda en el pago para atribuir la venta
+    // y, si se cierra por fuera, subirla como conversión offline a Google Ads.
+    const attribution = sanitizeAttribution((body as Record<string, unknown>).attribution);
     const siteUrl = getSiteUrl();
 
     // Precio autoritativo del lado del servidor: si el cliente manda la
@@ -79,6 +83,9 @@ export async function POST(req: NextRequest) {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
+      // Español latino en el checkout y un teléfono para dar seguimiento.
+      locale: "es-419",
+      phone_number_collection: { enabled: true },
       line_items: [
         {
           quantity: 1,
@@ -95,8 +102,11 @@ export async function POST(req: NextRequest) {
         montoCliente: String(monto),
         moneda: currency,
         ...metadata,
+        ...attribution,
       },
-      success_url: `${siteUrl}/gracias?status=success&provider=stripe`,
+      // {CHECKOUT_SESSION_ID} lo sustituye Stripe: /gracias lo verifica contra
+      // la API antes de mostrar "pago recibido" y de contar la conversión.
+      success_url: `${siteUrl}/gracias?status=success&provider=stripe&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/gracias?status=cancel&provider=stripe`,
     });
 

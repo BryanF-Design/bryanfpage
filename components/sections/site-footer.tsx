@@ -41,7 +41,7 @@ const social = [
   { Icon: FaGithub, href: "https://github.com/BryanF-Design", label: "GitHub" },
 ];
 
-const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
+const CLIENT_PORTAL = "https://access.bryanfdesign.com/";
 
 const linkClass =
   "group/link inline-flex min-h-11 items-center gap-1.5 text-[0.9375rem] text-white/70 transition-colors hover:text-white lg:min-h-10";
@@ -88,10 +88,12 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
 
   const nav = [
     { label: t.nav.inicio, href: "/" },
-    { label: t.nav.proceso, href: "/#proceso" },
     { label: t.nav.proyectos, href: "/#projects" },
-    { label: t.nav.serviciosEntrada, href: "/#servicios-entrada" },
     { label: t.nav.precios, href: "/#precios" },
+    { label: t.nav.suscripcion, href: "/suscripcion" },
+    { label: t.nav.lumina, href: "/lumina" },
+    { label: t.nav.conoce, href: "/conoce-a-bryan" },
+    { label: t.nav.proceso, href: "/conoce-a-bryan#proceso" },
     { label: t.nav.faq, href: "/#faq" },
   ];
 
@@ -127,10 +129,10 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
         <>
           bryanf@
           <wbr />
-          bryanfdesign.com.mx
+          bryanfdesign.com
         </>
       ),
-      href: "mailto:bryanf@bryanfdesign.com.mx",
+      href: "mailto:bryanf@bryanfdesign.com",
       external: false,
     },
     {

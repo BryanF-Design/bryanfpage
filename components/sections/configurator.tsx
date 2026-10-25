@@ -10,6 +10,7 @@ import {
   LayoutPanelTop,
   Loader2,
   Mail,
+  MessageCircle,
   Minus,
   Nfc,
   Plus,
@@ -33,7 +34,8 @@ import { SectionHeading } from "@/components/sections/section-heading";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 import { trackEvent } from "@/lib/analytics";
-import { LUMINA_FILL_EVENT, LUMINA_QUOTE_EVENT, type LuminaFill, type LuminaQuote } from "@/lib/lumina-actions";
+import { getAttribution } from "@/lib/attribution";
+import { LUMINA_QUOTE_EVENT, type LuminaQuote } from "@/lib/lumina-actions";
 import { isReducedMotionRequested } from "@/lib/motion-preference";
 import { useConfiguratorInView } from "@/lib/use-configurator-in-view";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
@@ -48,6 +50,7 @@ import {
   CONFIGURATOR_PLANS as PLAN_META,
   SECTION_PRICE,
 } from "@/lib/catalog";
+import { LEAD_FORM_ID, QUOTE_STORAGE_KEY } from "@/lib/quote";
 
 /**
  * Tope de secciones adicionales: el mismo que aplica el servidor al recomponer
@@ -156,7 +159,7 @@ function formatMXN(value: number) {
   return formatMoney(value, "MXN");
 }
 
-const QUOTE_KEY = "bryanf_quote_v1";
+const QUOTE_KEY = QUOTE_STORAGE_KEY;
 
 export function Configurator({ hideHeading = false }: { hideHeading?: boolean } = {}) {
   const { t } = useLanguage();
@@ -281,27 +284,12 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
         )
       );
       setSections(Math.max(0, Math.min(MAX_SECTIONS, Math.floor(quote.sections || 0))));
+      if (quote.mode === "anticipo" || quote.mode === "liquidacion") setMode(quote.mode);
       trackEvent("lumina_quote", { plan: quote.plan, modules: quote.modules.join(",") });
     }
     window.addEventListener(LUMINA_QUOTE_EVENT, onLuminaQuote);
     return () => window.removeEventListener(LUMINA_QUOTE_EVENT, onLuminaQuote);
   }, []);
-
-  // Lumina llena por el usuario modalidad, moneda y cupón.
-  useEffect(() => {
-    function onLuminaFill(event: Event) {
-      const fill = (event as CustomEvent<LuminaFill>).detail;
-      if (!fill) return;
-      if (fill.mode === "anticipo" || fill.mode === "liquidacion") setMode(fill.mode);
-      if (fill.currency === "MXN" || fill.currency === "USD") setCurrency(fill.currency);
-      if (typeof fill.coupon === "string") {
-        setCoupon(fill.coupon);
-        setCouponMsg(t.configurator.couponNoneActive);
-      }
-    }
-    window.addEventListener(LUMINA_FILL_EVENT, onLuminaFill);
-    return () => window.removeEventListener(LUMINA_FILL_EVENT, onLuminaFill);
-  }, [t.configurator.couponNoneActive]);
 
   useEffect(() => {
     if (!restored) return;
@@ -392,11 +380,14 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
             coupon: coupon.trim() || "none",
             currency,
           },
+          // Campaña de origen (gclid/utm) para atribuir la venta.
+          attribution: getAttribution(),
         }),
       });
       const data = await res.json();
       if (!res.ok || data.error) {
         setStatus(t.configurator.openFailed(String(data.error || res.status)));
+        setLoading(null);
         return;
       }
       const url = data.checkoutUrl || data.initPoint;
@@ -404,18 +395,21 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
         trackEvent("begin_checkout", {
           payment_provider: label,
           value: payableNowMxn,
-          currency,
+          currency: "MXN",
+          items: [{ item_id: planId, item_name: plan.name, price: payableNowMxn, quantity: 1 }],
         });
-        window.open(url, "_blank", "noopener,noreferrer");
-        setStatus(t.configurator.openedInTab(label));
-      } else {
-        setStatus(t.configurator.noPaymentLink);
+        // Misma pestaña: window.open después de un `await` lo bloquea Safari
+        // (y muchos navegadores móviles) como ventana emergente, y el cliente
+        // se quedaba sin checkout. Al volver, /gracias o la cotización guardada
+        // lo esperan. `loading` se queda puesto mientras el navegador navega.
+        window.location.assign(url);
+        return;
       }
+      setStatus(t.configurator.noPaymentLink);
     } catch {
       setStatus(t.configurator.connectionError);
-    } finally {
-      setLoading(null);
     }
+    setLoading(null);
   }
 
   async function copy(value: string, label: string) {
@@ -436,10 +430,44 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
       projectTotal,
       currency
     )}\n${t.configurator.payNow}: ${formatMoney(payableNow, currency)}`;
-    window.location.href = `mailto:bryanf@bryanfdesign.com.mx?subject=${encodeURIComponent(
+    window.location.href = `mailto:bryanf@bryanfdesign.com?subject=${encodeURIComponent(
       t.configurator.emailQuoteSubject
     )}&body=${encodeURIComponent(body)}`;
   }
+
+  // ¿Hay formulario de cotización en esta página? (home y /crear-web sí).
+  const [hasLeadForm, setHasLeadForm] = useState(false);
+  // El formulario carga en su propio chunk, a veces después del cotizador:
+  // se revisa otra vez cuando el resumen entra a la vista.
+  useEffect(() => {
+    setHasLeadForm(!!document.getElementById(LEAD_FORM_ID));
+  }, [summaryInView]);
+
+  function contactMe() {
+    const target = document.getElementById(LEAD_FORM_ID);
+    if (!target) {
+      emailQuote();
+      return;
+    }
+    trackEvent("cta_click", { cta_text: "contact_me", location: "precios" });
+    target.scrollIntoView({
+      behavior: isReducedMotionRequested() ? "auto" : "smooth",
+      block: "start",
+    });
+    target.querySelector<HTMLInputElement>("input[name='name']")?.focus({ preventScroll: true });
+  }
+
+  // Al volver del checkout con "atrás", el navegador puede restaurar la página
+  // congelada (bfcache) con el botón aún cargando: se libera.
+  useEffect(() => {
+    function onPageShow(event: PageTransitionEvent) {
+      if (!event.persisted) return;
+      setLoading(null);
+      setStatus("");
+    }
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
 
   // La transferencia siempre es a cuenta mexicana: montos en MXN.
   const transferMsg = encodeURIComponent(
@@ -957,14 +985,21 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                     )}
                   />
                 </Button>
+                {/* Quien no quiere pagar todavía deja sus datos: la
+                    cotización armada viaja con la solicitud. Sin formulario
+                    en la página, se ofrece el correo como antes. */}
                 <Button
                   variant="ghost"
-                  onClick={emailQuote}
+                  onClick={contactMe}
                   disabled={projectTotal <= 0}
-                  className="w-full text-white/80 hover:bg-white/[0.06] hover:text-white"
+                  className="w-full whitespace-normal text-white/80 hover:bg-white/[0.06] hover:text-white"
                 >
-                  <Mail className="h-4 w-4" />
-                  {t.configurator.emailQuote}
+                  {hasLeadForm ? (
+                    <MessageCircle className="h-4 w-4" />
+                  ) : (
+                    <Mail className="h-4 w-4" />
+                  )}
+                  {hasLeadForm ? t.leadForm.configuratorLink : t.configurator.emailQuote}
                 </Button>
               </div>
 
@@ -1022,7 +1057,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                           trackEvent("begin_checkout", {
                             payment_provider: "bank_transfer",
                             value: payableNowMxn,
-                            currency,
+                            currency: "MXN",
                           })
                         }
                       >
@@ -1035,9 +1070,17 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                       variant="outline"
                       className="w-full whitespace-normal text-center leading-tight"
                     >
-                      <a href="mailto:bryanf@bryanfdesign.com.mx?subject=Comprobante%20de%20transferencia%20-%20BryanF%20Design">
+                      <a href="mailto:bryanf@bryanfdesign.com?subject=Comprobante%20de%20transferencia%20-%20BryanF%20Design">
                         {t.configurator.sendEmail}
                       </a>
+                    </Button>
+                    {/* Transferencia: /gracias explica cómo confirmar el pago; el brief llega por correo al confirmarlo. */}
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="w-full whitespace-normal border-lime/40 text-center leading-tight text-lime"
+                    >
+                      <a href="/gracias?via=transferencia">{t.configurator.fillBrief}</a>
                     </Button>
                   </div>
                 </div>

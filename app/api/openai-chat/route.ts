@@ -87,8 +87,10 @@ export async function POST(req: NextRequest) {
           model,
           messages,
           temperature: 0.35,
-          // Respuestas cortas: tope duro de costo por mensaje.
-          max_tokens: 380,
+          // Lumina responde en JSON (texto, bloques y acciones).
+          response_format: { type: "json_object" },
+          // Tope duro de costo por mensaje.
+          max_tokens: 650,
           user: `lumina-${hashIp(ip)}`,
         }),
       });
@@ -121,7 +123,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Solo el texto: nada de metadatos de la cuenta hacia el navegador.
-    const content = String(data?.choices?.[0]?.message?.content ?? "").slice(0, 2400);
+    const content = String(data?.choices?.[0]?.message?.content ?? "").slice(0, 6000);
     return NextResponse.json({ choices: [{ message: { content } }] });
   } catch (error) {
     console.error("OpenAI proxy error:", error);

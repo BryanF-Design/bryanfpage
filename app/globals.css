@@ -1331,68 +1331,6 @@ html.preload-out .preloader-mark {
   }
 }
 
-/* ——— Lumina señala ————————————————————————————————————————————————
-   Un foco que oscurece la página y deja a la vista solo el elemento que
-   Lumina quiere enseñar, con su nota encima. Se quita al tocar cualquier
-   parte o solo a los pocos segundos. */
-.lumina-focus {
-  position: fixed;
-  z-index: 125;
-  border-radius: 1.25rem;
-  box-shadow:
-    0 0 0 4px hsl(var(--lime)),
-    0 0 0 9999px hsl(var(--ink) / 0.55);
-  pointer-events: none;
-  transition:
-    top 380ms var(--ease-out, ease-out),
-    left 380ms var(--ease-out, ease-out),
-    width 380ms var(--ease-out, ease-out),
-    height 380ms var(--ease-out, ease-out),
-    opacity 220ms linear;
-  animation: lumina-focus-in 360ms var(--ease-out, ease-out);
-}
-.lumina-focus::after {
-  content: "";
-  position: absolute;
-  inset: -4px;
-  border-radius: inherit;
-  animation: lumina-spot 1.2s var(--ease-out, ease-out) 3;
-}
-.lumina-focus-note {
-  position: fixed;
-  z-index: 126;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  max-width: min(20rem, calc(100vw - 1.5rem));
-  padding: 0.4rem 0.9rem 0.4rem 0.4rem;
-  border-radius: 999px;
-  background: hsl(0 0% 100%);
-  color: hsl(var(--ink));
-  font-size: 0.875rem;
-  font-weight: 600;
-  line-height: 1.25;
-  box-shadow: 0 18px 40px -16px hsl(var(--ink) / 0.6);
-  animation: lumina-focus-in 360ms var(--ease-out, ease-out) 120ms both;
-}
-@keyframes lumina-focus-in {
-  from {
-    opacity: 0;
-  }
-}
-/* Campo que Lumina acaba de llenar. */
-.lumina-filled {
-  animation: lumina-filled 1.6s var(--ease-out, ease-out);
-}
-@keyframes lumina-filled {
-  0%,
-  40% {
-    box-shadow: 0 0 0 4px hsl(var(--lime));
-  }
-  100% {
-    box-shadow: 0 0 0 4px hsl(var(--lime) / 0);
-  }
-}
 @media (prefers-reduced-motion: reduce) {
   html.preload .preloader {
     display: none;
@@ -1400,15 +1338,33 @@ html.preload-out .preloader-mark {
   html.preload body {
     overflow: auto;
   }
-  .lumina-focus,
-  .lumina-focus::after,
-  .lumina-focus-note,
-  .lumina-filled {
-    animation: none;
-  }
 }
 /* La entrada del hero espera a que suba el telón del preloader. */
 html.preload:not(.preload-out) .hero-in,
 html.preload:not(.preload-out) .hero-line > span {
   animation-play-state: paused;
+}
+
+/* Briefing: el campo que Lumina acaba de llenar destella en lima. */
+.brief-flash {
+  animation: brief-flash 2.4s ease-out both;
+}
+@keyframes brief-flash {
+  0%,
+  35% {
+    box-shadow: 0 0 0 3px hsl(var(--lime)), 0 0 0 7px hsl(var(--lime) / 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 0 hsl(var(--lime) / 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brief-flash {
+    animation: none;
+    box-shadow: 0 0 0 3px hsl(var(--lime));
+  }
+}
+:root.a11y-reduce-motion .brief-flash {
+  animation: none;
+  box-shadow: 0 0 0 3px hsl(var(--lime));
 }
