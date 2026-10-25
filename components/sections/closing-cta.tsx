@@ -44,7 +44,7 @@ const FAN = [
 function Phone({ slug, sizes }: { slug: string; sizes: string }) {
   return (
     <div
-      className="aspect-[390/800] bg-ink p-[3.2%] shadow-[0_30px_50px_-20px_hsl(var(--ink)/0.55)] ring-1 ring-ink/10"
+      className="aspect-[390/800] bg-ink p-[3.2%] shadow-[0_30px_50px_-20px_hsl(var(--shade)/0.55)] ring-1 ring-ink/10"
       style={{ borderRadius: "16% / 7.8%" }}
     >
       <div

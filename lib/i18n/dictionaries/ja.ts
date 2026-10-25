@@ -714,6 +714,7 @@ const ja: Dictionary = {
         "paginas-web-para-negocios": "ビジネス向けサイト",
         "software-a-medida-mexico": "オーダーメイドソフト",
         "mantenimiento-web-mexico": "サイト保守",
+        "mi-panel": "マイパネル",
       },
     },
     languageInstruction: "日本語",

@@ -130,7 +130,7 @@ function CardMock({ fromLabel }: { fromLabel: string }) {
             width={720}
             height={253}
             sizes="96px"
-            className="h-6 w-auto"
+            className="logo-invert h-6 w-auto"
           />
           <span className="grid size-8 place-items-center rounded-full bg-lime text-ink">
             <Nfc className="h-4 w-4" />

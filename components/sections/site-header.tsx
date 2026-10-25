@@ -14,6 +14,7 @@ import {
 } from "react-icons/fa";
 
 import { Button, ButtonArrow } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useLanguage } from "@/lib/i18n/context";
 import { DICTIONARIES } from "@/lib/i18n/dictionaries";
@@ -21,7 +22,8 @@ import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { useFooterInView } from "@/lib/use-footer-in-view";
 import { cn } from "@/lib/utils";
 
-const CLIENT_PORTAL = "https://access.bryanfdesign.com/";
+// Panel de los suscriptores, dentro del mismo sitio.
+const CLIENT_PORTAL = "/mi-panel";
 
 const social = [
   { Icon: FaInstagram, href: "https://www.instagram.com/bryanf_design/", label: "Instagram" },
@@ -45,9 +47,10 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
   const [hovered, setHovered] = useState<number | null>(null);
   // Al llegar al pie (que crece a pantalla completa) el header se retira
-  // hacia arriba; vuelve en cuanto se sube. Con el menú abierto no se va.
+  // hacia arriba; vuelve en cuanto se sube. Con el menú abierto no se va, y
+  // en páginas cortas (el pie ya se ve arriba) tampoco: solo si ya se bajó.
   const footerInView = useFooterInView();
-  const hidden = footerInView && !open;
+  const hidden = footerInView && !open && scrolled;
   const headerRef = useRef<HTMLElement>(null);
   const menuPanelRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -141,8 +144,8 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
           className={cn(
             "pointer-events-auto mx-auto flex h-[3.75rem] max-w-[1488px] items-center justify-between gap-3 rounded-full bg-white pl-3 pr-2 ring-1 ring-ink/[0.06] transition-shadow duration-300 md:h-16 md:pl-4",
             scrolled || open
-              ? "shadow-[0_18px_40px_-22px_hsl(var(--ink)/0.45)]"
-              : "shadow-[0_8px_24px_-20px_hsl(var(--ink)/0.3)]"
+              ? "shadow-[0_18px_40px_-22px_hsl(var(--shade)/0.45)]"
+              : "shadow-[0_8px_24px_-20px_hsl(var(--shade)/0.3)]"
           )}
         >
           <Link
@@ -158,7 +161,7 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
               height={253}
               priority
               sizes="120px"
-              className="h-7 w-auto md:h-8"
+              className="logo-invert h-7 w-auto md:h-8"
             />
           </Link>
 
@@ -190,6 +193,7 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
           </nav>
 
           <div className="flex items-center gap-1.5">
+            <ThemeToggle />
             {!spanishOnly && (
               <span data-lumina="idioma" className="contents">
                 <LanguageSwitcher />
@@ -197,8 +201,6 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
             )}
             <Link
               href={CLIENT_PORTAL}
-              target="_blank"
-              rel="noopener noreferrer"
               className="hidden h-10 items-center gap-2 rounded-full px-4 text-sm font-semibold text-ink/75 transition-colors hover:bg-ink/[0.05] hover:text-ink xl:inline-flex"
             >
               <LogIn className="h-4 w-4" />
@@ -238,7 +240,7 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.98 }}
             transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
             style={{ transformOrigin: "50% 0%" }}
-            className="fixed inset-x-[var(--gutter)] bottom-[var(--gutter)] top-[calc(var(--gutter)*0.75+4.25rem)] z-[99] flex flex-col overflow-y-auto rounded-panel bg-white shadow-[0_30px_80px_-30px_hsl(var(--ink)/0.5)] lg:hidden"
+            className="fixed inset-x-[var(--gutter)] bottom-[var(--gutter)] top-[calc(var(--gutter)*0.75+4.25rem)] z-[99] flex flex-col overflow-y-auto rounded-panel bg-white shadow-[0_30px_80px_-30px_hsl(var(--shade)/0.5)] lg:hidden"
           >
             <nav aria-label={t.nav.menu} className="flex flex-1 flex-col px-5 pb-6 pt-4 sm:px-8">
               <ul className="flex flex-col">
@@ -281,8 +283,6 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
                 <Button asChild size="lg" variant="outline" className="w-full sm:flex-1">
                   <Link
                     href={CLIENT_PORTAL}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     onClick={() => setOpen(false)}
                   >
                     <LogIn className="h-4 w-4" />

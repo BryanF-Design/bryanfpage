@@ -722,6 +722,7 @@ const de: Dictionary = {
         "paginas-web-para-negocios": "Websites für Unternehmen",
         "software-a-medida-mexico": "Individuelle Software",
         "mantenimiento-web-mexico": "Website-Wartung",
+        "mi-panel": "Mein Bereich",
       },
     },
     languageInstruction: "Deutsch",

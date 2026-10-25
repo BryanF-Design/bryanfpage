@@ -342,7 +342,7 @@ export function LuminaFeature() {
           <div className="flex flex-1 flex-col gap-3 rounded-[calc(var(--r-panel)-0.75rem)] bg-mint p-3 sm:p-4">
             {/* El saludo es copia propia del diccionario (HTML de confianza). */}
             <div
-              className="max-w-[90%] self-start rounded-[1.35rem] rounded-bl-md bg-white px-4 py-3 text-[0.9375rem] leading-relaxed text-ink shadow-[0_10px_24px_-18px_hsl(var(--ink)/0.5)]"
+              className="max-w-[90%] self-start rounded-[1.35rem] rounded-bl-md bg-white px-4 py-3 text-[0.9375rem] leading-relaxed text-ink shadow-[0_10px_24px_-18px_hsl(var(--shade)/0.5)]"
               dangerouslySetInnerHTML={{ __html: t.lumina.greeting }}
             />
             <TypedPhrases phrases={t.luminaSection.phrases} />
@@ -480,7 +480,7 @@ function BadgeVisual({ index }: { index: number }) {
           <span
             key={slug}
             style={{ left: `${i * 2}rem`, rotate: `${(i - 1) * 7}deg` }}
-            className="absolute -top-7 h-16 w-10 overflow-hidden rounded-[0.55rem] bg-ink shadow-[0_12px_20px_-10px_hsl(var(--ink)/0.6)] ring-2 ring-white"
+            className="absolute -top-7 h-16 w-10 overflow-hidden rounded-[0.55rem] bg-ink shadow-[0_12px_20px_-10px_hsl(var(--shade)/0.6)] ring-2 ring-white"
           >
             <Image src={mobileShot(slug)} alt="" fill sizes="40px" className="object-cover object-top" />
           </span>
@@ -557,7 +557,7 @@ function TypedPhrases({ phrases }: { phrases: string[] }) {
       {/* El texto que se escribe y borra es decorativo; el lector de
           pantalla recibe la primera frase completa, una sola vez. */}
       <span className="sr-only">{phrases[0]}</span>
-      <p aria-hidden className="min-h-[2.9rem] rounded-[1.35rem] rounded-bl-md bg-white px-4 py-3 text-[0.9375rem] font-semibold leading-relaxed text-ink shadow-[0_10px_24px_-18px_hsl(var(--ink)/0.5)]">
+      <p aria-hidden className="min-h-[2.9rem] rounded-[1.35rem] rounded-bl-md bg-white px-4 py-3 text-[0.9375rem] font-semibold leading-relaxed text-ink shadow-[0_10px_24px_-18px_hsl(var(--shade)/0.5)]">
         {text}
         <span
           aria-hidden

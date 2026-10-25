@@ -1,17 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Check,
-  Clock,
-  FileText,
-  Infinity as InfinityIcon,
-  LayoutTemplate,
-  Nfc,
-  ShieldCheck,
-  Sparkle,
-  TrendingUp,
-  X,
-} from "lucide-react";
+import { Check, Clock, FileText, Infinity as InfinityIcon, ShieldCheck, Sparkle, X } from "lucide-react";
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button, ButtonArrow } from "@/components/ui/button";
@@ -21,18 +10,18 @@ import { SiteFooter } from "@/components/sections/site-footer";
 import { SiteHeader } from "@/components/sections/site-header";
 import { SpanishPageLanguage } from "@/components/seo/spanish-page-language";
 import { SubscriptionButtons } from "@/components/subscription-buttons";
+import { AccessShowcase } from "@/components/subscription/access-showcase";
+import { PanelDemo } from "@/components/subscription/panel-demo";
+import { WorkExamples } from "@/components/subscription/work-examples";
 import { SUBSCRIPTION_PLAN } from "@/lib/catalog";
 import { SITE_URL } from "@/lib/seo/service-pages";
 import {
   SUBSCRIPTION_FAQ,
   SUBSCRIPTION_FAQ_ALL,
-  SUBSCRIPTION_INCLUDES,
   SUBSCRIPTION_POLICY,
   SUBSCRIPTION_PRICE_LABEL,
   SUBSCRIPTION_STEPS,
 } from "@/lib/subscription";
-
-const INCLUDE_ICONS = [LayoutTemplate, InfinityIcon, Nfc, TrendingUp];
 
 const PRICE = new Intl.NumberFormat("es-MX", {
   style: "currency",
@@ -112,29 +101,56 @@ export function SubscriptionPage() {
       <main id="main-content" tabIndex={-1} className="sheet-main">
         {/* ——— Portada: la promesa y la tarjeta de precio. ——— */}
         <section aria-labelledby="sub-title" data-lumina-topic="plan" className="grid gap-gutter lg:grid-cols-12">
-          <div className="panel flex flex-col justify-between gap-8 p-5 pt-6 shadow-soft sm:p-8 lg:col-span-7 lg:p-10">
-            <div className="flex flex-col items-start gap-5">
-              <Eyebrow>Suscripción Todo Digital</Eyebrow>
+          <div className="panel relative flex flex-col justify-between gap-8 overflow-hidden p-5 pt-6 shadow-soft sm:p-8 lg:col-span-7 lg:p-10">
+            {/* Destellos que flotan detrás del titular. */}
+            <Sparkle aria-hidden className="float-y absolute right-[8%] top-[10%] h-8 w-8 fill-lime text-lime-deep opacity-80" />
+            <Sparkle
+              aria-hidden
+              style={{ animationDelay: "-2.5s" }}
+              className="float-y absolute right-[22%] top-[26%] hidden h-4 w-4 fill-lime text-lime-deep opacity-70 sm:block"
+            />
+            <div className="relative flex flex-col items-start gap-5">
+              <span className="hero-in hero-in-up">
+                <Eyebrow>Suscripción Todo Digital</Eyebrow>
+              </span>
               <h1
                 id="sub-title"
                 className="display-title text-balance text-[clamp(2.6rem,6vw,5.5rem)] leading-[0.94] text-ink"
               >
-                Todo lo digital de tu negocio, por {PRICE} al mes
+                <span className="hero-line">
+                  <span style={{ "--hd": "60ms" } as React.CSSProperties}>Todo lo digital</span>
+                </span>
+                <span className="hero-line">
+                  <span style={{ "--hd": "160ms" } as React.CSSProperties}>de tu negocio,</span>
+                </span>
+                <span className="hero-line">
+                  <span style={{ "--hd": "260ms" } as React.CSSProperties}>
+                    por <span className="relative inline-block">
+                      <span className="relative z-10">{PRICE}</span>
+                      <span aria-hidden className="sub-underline absolute inset-x-[-0.06em] bottom-[0.08em] -z-0 h-[0.32em] rounded-full bg-lime" />
+                    </span>{" "}
+                    al mes
+                  </span>
+                </span>
               </h1>
-              <p className="max-w-xl text-pretty text-[0.975rem] leading-relaxed text-muted-foreground md:text-lg">
+              <p
+                style={{ "--hd": "380ms" } as React.CSSProperties}
+                className="hero-in hero-in-up max-w-xl text-pretty text-[0.975rem] leading-relaxed text-muted-foreground md:text-lg"
+              >
                 Páginas web, cambios ilimitados, tarjetas digitales, firmas, gráficos y todo lo que tu
                 negocio necesite en digital. Lo pides, lo hacemos y en 1 a 2 días hábiles lo tienes.
               </p>
             </div>
-            <ul className="grid gap-2 sm:grid-cols-3">
+            <ul className="relative grid gap-2 sm:grid-cols-3">
               {[
                 { Icon: InfinityIcon, text: "Cambios ilimitados" },
                 { Icon: Clock, text: "Entregas en 1 a 2 días hábiles" },
                 { Icon: ShieldCheck, text: "Sin plazo forzoso" },
-              ].map(({ Icon, text }) => (
+              ].map(({ Icon, text }, i) => (
                 <li
                   key={text}
-                  className="flex items-center gap-3 rounded-card bg-mint p-3 text-sm font-semibold leading-snug text-ink ring-1 ring-inset ring-ink/[0.06]"
+                  style={{ "--hd": `${480 + i * 90}ms` } as React.CSSProperties}
+                  className="hero-in hero-in-up flex items-center gap-3 rounded-card bg-mint p-3 text-sm font-semibold leading-snug text-ink ring-1 ring-inset ring-ink/[0.06]"
                 >
                   <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-ink text-lime">
                     <Icon className="h-4 w-4" />
@@ -145,9 +161,14 @@ export function SubscriptionPage() {
             </ul>
           </div>
 
-          <div id="plan" className="scroll-mt-[calc(var(--header-h)+var(--gutter))] lg:col-span-5">
+          <div
+            id="plan"
+            style={{ "--hd": "200ms" } as React.CSSProperties}
+            className="hero-in hero-in-right scroll-mt-[calc(var(--header-h)+var(--gutter))] lg:col-span-5"
+          >
             <div className="panel panel-ink relative flex h-full flex-col gap-6 overflow-hidden p-5 sm:p-8">
               <div aria-hidden className="mesh-glow-a opacity-60" />
+              <div aria-hidden className="sub-shine" />
               <div className="relative flex items-center justify-between gap-3">
                 <p className="display-title text-[1.6rem] leading-none text-white">Tu plan</p>
                 <span className="inline-flex h-9 items-center gap-2 rounded-full bg-white/10 px-3.5 text-xs font-bold text-white">
@@ -171,8 +192,12 @@ export function SubscriptionPage() {
                   "Tarjetas digitales y firmas de correo",
                   "Gráficos para redes, SEO y mantenimiento",
                   "Hosting de tus sitios incluido",
-                ].map((item) => (
-                  <li key={item} className="flex items-center gap-2.5 text-[0.9375rem] text-white/85">
+                ].map((item, i) => (
+                  <li
+                    key={item}
+                    style={{ "--hd": `${520 + i * 80}ms` } as React.CSSProperties}
+                    className="hero-in hero-in-left flex items-center gap-2.5 text-[0.9375rem] text-white/85"
+                  >
                     <span aria-hidden className="grid size-6 shrink-0 place-items-center rounded-full bg-lime text-ink">
                       <Check className="h-3.5 w-3.5" strokeWidth={3} />
                     </span>
@@ -208,35 +233,47 @@ export function SubscriptionPage() {
           </div>
         </section>
 
-        {/* ——— Qué incluye ——— */}
-        <section aria-labelledby="incluye-title" className="panel p-5 pt-6 shadow-soft sm:p-8 lg:p-10">
-          <div className="flex flex-col gap-4">
-            <Eyebrow>Qué incluye</Eyebrow>
+        {/* ——— A qué tienes acceso: pestañas con escenas animadas ——— */}
+        <section aria-labelledby="incluye-title" data-lumina-topic="incluye" className="panel p-5 pt-6 shadow-soft sm:p-8 lg:p-10">
+          <div data-fx="up" className="flex flex-col gap-4">
+            <Eyebrow>A qué tienes acceso</Eyebrow>
             <h2 id="incluye-title" className="display-title max-w-3xl text-balance text-[clamp(2rem,4.2vw,3.4rem)] leading-[0.98] text-ink">
               Si es digital y tu negocio lo necesita, entra
             </h2>
+            <p className="max-w-2xl text-pretty text-[0.975rem] leading-relaxed text-muted-foreground md:text-lg">
+              Un estudio completo de diseño y desarrollo trabajando para tu negocio cada mes. Esto es lo que puedes pedir:
+            </p>
           </div>
-          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {SUBSCRIPTION_INCLUDES.map((group, i) => {
-              const Icon = INCLUDE_ICONS[i] ?? Sparkle;
-              return (
-                <article key={group.title} className="flex flex-col gap-4 rounded-card bg-mint p-5 ring-1 ring-inset ring-ink/[0.06]">
-                  <span aria-hidden className="grid size-12 place-items-center rounded-full bg-ink text-lime">
-                    <Icon className="h-5 w-5" />
-                  </span>
-                  <h3 className="display-title text-[1.35rem] leading-tight text-ink">{group.title}</h3>
-                  <ul className="flex flex-col gap-2">
-                    {group.items.map((item) => (
-                      <li key={item} className="flex items-start gap-2 text-sm leading-snug text-ink/80">
-                        <Check aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-forest" strokeWidth={3} />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </article>
-              );
-            })}
+          <AccessShowcase />
+        </section>
+
+        {/* ——— Tu panel ——— */}
+        <section id="tu-panel" aria-labelledby="tu-panel-title" className="panel scroll-mt-[calc(var(--header-h)+var(--gutter))] overflow-hidden p-5 pt-6 shadow-soft sm:p-8 lg:p-10">
+          <div data-fx="up" className="mx-auto flex max-w-3xl flex-col items-center gap-4 text-center">
+            <Eyebrow>Tu panel</Eyebrow>
+            <h2 id="tu-panel-title" className="display-title text-balance text-[clamp(2rem,4.2vw,3.4rem)] leading-[0.98] text-ink">
+              Todo tu plan, en un solo lugar
+            </h2>
+            <p className="text-pretty text-[0.975rem] leading-relaxed text-muted-foreground md:text-lg">
+              Al suscribirte tienes tu propio panel: ves cuántos días faltan para tu próximo cobro, pides lo que
+              necesites con un toque y administras tu tarjeta o tus facturas cuando quieras.
+            </p>
           </div>
+          <PanelDemo />
+        </section>
+
+        {/* ——— Ejemplos de trabajo ——— */}
+        <section aria-labelledby="trabajos-title" data-lumina-topic="trabajos" className="panel overflow-hidden px-0 py-6 shadow-soft sm:py-8 lg:py-10">
+          <div data-fx="up" className="flex flex-col gap-4 px-5 sm:px-8 lg:px-10">
+            <Eyebrow>Ejemplos de trabajo</Eyebrow>
+            <h2 id="trabajos-title" className="display-title max-w-3xl text-balance text-[clamp(2rem,4vw,3.2rem)] leading-[0.98] text-ink">
+              Así se ve lo que entregamos
+            </h2>
+            <p className="max-w-2xl text-pretty text-[0.975rem] leading-relaxed text-muted-foreground">
+              Sitios reales de negocios reales. Tócalos para visitarlos: así de rápido y cuidado sale cada solicitud.
+            </p>
+          </div>
+          <WorkExamples />
         </section>
 
         {/* ——— Cómo funciona + tiempos ——— */}
@@ -246,9 +283,13 @@ export function SubscriptionPage() {
             <h2 id="como-title" className="display-title mt-4 text-balance text-[clamp(2rem,4vw,3.2rem)] leading-[0.98] text-ink">
               Pides, entregamos, repites
             </h2>
-            <ol className="mt-8 grid gap-3 sm:grid-cols-2">
+            <ol data-fx="up" style={{ "--fx-delay": "330ms" } as React.CSSProperties} className="mt-8 grid gap-3 sm:grid-cols-2">
               {SUBSCRIPTION_STEPS.map((step, i) => (
-                <li key={step.title} className="flex gap-4 rounded-card bg-mint p-4 ring-1 ring-inset ring-ink/[0.06] sm:p-5">
+                <li
+                  key={step.title}
+                  style={{ "--fx-delay": `${i * 110}ms` } as React.CSSProperties}
+                  className="flex gap-4 rounded-card bg-mint p-4 ring-1 ring-inset ring-ink/[0.06] sm:p-5"
+                >
                   <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-ink text-sm font-bold text-lime">
                     {i + 1}
                   </span>
@@ -278,7 +319,7 @@ export function SubscriptionPage() {
               width={852}
               height={1162}
               sizes="10rem"
-              className="h-auto w-32 self-end"
+              className="float-y h-auto w-32 self-end"
             />
           </aside>
         </section>
@@ -290,7 +331,8 @@ export function SubscriptionPage() {
             Pago único o suscripción
           </h2>
           <div className="mt-8 grid gap-3 md:grid-cols-2">
-            <article className="flex flex-col gap-4 rounded-card bg-mint p-5 ring-1 ring-inset ring-ink/[0.06] sm:p-6">
+            <div data-fx="left" className="flex">
+            <article className="flex flex-1 flex-col gap-4 rounded-card bg-mint p-5 ring-1 ring-inset ring-ink/[0.06] sm:p-6">
               <p className="text-sm font-bold text-ink/60">Proyecto de pago único</p>
               <p className="display-title text-[2rem] leading-none text-ink">Desde $3,500 MXN</p>
               <ul className="flex flex-col gap-2 text-sm text-ink/80">
@@ -304,7 +346,9 @@ export function SubscriptionPage() {
                 <Link href="/crear-web">Cotizar pago único</Link>
               </Button>
             </article>
-            <article className="flex flex-col gap-4 rounded-card bg-ink p-5 text-white sm:p-6">
+            </div>
+            <div data-fx="right" style={{ "--fx-delay": "120ms" } as React.CSSProperties} className="flex">
+            <article className="relative flex flex-1 flex-col overflow-hidden gap-4 rounded-card bg-ink p-5 text-white sm:p-6 ring-1 ring-inset ring-lime/25">
               <p className="text-sm font-bold text-lime">Suscripción Todo Digital</p>
               <p className="display-title text-[2rem] leading-none text-white">{PRICE} MXN / mes</p>
               <ul className="flex flex-col gap-2 text-sm text-white/85">
@@ -321,6 +365,7 @@ export function SubscriptionPage() {
                 </a>
               </Button>
             </article>
+            </div>
           </div>
         </section>
 
@@ -332,9 +377,12 @@ export function SubscriptionPage() {
               Las reglas, claras desde el principio
             </h2>
           </div>
-          <dl className="mt-8 grid gap-3 md:grid-cols-2">
+          <dl data-fx="up" style={{ "--fx-delay": "300ms" } as React.CSSProperties} className="mt-8 grid gap-3 md:grid-cols-2">
             {SUBSCRIPTION_POLICY.map((rule, i) => (
-              <div key={rule.title} className="flex gap-4 rounded-card bg-mint p-4 ring-1 ring-inset ring-ink/[0.06] sm:p-5">
+              <div
+                key={rule.title}
+                style={{ "--fx-delay": `${(i % 2) * 90}ms` } as React.CSSProperties}
+                className="flex gap-4 rounded-card bg-mint p-4 ring-1 ring-inset ring-ink/[0.06] sm:p-5">
                 <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-full bg-white text-xs font-bold tabular-nums text-ink/75 ring-1 ring-ink/[0.06]">
                   {String(i + 1).padStart(2, "0")}
                 </span>

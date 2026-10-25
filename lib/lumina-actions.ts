@@ -58,6 +58,7 @@ export const SECTION_PAGE: Record<LuminaSection, string> = {
 export const LUMINA_PAGES = {
   suscripcion: "/suscripcion",
   "suscripcion-preguntas": "/suscripcion/preguntas-frecuentes",
+  "mi-panel": "/mi-panel",
   lumina: "/lumina",
   "conoce-a-bryan": "/conoce-a-bryan",
   "crear-web": "/crear-web",

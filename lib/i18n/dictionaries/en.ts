@@ -722,6 +722,7 @@ const en: Dictionary = {
         "paginas-web-para-negocios": "Websites for businesses",
         "software-a-medida-mexico": "Custom software",
         "mantenimiento-web-mexico": "Website maintenance",
+        "mi-panel": "My dashboard",
       },
     },
     languageInstruction: "English",

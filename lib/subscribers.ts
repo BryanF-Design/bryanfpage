@@ -4,7 +4,7 @@ import { MercadoPagoConfig, PreApproval } from "mercadopago";
 import { SUBSCRIPTION_PLAN } from "@/lib/catalog";
 
 /**
- * Suscriptores para BryanF Access, leídos en vivo de Stripe y Mercado Pago
+ * Suscriptores para Panel BryanF, leídos en vivo de Stripe y Mercado Pago
  * (el sitio no guarda una base de datos propia: la fuente de verdad son los
  * cobros). Las transferencias mensuales se llevan a mano y no aparecen aquí.
  */
@@ -33,6 +33,8 @@ export interface Subscriber {
   /** Cobros hechos hasta hoy (si el proveedor lo informa). */
   charges: number | null;
   dashboardUrl: string;
+  /** Stripe: cliente dueño de la suscripción (para abrir su portal). */
+  customerId?: string;
 }
 
 export interface SubscribersResult {
@@ -80,13 +82,19 @@ function mpStatus(status: string): SubscriberStatus {
   }
 }
 
-async function fromStripe(): Promise<Subscriber[]> {
-  const stripe = new Stripe(process.env.STRIPE_SECRET as string);
-  const list = await stripe.subscriptions
-    .list({ status: "all", limit: 100, expand: ["data.customer"] })
-    .autoPagingToArray({ limit: 500 });
+function stripeClient() {
+  return new Stripe(process.env.STRIPE_SECRET as string);
+}
 
-  return list.map((sub) => {
+async function fromStripe(): Promise<Subscriber[]> {
+  const list = await stripeClient()
+    .subscriptions.list({ status: "all", limit: 100, expand: ["data.customer"] })
+    .autoPagingToArray({ limit: 500 });
+  return list.map(mapStripe);
+}
+
+function mapStripe(sub: Stripe.Subscription): Subscriber {
+  {
     const customer = typeof sub.customer === "object" && !("deleted" in sub.customer && sub.customer.deleted)
       ? (sub.customer as Stripe.Customer)
       : null;
@@ -115,18 +123,31 @@ async function fromStripe(): Promise<Subscriber[]> {
       cancelAtPeriodEnd: sub.cancel_at_period_end,
       charges: null,
       dashboardUrl: `https://dashboard.stripe.com/subscriptions/${sub.id}`,
+      customerId: typeof sub.customer === "string" ? sub.customer : sub.customer?.id,
     };
-  });
+  }
 }
 
-async function fromMercadoPago(): Promise<Subscriber[]> {
-  const client = new PreApproval(new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN as string }));
+function mpClient() {
+  return new PreApproval(new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN as string }));
+}
+
+async function fromMercadoPago(payerEmail?: string): Promise<Subscriber[]> {
+  const client = mpClient();
   const planId = (process.env.MP_SUBSCRIPTION_PLAN_ID || "").trim();
   const found: Array<{ id: string; raw: Record<string, unknown> }> = [];
 
   for (const status of ["authorized", "paused", "pending", "cancelled"]) {
     for (let offset = 0; offset < 500; offset += 100) {
-      const page = await client.search({ options: { status, limit: 100, offset, ...(planId ? { preapproval_plan_id: planId } : {}) } });
+      const page = await client.search({
+        options: {
+          status,
+          limit: 100,
+          offset,
+          ...(planId ? { preapproval_plan_id: planId } : {}),
+          ...(payerEmail ? { payer_email: payerEmail } : {}),
+        },
+      });
       const results = page.results || [];
       for (const r of results) if (r.id) found.push({ id: r.id, raw: r as unknown as Record<string, unknown> });
       if (results.length < 100) break;
@@ -189,7 +210,7 @@ export async function listSubscribers(): Promise<SubscribersResult> {
   ];
   const errorText = (r: PromiseSettledResult<unknown>) => {
     if (r.status !== "rejected") return undefined;
-    console.error("BryanF Access:", r.reason);
+    console.error("Panel BryanF:", r.reason);
     return r.reason instanceof Error ? r.reason.message : "Error al consultar";
   };
 
@@ -201,4 +222,42 @@ export async function listSubscribers(): Promise<SubscribersResult> {
     ],
     fetchedAt: Date.now(),
   };
+}
+
+/**
+ * Suscripciones de una sola persona, por su correo (para /mi-panel). Se
+ * comparan los correos sin mayúsculas: Stripe guarda el que escribió el
+ * cliente en el pago.
+ */
+export async function findSubscriptionsByEmail(email: string): Promise<Subscriber[]> {
+  const target = email.trim().toLowerCase();
+  const out: Subscriber[] = [];
+  const jobs: Promise<void>[] = [];
+
+  if (process.env.STRIPE_SECRET) {
+    jobs.push(
+      (async () => {
+        const stripe = stripeClient();
+        const customers = await stripe.customers.list({ email: target, limit: 10 });
+        for (const customer of customers.data) {
+          const subs = await stripe.subscriptions.list({ customer: customer.id, status: "all", limit: 20 });
+          out.push(...subs.data.map((sub) => mapStripe({ ...sub, customer })));
+        }
+      })().catch((error) => console.error("Mi panel (Stripe):", error))
+    );
+  }
+  if (process.env.MP_ACCESS_TOKEN) {
+    jobs.push(
+      fromMercadoPago(target)
+        .then((subs) => {
+          out.push(...subs.filter((s) => s.email.toLowerCase() === target));
+        })
+        .catch((error) => console.error("Mi panel (Mercado Pago):", error))
+    );
+  }
+  await Promise.all(jobs);
+
+  // Primero lo activo; luego lo más reciente.
+  const rank = (s: Subscriber) => (s.status === "active" || s.status === "trialing" ? 0 : s.status === "canceled" ? 2 : 1);
+  return out.sort((a, b) => rank(a) - rank(b) || (b.startedAt || 0) - (a.startedAt || 0));
 }

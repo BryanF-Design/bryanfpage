@@ -64,7 +64,7 @@ export function LanguageNotice() {
     markDismissed();
   }
 
-  if (!visible || configuratorInView || chatOpen || pathname?.startsWith("/access")) return null;
+  if (!visible || configuratorInView || chatOpen || pathname?.startsWith("/admin")) return null;
 
   return (
     // Teléfono y tableta: tira compacta bajo el header (abajo tapaba los CTA

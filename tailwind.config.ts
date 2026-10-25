@@ -1,5 +1,19 @@
 import type { Config } from "tailwindcss";
 
+/**
+ * La tinta como FONDO, borde o degradado sólido usa `--ink-solid`: en modo
+ * oscuro la tinta del texto se vuelve clara, pero las piezas tinta (botones,
+ * tarjetas, píldoras) siguen oscuras. Con opacidad (`bg-ink/[0.05]`) sigue
+ * siendo la tinta del texto: así los velos y bordes sutiles se ven en ambos
+ * temas.
+ */
+const solidInk = ({ opacityValue }: { opacityValue?: string }) =>
+  opacityValue === undefined || opacityValue === "1"
+    ? "hsl(var(--ink-solid))"
+    : String(opacityValue).startsWith("var(")
+      ? `hsl(var(--ink-solid) / ${opacityValue})`
+      : `hsl(var(--ink) / ${opacityValue})`;
+
 const config: Config = {
   darkMode: ["class"],
   content: [
@@ -14,6 +28,11 @@ const config: Config = {
       screens: { "2xl": "1280px" },
     },
     extend: {
+      backgroundColor: { ink: { DEFAULT: solidInk as unknown as string } },
+      gradientColorStops: { ink: { DEFAULT: solidInk as unknown as string } },
+      borderColor: { ink: { DEFAULT: solidInk as unknown as string } },
+      ringColor: { ink: { DEFAULT: solidInk as unknown as string } },
+      fill: { ink: { DEFAULT: solidInk as unknown as string } },
       fontFamily: {
         sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
         display: ["var(--font-display)", "ui-sans-serif", "system-ui", "sans-serif"],
@@ -93,9 +112,9 @@ const config: Config = {
         sm: "calc(var(--radius) - 8px)",
       },
       boxShadow: {
-        soft: "0 1px 0 hsl(var(--ink) / 0.04), 0 18px 40px -24px hsl(var(--ink) / 0.35)",
-        float: "0 2px 0 hsl(var(--ink) / 0.03), 0 30px 60px -28px hsl(var(--ink) / 0.45)",
-        pop: "0 14px 30px -12px hsl(var(--ink) / 0.45)",
+        soft: "0 1px 0 hsl(var(--shade) / 0.04), 0 18px 40px -24px hsl(var(--shade) / 0.35)",
+        float: "0 2px 0 hsl(var(--shade) / 0.03), 0 30px 60px -28px hsl(var(--shade) / 0.45)",
+        pop: "0 14px 30px -12px hsl(var(--shade) / 0.45)",
       },
       spacing: {
         gutter: "var(--gutter)",

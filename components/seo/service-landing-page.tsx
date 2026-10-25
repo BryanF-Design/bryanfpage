@@ -257,7 +257,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
               >
                 <Link
                   href="/"
-                  className="inline-flex h-10 min-w-11 shrink-0 items-center gap-1.5 rounded-full bg-white px-3.5 text-ink shadow-[0_4px_14px_-8px_hsl(var(--ink)/0.45)] transition-colors hover:bg-lime"
+                  className="inline-flex h-10 min-w-11 shrink-0 items-center gap-1.5 rounded-full bg-white px-3.5 text-ink shadow-[0_4px_14px_-8px_hsl(var(--shade)/0.45)] transition-colors hover:bg-lime"
                 >
                   <House aria-hidden className="h-3.5 w-3.5" />
                   Inicio

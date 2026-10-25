@@ -267,7 +267,7 @@ function PhoneMock({
   return (
     <div
       className={cn(
-        "aspect-[390/800] bg-ink p-[3.2%] shadow-[0_34px_60px_-24px_hsl(var(--ink)/0.7)] ring-1 ring-white/10",
+        "aspect-[390/800] bg-ink p-[3.2%] shadow-[0_34px_60px_-24px_hsl(var(--shade)/0.7)] ring-1 ring-white/10",
         className
       )}
       style={{ borderRadius: "16% / 7.8%", ...style }}

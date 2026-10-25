@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { Loader2, Lock } from "lucide-react";
 
 import { Button, ButtonArrow } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
-/** Acceso a BryanF Access: usuario y contraseña del administrador. */
-export function AccessLogin({ configured }: { configured: boolean }) {
+/** Acceso a Panel BryanF: usuario y contraseña del administrador. */
+export function AdminLogin({ configured }: { configured: boolean }) {
   const router = useRouter();
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +21,7 @@ export function AccessLogin({ configured }: { configured: boolean }) {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/access/login", {
+      const res = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user, password }),
@@ -43,10 +44,11 @@ export function AccessLogin({ configured }: { configured: boolean }) {
 
   return (
     <main id="main-content" tabIndex={-1} className="grid min-h-[100dvh] place-items-center p-[var(--gutter)]">
-      <div className="panel w-full max-w-md p-6 shadow-soft sm:p-8">
+      <div className="panel relative w-full max-w-md p-6 shadow-soft sm:p-8">
+        <ThemeToggle className="absolute right-5 top-5" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/img/brand/logo-dark.png" alt="BryanF Design" width={180} height={63} className="h-9 w-auto" />
-        <h1 className="display-title mt-6 text-3xl text-ink">BryanF Access</h1>
+        <img src="/img/brand/logo-dark.png" alt="BryanF Design" width={180} height={63} className="logo-invert h-9 w-auto" />
+        <h1 className="display-title mt-6 text-3xl text-ink">Panel BryanF</h1>
         <p className="mt-2 text-sm text-ink/65">Panel privado: suscriptores, cobros y próximas mensualidades.</p>
 
         {!configured && (

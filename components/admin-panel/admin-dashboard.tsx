@@ -6,6 +6,7 @@ import {
   AlertTriangle,
   ArrowUpRight,
   CalendarClock,
+  Download,
   LogOut,
   Mail,
   Phone,
@@ -16,6 +17,9 @@ import {
   XCircle,
 } from "lucide-react";
 
+import { FaWhatsapp } from "react-icons/fa";
+
+import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 import type { Subscriber, SubscriberStatus, SubscribersResult } from "@/lib/subscribers";
 
@@ -61,7 +65,7 @@ function daysLeftLabel(days: number) {
   return `Faltan ${days} días`;
 }
 
-export function AccessDashboard({ data }: { data: SubscribersResult }) {
+export function AdminDashboard({ data }: { data: SubscribersResult }) {
   const router = useRouter();
   const [refreshing, startRefresh] = useTransition();
   const [filter, setFilter] = useState<Filter>("all");
@@ -108,8 +112,36 @@ export function AccessDashboard({ data }: { data: SubscribersResult }) {
       });
   }, [data.subscribers, filter, query]);
 
+  /** Descarga la lista filtrada en CSV (abre en Excel o Google Sheets). */
+  function exportCsv() {
+    const head = ["Nombre", "Correo", "Teléfono", "Estado", "Proveedor", "Monto", "Moneda", "Suscrito desde", "Próximo cobro", "Días restantes", "ID"];
+    const iso = (ms: number | null) => (ms ? new Date(ms).toISOString().slice(0, 10) : "");
+    const lines = rows.map((s) => [
+      s.name,
+      s.email,
+      s.phone,
+      STATUS[s.status].label,
+      PROVIDER[s.provider],
+      String(s.amount),
+      s.currency,
+      iso(s.startedAt),
+      iso(s.nextChargeAt),
+      s.nextChargeAt ? String(Math.ceil((s.nextChargeAt - now) / DAY)) : "",
+      s.id,
+    ]);
+    const csv = [head, ...lines]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      .join("\r\n");
+    const url = URL.createObjectURL(new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `suscriptores-${new Date(now).toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   async function logout() {
-    await fetch("/api/access/logout", { method: "POST" }).catch(() => null);
+    await fetch("/api/admin/logout", { method: "POST" }).catch(() => null);
     router.refresh();
   }
 
@@ -121,13 +153,23 @@ export function AccessDashboard({ data }: { data: SubscribersResult }) {
       <header className="panel flex flex-wrap items-center justify-between gap-4 p-4 shadow-soft sm:p-6">
         <div className="flex items-center gap-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/img/brand/logo-dark.png" alt="BryanF Design" width={160} height={56} className="h-8 w-auto" />
+          <img src="/img/brand/logo-dark.png" alt="BryanF Design" width={160} height={56} className="logo-invert h-8 w-auto" />
           <div className="leading-tight">
-            <h1 className="display-title text-2xl text-ink sm:text-3xl">BryanF Access</h1>
+            <h1 className="display-title text-2xl text-ink sm:text-3xl">Panel BryanF</h1>
             <p className="text-xs font-medium text-ink/60">Suscripción Todo Digital · actualizado {updated}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <ThemeToggle className="size-11" />
+          <button
+            type="button"
+            onClick={exportCsv}
+            disabled={!rows.length}
+            className="inline-flex min-h-11 items-center gap-2 rounded-full bg-ink/[0.05] px-4 text-sm font-semibold text-ink transition-colors hover:bg-ink hover:text-white disabled:opacity-40"
+          >
+            <Download aria-hidden className="h-4 w-4" />
+            Exportar
+          </button>
           <button
             type="button"
             onClick={() => startRefresh(() => router.refresh())}
@@ -352,7 +394,18 @@ function SubscriberRow({ s, now }: { s: Subscriber; now: number }) {
         )}
       </div>
 
-      <div className="md:col-span-1 md:text-right">
+      <div className="flex gap-1.5 md:col-span-1 md:justify-end">
+        {s.phone && (
+          <a
+            href={`https://wa.me/${s.phone.replace(/\D/g, "")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`WhatsApp a ${s.name || s.phone}`}
+            className="inline-grid size-10 place-items-center rounded-full bg-lime text-ink transition-colors hover:bg-ink hover:text-lime"
+          >
+            <FaWhatsapp aria-hidden className="h-4 w-4" />
+          </a>
+        )}
         <a
           href={s.dashboardUrl}
           target="_blank"

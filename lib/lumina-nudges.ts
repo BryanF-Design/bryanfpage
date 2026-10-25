@@ -168,6 +168,38 @@ export const LUMINA_NUDGES: LuminaNudge[] = [
     },
   },
   {
+    id: "sub-panel",
+    path: "/suscripcion",
+    topic: "tu-panel",
+    dwell: 14_000,
+    es: {
+      say: "¿Te gustaría tener tu propio panel así? Te cuento cómo pides cosas desde ahí.",
+      short: "¿Un panel así para ti?",
+      ask: "¿Cómo funciona el panel del suscriptor y cómo pido cosas desde ahí?",
+    },
+    en: {
+      say: "Want your own dashboard like this? I'll show you how requests work from there.",
+      short: "A dashboard like this?",
+      ask: "How does the subscriber dashboard work and how do I make requests?",
+    },
+  },
+  {
+    id: "sub-work",
+    path: "/suscripcion",
+    topic: "trabajos",
+    dwell: 12_000,
+    es: {
+      say: "¿Te gusta el trabajo? ¿Te gustaría que tu negocio se viera así cada mes?",
+      short: "¿Te gustaría algo así? ✨",
+      ask: "Me gusta este trabajo, ¿cómo sería con la suscripción para mi negocio?",
+    },
+    en: {
+      say: "Like the work? Want your business to look like this every month?",
+      short: "Want something like this? ✨",
+      ask: "I like this work. How would the subscription work for my business?",
+    },
+  },
+  {
     id: "sub-compare",
     path: "/suscripcion",
     topic: "compara",

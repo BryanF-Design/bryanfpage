@@ -49,7 +49,7 @@ const AccordionTrigger = React.forwardRef<
       <span
         aria-hidden
         className={cn(
-          "grid size-10 shrink-0 place-items-center rounded-full bg-white text-ink shadow-[0_6px_16px_-10px_hsl(var(--ink)/0.5)] ring-1 ring-ink/[0.07] transition-[background-color,color,transform] duration-300 [transition-timing-function:var(--ease-out)] group-hover/acc:scale-105 group-data-[state=open]/acc:bg-ink group-data-[state=open]/acc:text-lime md:size-11",
+          "grid size-10 shrink-0 place-items-center rounded-full bg-white text-ink shadow-[0_6px_16px_-10px_hsl(var(--shade)/0.5)] ring-1 ring-ink/[0.07] transition-[background-color,color,transform] duration-300 [transition-timing-function:var(--ease-out)] group-hover/acc:scale-105 group-data-[state=open]/acc:bg-ink group-data-[state=open]/acc:text-lime md:size-11",
           iconClassName,
         )}
       >

@@ -214,7 +214,7 @@ export function AccessibilityPanel() {
             role="dialog"
             aria-labelledby="accessibility-panel-title"
             id="accessibility-panel"
-            className="fixed bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] left-3 z-[121] max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] w-[min(calc(100vw-1.5rem),22rem)] overflow-y-auto overscroll-contain rounded-card bg-white p-2 text-ink shadow-[0_2px_0_hsl(var(--ink)/0.03),0_34px_70px_-26px_hsl(var(--ink)/0.55)] ring-1 ring-ink/[0.06] [scrollbar-width:thin] sm:left-6"
+            className="fixed bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] left-3 z-[121] max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] w-[min(calc(100vw-1.5rem),22rem)] overflow-y-auto overscroll-contain rounded-card bg-white p-2 text-ink shadow-[0_2px_0_hsl(var(--shade)/0.03),0_34px_70px_-26px_hsl(var(--shade)/0.55)] ring-1 ring-ink/[0.06] [scrollbar-width:thin] sm:left-6"
           >
             {/* Cabecera tipo hoja de app: icono redondo, título y cerrar. */}
             <div className="flex items-center justify-between gap-3 py-1.5 pl-2 pr-1">
@@ -242,7 +242,7 @@ export function AccessibilityPanel() {
               {/* Tamaño de texto: un paso a paso en píldora. */}
               <div className="flex items-center justify-between gap-3 rounded-inner bg-mint p-2 pl-3.5">
                 <span className="text-sm font-semibold text-ink">{t.textSize}</span>
-                <div className="flex items-center gap-1 rounded-full bg-white p-1 shadow-[0_4px_14px_-8px_hsl(var(--ink)/0.35)]">
+                <div className="flex items-center gap-1 rounded-full bg-white p-1 shadow-[0_4px_14px_-8px_hsl(var(--shade)/0.35)]">
                   <button
                     type="button"
                     onClick={() => update({ fontStep: Math.max(0, settings.fontStep - 1) })}
@@ -308,7 +308,7 @@ export function AccessibilityPanel() {
                       >
                         <span
                           className={cn(
-                            "size-6 rounded-full shadow-[0_2px_6px_hsl(var(--ink)/0.3)] transition-transform duration-200 [transition-timing-function:var(--ease-out)]",
+                            "size-6 rounded-full shadow-[0_2px_6px_hsl(var(--shade)/0.3)] transition-transform duration-200 [transition-timing-function:var(--ease-out)]",
                             active ? "translate-x-5 bg-lime" : "bg-white"
                           )}
                         />

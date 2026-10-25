@@ -10,6 +10,7 @@ import { MotionPreferenceProvider } from "@/components/motion-preference-provide
 import { SkipLink } from "@/components/skip-link";
 import { SITE_URL } from "@/lib/seo/service-pages";
 import { SUBSCRIPTION_PLAN } from "@/lib/catalog";
+import { THEME_COLORS, themeBootstrap } from "@/lib/theme";
 
 // Client-only widget, no SEO content: skip SSR entirely to shave initial payload.
 const AccessibilityPanel = dynamic(
@@ -132,9 +133,12 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  colorScheme: "light",
-  // El lienzo claro del sitio: la barra del navegador continúa el fondo.
-  themeColor: "#eef2e6",
+  colorScheme: "light dark",
+  // La barra del navegador continúa el fondo (claro u oscuro).
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: THEME_COLORS.light },
+    { media: "(prefers-color-scheme: dark)", color: THEME_COLORS.dark },
+  ],
 };
 
 const ORG_ID = `${SITE_URL}/#organization`;
@@ -341,6 +345,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
         <script dangerouslySetInnerHTML={{ __html: a11yBootstrap }} />
         <script dangerouslySetInnerHTML={{ __html: preloadBootstrap }} />
         <script dangerouslySetInnerHTML={{ __html: fxBootstrap }} />

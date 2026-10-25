@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Check, Pause, Sparkle } from "lucide-react";
 
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n/context";
 import { useReducedMotionPreference } from "@/lib/motion-preference";
@@ -86,12 +87,15 @@ export function NotFoundContent() {
               height={253}
               priority
               sizes="120px"
-              className="h-7 w-auto md:h-8"
+              className="logo-invert h-7 w-auto md:h-8"
             />
           </Link>
-          <span className="eyebrow pl-3">
-            <span aria-hidden className="size-2 rounded-full bg-signal" />
-            {copy.badge}
+          <span className="flex items-center gap-2">
+            <span className="eyebrow pl-3">
+              <span aria-hidden className="size-2 rounded-full bg-signal" />
+              {copy.badge}
+            </span>
+            <ThemeToggle />
           </span>
         </div>
 
@@ -197,7 +201,7 @@ export function NotFoundContent() {
                     "grid h-9 shrink-0 place-items-center rounded-full text-[0.8125rem] font-semibold transition-colors",
                     paused
                       ? "w-9 bg-ink text-lime"
-                      : "bg-white px-3 text-ink shadow-[0_4px_14px_-8px_hsl(var(--ink)/0.45)] hover:bg-ink hover:text-white"
+                      : "bg-white px-3 text-ink shadow-[0_4px_14px_-8px_hsl(var(--shade)/0.45)] hover:bg-ink hover:text-white"
                   )}
                 >
                   {paused ? <Check aria-hidden className="h-4 w-4" strokeWidth={2.5} /> : copy.stay}

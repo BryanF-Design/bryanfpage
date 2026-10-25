@@ -144,7 +144,8 @@ export async function sendOrderConfirmation(
           briefUrl: briefLink,
           manageUrl: manageSubscriptionUrl(order.provider),
           policyUrl: `${getSiteUrl()}/suscripcion#politica`,
-          portalUrl: clientPortalUrl(),
+          // Los suscriptores tienen su panel en el sitio (/mi-panel).
+          portalUrl: clientPortalUrl() || `${getSiteUrl()}/mi-panel`,
         })
       : paymentReceived({
           name: order.customerName,

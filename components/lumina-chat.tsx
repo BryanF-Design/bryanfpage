@@ -290,7 +290,7 @@ function writeNudgeState(state: NudgeState) {
 /** Lumina vive en el layout; el panel de administración no la lleva. */
 export function LuminaChat() {
   const pathname = usePathname() || "/";
-  if (pathname.startsWith("/access")) return null;
+  if (pathname.startsWith("/admin")) return null;
   return <LuminaChatWidget pathname={pathname} />;
 }
 
@@ -887,7 +887,7 @@ function LuminaChatWidget({ pathname }: { pathname: string }) {
         return (
           <div
             key={i}
-            className="relative max-w-[92%] self-start overflow-hidden rounded-[1.35rem] bg-ink px-4 py-3.5 text-white shadow-[0_14px_28px_-18px_hsl(var(--ink)/0.8)]"
+            className="relative max-w-[92%] self-start overflow-hidden rounded-[1.35rem] bg-ink px-4 py-3.5 text-white shadow-[0_14px_28px_-18px_hsl(var(--shade)/0.8)]"
           >
             <Sparkle aria-hidden className="absolute right-3 top-3 h-4 w-4 fill-lime text-lime" />
             <p className="text-xs font-semibold text-white/65">{block.label}</p>
@@ -911,7 +911,7 @@ function LuminaChatWidget({ pathname }: { pathname: string }) {
       return (
         <div
           key={i}
-          className="max-w-[92%] self-start rounded-[1.35rem] bg-white px-4 py-3.5 text-ink shadow-[0_10px_24px_-18px_hsl(var(--ink)/0.5)]"
+          className="max-w-[92%] self-start rounded-[1.35rem] bg-white px-4 py-3.5 text-ink shadow-[0_10px_24px_-18px_hsl(var(--shade)/0.5)]"
         >
           {block.title && <p className="mb-2 text-[0.8125rem] font-bold text-ink">{block.title}</p>}
           <ol className="flex flex-col gap-2">
@@ -950,7 +950,7 @@ function LuminaChatWidget({ pathname }: { pathname: string }) {
     });
 
     return (
-      <div key="quote" className="w-full overflow-hidden rounded-[1.5rem] bg-ink text-white shadow-[0_18px_36px_-20px_hsl(var(--ink)/0.9)]">
+      <div key="quote" className="w-full overflow-hidden rounded-[1.5rem] bg-ink text-white shadow-[0_18px_36px_-20px_hsl(var(--shade)/0.9)]">
         <div className="flex items-center justify-between gap-2 px-4 pb-2 pt-3.5">
           <p className="display-title text-[1.15rem] leading-tight">{t.lumina.ui.packageTitle}</p>
           <span className="inline-flex items-center gap-1 rounded-full bg-lime/15 px-2.5 py-1 text-[0.6875rem] font-bold text-lime">
@@ -1023,7 +1023,7 @@ function LuminaChatWidget({ pathname }: { pathname: string }) {
   function renderSubscription() {
     const ui = t.lumina.ui;
     return (
-      <div key="subscription" className="w-full overflow-hidden rounded-[1.5rem] bg-lime text-ink shadow-[0_18px_36px_-22px_hsl(var(--ink)/0.7)]">
+      <div key="subscription" className="w-full overflow-hidden rounded-[1.5rem] bg-lime text-ink shadow-[0_18px_36px_-22px_hsl(var(--shade)/0.7)]">
         <div className="flex items-start justify-between gap-3 px-4 pt-3.5">
           <p className="display-title text-[1.15rem] leading-tight">{ui.subscriptionTitle}</p>
           <span className="shrink-0 rounded-full bg-ink px-2.5 py-1 text-[0.6875rem] font-bold text-lime">{ui.subscriptionNote}</span>
@@ -1133,7 +1133,7 @@ function LuminaChatWidget({ pathname }: { pathname: string }) {
                     className="group flex h-full items-center gap-2.5 rounded-[1.1rem] bg-white p-1.5 pr-2.5 ring-1 ring-ink/[0.08] transition-shadow hover:shadow-soft"
                   >
                     {/* La miniatura sobresale de la ficha, como las capturas del portafolio. */}
-                    <span className="relative -my-3 h-[4.5rem] w-11 shrink-0 overflow-hidden rounded-[0.6rem] bg-ink shadow-[0_10px_18px_-10px_hsl(var(--ink)/0.6)] ring-2 ring-white transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:-rotate-3">
+                    <span className="relative -my-3 h-[4.5rem] w-11 shrink-0 overflow-hidden rounded-[0.6rem] bg-ink shadow-[0_10px_18px_-10px_hsl(var(--shade)/0.6)] ring-2 ring-white transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:-rotate-3">
                       <Image src={mobileShot(slug)} alt="" fill sizes="44px" className="object-cover object-top" />
                     </span>
                     <span className="min-w-0 flex-1 leading-tight">
@@ -1222,7 +1222,7 @@ function LuminaChatWidget({ pathname }: { pathname: string }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.98 }}
             transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-0 z-[130] flex h-[100dvh] w-full flex-col overflow-hidden bg-white text-ink outline-none sm:inset-auto sm:bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] sm:right-6 sm:h-auto sm:max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] sm:w-[min(92vw,24.5rem)] sm:origin-bottom-right sm:rounded-[2rem] sm:shadow-[0_40px_80px_-30px_hsl(var(--ink)/0.55)] sm:ring-1 sm:ring-ink/[0.06]"
+            className="fixed inset-0 z-[130] flex h-[100dvh] w-full flex-col overflow-hidden bg-white text-ink outline-none sm:inset-auto sm:bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] sm:right-6 sm:h-auto sm:max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] sm:w-[min(92vw,24.5rem)] sm:origin-bottom-right sm:rounded-[2rem] sm:shadow-[0_40px_80px_-30px_hsl(var(--shade)/0.55)] sm:ring-1 sm:ring-ink/[0.06]"
             role="dialog"
             aria-modal={isPhone ? true : undefined}
             aria-labelledby="lumina-chat-title"
@@ -1291,7 +1291,7 @@ function LuminaChatWidget({ pathname }: { pathname: string }) {
                   "max-w-[86%] px-4 py-2.5 text-[0.9375rem] leading-relaxed [&_a]:font-semibold [&_a]:underline [&_a]:underline-offset-2 [&_li]:mt-0.5 [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5",
                   m.role === "user"
                     ? "self-end rounded-[1.35rem] rounded-br-md bg-ink text-white [&_a]:text-lime"
-                    : "self-start rounded-[1.35rem] rounded-bl-md bg-white text-ink shadow-[0_10px_24px_-18px_hsl(var(--ink)/0.5)] [&_a]:text-forest"
+                    : "self-start rounded-[1.35rem] rounded-bl-md bg-white text-ink shadow-[0_10px_24px_-18px_hsl(var(--shade)/0.5)] [&_a]:text-forest"
                 );
                 // User input is never trusted as HTML — only sanitized assistant
                 // replies (see sanitizeHtml) go through dangerouslySetInnerHTML.
@@ -1389,7 +1389,7 @@ function LuminaChatWidget({ pathname }: { pathname: string }) {
                 type="submit"
                 disabled={loading || !input.trim()}
                 aria-label={t.lumina.send}
-                className="grid size-12 shrink-0 place-items-center rounded-full bg-lime text-ink shadow-[0_10px_20px_-12px_hsl(var(--ink)/0.5)] transition-[transform,opacity] duration-200 hover:-rotate-12 active:scale-95 disabled:opacity-45 disabled:hover:rotate-0"
+                className="grid size-12 shrink-0 place-items-center rounded-full bg-lime text-ink shadow-[0_10px_20px_-12px_hsl(var(--shade)/0.5)] transition-[transform,opacity] duration-200 hover:-rotate-12 active:scale-95 disabled:opacity-45 disabled:hover:rotate-0"
               >
                 <Send aria-hidden className="h-[1.1rem] w-[1.1rem]" />
               </button>

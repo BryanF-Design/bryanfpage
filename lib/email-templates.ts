@@ -470,7 +470,7 @@ export function subscriptionWelcome(d: SubscriptionWelcomeData): EmailContent {
         ["Recíbela en 1 a 2 días hábiles", "Según su complejidad. Una solicitud activa a la vez."],
       ]),
       button("Armar mi brief", d.briefUrl, "ink"),
-      d.portalUrl ? button("Entrar a mi portal", d.portalUrl, "outline") : "",
+      d.portalUrl ? button("Entrar a mi panel", d.portalUrl, "outline") : "",
       muted(
         `Política y preguntas frecuentes: <a href="${escapeHtml(d.policyUrl)}" style="color:${BRAND.ink};">${escapeHtml(d.policyUrl.replace(/^https?:\/\//, ""))}</a>${
           d.manageUrl
@@ -1010,4 +1010,25 @@ export function internalNotice(d: {
     ].join(""),
   });
   return build(d.title, html);
+}
+
+/** Enlace de acceso a Mi panel (suscriptores). */
+export function clientLoginLink(d: { url: string; minutes: number }): EmailContent {
+  const html = layout({
+    preheader: "Tu enlace para entrar a tu panel de BryanF Design.",
+    eyebrow: "Mi panel",
+    title: "Entra a tu panel",
+    tone: "ink",
+    body: [
+      paragraph("Hola:"),
+      paragraph(
+        "Usa este botón para entrar a tu panel de la suscripción Todo Digital: ahí ves tu plan, tu próximo cobro y pides lo que necesites."
+      ),
+      button("Entrar a mi panel", d.url, "ink"),
+      muted(
+        `El enlace vale ${d.minutes} minutos. Si tú no lo pediste, ignora este correo.`
+      ),
+    ].join(""),
+  });
+  return build("Tu enlace para entrar a Mi panel", html);
 }

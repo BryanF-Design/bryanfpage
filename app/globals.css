@@ -22,6 +22,10 @@
     --ink: 160 30% 9%;
     --ink-soft: 160 18% 17%;
     --ink-foreground: 0 0% 100%;
+    /* Color de las sombras: tinta en claro, negro en oscuro. */
+    --shade: 160 30% 9%;
+    /* Fondo de las piezas tinta (`bg-ink`): en oscuro no se invierte. */
+    --ink-solid: 160 30% 9%;
 
     --card: 0 0% 100%;
     --card-foreground: 160 30% 9%;
@@ -295,8 +299,8 @@
     background: hsl(var(--card));
     color: hsl(var(--card-foreground));
     box-shadow:
-      0 1px 0 hsl(var(--ink) / 0.04),
-      0 18px 40px -26px hsl(var(--ink) / 0.4);
+      0 1px 0 hsl(var(--shade) / 0.04),
+      0 18px 40px -26px hsl(var(--shade) / 0.4);
   }
 
   /* ——— Recortes con esquinas cóncavas ————————————————————————————————
@@ -408,7 +412,7 @@
     height: 1.6rem;
     padding: 0 0.4rem;
     border-radius: 999px;
-    background: hsl(var(--ink));
+    background: hsl(var(--ink-solid));
     color: hsl(var(--lime));
     font-size: 0.75rem;
     font-weight: 700;
@@ -428,7 +432,7 @@
     min-height: 2.5rem;
     padding: 0 1rem 0 0.35rem;
     border-radius: 999px;
-    background: hsl(var(--ink));
+    background: hsl(var(--ink-solid));
     color: hsl(0 0% 100%);
     font-size: 0.8125rem;
     font-weight: 600;
@@ -518,17 +522,17 @@
     background-color: hsl(var(--card));
     color: hsl(var(--card-foreground));
     border: 1px solid hsl(var(--border));
-    box-shadow: 0 30px 60px -28px hsl(var(--ink) / 0.45);
+    box-shadow: 0 30px 60px -28px hsl(var(--shade) / 0.45);
   }
   .glass-tint {
     background-color: hsl(var(--lime) / 0.14);
     border: 1px solid hsl(var(--lime) / 0.6);
   }
   .glass-nav {
-    background-color: hsl(0 0% 100% / 0.92);
+    background-color: hsl(var(--card) / 0.92);
   }
   .glass-dark {
-    background-color: hsl(var(--ink) / 0.92);
+    background-color: hsl(var(--ink-solid) / 0.92);
     color: white;
   }
   .editorial-panel {
@@ -691,11 +695,11 @@
     height: var(--fab-size);
     padding: 0 0.375rem;
     border-radius: 999px;
-    background: hsl(0 0% 100%);
+    background: hsl(var(--card));
     color: hsl(var(--ink));
     box-shadow:
-      0 0 0 1px hsl(var(--ink) / 0.06),
-      0 16px 34px -14px hsl(var(--ink) / 0.5);
+      0 0 0 1px hsl(var(--shade) / 0.06),
+      0 16px 34px -14px hsl(var(--shade) / 0.5);
     transition:
       transform 220ms var(--ease-out),
       box-shadow 220ms var(--ease-out),
@@ -705,14 +709,14 @@
   .fab:hover {
     transform: translateY(-2px);
     box-shadow:
-      0 0 0 1px hsl(var(--ink) / 0.06),
-      0 22px 40px -14px hsl(var(--ink) / 0.55);
+      0 0 0 1px hsl(var(--shade) / 0.06),
+      0 22px 40px -14px hsl(var(--shade) / 0.55);
   }
   .fab:active {
     transform: scale(0.96);
   }
   .fab-ink {
-    background: hsl(var(--ink));
+    background: hsl(var(--ink-solid));
     color: hsl(0 0% 100%);
   }
   .fab-lime {
@@ -722,7 +726,7 @@
   /* WhatsApp en la paleta de la marca: tinta con el icono en lima (el verde
      de WhatsApp chocaba con la lima y no daba contraste con texto blanco). */
   .fab-wa {
-    background: hsl(var(--ink));
+    background: hsl(var(--ink-solid));
     color: hsl(0 0% 100%);
   }
   .fab-wa > svg {
@@ -736,11 +740,11 @@
     height: var(--fab-size);
     padding: 0.25rem;
     border-radius: 999px;
-    background: hsl(var(--ink));
+    background: hsl(var(--ink-solid));
     color: hsl(0 0% 100%);
     box-shadow:
-      0 0 0 1px hsl(var(--ink) / 0.06),
-      0 16px 34px -14px hsl(var(--ink) / 0.5);
+      0 0 0 1px hsl(var(--shade) / 0.06),
+      0 16px 34px -14px hsl(var(--shade) / 0.5);
   }
   .fab-dock-btn {
     align-items: center;
@@ -1245,7 +1249,7 @@ html.preload .preloader {
   z-index: 1000;
   display: grid;
   place-items: center;
-  background: hsl(var(--ink));
+  background: hsl(var(--ink-solid));
   pointer-events: none;
 }
 html.preload body {
@@ -1403,3 +1407,228 @@ html.preload:not(.preload-out) .hero-line > span {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* ——— Suscripción: cinta de trabajos ——————————————————————————————————— */
+.sub-marquee-track {
+  animation: sub-marquee 60s linear infinite;
+}
+.sub-marquee:hover .sub-marquee-track,
+.sub-marquee:focus-within .sub-marquee-track {
+  animation-play-state: paused;
+}
+@keyframes sub-marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sub-marquee-track {
+    animation: none;
+  }
+  .sub-marquee {
+    overflow-x: auto;
+  }
+}
+.a11y-reduce-motion .sub-marquee-track {
+  animation: none;
+}
+
+/* Brillo que cruza la tarjeta de precio. */
+.sub-shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 35%, hsl(0 0% 100% / 0.09) 50%, transparent 65%);
+  background-size: 250% 100%;
+  animation: sub-shine 5.5s ease-in-out infinite;
+}
+@keyframes sub-shine {
+  0% {
+    background-position: 130% 0;
+  }
+  60%,
+  100% {
+    background-position: -130% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sub-shine {
+    animation: none;
+  }
+}
+.a11y-reduce-motion .sub-shine {
+  animation: none;
+}
+
+/* Subrayado lima del precio en el titular de /suscripcion. */
+.sub-underline {
+  transform-origin: left center;
+  animation: sub-underline 0.9s var(--ease-out) 0.7s both;
+}
+@keyframes sub-underline {
+  from {
+    transform: scaleX(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sub-underline {
+    animation: none;
+  }
+}
+.a11y-reduce-motion .sub-underline,
+.a11y-reduce-motion .hero-in,
+.a11y-reduce-motion .hero-line > span {
+  animation: none;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   MODO OSCURO
+   `html.dark` lo pone el script de layout.tsx (preferencia guardada o la del
+   sistema) antes del primer cuadro, así nunca parpadea. La idea: la tinta
+   (`--ink`) pasa a ser el color claro del texto, los paneles blancos se
+   vuelven grafito verdoso y el lima sigue siendo el acento. Las piezas
+   tinta (`bg-ink`) no se invierten: usan `--ink-solid`. Dentro de lo lima
+   la tinta vuelve a ser oscura para que se lea.
+   ════════════════════════════════════════════════════════════════════════ */
+html.dark {
+  color-scheme: dark;
+  --canvas: 160 20% 5%;
+  --background: 160 20% 5%;
+  --sheet: 160 20% 5%;
+  --foreground: 90 22% 93%;
+  --ink: 90 22% 93%;
+  --ink-soft: 160 14% 22%;
+  --ink-solid: 160 20% 13%;
+  --shade: 0 0% 0%;
+  --card: 160 16% 9%;
+  --card-foreground: 90 22% 93%;
+  --popover: 160 16% 9%;
+  --popover-foreground: 90 22% 93%;
+  --mint: 160 14% 13%;
+  --cream: 160 14% 11%;
+  --secondary: 160 14% 13%;
+  --secondary-foreground: 90 22% 93%;
+  --muted: 160 12% 14%;
+  --muted-foreground: 100 8% 68%;
+  --accent: 78 30% 17%;
+  --accent-foreground: 90 22% 93%;
+  --lime-soft: 78 32% 20%;
+  --lime-deep: 76 76% 62%;
+  --border: 160 10% 19%;
+  --input: 160 10% 25%;
+  --ring: 76 76% 54%;
+  --primary-foreground: 160 30% 9%;
+}
+
+/* Superficies blancas → grafito. */
+html.dark .bg-white,
+html.dark .panel-sheet,
+html.dark .panel-card,
+html.dark .surface-white {
+  background-color: hsl(var(--card));
+}
+html.dark .surface-white,
+html.dark .panel-sheet,
+html.dark .panel-card {
+  --background: 160 16% 9%;
+  --foreground: 90 22% 93%;
+  --muted-foreground: 100 8% 68%;
+  --border: 160 10% 19%;
+}
+html.dark .hover\:bg-white:hover {
+  background-color: hsl(var(--mint));
+}
+/* Paneles con un filo apenas visible: en oscuro la sombra no separa. */
+html.dark .panel:not(.panel-lime):not(.surface-lime) {
+  box-shadow: inset 0 0 0 1px hsl(0 0% 100% / 0.05);
+}
+
+/* Piezas tinta: siguen oscuras (un tono arriba del fondo). */
+html.dark .bg-ink,
+html.dark .hover\:bg-ink:hover,
+html.dark .group:hover .group-hover\:bg-ink {
+  background-color: hsl(var(--ink-solid));
+}
+html.dark .hover\:bg-ink-soft:hover {
+  background-color: hsl(160 16% 19%);
+}
+html.dark .border-ink {
+  border-color: hsl(var(--ink-solid));
+}
+html.dark .ring-ink {
+  --tw-ring-color: hsl(var(--ink-solid));
+}
+html.dark .fill-ink {
+  fill: hsl(var(--ink-solid));
+}
+html.dark .panel-ink,
+html.dark .surface-ink {
+  background-color: hsl(var(--ink-solid));
+  box-shadow: inset 0 0 0 1px hsl(0 0% 100% / 0.06);
+}
+html.dark .panel-moss,
+html.dark .panel-forest,
+html.dark .surface-forest {
+  background-color: hsl(165 26% 20%);
+}
+
+/* El verde bosque como texto se pierde en lo oscuro: pasa a lima. */
+html.dark .text-forest,
+html.dark .hover\:text-forest:hover {
+  color: hsl(var(--lime));
+}
+
+/* Dentro de lo lima la tinta vuelve a ser tinta. */
+html.dark :is(.bg-lime, .panel-lime, .surface-lime, .hover\:bg-lime:hover, .group:hover .group-hover\:bg-lime, [data-state="open"].data-\[state\=open\]\:bg-lime) {
+  --ink: 160 30% 9%;
+  --ink-solid: 160 30% 9%;
+  --foreground: 160 30% 9%;
+  --muted-foreground: 160 26% 20%;
+  --card: 0 0% 100%;
+  --mint: 96 40% 96%;
+  --border: 78 44% 42%;
+}
+html.dark :is(.bg-lime, .panel-lime, .surface-lime) .text-forest {
+  color: hsl(165 28% 30%);
+}
+html.dark :is(.bg-lime, .panel-lime, .surface-lime) .bg-white {
+  background-color: hsl(0 0% 100%);
+}
+
+/* Logotipo oscuro sobre fondo oscuro: se invierte conservando el lima. */
+html.dark .logo-invert {
+  filter: invert(1) hue-rotate(180deg) brightness(1.05);
+}
+
+/* Imágenes y capturas: un poco menos de brillo para no deslumbrar. */
+html.dark main img:not(.logo-invert):not([src$=".svg"]) {
+  filter: brightness(0.94);
+}
+
+/* Barra de desplazamiento y selección. */
+html.dark ::selection {
+  background: hsl(var(--lime));
+  color: hsl(160 30% 9%);
+}
+
+/* Al cambiar de tema, todo se funde (sin saltos). */
+html.theme-fade,
+html.theme-fade *,
+html.theme-fade *::before,
+html.theme-fade *::after {
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    color 0.35s ease,
+    fill 0.35s ease,
+    box-shadow 0.35s ease !important;
+}
+
+/* Velos blancos semitransparentes: en oscuro toman la superficie menta
+   (que dentro de lo lima sigue siendo clara). */
+html.dark .bg-white\/50 { background-color: hsl(var(--mint) / 0.5); }
+html.dark .bg-white\/55 { background-color: hsl(var(--mint) / 0.55); }
+html.dark .bg-white\/60 { background-color: hsl(var(--mint) / 0.6); }
+html.dark .bg-white\/70 { background-color: hsl(var(--mint) / 0.7); }
+html.dark .bg-white\/80 { background-color: hsl(var(--mint) / 0.8); }
+html.dark .hover\:bg-white\/70:hover { background-color: hsl(var(--mint) / 0.7); }

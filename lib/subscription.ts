@@ -170,7 +170,7 @@ export const SUBSCRIPTION_FAQ: { question: string; answer: string }[] = [
 ];
 
 /** Resumen corto para el prompt de Lumina. */
-export const SUBSCRIPTION_PROMPT = `Suscripción "Todo Digital": ${SUBSCRIPTION_PRICE_LABEL} al mes, sin plazo forzoso. Incluye todo lo digital: páginas web y tiendas, cambios ilimitados, tarjetas digitales, firmas de correo, gráficos para redes, SEO técnico, mantenimiento y hosting. Cada solicitud tarda 1 a 2 días hábiles según complejidad; una solicitud activa a la vez. No incluye pagos a terceros (anuncios, licencias, dominios extra, impresión). Cancela cuando quiera. Página: suscripcion. Todas las dudas (factura, dominio, cancelación, pagos, tiempos): página suscripcion-preguntas.`;
+export const SUBSCRIPTION_PROMPT = `Suscripción "Todo Digital": ${SUBSCRIPTION_PRICE_LABEL} al mes, sin plazo forzoso. Incluye todo lo digital: páginas web y tiendas, cambios ilimitados, tarjetas digitales, firmas de correo, gráficos para redes, SEO técnico, mantenimiento y hosting. Cada solicitud tarda 1 a 2 días hábiles según complejidad; una solicitud activa a la vez. No incluye pagos a terceros (anuncios, licencias, dominios extra, impresión). Cancela cuando quiera. Página: suscripcion. Todas las dudas (factura, dominio, cancelación, pagos, tiempos): página suscripcion-preguntas. Quien ya es suscriptor ve su plan, su próximo cobro y pide cosas en su panel: página mi-panel.`;
 
 export interface FaqItem {
   question: string;

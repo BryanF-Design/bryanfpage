@@ -750,6 +750,7 @@ const es = {
         "paginas-web-para-negocios": "Páginas web para negocios",
         "software-a-medida-mexico": "Software a medida",
         "mantenimiento-web-mexico": "Mantenimiento web",
+        "mi-panel": "Mi panel",
       },
     },
     languageInstruction: "español",

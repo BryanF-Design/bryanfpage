@@ -17,10 +17,10 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-[0_10px_24px_-12px_hsl(var(--ink)/0.45)] hover:-translate-y-0.5 hover:shadow-[0_16px_30px_-12px_hsl(var(--ink)/0.5)]",
-        ink: "bg-ink text-white shadow-[0_10px_24px_-12px_hsl(var(--ink)/0.6)] hover:-translate-y-0.5 hover:bg-ink-soft",
+          "bg-primary text-primary-foreground shadow-[0_10px_24px_-12px_hsl(var(--shade)/0.45)] hover:-translate-y-0.5 hover:shadow-[0_16px_30px_-12px_hsl(var(--shade)/0.5)]",
+        ink: "bg-ink text-white shadow-[0_10px_24px_-12px_hsl(var(--shade)/0.6)] hover:-translate-y-0.5 hover:bg-ink-soft",
         white:
-          "bg-white text-ink shadow-[0_10px_24px_-14px_hsl(var(--ink)/0.45)] hover:-translate-y-0.5",
+          "bg-white text-ink shadow-[0_10px_24px_-14px_hsl(var(--shade)/0.45)] hover:-translate-y-0.5",
         outline:
           "border-[1.5px] border-foreground/20 bg-transparent text-foreground hover:border-foreground/60 hover:bg-foreground/[0.04]",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",

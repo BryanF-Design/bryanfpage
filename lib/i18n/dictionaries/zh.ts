@@ -666,6 +666,7 @@ const zh: Dictionary = {
         "paginas-web-para-negocios": "企业网站",
         "software-a-medida-mexico": "定制软件",
         "mantenimiento-web-mexico": "网站维护",
+        "mi-panel": "我的面板",
       },
     },
     languageInstruction: "中文",

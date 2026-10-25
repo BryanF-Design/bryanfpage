@@ -15,6 +15,8 @@ const nextConfig = {
       { source: "/crear-web.html", destination: "/crear-web", permanent: true },
       { source: "/terminos.html", destination: "/terminos", permanent: true },
       { source: "/privacidad.html", destination: "/privacidad", permanent: true },
+      // El panel de administración se llamaba BryanF Access.
+      { source: "/access", destination: "/admin", permanent: true },
     ];
   },
   // Baseline security headers on every response.

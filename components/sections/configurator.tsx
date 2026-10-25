@@ -640,7 +640,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                       />
                       <span
                         aria-hidden
-                        className="absolute left-1 top-1 size-5 rounded-full bg-white shadow-[0_2px_6px_hsl(var(--ink)/0.3)] transition-transform duration-300 [transition-timing-function:var(--ease-pop)] peer-checked:translate-x-5 peer-checked:bg-lime"
+                        className="absolute left-1 top-1 size-5 rounded-full bg-white shadow-[0_2px_6px_hsl(var(--shade)/0.3)] transition-transform duration-300 [transition-timing-function:var(--ease-pop)] peer-checked:translate-x-5 peer-checked:bg-lime"
                       />
                     </span>
                   </label>
@@ -670,7 +670,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                     type="button"
                     onClick={() => setSections((n) => Math.max(0, n - 1))}
                     disabled={sections <= 0}
-                    className="grid size-11 place-items-center rounded-full bg-white text-ink shadow-[0_1px_2px_hsl(var(--ink)/0.12)] transition-transform hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-40"
+                    className="grid size-11 place-items-center rounded-full bg-white text-ink shadow-[0_1px_2px_hsl(var(--shade)/0.12)] transition-transform hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-40"
                     aria-label={t.configurator.removeSection}
                   >
                     <Minus aria-hidden className="h-4 w-4" strokeWidth={2.5} />

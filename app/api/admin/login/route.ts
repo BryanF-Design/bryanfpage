@@ -11,7 +11,7 @@ import {
 
 export const runtime = "nodejs";
 
-/** Inicio de sesión de BryanF Access (/access). */
+/** Inicio de sesión de Panel BryanF (/admin). */
 export async function POST(req: NextRequest) {
   if (!isSameOrigin(req)) return forbidden();
   // Pocos intentos por IP: frena a quien quiera adivinar la contraseña.

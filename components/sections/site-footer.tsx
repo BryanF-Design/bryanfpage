@@ -41,7 +41,8 @@ const social = [
   { Icon: FaGithub, href: "https://github.com/BryanF-Design", label: "GitHub" },
 ];
 
-const CLIENT_PORTAL = "https://access.bryanfdesign.com/";
+// Panel de los suscriptores, dentro del mismo sitio.
+const CLIENT_PORTAL = "/mi-panel";
 
 const linkClass =
   "group/link inline-flex min-h-11 items-center gap-1.5 text-[0.9375rem] text-white/70 transition-colors hover:text-white lg:min-h-10";
@@ -251,8 +252,6 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                     y queda bajo las dos listas; desde sm vuelve a su ancho. */}
                 <Link
                   href={CLIENT_PORTAL}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="mt-2 inline-flex min-h-11 w-[calc(200%+1rem)] items-center justify-center gap-2 rounded-full border border-lime/40 px-4 text-sm font-semibold text-lime transition-colors hover:bg-lime hover:text-ink sm:mt-3 sm:w-auto sm:justify-start"
                 >
                   <LogIn aria-hidden className="h-4 w-4" />

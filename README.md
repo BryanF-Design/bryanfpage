@@ -15,10 +15,13 @@ Sitio del estudio en Next.js 14 (App Router), desplegado en Vercel.
 - `lib/lumina-*.ts` — prompt, acciones y comentarios por sección de Lumina
 - `public/` — imágenes y archivos estáticos
 
-## BryanF Access (`/access`)
-Panel privado con los suscriptores de Stripe y Mercado Pago: estado, próximo
-cobro y días que faltan. Se activa con `ADMIN_USER` y `ADMIN_PASSWORD`
-(mínimo 12 caracteres) en las variables de entorno de Vercel.
+## Panel BryanF (`/admin`) y Mi panel (`/mi-panel`)
+`/admin` es el panel privado de Bryan con los suscriptores de Stripe y Mercado
+Pago: estado, próximo cobro y días que faltan. Se activa con `ADMIN_USER` y
+`ADMIN_PASSWORD` (mínimo 12 caracteres) en las variables de entorno de Vercel.
+
+`/mi-panel` es el panel de cada suscriptor: entra con un enlace que le llega al
+correo (sin contraseña), ve su plan, su próximo cobro y pide cosas por WhatsApp.
 
 ## Variables de entorno
 Todas están documentadas en `.env.example`. Guías: `SUSCRIPCION_SETUP.md`,
