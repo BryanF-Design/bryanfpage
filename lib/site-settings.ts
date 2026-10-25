@@ -1,10 +1,10 @@
 import { unstable_cache } from "next/cache";
 
-import { readPublicSettings } from "@/lib/db";
+import { PUBLIC_SETTINGS_TAG, readPublicSettings } from "@/lib/db";
 import { normalizeSettings, type SiteSettings } from "@/lib/seasons";
 
 /** Etiqueta de caché: el panel la invalida al guardar. */
-export const SETTINGS_TAG = "site-settings";
+export const SETTINGS_TAG = PUBLIC_SETTINGS_TAG;
 
 async function load(): Promise<SiteSettings> {
   try {

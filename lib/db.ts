@@ -29,6 +29,9 @@ export function publicDbConfigured() {
   return !!(base() && publicKey());
 }
 
+/** Etiqueta de caché de los ajustes públicos (el panel la invalida al guardar). */
+export const PUBLIC_SETTINGS_TAG = "site-settings";
+
 async function call<T>(fn: string, body: Record<string, unknown> | null): Promise<T> {
   const res = await fetch(`${base()}/rest/v1/rpc/${fn}`, {
     method: body ? "POST" : "GET",
@@ -38,7 +41,11 @@ async function call<T>(fn: string, body: Record<string, unknown> | null): Promis
       Accept: "application/json",
     },
     body: body ? JSON.stringify(body) : undefined,
-    cache: "no-store",
+    // Lo público se guarda en la caché de Next (así las páginas siguen siendo
+    // estáticas); lo protegido nunca.
+    ...(body
+      ? { cache: "no-store" as const }
+      : { next: { revalidate: 300, tags: [PUBLIC_SETTINGS_TAG] } }),
     signal: AbortSignal.timeout(TIMEOUT_MS),
   });
   if (!res.ok) {
