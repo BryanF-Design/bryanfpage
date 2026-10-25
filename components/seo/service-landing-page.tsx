@@ -17,6 +17,7 @@ import { Button, ButtonArrow } from "@/components/ui/button";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { MarqueeBand } from "@/components/sections/marquee-band";
 import { SiteFooter } from "@/components/sections/site-footer";
+import { LuminaChatLazy } from "@/components/lumina-chat-lazy";
 import { SiteHeader } from "@/components/sections/site-header";
 import { SpanishPageLanguage } from "@/components/seo/spanish-page-language";
 import { TrackedWhatsAppLink } from "@/components/analytics/tracked-whatsapp-link";
@@ -931,6 +932,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
         </section>
       </main>
 
+      <LuminaChatLazy />
       <SiteFooter spanishOnly />
     </>
   );

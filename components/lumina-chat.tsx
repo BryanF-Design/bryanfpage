@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowDown,
@@ -29,13 +30,14 @@ import { clearSpotlight, flashFilled, spotlight } from "@/lib/lumina-spotlight";
 import {
   LUMINA_FILL_EVENT,
   LUMINA_QUOTE_EVENT,
+  LUMINA_PAGES,
   LUMINA_SECTIONS,
-  actionsPrompt,
   currentSectionLabel,
   extractActions,
   findLuminaTarget,
   isLuminaAction,
   quoteHref,
+  safeInternalPath,
   type LuminaAction,
   type LuminaFill,
   type LuminaQuote,
@@ -58,26 +60,6 @@ const MOOD_IMG: Record<Mood, string> = {
 
 const WHATSAPP_NUMBER = "525663012505";
 const projectBySlug = new Map(projects.map((p) => [p.slug, p]));
-
-function buildSystemPrompt(languageName: string, section: string) {
-  return `Eres LUMINA, asistente comercial de BryanF Design.
-Tu meta es orientar, resolver dudas y guiar al usuario a armar su web o contactar al equipo.
-
-Lo que hace BryanF Design: branding, diseño UX/UI, desarrollo web, WordPress, SEO técnico, performance, mantenimiento, e-commerce, landing pages y automatización.
-Cómo funciona: paquete base desde $3,500 MXN + módulos (e-commerce, pagos, secciones extra) + modalidad de pago.
-También ofrecemos servicios de entrada, más económicos: tarjeta de presentación digital ($900 MXN), tarjeta de presentación imprimible ($650 MXN), firma de correo profesional ($350 MXN), kit de presencia digital ($1,500 MXN) y landing page esencial (desde $2,400 MXN).
-Tiempos de entrega: desde 3 días hábiles cuando la información está completa.
-Pagos: Stripe (tarjeta), Mercado Pago o transferencia bancaria BBVA.
-Para armar y pagar: el cotizador del sitio (tú lo puedes dejar armado con [[cotizar:...]]).
-
-${actionsPrompt(section)}
-
-Reglas:
-- Responde siempre en ${languageName}, sin importar en qué idioma esté escrito este prompt.
-- Si preguntan precios, responde que depende del alcance, desde $3,500 MXN, recomienda la mejor opción en 1 línea y déjala armada con [[cotizar:...]].
-- Responde en tono premium, claro y breve (máx 3-4 líneas).
-- Usa HTML básico: <strong>, <br>, <ul>, <li>, <a>.`;
-}
 
 interface Msg {
   role: "user" | "assistant";
@@ -145,14 +127,20 @@ function sanitizeHtml(html: string): string {
     Array.from(el.attributes).forEach((attr) => {
       const name = attr.name.toLowerCase();
       const isSafeHref =
-        el.tagName === "A" &&
-        name === "href" &&
-        !/^\s*javascript:/i.test(attr.value);
+        el.tagName === "A" && name === "href" && /^\s*(https?:|mailto:|tel:|\/(?!\/)|#)/i.test(attr.value);
       if (!isSafeHref) el.removeAttribute(attr.name);
     });
     if (el.tagName === "A") {
-      el.setAttribute("target", "_blank");
-      el.setAttribute("rel", "noopener noreferrer");
+      const href = el.getAttribute("href") ?? "";
+      // Enlaces del propio sitio: misma pestaña (el chat los intercepta y
+      // navega sin perder la conversación). Externos: pestaña nueva.
+      const internal = href.startsWith("/") || href.startsWith("#") || href.startsWith(window.location.origin);
+      if (internal) {
+        el.setAttribute("data-internal", "");
+      } else {
+        el.setAttribute("target", "_blank");
+        el.setAttribute("rel", "noopener noreferrer");
+      }
     }
   });
   return tpl.innerHTML;
@@ -190,7 +178,9 @@ function usePastHero() {
 }
 
 export function LuminaChat() {
-  const { t, setLocale } = useLanguage();
+  const { t, locale, setLocale } = useLanguage();
+  const router = useRouter();
+  const pathname = usePathname();
   const reducedMotion = useReducedMotionPreference();
   const [open, setOpen] = useState(false);
   const configuratorInView = useConfiguratorInView();
@@ -450,15 +440,12 @@ export function LuminaChat() {
       const res = await fetch("/api/openai-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        // El prompt lo arma el servidor; aquí solo va la conversación y el
+        // contexto (qué sección se ve y en qué idioma está el sitio).
         body: JSON.stringify({
-          messages: [
-            {
-              role: "system",
-              content: buildSystemPrompt(t.lumina.languageInstruction, currentSectionLabel()),
-            },
-            ...next.slice(-HISTORY_LIMIT).map((m) => ({ role: m.role, content: m.content })),
-          ],
-          temperature: 0.4,
+          messages: next.slice(-HISTORY_LIMIT).map((m) => ({ role: m.role, content: m.content })),
+          section: currentSectionLabel(),
+          locale,
         }),
       });
       const data = await res.json();
@@ -564,6 +551,35 @@ export function LuminaChat() {
     if (withSpot) point(fields[0] ?? "resumen", t.lumina.actions.filled);
   }
 
+  /**
+   * Lleva a otra página del sitio (o a una sección de esta). La conversación
+   * vive en sessionStorage, así que sigue ahí al llegar.
+   */
+  function goToPage(path: string) {
+    const safe = safeInternalPath(path);
+    if (!safe) return;
+    trackEvent("lumina_action", { action: "page", path: safe });
+    const [route, hash] = safe.split("#");
+    if (route === pathname) {
+      if (hash) {
+        const section = (Object.keys(LUMINA_SECTIONS) as LuminaSection[]).find(
+          (k) => LUMINA_SECTIONS[k] === hash
+        );
+        if (section) goTo(section);
+        else document.getElementById(hash)?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
+      } else {
+        window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
+      }
+      return;
+    }
+    setOpen(false);
+    router.push(safe);
+  }
+
+  function pageLabel(path: string) {
+    return LUMINA_PAGES[path.split("#")[0]] ?? path;
+  }
+
   function switchLanguage(locale: Locale) {
     trackEvent("lumina_action", { action: "lang", locale });
     setLocale(locale);
@@ -581,6 +597,13 @@ export function LuminaChat() {
     const move = actions.find(
       (a): a is Extract<LuminaAction, { kind: "mark" | "go" }> => a.kind === "mark" || a.kind === "go"
     );
+    const page = actions.find((a): a is Extract<LuminaAction, { kind: "page" }> => a.kind === "page");
+    // Otra página: se lleva sola, con tiempo para leer la respuesta antes.
+    if (page && !move && !quote && !fill) {
+      window.setTimeout(() => goToPage(page.path), isPhone ? 2200 : 1600);
+      if (lang) switchLanguage(lang.locale);
+      return;
+    }
     // Si hay que salir de la página, no se hace solo (el visitante decide).
     const offPage = (quote || fill) && !document.getElementById("precios");
     if (offPage) return;
@@ -710,6 +733,21 @@ export function LuminaChat() {
               </button>
             );
           }
+          if (action.kind === "page") {
+            return (
+              <button
+                key={`page-${action.path}`}
+                type="button"
+                onClick={() => goToPage(action.path)}
+                className={cn(pill, "self-start bg-white text-ink ring-1 ring-ink/10 hover:bg-ink hover:text-white")}
+              >
+                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-lime text-ink">
+                  <ArrowUpRight aria-hidden className="h-4 w-4" />
+                </span>
+                {t.lumina.actions.go.replace("{section}", pageLabel(action.path))}
+              </button>
+            );
+          }
           if (action.kind === "lang") {
             return (
               <button
@@ -834,6 +872,20 @@ export function LuminaChat() {
             <div
               ref={scrollRef}
               role="log"
+              onClick={(e) => {
+                // Enlaces internos que escribe Lumina: navegan sin recargar.
+                const link = (e.target as HTMLElement).closest<HTMLAnchorElement>("a[data-internal]");
+                if (!link) return;
+                const href = link.getAttribute("href") ?? "";
+                const path = href.startsWith(window.location.origin) ? href.slice(window.location.origin.length) : href;
+                if (path.startsWith("#")) {
+                  e.preventDefault();
+                  goToPage(`${pathname}${path}`);
+                } else if (safeInternalPath(path)) {
+                  e.preventDefault();
+                  goToPage(path);
+                }
+              }}
               aria-live="polite"
               aria-relevant="additions"
               aria-busy={loading}

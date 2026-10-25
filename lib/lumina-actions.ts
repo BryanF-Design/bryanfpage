@@ -1,6 +1,7 @@
 import { CONFIGURATOR_MODULES, CONFIGURATOR_PLANS } from "@/lib/catalog";
 import { projects } from "@/lib/projects";
 import { isLocale, type Locale } from "@/lib/i18n/locales";
+import { servicePages } from "@/lib/seo/service-pages";
 
 /**
  * Acciones de Lumina: además del texto, sus respuestas pueden traer marcas
@@ -79,6 +80,21 @@ export interface LuminaFill {
   coupon?: string;
 }
 
+/** Páginas del sitio a las que Lumina puede llevar directamente. */
+export const LUMINA_PAGES: Record<string, string> = {
+  "/": "Inicio",
+  "/crear-web": "Armar tu web",
+  ...Object.fromEntries(servicePages.map((p) => [`/${p.slug}`, p.eyebrow || p.keyword])),
+};
+/** Ruta interna permitida (con #sección opcional) o null. */
+export function safeInternalPath(raw: string): string | null {
+  const [path = "", hash = ""] = raw.trim().split("#");
+  const clean = path === "" ? "/" : path.replace(/\/+$/, "") || "/";
+  if (!(clean in LUMINA_PAGES)) return null;
+  if (hash && !/^[a-z0-9-]{1,40}$/.test(hash)) return clean;
+  return hash ? `${clean}#${hash}` : clean;
+}
+
 export interface LuminaQuote {
   plan: string;
   modules: string[];
@@ -90,6 +106,7 @@ export type LuminaAction =
   | { kind: "mark"; target: LuminaTarget; note?: string }
   | { kind: "fill"; fill: LuminaFill }
   | { kind: "lang"; locale: Locale }
+  | { kind: "page"; path: string }
   | { kind: "project"; slug: string }
   | { kind: "quote"; quote: LuminaQuote }
   | { kind: "whatsapp" };
@@ -100,7 +117,7 @@ const MODULE_IDS = new Set(CONFIGURATOR_MODULES.map((m) => m.id));
 const SHOWCASE = projects.filter((p) => p.shots !== false);
 const SHOWCASE_SLUGS = new Set(SHOWCASE.map((p) => p.slug));
 
-const MARK = /\[\[\s*(ver|marcar|llenar|idioma|proyecto|cotizar|whatsapp)\s*(?::\s*([^\]]*?))?\s*\]\]/gi;
+const MARK = /\[\[\s*(ver|marcar|llenar|idioma|ir|proyecto|cotizar|whatsapp)\s*(?::\s*([^\]]*?))?\s*\]\]/gi;
 
 function parseQuote(raw = ""): LuminaQuote | null {
   const [plan = "", modules = "", sections = "0"] = raw.split("|").map((s) => s.trim());
@@ -156,6 +173,9 @@ export function extractActions(reply: string): { text: string; actions: LuminaAc
     } else if (kind === "llenar") {
       const fill = parseFill(arg);
       if (fill) add("fill", { kind: "fill", fill });
+    } else if (kind === "ir") {
+      const path = safeInternalPath(arg);
+      if (path) add(`page:${path}`, { kind: "page", path });
     } else if (kind === "idioma") {
       const locale = arg.toLowerCase();
       if (isLocale(locale)) add("lang", { kind: "lang", locale });
@@ -186,6 +206,7 @@ export function isLuminaAction(value: unknown): value is LuminaAction {
   if (a.kind === "mark") {
     return typeof a.target === "string" && isTarget(a.target) && (a.note === undefined || typeof a.note === "string");
   }
+  if (a.kind === "page") return typeof a.path === "string" && safeInternalPath(a.path) === a.path;
   if (a.kind === "lang") return typeof a.locale === "string" && isLocale(a.locale);
   if (a.kind === "fill") {
     const f = a.fill as Record<string, unknown> | undefined;
@@ -246,6 +267,9 @@ Las acciones se ejecutan solas en cuanto respondes (tú controlas el sitio: llev
 - [[ver:SECCION]] lleva al usuario a una sección y la ilumina. SECCION: inicio, proyectos, casos, bryan, proceso, stack, lumina, servicios, precios, presencia, faq o contacto.
 - [[marcar:ELEMENTO|nota corta]] lleva al elemento y lo señala con un foco y tu nota (máx. 8 palabras). ELEMENTO: arma-tu-web (botón principal), idioma (selector de idioma), whatsapp (botón flotante), accesibilidad (panel de accesibilidad), destacado (proyecto destacado), planes, modulos, modalidad (pago completo o anticipo), moneda, cupon, resumen (total del cotizador), pagar (botones de pago), o cualquier SECCION. Úsalo cuando pregunten "¿dónde está…?" o "¿cómo hago…?".
 - [[llenar:pago=anticipo|liquidacion;moneda=MXN|USD;cupon=CODIGO]] llena por el usuario esos campos del cotizador (pon solo los que pidió). Ej.: [[llenar:pago=anticipo;moneda=USD]].
+- [[ir:/RUTA]] lleva al usuario a otra página del sitio (opcional #seccion). RUTAS: ${Object.entries(LUMINA_PAGES)
+    .map(([path, name]) => `${path} (${name})`)
+    .join(", ")}. Úsalo cuando su necesidad encaja con una página de servicio; dentro del texto también puedes enlazarla con <a href="/RUTA">texto</a>.
 - [[idioma:CODIGO]] cambia el idioma del sitio. CODIGO: es, en, pt, de, fr, ja, zh. Úsalo solo si lo piden.
 - [[proyecto:SLUG]] muestra la ficha de un proyecto real con su captura (máx. 3, solo slugs de la lista).
 - [[cotizar:PLAN|MODULOS|SECCIONES]] arma el cotizador en vivo frente al usuario. PLAN: full (sitio a medida), update (actualización) o maintenance (mantenimiento). MODULOS: ecommerce, payments, maintenance separados por coma, o vacío. SECCIONES extra: 0 a 10. Ej.: [[cotizar:full|ecommerce,payments|0]].
