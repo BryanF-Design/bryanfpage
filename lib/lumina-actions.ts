@@ -1,4 +1,5 @@
 import { CONFIGURATOR_MODULES, CONFIGURATOR_PLANS, ENTRY_SERVICE_PRICES } from "@/lib/catalog";
+import { sectionInView, topicOf } from "@/lib/lumina-nudges";
 import { projects } from "@/lib/projects";
 import { SUBSCRIPTION_PROMPT } from "@/lib/subscription";
 
@@ -350,13 +351,10 @@ export const LUMINA_QUOTE_EVENT = "lumina:quote";
  */
 export function currentSectionLabel(): string {
   if (typeof document === "undefined") return "inicio";
-  const y = window.innerHeight / 2;
-  const sections = Array.from(document.querySelectorAll<HTMLElement>("main section[id], footer#site-footer"));
-  const hit = sections.find((el) => {
-    const r = el.getBoundingClientRect();
-    return r.top <= y && r.bottom >= y;
-  });
-  return `${window.location.pathname} · ${hit?.id || "inicio"}`;
+  const hit = sectionInView();
+  const footer = document.getElementById("site-footer");
+  const atFooter = footer && footer.getBoundingClientRect().top < window.innerHeight / 2;
+  return `${window.location.pathname} · ${atFooter ? "site-footer" : (hit && topicOf(hit)) || "inicio"}`;
 }
 
 /** Bloque del prompt: formato de respuesta, acciones y catálogo disponible. */

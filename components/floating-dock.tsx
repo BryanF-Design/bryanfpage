@@ -113,6 +113,8 @@ export function FloatingDock() {
   }, []);
 
   const hidden = !pastHero || footerInView || configuratorInView || chatOpen;
+  // El panel privado (/access) no lleva los flotantes del sitio público.
+  if (pathname?.startsWith("/access")) return null;
 
   return (
     <div

@@ -40,11 +40,6 @@ const Faq = dynamic(() => import("@/components/sections/faq").then((m) => m.Faq)
 const SiteFooter = dynamic(() =>
   import("@/components/sections/site-footer").then((m) => m.SiteFooter)
 );
-// Client-only widgets, no SEO content: skip SSR entirely to shave initial payload.
-const LuminaChat = dynamic(
-  () => import("@/components/lumina-chat").then((m) => m.LuminaChat),
-  { ssr: false }
-);
 
 // Las preguntas frecuentes del home como FAQPage. Se arman con el diccionario
 // en español porque el HTML del servidor siempre sale en español: el marcado
@@ -185,7 +180,6 @@ export default function HomePage() {
         </ChapterOrder>
       </main>
 
-      <LuminaChat />
       <SiteFooter />
     </>
   );

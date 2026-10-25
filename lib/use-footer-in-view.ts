@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 /**
  * True once #site-footer scrolls into view. Fixed UI (chat, a11y panel, social
@@ -8,8 +9,12 @@ import { useEffect, useState } from "react";
  */
 export function useFooterInView() {
   const [inView, setInView] = useState(false);
+  // Se vuelve a observar al cambiar de página: los flotantes viven en el
+  // layout y el footer de la página anterior ya no existe.
+  const pathname = usePathname();
 
   useEffect(() => {
+    setInView(false);
     const footer = document.getElementById("site-footer");
     if (!footer) return;
 
@@ -32,7 +37,7 @@ export function useFooterInView() {
       window.clearTimeout(timeout);
       observer.disconnect();
     };
-  }, []);
+  }, [pathname]);
 
   return inView;
 }

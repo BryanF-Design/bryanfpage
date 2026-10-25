@@ -19,11 +19,6 @@ import { useLanguage } from "@/lib/i18n/context";
 const SiteFooter = dynamic(() =>
   import("@/components/sections/site-footer").then((m) => m.SiteFooter)
 );
-// Widget cliente sin contenido SEO: sin SSR para no cargar el bundle de más.
-const LuminaChat = dynamic(
-  () => import("@/components/lumina-chat").then((m) => m.LuminaChat),
-  { ssr: false }
-);
 
 const FEATURE_ICONS = [Timer, Search, CreditCard];
 
@@ -218,7 +213,6 @@ export function CrearWebExperience() {
       </main>
 
       <SiteFooter />
-      <LuminaChat />
     </>
   );
 }

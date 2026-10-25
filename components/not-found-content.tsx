@@ -71,6 +71,7 @@ export function NotFoundContent() {
   return (
     <main
       id="main-content"
+      data-lumina-page="not-found"
       tabIndex={-1}
       className="flex min-h-[100dvh] flex-col p-[var(--gutter)]"
     >

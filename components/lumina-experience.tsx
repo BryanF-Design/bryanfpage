@@ -16,10 +16,6 @@ const ClosingCta = dynamic(() =>
 const SiteFooter = dynamic(() =>
   import("@/components/sections/site-footer").then((m) => m.SiteFooter)
 );
-const LuminaChat = dynamic(
-  () => import("@/components/lumina-chat").then((m) => m.LuminaChat),
-  { ssr: false }
-);
 
 /**
  * /lumina — todo lo que hace la asesora IA: quién es, qué puede hacer en el
@@ -38,7 +34,6 @@ export function LuminaExperience() {
           <ClosingCta />
         </ChapterOrder>
       </main>
-      <LuminaChat />
       <SiteFooter />
     </>
   );

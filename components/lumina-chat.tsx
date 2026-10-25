@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowDown,
@@ -53,6 +54,15 @@ import {
 import { ENTRY_SERVICE_PRICES, SUBSCRIPTION_PLAN } from "@/lib/catalog";
 import { formatMoney } from "@/lib/currency";
 import { LEAD_FORM_ID, QUOTE_STORAGE_KEY, buildQuoteLinesMxn } from "@/lib/quote";
+import {
+  NUDGE_CHANCE,
+  NUDGE_GAP_MS,
+  NUDGE_MAX_PER_SESSION,
+  findNudge,
+  nudgeCopy,
+  sectionInView,
+  topicOf,
+} from "@/lib/lumina-nudges";
 
 type Mood = "Normal" | "Enfocada" | "Duda" | "Sorprendida" | "Offline";
 
@@ -222,7 +232,7 @@ function useIsPhone() {
 }
 
 /** true cuando el héroe (#home) ya quedó arriba; sin héroe, siempre true. */
-function usePastHero() {
+function usePastHero(pathname: string) {
   const [past, setPast] = useState(false);
   useEffect(() => {
     const hero = document.getElementById("home");
@@ -230,16 +240,61 @@ function usePastHero() {
       setPast(true);
       return;
     }
+    setPast(false);
     const io = new IntersectionObserver(([entry]) => {
       setPast(!entry.isIntersecting && entry.boundingClientRect.top < 0);
     });
     io.observe(hero);
     return () => io.disconnect();
-  }, []);
+  }, [pathname]);
   return past;
 }
 
+/** Burbuja de Lumina: el saludo inicial o un comentario según la sección. */
+interface Bubble {
+  say: string;
+  short: string;
+  /** Si existe, tocar la burbuja abre el chat y envía esta pregunta. */
+  ask?: string;
+}
+
+/** Comentarios ya hechos en esta sesión (ver lib/lumina-nudges). */
+const NUDGE_KEY = "bryanf_lumina_nudges_v1";
+interface NudgeState {
+  shown: string[];
+  count: number;
+  last: number;
+}
+
+function readNudgeState(): NudgeState {
+  try {
+    const parsed = JSON.parse(window.sessionStorage.getItem(NUDGE_KEY) || "{}");
+    return {
+      shown: Array.isArray(parsed.shown) ? parsed.shown.filter((x: unknown) => typeof x === "string") : [],
+      count: Number(parsed.count) || 0,
+      last: Number(parsed.last) || 0,
+    };
+  } catch {
+    return { shown: [], count: 0, last: 0 };
+  }
+}
+
+function writeNudgeState(state: NudgeState) {
+  try {
+    window.sessionStorage.setItem(NUDGE_KEY, JSON.stringify(state));
+  } catch {
+    /* sessionStorage bloqueado */
+  }
+}
+
+/** Lumina vive en el layout; el panel de administración no la lleva. */
 export function LuminaChat() {
+  const pathname = usePathname() || "/";
+  if (pathname.startsWith("/access")) return null;
+  return <LuminaChatWidget pathname={pathname} />;
+}
+
+function LuminaChatWidget({ pathname }: { pathname: string }) {
   const { t, locale } = useLanguage();
   const reducedMotion = useReducedMotionPreference();
   const [open, setOpen] = useState(false);
@@ -249,8 +304,9 @@ export function LuminaChat() {
   const [mood, setMood] = useState<Mood>("Normal");
   const [teaser, setTeaser] = useState(false);
   const [teaserDue, setTeaserDue] = useState(false);
+  const [bubble, setBubble] = useState<Bubble | null>(null);
   const isPhone = useIsPhone();
-  const pastHero = usePastHero();
+  const pastHero = usePastHero(pathname);
   const [messages, setMessages] = useState<Msg[]>([
     { role: "assistant", content: t.lumina.greeting },
   ]);
@@ -445,6 +501,9 @@ export function LuminaChat() {
     // Nunca encima del hero (ahí taparía la tarjeta destacada o los CTA).
     if (!pastHero) return;
     markTeased();
+    const state = readNudgeState();
+    writeNudgeState({ ...state, last: Date.now() });
+    setBubble(null);
     setTeaser(true);
   }, [teaserDue, open, configuratorInView, isPhone, pastHero]);
 
@@ -453,12 +512,79 @@ export function LuminaChat() {
   const hideFab =
     !open && (footerInView || configuratorInView || (isPhone && !pastHero));
 
-  // Se retira sola a los 7 s.
+  // Se retira sola (un comentario se queda un poco más para alcanzar a leerlo).
   useEffect(() => {
     if (!teaser) return;
-    const hideAt = window.setTimeout(() => setTeaser(false), 7_000);
+    const hideAt = window.setTimeout(() => setTeaser(false), bubble ? 9_000 : 7_000);
     return () => window.clearTimeout(hideAt);
-  }, [teaser]);
+  }, [teaser, bubble]);
+
+  // Comentarios según lo que está viendo: si se queda un rato en una sección
+  // que tiene comentario (lib/lumina-nudges), a veces Lumina pregunta algo
+  // que viene al caso y resalta esa sección. Nunca con el chat abierto, otra
+  // burbuja a la vista, en el cotizador o en el footer.
+  const nudgeBlockedRef = useRef(true);
+  const localeRef = useRef(locale);
+  localeRef.current = locale;
+  useEffect(() => {
+    let topic = "";
+    let since = Date.now();
+    const tick = () => {
+      if (document.visibilityState !== "visible") {
+        since = Date.now();
+        return;
+      }
+      const el = sectionInView();
+      const next = el ? topicOf(el) : "";
+      if (next !== topic) {
+        topic = next;
+        since = Date.now();
+        return;
+      }
+      const notFound = !!document.querySelector('[data-lumina-page="not-found"]');
+      const nudge = findNudge(window.location.pathname, topic, notFound);
+      if (!nudge || Date.now() - since < nudge.dwell || nudgeBlockedRef.current) return;
+      const state = readNudgeState();
+      if (
+        state.shown.includes(nudge.id) ||
+        state.count >= NUDGE_MAX_PER_SESSION ||
+        Date.now() - state.last < NUDGE_GAP_MS
+      )
+        return;
+      state.shown.push(nudge.id);
+      // "De repente, no siempre": a veces lo deja pasar.
+      if (Math.random() > NUDGE_CHANCE) {
+        writeNudgeState(state);
+        return;
+      }
+      writeNudgeState({ ...state, count: state.count + 1, last: Date.now() });
+      markTeased();
+      setBubble(nudgeCopy(nudge, localeRef.current));
+      setTeaser(true);
+      setMood("Sorprendida");
+      window.setTimeout(() => setMood("Normal"), 1400);
+      trackEvent("lumina_nudge", { id: nudge.id });
+      if (el && nudge.topic) {
+        el.classList.remove("lumina-spot");
+        void (el as HTMLElement).offsetWidth;
+        el.classList.add("lumina-spot");
+        window.setTimeout(() => el.classList.remove("lumina-spot"), 2600);
+      }
+    };
+    const timer = window.setInterval(tick, 2_000);
+    return () => window.clearInterval(timer);
+  }, [pathname]);
+
+  function openFromBubble() {
+    const ask = bubble?.ask;
+    if (!ask) {
+      openChat();
+      return;
+    }
+    trackEvent("lumina_nudge_open", { ask });
+    setTeaser(false);
+    window.dispatchEvent(new CustomEvent("lumina:open", { detail: { message: ask } }));
+  }
 
   function openChat() {
     markTeased();
@@ -589,6 +715,9 @@ export function LuminaChat() {
     },
     [reducedMotion]
   );
+
+  nudgeBlockedRef.current =
+    open || teaser || !!guide || configuratorInView || footerInView || (isPhone && !pastHero);
 
   // La guía se retira sola.
   useEffect(() => {
@@ -1325,7 +1454,8 @@ export function LuminaChat() {
         )}
       </AnimatePresence>
 
-      {/* Burbuja proactiva: saluda una vez; tocarla abre el chat. */}
+      {/* Burbuja proactiva: el saludo (una vez) o un comentario según la
+          sección; tocarla abre el chat. */}
       <AnimatePresence>
         {teaser && !open && !footerInView && !configuratorInView && (
           <motion.div
@@ -1339,16 +1469,16 @@ export function LuminaChat() {
             {/* En teléfono es una píldora compacta de una frase; desde sm, la tarjeta completa. */}
             <div className="relative flex items-center gap-2.5 rounded-[1.4rem] rounded-br-md bg-white py-2 pl-2 pr-11 text-ink shadow-float ring-1 ring-ink/[0.06] sm:items-start sm:gap-3 sm:rounded-[1.5rem] sm:rounded-br-md sm:p-3 sm:pr-11">
               <span aria-hidden className="relative size-9 shrink-0 overflow-hidden rounded-full bg-ink ring-2 ring-lime sm:size-10">
-                <Image src={MOOD_IMG.Normal} alt="" fill sizes="40px" className="object-cover" />
+                <Image src={MOOD_IMG[bubble ? "Sorprendida" : "Normal"]} alt="" fill sizes="40px" className="object-cover" />
               </span>
               <button
                 type="button"
-                onClick={openChat}
+                onClick={openFromBubble}
                 className="min-w-0 flex-1 rounded-lg text-left text-sm font-semibold leading-snug sm:pt-0.5 sm:font-medium"
               >
                 <span className="block text-xs font-bold text-ink/70 max-sm:sr-only">{t.lumina.name}</span>
-                <span className="line-clamp-2 sm:hidden">{t.lumina.teaserShort}</span>
-                <span className="hidden sm:inline">{t.lumina.teaser}</span>
+                <span className="line-clamp-2 sm:hidden">{bubble?.short ?? t.lumina.teaserShort}</span>
+                <span className="hidden sm:inline">{bubble?.say ?? t.lumina.teaser}</span>
               </button>
               <button
                 type="button"

@@ -20,7 +20,7 @@ export function HomeTeasers() {
   const copy = t.homeTeasers;
 
   return (
-    <section aria-label={t.nav.suscripcion} className="grid gap-gutter lg:grid-cols-12">
+    <section aria-label={t.nav.suscripcion} data-lumina-topic="suscripcion" className="grid gap-gutter lg:grid-cols-12">
       {/* Suscripción: la tarjeta grande, en lima. */}
       <div data-fx="up" className="min-w-0 lg:col-span-6 lg:row-span-2">
         <div className="panel panel-lime relative flex h-full flex-col gap-6 overflow-hidden p-5 sm:p-8 lg:p-10">

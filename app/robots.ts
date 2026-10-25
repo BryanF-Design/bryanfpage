@@ -7,8 +7,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // Endpoints de pago, chat y webhooks: no son páginas.
-      disallow: ["/api/"],
+      // Endpoints de pago, chat y webhooks: no son páginas. /access es el
+      // panel privado (además lleva noindex).
+      disallow: ["/api/", "/access"],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
     host: SITE_URL,

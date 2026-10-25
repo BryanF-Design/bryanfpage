@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Sparkle } from "lucide-react";
 
@@ -11,11 +10,6 @@ import { SiteHeader } from "@/components/sections/site-header";
 import { SpanishPageLanguage } from "@/components/seo/spanish-page-language";
 import { SubscriptionFaqCenter } from "@/components/subscription-faq-center";
 import { SUBSCRIPTION_PRICE_LABEL } from "@/lib/subscription";
-
-const LuminaChat = dynamic(
-  () => import("@/components/lumina-chat").then((m) => m.LuminaChat),
-  { ssr: false }
-);
 
 /**
  * /suscripcion/preguntas-frecuentes — todas las dudas de la suscripción en
@@ -70,7 +64,6 @@ export function SubscriptionFaqPage() {
         </section>
       </main>
 
-      <LuminaChat />
       <SiteFooter spanishOnly />
     </>
   );

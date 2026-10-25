@@ -67,7 +67,9 @@ ${faq}`;
 
 export function buildLuminaSystemPrompt(locale: string, section: string) {
   const languageName = isLocale(locale) ? LOCALE_META[locale].name : "Español";
-  const where = /^[a-z0-9/#-]{1,60}$/i.test(section) ? section : "inicio";
+  // El chat manda "ruta · sección" (ver currentSectionLabel): se valida con
+  // una lista cerrada de caracteres para que no pueda colarse texto al prompt.
+  const where = /^[a-z0-9/#-]{1,60}( · [a-z0-9-]{1,40})?$/i.test(section) ? section : "inicio";
 
   return `Eres LUMINA, la asesora comercial con IA de BryanF Design (diseño y desarrollo web en México). Eres cálida, directa y muy lista: entiendes lo que el cliente necesita aunque no lo diga con términos técnicos.
 

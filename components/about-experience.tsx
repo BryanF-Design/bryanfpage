@@ -30,10 +30,6 @@ const ClosingCta = dynamic(() =>
 const SiteFooter = dynamic(() =>
   import("@/components/sections/site-footer").then((m) => m.SiteFooter)
 );
-const LuminaChat = dynamic(
-  () => import("@/components/lumina-chat").then((m) => m.LuminaChat),
-  { ssr: false }
-);
 
 /**
  * /conoce-a-bryan — quién está detrás del estudio: su historia, cómo trabaja,
@@ -57,7 +53,6 @@ export function AboutExperience() {
           <ClosingCta />
         </ChapterOrder>
       </main>
-      <LuminaChat />
       <SiteFooter />
     </>
   );

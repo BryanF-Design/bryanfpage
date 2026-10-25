@@ -24,6 +24,12 @@ const FloatingDock = dynamic(
   () => import("@/components/floating-dock").then((m) => m.FloatingDock),
   { ssr: false }
 );
+// Lumina vive aquí, una sola vez para todo el sitio: sigue abierta y con la
+// misma plática al cambiar de página (incluye suscripción, brief y 404).
+const LuminaChat = dynamic(
+  () => import("@/components/lumina-chat").then((m) => m.LuminaChat),
+  { ssr: false }
+);
 
 // Cuerpo e interfaz: Plus Jakarta Sans — redonda, clara y muy legible en
 // tamaños chicos (etiquetas, precios, chips).
@@ -360,6 +366,7 @@ export default function RootLayout({
             <SkipLink />
             {children}
             <LanguageNotice />
+            <LuminaChat />
             <FloatingDock />
           </LanguageProvider>
           <AccessibilityPanel />
