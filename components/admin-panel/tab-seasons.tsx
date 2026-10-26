@@ -2,7 +2,9 @@
 
 import { CalendarHeart, Eye, EyeOff } from "lucide-react";
 
-import { Calaverita, Cempasuchil, Copo, EtiquetaPrecio, GorroNavidad } from "@/components/season/season-art";
+import { Marigold, MiniSkull } from "@/components/season/art/muertos";
+import { Tile, TILE_SEQUENCE } from "@/components/season/art/navidad";
+import { BlackTag, BuenFinMini } from "@/components/season/art/ventas";
 import {
   SEASONS,
   activeSeason,
@@ -19,25 +21,25 @@ import { Card, Field, Input, Pill, Toggle } from "./admin-ui";
 const ART: Record<SeasonId, React.ReactNode> = {
   muertos: (
     <>
-      <Calaverita className="h-12 w-12 -rotate-6" />
-      <Cempasuchil className="h-8 w-8" />
+      <MiniSkull className="h-12 w-12 -rotate-6" />
+      <Marigold className="h-8 w-8" />
     </>
   ),
-  "buen-fin": <EtiquetaPrecio className="h-10 w-14" fill="#e5484d" text="%" />,
-  "black-friday": <EtiquetaPrecio className="h-10 w-14" fill="#101a16" text="BF" />,
+  "buen-fin": <BuenFinMini className="h-12 w-12 rotate-6" />,
+  "black-friday": <BlackTag className="h-9 w-16" />,
   navidad: (
     <>
-      <GorroNavidad className="h-10 w-12" />
-      <Copo className="h-7 w-7 text-sky-400" />
+      <Tile spec={TILE_SEQUENCE[3]} className="h-11 w-11 rounded-xl" />
+      <Tile spec={TILE_SEQUENCE[1]} className="h-8 w-8 rounded-lg" />
     </>
   ),
 };
 
 const SWATCH: Record<SeasonId, string> = {
-  muertos: "linear-gradient(120deg,#fbb423,#f39012 50%,#e2307a)",
-  "buen-fin": "linear-gradient(120deg,#ffd1d8,#ff6f87)",
-  "black-friday": "linear-gradient(120deg,#101a16,#2c3a33)",
-  navidad: "linear-gradient(120deg,#f6d36b,#2fa86b)",
+  muertos: "linear-gradient(120deg,#5a1a7e,#3d1158 55%,#ff2e8b)",
+  "buen-fin": "linear-gradient(120deg,#ffffff 35%,#ffc9cd)",
+  "black-friday": "linear-gradient(120deg,#0b0b0b,#2a2a2a 70%,#ffd400)",
+  navidad: "linear-gradient(120deg,#0d3a2b,#1f7a52 60%,#34b27b)",
 };
 
 const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
@@ -139,7 +141,7 @@ export function SeasonsTab({
           const until = daysUntil(r.start, now);
           return (
             <section key={s.id} aria-labelledby={`season-${s.id}`} className="panel flex flex-col overflow-hidden shadow-soft">
-              <div className="flex items-end justify-between gap-3 p-5 text-ink" style={{ background: SWATCH[s.id] }}>
+              <div className={cn("flex items-end justify-between gap-3 p-5", s.id === "buen-fin" ? "text-ink" : "text-white")} style={{ background: SWATCH[s.id] }}>
                 <div className={cn("flex min-w-0 flex-col items-start gap-2", s.id === "black-friday" && "text-white")}>
                   {live ? (
                     <Pill tone="ink">● En el sitio ahora</Pill>
@@ -176,9 +178,23 @@ export function SeasonsTab({
                     <Input type="date" value={`${r.start > r.end ? year + 1 : year}-${r.end}`} onChange={(e) => e.target.value && setRange(s.id, { end: e.target.value.slice(5) })} />
                   </Field>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-3">
+                <div className="grid gap-3 sm:grid-cols-2">
                   <Toggle checked={r.palette} onChange={(v) => setRange(s.id, { palette: v })} label="Colores" description="Cambia el lima por el de la temporada" />
-                  <Toggle checked={r.decorations} onChange={(v) => setRange(s.id, { decorations: v })} label="Decoración" description={s.id === "muertos" ? "Papel picado, pétalos y calaverita" : s.id === "navidad" ? "Luces, nieve y gorro" : "Banderines y etiquetas"} />
+                  <Toggle
+                    checked={r.decorations}
+                    onChange={(v) => setRange(s.id, { decorations: v })}
+                    label="Decoración y cartel"
+                    description={
+                      s.id === "muertos"
+                        ? "Papel picado, flores, calavera y el cartel en la home"
+                        : s.id === "navidad"
+                          ? "Esferas, mosaico geométrico y el cartel en la home"
+                          : s.id === "buen-fin"
+                            ? "Logo de El Buen Fin, etiquetas y el cartel en la home"
+                            : "Cinta de SALE, etiquetas y el cartel en la home"
+                    }
+                  />
+                  <Toggle checked={r.popup} onChange={(v) => setRange(s.id, { popup: v })} label="Pop-up de temporada" description="Una vez por visitante, si no hay un pop-up propio" />
                   <Toggle checked={r.banner} onChange={(v) => setRange(s.id, { banner: v })} label="Aviso arriba" description="Píldora bajo el menú" />
                 </div>
                 <Field label="Texto del aviso" hint="Vacío: se usa el sugerido.">

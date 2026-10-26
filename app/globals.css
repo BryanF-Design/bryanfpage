@@ -1641,16 +1641,16 @@ html[data-season-palette="muertos"] {
   --signal: 330 74% 52%;
 }
 html[data-season-palette="navidad"] {
-  --lime: 44 92% 56%;
-  --primary: 44 92% 56%;
-  --lime-soft: 46 100% 88%;
-  --lime-deep: 40 95% 28%;
-  --accent: 46 100% 90%;
+  --lime: 154 55% 48%;
+  --primary: 154 55% 48%;
+  --lime-soft: 150 60% 88%;
+  --lime-deep: 158 64% 15%;
+  --accent: 150 60% 91%;
   --signal: 356 78% 52%;
 }
 html[data-season-palette="buen-fin"] {
-  --lime: 352 92% 64%;
-  --primary: 352 92% 64%;
+  --lime: 356 92% 62%;
+  --primary: 356 92% 62%;
   --lime-soft: 352 100% 92%;
   --lime-deep: 350 70% 38%;
   --accent: 352 100% 94%;
@@ -1670,8 +1670,9 @@ html[data-season-palette] :is(.panel-lime, .surface-lime) {
   --border: var(--lime-deep);
 }
 
-/* Guirnalda: cuelga justo debajo del header flotante, sobre la parte de
-   arriba de la página; se va con el scroll y no recibe clics. */
+/* ——— Decoración de arriba (season-decor) ———————————————————————————————
+   Cuelga justo debajo del header flotante, sobre la parte de arriba de la
+   página; se va con el scroll y no recibe clics. */
 .season-decor {
   position: absolute;
   inset: calc(var(--gutter) * 0.75 + 3.4rem) 0 auto 0;
@@ -1679,21 +1680,27 @@ html[data-season-palette] :is(.panel-lime, .surface-lime) {
   z-index: 90;
   pointer-events: none;
 }
-.season-picado,
-.season-lights {
+@media (min-width: 768px) {
+  .season-decor {
+    top: calc(var(--gutter) + 3.6rem);
+  }
+}
+.season-garland {
   position: absolute;
   inset: 0 0 auto 0;
-  height: 5.5rem;
+  height: 7rem;
   overflow: hidden;
 }
-.season-picado-rope {
+.season-rope {
   position: absolute;
-  inset: 0.15rem 0 auto 0;
-  width: 100%;
-  height: 0.6rem;
+  inset: 0.2rem 0 auto 0;
+  height: 2px;
+  background: hsl(var(--ink) / 0.3);
 }
-.season-picado-row,
-.season-lights-row {
+.season-rope-pine {
+  background: #145239;
+}
+.season-garland-row {
   display: flex;
   justify-content: space-between;
   gap: 0.35rem;
@@ -1702,27 +1709,34 @@ html[data-season-palette] :is(.panel-lime, .surface-lime) {
 .season-flag {
   flex: 0 1 auto;
   min-width: 0;
-  width: clamp(1.9rem, 4.6vw, 3rem);
-  margin-top: 0.3rem;
+  width: clamp(2rem, 4.4vw, 3.1rem);
+  margin-top: 0.25rem;
   transform-origin: 50% 0;
   animation: season-sway 4.6s ease-in-out infinite alternate;
   animation-delay: calc(var(--i) * -0.37s);
-  opacity: 0.95;
+  filter: drop-shadow(0 5px 4px rgba(42, 11, 61, 0.2));
 }
-.season-pennants .season-flag {
-  width: clamp(1.4rem, 3.2vw, 2.1rem);
+.season-ornaments .season-flag {
+  width: clamp(1.3rem, 2.6vw, 1.9rem);
 }
-.season-flag:nth-child(n + 13) {
+.season-tags .season-flag {
+  width: clamp(1.25rem, 2.4vw, 1.75rem);
+}
+/* Cuántas caben: 10 en teléfono, 16 en tableta, todas en escritorio. */
+.season-garland-row > :nth-child(n + 11) {
   display: none;
 }
 @media (min-width: 640px) {
-  .season-flag:nth-child(n + 13) {
+  .season-garland-row > :nth-child(n + 11) {
     display: block;
   }
+  .season-garland-row > :nth-child(n + 17) {
+    display: none;
+  }
 }
-@media (min-width: 768px) {
-  .season-decor {
-    top: calc(var(--gutter) + 3.6rem);
+@media (min-width: 1024px) {
+  .season-garland-row > :nth-child(n + 17) {
+    display: block;
   }
 }
 @keyframes season-sway {
@@ -1733,36 +1747,15 @@ html[data-season-palette] :is(.panel-lime, .surface-lime) {
     transform: rotate(3.5deg);
   }
 }
-.season-bulb {
-  flex: 0 0 auto;
-  width: 0.7rem;
-  height: 1.05rem;
-  margin-top: 0.55rem;
-  border-radius: 50% 50% 46% 46% / 60% 60% 40% 40%;
-  background: var(--c);
-  box-shadow: 0 0 0.9rem 0.15rem color-mix(in srgb, var(--c) 70%, transparent);
-  animation: season-twinkle 2.4s ease-in-out infinite;
-  animation-delay: calc(var(--i) * -0.29s);
-}
-.season-bulb:nth-child(n + 15) {
-  display: none;
-}
-@media (min-width: 640px) {
-  .season-bulb:nth-child(n + 15) {
-    display: block;
-  }
-}
-@keyframes season-twinkle {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.45;
-  }
+/* Black Friday: una cinta de "SALE" cruza la página bajo el header. */
+.season-tape {
+  left: -4%;
+  right: -4%;
+  top: 0.55rem;
+  transform: rotate(-1.4deg);
 }
 
-/* Lluvia de pétalos / nieve / etiquetas: solo al llegar, unos segundos. */
+/* Lluvia de pétalos / estrellas / confeti: solo al llegar, unos segundos. */
 .season-fall {
   position: fixed;
   inset: 0;
@@ -1780,7 +1773,7 @@ html[data-season-palette] :is(.panel-lime, .surface-lime) {
   animation-iteration-count: 2;
   animation-fill-mode: both;
 }
-.season-drop > svg {
+.season-drop > * {
   scale: var(--s, 1);
 }
 @keyframes season-drop {
@@ -1812,30 +1805,67 @@ html[data-season-palette] :is(.panel-lime, .surface-lime) {
   }
 }
 
-/* Aviso de temporada bajo el header. */
+/* ——— Aviso bajo el header (season-strip) ————————————————————————————————— */
 .season-strip {
   background: hsl(var(--lime));
   color: hsl(160 30% 9%);
 }
-[data-season-strip="muertos"] {
-  background: linear-gradient(100deg, #fbb423, #f39012 55%, #e2307a);
-}
-[data-season-strip="navidad"] {
-  background: linear-gradient(100deg, #f6d36b, #f6c21a);
-}
-[data-season-strip="buen-fin"] {
-  background: linear-gradient(100deg, #ffd1d8, #ff6f87);
-}
-[data-season-strip="black-friday"] {
+.season-strip-cta {
   background: #101a16;
   color: #fff;
 }
-[data-season-strip="black-friday"] a {
-  background: hsl(var(--lime));
-  color: #101a16;
+.season-strip-pct {
+  background: #101a16;
+  color: hsl(var(--lime));
+}
+[data-season-strip="muertos"] {
+  background: linear-gradient(100deg, #3d1158, #5a1a7e 62%, #82206f);
+  color: #fff;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 174, 0, 0.55), 0 14px 30px -18px rgba(42, 11, 61, 0.8);
+}
+[data-season-strip="muertos"] .season-strip-cta {
+  background: #ffae00;
+  color: #2a0b3d;
+}
+[data-season-strip="muertos"] .season-strip-pct {
+  background: #ff2e8b;
+  color: #fff;
+}
+[data-season-strip="navidad"] {
+  background: #0d3a2b;
+  color: #fff;
+  box-shadow: inset 0 0 0 1.5px rgba(52, 178, 123, 0.6), 0 14px 30px -18px rgba(13, 58, 43, 0.8);
+}
+[data-season-strip="navidad"] .season-strip-cta {
+  background: #34b27b;
+  color: #0d3a2b;
+}
+[data-season-strip="navidad"] .season-strip-pct {
+  background: #fff;
+  color: #0d3a2b;
+}
+[data-season-strip="buen-fin"] {
+  background: #fff;
+  color: #0b0b0b;
+  box-shadow: inset 0 0 0 2px #0b0b0b, inset 0 -5px 0 0 #e30613, 0 14px 30px -18px rgba(0, 0, 0, 0.6);
+}
+[data-season-strip="buen-fin"] .season-strip-cta,
+[data-season-strip="buen-fin"] .season-strip-pct {
+  background: #e30613;
+  color: #fff;
+}
+[data-season-strip="black-friday"] {
+  background: #0b0b0b;
+  color: #fff;
+  box-shadow: inset 0 0 0 1.5px #ffd400, 0 14px 30px -18px rgba(0, 0, 0, 0.8);
+}
+[data-season-strip="black-friday"] .season-strip-cta,
+[data-season-strip="black-friday"] .season-strip-pct {
+  background: #ffd400;
+  color: #0b0b0b;
 }
 
-/* Pop-up: un halo del color de la temporada. */
+/* Pop-up sin temporada: un halo del color de marca. */
 .season-popup-glow {
   position: absolute;
   inset: -40% -30% auto auto;
@@ -1861,14 +1891,257 @@ html[data-season-palette] :is(.panel-lime, .surface-lime) {
   }
 }
 
+/* ——— Cartel de temporada (season-poster): home y pop-up ———————————————— */
+.poster {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: var(--r-panel);
+  color: #fff;
+  --tile: clamp(3.5rem, 7.5vw, 6rem);
+}
+.poster-compact {
+  border-radius: 0;
+  --tile: 3.4rem;
+}
+.poster-corner {
+  position: absolute;
+  z-index: 0;
+  height: auto;
+  pointer-events: none;
+}
+
+/* Día de Muertos: noche morada con textura de papel. */
+.poster-muertos {
+  background: radial-gradient(120% 85% at 50% 35%, #5a1a7e 0%, #3d1158 48%, #2a0b3d 100%);
+}
+.poster-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.32;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.poster-picado {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 0;
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+  height: 5.5rem;
+  overflow: hidden;
+  padding-inline: clamp(6.5rem, 17vw, 14rem);
+  border-top: 2px solid rgba(255, 248, 236, 0.35);
+}
+.poster-picado .season-flag {
+  flex: 0 0 auto;
+  width: clamp(1.9rem, 3.4vw, 2.75rem);
+  margin-top: 0;
+  filter: drop-shadow(0 6px 6px rgba(10, 0, 20, 0.45));
+}
+.poster-folk {
+  font-family: var(--font-folk), "Rye", Georgia, serif;
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  text-shadow: 0.045em 0.05em 0 #ff2e8b, 0.09em 0.1em 0 rgba(10, 0, 20, 0.35);
+  text-wrap: balance;
+}
+.poster-halo {
+  position: absolute;
+  inset: 6%;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, rgba(255, 174, 0, 0.5), rgba(255, 46, 139, 0.18) 60%, transparent 75%);
+}
+.poster-skull {
+  animation: poster-float 6s ease-in-out infinite;
+}
+.poster-bob {
+  animation: poster-bob 5s ease-in-out infinite;
+}
+@keyframes poster-float {
+  50% {
+    transform: translateY(-10px) rotate(-1.5deg);
+  }
+}
+@keyframes poster-bob {
+  50% {
+    transform: translateY(8px) rotate(14deg);
+  }
+}
+
+/* Navidad: mosaico geométrico. */
+.poster-navidad {
+  background: #0d3a2b;
+}
+.poster-tiles {
+  display: flex;
+  overflow: hidden;
+}
+.poster-tile {
+  flex: 0 0 var(--tile);
+  width: var(--tile);
+  height: var(--tile);
+}
+.poster-tile-block {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 1.75rem;
+}
+.poster-amp {
+  font-size: 1.6em;
+  line-height: 0.8;
+  text-shadow: -0.07em 0 0 rgba(52, 178, 123, 0.45), -0.14em 0 0 rgba(52, 178, 123, 0.22), -0.21em 0 0 rgba(52, 178, 123, 0.1);
+}
+
+/* El Buen Fin: el logo asomando entre papel negro que se enrolla. */
+.poster-buenfin {
+  background: radial-gradient(70% 70% at 50% 50%, #1d1d1d, #050505);
+}
+.poster-curl {
+  position: absolute;
+  z-index: 0;
+  width: clamp(9rem, 28vw, 21rem);
+  height: auto;
+  filter: drop-shadow(0 18px 26px rgba(0, 0, 0, 0.7));
+  pointer-events: none;
+}
+.poster-compact .poster-curl {
+  width: 8.5rem;
+}
+.poster-hole {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(40% 45% at 50% 45%, rgba(227, 6, 19, 0.16), transparent);
+}
+.poster-logo {
+  transform: rotate(-4deg);
+  animation: poster-logo 0.9s var(--ease-pop) both;
+}
+@keyframes poster-logo {
+  from {
+    transform: rotate(-14deg) scale(0.7);
+    opacity: 0;
+  }
+}
+.poster-chrome {
+  background: linear-gradient(180deg, #ffffff 0%, #e6e6e6 46%, #8d8d8d 54%, #f4f4f4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.6));
+  text-wrap: balance;
+}
+
+/* Black Friday: negro, cinta de SALE, letra enorme. */
+.poster-blackfriday {
+  background: radial-gradient(60% 70% at 85% 20%, rgba(255, 212, 0, 0.12), transparent 70%), #0b0b0b;
+}
+.poster-tape {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  z-index: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 0.45em 0;
+  background: #ffd400;
+  color: #0b0b0b;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(0.8rem, 1.3vw, 1.05rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-block: 5px solid transparent;
+  border-image: repeating-linear-gradient(-45deg, #0b0b0b 0 7px, #ffd400 7px 14px) 5;
+  box-shadow: 0 14px 26px -12px rgba(0, 0, 0, 0.85);
+}
+.poster-tape-red {
+  background: #ff2b3a;
+  color: #fff;
+  border-image: repeating-linear-gradient(-45deg, #fff 0 7px, #ff2b3a 7px 14px) 5;
+}
+.poster-tape-a {
+  top: clamp(1rem, 3vw, 2rem);
+  transform: rotate(-4deg);
+}
+.poster-tape-b {
+  bottom: clamp(1.25rem, 3vw, 2.25rem);
+  transform: rotate(2.5deg);
+}
+.poster-compact .poster-tape-a {
+  top: 1.1rem;
+  transform: rotate(-5deg);
+}
+.poster-tape-track {
+  display: flex;
+  width: max-content;
+  animation: poster-tape 30s linear infinite;
+}
+.poster-tape-b .poster-tape-track {
+  animation-direction: reverse;
+}
+.poster-tape-run {
+  display: flex;
+}
+.poster-tape-run > span {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 0.9em;
+}
+.poster-tape-dot {
+  margin-left: 0.9em;
+  font-size: 0.8em;
+}
+@keyframes poster-tape {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.poster-bf-title {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 900;
+  font-stretch: 75%;
+  font-variation-settings: "wdth" 75;
+  text-transform: uppercase;
+  line-height: 0.8;
+  letter-spacing: -0.02em;
+}
+.poster-bf-outline {
+  color: transparent;
+  -webkit-text-stroke: max(1.5px, 0.022em) #fff;
+}
+.poster-swing {
+  transform-origin: 8% 50%;
+  animation: poster-swing 3.4s ease-in-out infinite alternate;
+}
+@keyframes poster-swing {
+  from {
+    transform: rotate(-7deg);
+  }
+  to {
+    transform: rotate(5deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .season-flag,
-  .season-bulb,
-  .season-badge {
+  .season-badge,
+  .poster-skull,
+  .poster-bob,
+  .poster-logo,
+  .poster-swing,
+  .poster-tape-track {
     animation: none;
   }
 }
-html.a11y-reduce-motion :is(.season-flag, .season-bulb, .season-badge) {
+html.a11y-reduce-motion
+  :is(.season-flag, .season-badge, .poster-skull, .poster-bob, .poster-logo, .poster-swing, .poster-tape-track) {
   animation: none;
 }
 

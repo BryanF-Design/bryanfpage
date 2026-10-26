@@ -13,6 +13,7 @@ import { HomeTrackRecord } from "@/components/sections/home-track-record";
 import { useLanguage } from "@/lib/i18n/context";
 import { DICTIONARIES } from "@/lib/i18n/dictionaries";
 import { SITE_URL } from "@/lib/seo/service-pages";
+import { useSiteSettings } from "@/components/season/site-settings-provider";
 
 // Below-the-fold sections: code-split so the initial hydration bundle stays
 // small (main lever on mobile TBT). SSR stays on (default) for all of these
@@ -37,6 +38,10 @@ const LeadForm = dynamic(() =>
   import("@/components/sections/lead-form").then((m) => m.LeadForm)
 );
 const Faq = dynamic(() => import("@/components/sections/faq").then((m) => m.Faq));
+// Cartel de temporada (Panel BryanF → Temporadas): solo se descarga en temporada.
+const SeasonFeature = dynamic(() =>
+  import("@/components/season/season-feature").then((m) => m.SeasonFeature)
+);
 const SiteFooter = dynamic(() =>
   import("@/components/sections/site-footer").then((m) => m.SiteFooter)
 );
@@ -59,6 +64,8 @@ const faqJsonLd = {
 
 export default function HomePage() {
   const { t } = useLanguage();
+  const { season, settings } = useSiteSettings();
+  const showSeason = !!season && settings.season.ranges[season].decorations;
 
   return (
     <>
@@ -155,6 +162,8 @@ export default function HomePage() {
           {/* Trayectoria: países, proyectos, software y estructuras, desde el inicio. */}
           <HomeTrackRecord />
         </div>
+
+        {showSeason && <SeasonFeature />}
 
         {/* La home quedó corta: quién soy (hero), mi trabajo, puertas a las
             subpáginas (suscripción, Conoce a Bryan, Lumina), cotización y

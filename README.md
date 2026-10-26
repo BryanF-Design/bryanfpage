@@ -24,8 +24,10 @@ Sitio del estudio en Next.js 14 (App Router), desplegado en Vercel.
   por transferencia y **ver su panel como lo ve el cliente** (`/admin/vista?email=`).
 - **Suscripciones** y **Pagos**: en vivo de Stripe y Mercado Pago, más lo registrado a mano.
 - **Temporadas**: Día de Muertos, El Buen Fin, Black Friday y Navidad, cada una con fechas
-  (se prende y se apaga sola), colores, decoración y aviso. Vista previa con `/?temporada=muertos`
-  (`/?temporada=fin` la quita).
+  (se prende y se apaga sola), colores, decoración (guirnalda arriba, detalle en el logo y un
+  cartel propio en la home), pop-up de temporada y aviso. Cada una tiene su arte en
+  `components/season/art/` y su cartel en `components/season/season-poster.tsx`. Vista previa con
+  `/?temporada=muertos` (`/?temporada=fin` la quita).
 - **Descuentos**: % general y por servicio. Se muestran tachados y el servidor cobra con descuento.
 - **Avisos y pop-up**: la píldora bajo el menú y el pop-up de promoción.
 

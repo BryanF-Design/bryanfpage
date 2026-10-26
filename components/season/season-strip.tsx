@@ -5,23 +5,17 @@ import Link from "next/link";
 import { ArrowRight, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { announcementActive, seasonDef, seasonEndsAt } from "@/lib/seasons";
+import { announcementActive, seasonDef, seasonEndsAt, timeLeft } from "@/lib/seasons";
 
-import { Calaverita, Cempasuchil, Copo, EtiquetaPrecio } from "./season-art";
+import { Marigold, MiniSkull } from "./art/muertos";
+import { Tile, TILE_SEQUENCE } from "./art/navidad";
+import { BlackTag, BuenFinMini } from "./art/ventas";
 import { useSiteSettings } from "./site-settings-provider";
 
 function hash(text: string) {
   let h = 0;
   for (let i = 0; i < text.length; i++) h = (h * 31 + text.charCodeAt(i)) | 0;
   return (h >>> 0).toString(36);
-}
-
-function left(ms: number) {
-  const h = Math.floor(ms / 3_600_000);
-  const d = Math.floor(h / 24);
-  if (d >= 2) return `${d} días`;
-  if (h >= 1) return `${h} h`;
-  return `${Math.max(1, Math.ceil(ms / 60_000))} min`;
 }
 
 /**
@@ -88,33 +82,35 @@ export function SeasonStrip({ hidden }: { hidden: boolean }) {
     >
       <span aria-hidden className="grid size-7 shrink-0 place-items-center">
         {season === "muertos" ? (
-          <Calaverita className="h-7 w-7" />
+          <MiniSkull className="h-7 w-7" />
         ) : season === "navidad" ? (
-          <Copo className="h-5 w-5" />
+          <Tile spec={TILE_SEQUENCE[1]} className="h-7 w-7 rounded-full" />
+        ) : season === "buen-fin" ? (
+          <BuenFinMini className="h-7 w-7" />
         ) : season ? (
-          <EtiquetaPrecio className="h-5 w-7" fill="#e5484d" />
+          <BlackTag className="h-5 w-9" />
         ) : (
-          <Cempasuchil className="h-5 w-5" />
+          <Marigold className="h-5 w-5" />
         )}
       </span>
       <span className="min-w-0 leading-tight">
         <span className="line-clamp-2 sm:line-clamp-1">
           {discount > 0 && (
-            <strong className="mr-1 rounded-full bg-ink px-1.5 py-0.5 text-[0.75rem] text-lime">-{discount}%</strong>
+            <strong className="season-strip-pct mr-1 rounded-full px-1.5 py-0.5 text-[0.75rem]">-{discount}%</strong>
           )}
           {text}
         </span>
         {endsAt && endsAt > now && (
-          <span className="block text-[0.6875rem] font-medium opacity-75 sm:inline sm:pl-1.5">Termina en {left(endsAt - now)}</span>
+          <span className="block text-[0.6875rem] font-medium opacity-75 sm:inline sm:pl-1.5">Termina en {timeLeft(endsAt - now)}</span>
         )}
       </span>
       <Link
         href={href}
         tabIndex={hidden ? -1 : 0}
-        className="ml-1 inline-flex min-h-8 shrink-0 items-center gap-1 rounded-full bg-ink px-3 text-xs font-bold text-white transition-transform hover:scale-[1.03] active:scale-95"
+        className="season-strip-cta ml-1 inline-flex min-h-8 shrink-0 items-center gap-1 rounded-full px-3 text-xs font-bold transition-transform hover:scale-[1.03] active:scale-95"
       >
         {cta}
-        <ArrowRight aria-hidden className="h-3.5 w-3.5 text-lime" />
+        <ArrowRight aria-hidden className="h-3.5 w-3.5" />
       </Link>
       <button
         type="button"

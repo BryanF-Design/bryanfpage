@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Instrument_Serif, Plus_Jakarta_Sans } from "next/font/google";
+import { Archivo, Instrument_Serif, Plus_Jakarta_Sans, Sancreek } from "next/font/google";
 import dynamic from "next/dynamic";
 import "./globals.css";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
@@ -79,6 +79,16 @@ const instrumentSerif = Instrument_Serif({
   style: ["normal", "italic"],
   variable: "--font-serif",
   display: "swap",
+});
+
+// Rótulo de Día de Muertos (cartel y pop-up de temporada): letra de feria,
+// con remates de cartel mexicano. Sin precarga: solo se descarga si se usa.
+const sancreek = Sancreek({
+  subsets: ["latin", "latin-ext"],
+  weight: "400",
+  variable: "--font-folk",
+  display: "swap",
+  preload: false,
 });
 
 const SITE_DESCRIPTION =
@@ -366,7 +376,7 @@ export default async function RootLayout({
   return (
     <html
       lang="es"
-      className={`${jakarta.variable} ${archivo.variable} ${instrumentSerif.variable}`}
+      className={`${jakarta.variable} ${archivo.variable} ${instrumentSerif.variable} ${sancreek.variable}`}
       data-season={season ?? undefined}
       data-season-palette={palette}
       suppressHydrationWarning

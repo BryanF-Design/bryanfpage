@@ -22,6 +22,15 @@ export interface SeasonDef {
   banner: string;
   /** Lo que dice Lumina al saludar en esa temporada. */
   greeting: string;
+  /** Cartel de la home y pop-up de temporada. */
+  poster: {
+    kicker: string;
+    title: string;
+    /** Frase grande bajo el título (si el pop-up no trae título propio). */
+    lead: string;
+    text: string;
+    cta: string;
+  };
 }
 
 export const SEASONS: readonly SeasonDef[] = [
@@ -31,7 +40,14 @@ export const SEASONS: readonly SeasonDef[] = [
     start: "10-20",
     end: "11-09",
     banner: "Temporada de Día de Muertos: que tu negocio siga más vivo que nunca.",
-    greeting: "¡Llegó el Día de Muertos! 🌼 Puse unas calaveritas y cempasúchil por aquí. ¿Te ayudo con algo?",
+    greeting: "¡Llegó el Día de Muertos! 🌼 Hoy la página se vistió de papel picado y flores. ¿Te ayudo con algo?",
+    poster: {
+      kicker: "1 y 2 de noviembre",
+      title: "Día de Muertos",
+      lead: "Que tu negocio siga más vivo que nunca",
+      text: "Honramos a los que se fueron y celebramos lo que sigue vivo: que tu negocio brille con una web hecha con el mismo cariño que un altar.",
+      cta: "Arma tu web",
+    },
   },
   {
     id: "buen-fin",
@@ -40,6 +56,13 @@ export const SEASONS: readonly SeasonDef[] = [
     end: "11-16",
     banner: "El Buen Fin llegó a BryanF Design: el mejor momento para estrenar web.",
     greeting: "¡Es El Buen Fin! 🛍️ Si tenías pendiente tu página, este es el momento. ¿Te armo un paquete?",
+    poster: {
+      kicker: "Ya llegó",
+      title: "El Buen Fin",
+      lead: "Tu página web a precio de Buen Fin",
+      text: "El fin de semana más barato del año también es para tu página web. Aparta tu proyecto con precio de Buen Fin.",
+      cta: "Ver precios",
+    },
   },
   {
     id: "black-friday",
@@ -48,6 +71,13 @@ export const SEASONS: readonly SeasonDef[] = [
     end: "11-30",
     banner: "Black Friday · Cyber Monday: precios que no vuelven hasta el próximo año.",
     greeting: "¡Black Friday! 🖤 Hay precios especiales solo estos días. ¿Te digo cuánto quedaría lo tuyo?",
+    poster: {
+      kicker: "Solo 4 días",
+      title: "Black Friday",
+      lead: "Precios que no vuelven hasta el próximo año",
+      text: "Black Friday y Cyber Monday en BryanF Design: diseño y código a precio que no vuelve hasta el próximo año.",
+      cta: "Aprovechar",
+    },
   },
   {
     id: "navidad",
@@ -56,6 +86,13 @@ export const SEASONS: readonly SeasonDef[] = [
     end: "01-06",
     banner: "Felices fiestas: regálale a tu negocio la web que se merece.",
     greeting: "¡Felices fiestas! 🎄 ¿Le regalamos a tu negocio una web nueva para arrancar el año?",
+    poster: {
+      kicker: "Temporada navideña",
+      title: "Felices fiestas",
+      lead: "Regálale a tu negocio la web que se merece",
+      text: "Que el año nuevo arranque con tu página lista para vender: diseño, código y SEO hechos con cariño, como un buen regalo.",
+      cta: "Arma tu web",
+    },
   },
 ] as const;
 
@@ -100,8 +137,10 @@ export interface SeasonRange {
   end: string;
   /** Cambia el color de marca (lima) por el de la temporada. */
   palette: boolean;
-  /** Papel picado, pétalos, nieve… */
+  /** Papel picado, cartel en la home, detalle en el logo… */
   decorations: boolean;
+  /** Pop-up de temporada (una vez por visitante) si no hay uno propio. */
+  popup: boolean;
   /** Aviso de temporada en la barra de arriba. */
   banner: boolean;
   /** Texto propio del aviso (vacío: el sugerido). */
@@ -151,6 +190,7 @@ const range = (s: SeasonDef): SeasonRange => ({
   end: s.end,
   palette: true,
   decorations: true,
+  popup: true,
   banner: true,
   bannerText: "",
 });
@@ -197,6 +237,7 @@ export function normalizeSettings(raw: unknown): SiteSettings {
           end: typeof r.end === "string" && MMDD.test(r.end) ? r.end : def.end,
           palette: bool(r.palette, def.palette),
           decorations: bool(r.decorations, def.decorations),
+          popup: bool(r.popup, def.popup),
           banner: bool(r.banner, def.banner),
           bannerText: str(r.bannerText, 180),
         },
@@ -299,6 +340,30 @@ export function announcementActive(settings: SiteSettings, now: number) {
 export function popupActive(settings: SiteSettings, now: number) {
   const p = settings.popup;
   return p.enabled && !!(p.title || p.text) && notExpired(p.endsAt, now);
+}
+
+/** "15 días" / "5 h" / "20 min" — lo que falta para `endsAt`. */
+export function timeLeft(ms: number) {
+  const h = Math.floor(ms / 3_600_000);
+  const d = Math.floor(h / 24);
+  if (d >= 2) return `${d} días`;
+  if (h >= 1) return `${h} h`;
+  return `${Math.max(1, Math.ceil(ms / 60_000))} min`;
+}
+
+/** "13 al 16 de noviembre" / "1 de diciembre al 6 de enero". */
+export function humanRange(start: string, end: string) {
+  const MONTHS = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+  const [sm, sd] = start.split("-").map(Number);
+  const [em, ed] = end.split("-").map(Number);
+  return sm === em ? `${sd} al ${ed} de ${MONTHS[em - 1]}` : `${sd} de ${MONTHS[sm - 1]} al ${ed} de ${MONTHS[em - 1]}`;
+}
+
+/** Lo que va sobre el título del cartel: la fecha fija o el rango del panel. */
+export function posterKicker(settings: SiteSettings, id: SeasonId) {
+  if (id === "muertos" || id === "navidad") return seasonDef(id).poster.kicker;
+  const r = settings.season.ranges[id];
+  return `Del ${humanRange(r.start, r.end)}`;
 }
 
 /** Fin de la temporada activa (ms), para la cuenta regresiva del aviso. */
