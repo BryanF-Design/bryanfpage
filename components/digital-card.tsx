@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState, type ComponentType, type ReactNode, type SVGProps } from "react";
-import Image from "next/image";
 import {
   ArrowUpRight,
   Check,
@@ -14,9 +13,11 @@ import {
   Share2,
   Star,
   UserPlus,
+  Wallet,
 } from "lucide-react";
 import { FaFacebookF, FaGithub, FaInstagram, FaLinkedinIn, FaWhatsapp } from "react-icons/fa";
 
+import { FlipCard } from "@/components/digital-card-flip";
 import { SpanishPageLanguage } from "@/components/seo/spanish-page-language";
 import { trackEvent } from "@/lib/analytics";
 import { CARD } from "@/lib/contact-card";
@@ -72,7 +73,13 @@ function isExternal(href: string) {
  * botones grandes al alcance del pulgar y "Guardar contacto" siempre visible
  * abajo.
  */
-export function DigitalCard({ qrSvg }: { qrSvg: string }) {
+export function DigitalCard({
+  qrContactSvg,
+  qrLinkSvg,
+}: {
+  qrContactSvg: string;
+  qrLinkSvg: string;
+}) {
   const [copied, setCopied] = useState(false);
   const [canShare, setCanShare] = useState(false);
   const [saveInView, setSaveInView] = useState(true);
@@ -136,80 +143,25 @@ export function DigitalCard({ qrSvg }: { qrSvg: string }) {
       />
 
       <div className="relative mx-auto flex w-full max-w-[26rem] flex-col gap-3">
-        {/* ── Portada ─────────────────────────────────────────────── */}
-        <section
-          aria-labelledby="card-name"
-          className="relative overflow-hidden rounded-[2rem] bg-ink px-5 pb-6 pt-5 text-white shadow-[0_30px_60px_-30px_hsl(var(--ink)/0.7)]"
-        >
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-lime/25 blur-3xl"
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:radial-gradient(hsl(0_0%_100%)_1px,transparent_1px)] [background-size:14px_14px]"
-          />
+        {/* ── Tarjeta 3D: frente con la foto, reverso con el QR ───── */}
+        <FlipCard qrContactSvg={qrContactSvg} qrLinkSvg={qrLinkSvg} />
 
-          <div className="relative flex items-center justify-between">
-            <Image
-              src="/img/brand/logo-light.png"
-              alt="BryanF Design"
-              width={720}
-              height={253}
-              className="h-7 w-auto"
-              priority
-            />
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-lime">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-lime" />
-              Disponible
-            </span>
-          </div>
-
-          <div className="relative mt-7 flex flex-col items-center text-center">
-            <div className="relative">
-              <div className="absolute -inset-1.5 rounded-full bg-gradient-to-br from-lime via-lime/60 to-forest" />
-              <Image
-                src={CARD.photo.src}
-                alt={`Foto de ${CARD.fullName}`}
-                width={CARD.photo.width}
-                height={CARD.photo.height}
-                priority
-                className="relative h-32 w-32 rounded-full border-4 border-ink object-cover object-[50%_30%]"
-              />
-            </div>
-
-            <h1
-              id="card-name"
-              className="mt-5 font-display text-[2.5rem] font-extrabold italic leading-none tracking-[-0.03em]"
+        {/* Accesos rápidos. */}
+        <div className="grid grid-cols-4 gap-2">
+          {quickActions.map(({ label, href, Icon, external }) => (
+            <a
+              key={label}
+              href={href}
+              {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              className="group flex flex-col items-center gap-1.5 rounded-2xl bg-ink py-3 text-xs font-semibold text-white/85 shadow-[0_12px_26px_-18px_hsl(var(--ink)/0.8)] transition-colors hover:bg-ink-soft active:scale-[0.97]"
             >
-              {CARD.fullName}
-            </h1>
-            <p className="mt-2 text-[0.9375rem] font-semibold text-lime">{CARD.role}</p>
-            <p className="mt-1 text-sm text-white/60">
-              {CARD.company} · {CARD.city}
-            </p>
-            <p className="mt-4 max-w-[19rem] text-[0.9375rem] leading-relaxed text-white/80">
-              {CARD.bio}
-            </p>
-            <p className="mt-3 font-serif text-2xl italic text-white">{CARD.tagline}</p>
-          </div>
-
-          <div className="relative mt-6 grid grid-cols-4 gap-2">
-            {quickActions.map(({ label, href, Icon, external }) => (
-              <a
-                key={label}
-                href={href}
-                {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                className="group flex flex-col items-center gap-1.5 rounded-2xl bg-white/[0.07] py-3 text-xs font-semibold text-white/85 transition-colors hover:bg-white/[0.14] active:scale-[0.97]"
-              >
-                <span className="grid h-10 w-10 place-items-center rounded-full bg-lime text-ink transition-transform group-hover:-translate-y-0.5">
-                  <Icon aria-hidden className="h-[1.1rem] w-[1.1rem]" />
-                </span>
-                {label}
-              </a>
-            ))}
-          </div>
-        </section>
+              <span className="grid h-10 w-10 place-items-center rounded-full bg-lime text-ink transition-transform group-hover:-translate-y-0.5">
+                <Icon aria-hidden className="h-[1.1rem] w-[1.1rem]" />
+              </span>
+              {label}
+            </a>
+          ))}
+        </div>
 
         {/* ── Guardar contacto ───────────────────────────────────── */}
         <a
@@ -288,7 +240,7 @@ export function DigitalCard({ qrSvg }: { qrSvg: string }) {
           ))}
         </nav>
 
-        {/* ── QR para compartir ──────────────────────────────────── */}
+        {/* ── Compartir ──────────────────────────────────────────── */}
         <section
           aria-labelledby="card-qr"
           className="rounded-[2rem] bg-white p-5 shadow-[0_18px_40px_-28px_hsl(var(--ink)/0.45)]"
@@ -302,21 +254,8 @@ export function DigitalCard({ qrSvg }: { qrSvg: string }) {
               Comparte mi tarjeta
             </h2>
           </div>
-          <p className="mt-1 text-sm text-ink/70">Que lo escaneen con la cámara y listo.</p>
-
-          <div className="relative mx-auto mt-4 w-full max-w-[15rem] rounded-[1.5rem] bg-lime-soft p-5">
-            <div
-              role="img"
-              aria-label={`Código QR que abre ${CARD.cardUrl}`}
-              className="aspect-square w-full [&_svg]:h-full [&_svg]:w-full"
-              dangerouslySetInnerHTML={{ __html: qrSvg }}
-            />
-            <span className="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-xl bg-ink ring-4 ring-lime-soft">
-              <Image src="/img/favicon.png" alt="" width={28} height={28} className="h-7 w-7" />
-            </span>
-          </div>
-          <p className="mt-3 text-center font-mono text-xs text-ink/50">
-            {CARD.cardUrl.replace(/^https?:\/\//, "")}
+          <p className="mt-1 text-sm text-ink/70">
+            Voltea la tarjeta para mostrar el QR, mándala directo o guárdala en tu Wallet.
           </p>
 
           <div className="mt-4 grid grid-cols-2 gap-2">
@@ -362,6 +301,22 @@ export function DigitalCard({ qrSvg }: { qrSvg: string }) {
               )}
             </button>
           </div>
+
+          {/* Google Wallet guarda cualquier QR desde una foto o captura. */}
+          <a
+            href="/tarjeta/qr-contacto.png"
+            download="QR-contacto-Bryan-F.png"
+            onClick={() => trackEvent("card_wallet_qr")}
+            className="mt-2 flex h-12 items-center justify-center gap-2 rounded-full bg-lime-soft text-sm font-semibold text-ink transition-transform active:scale-[0.97]"
+          >
+            <Wallet aria-hidden className="h-4 w-4 text-forest" />
+            Descargar QR para Google Wallet
+          </a>
+          <p className="mt-3 text-xs leading-relaxed text-ink/55">
+            En Google Wallet toca <strong className="font-semibold text-ink/75">Agregar a Wallet → Foto</strong>{" "}
+            y elige la imagen: el pase guarda el QR con mi nombre, teléfono, correo y sitio. Quien lo
+            escanee me agrega a sus contactos al instante.
+          </p>
         </section>
 
         <a

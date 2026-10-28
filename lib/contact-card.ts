@@ -74,3 +74,28 @@ export function buildVCard(photoBase64?: string) {
   lines.push("END:VCARD");
   return lines.map(fold).join("\r\n") + "\r\n";
 }
+
+/**
+ * vCard mínima para el QR: sin foto ni redes para que el código quede legible.
+ * Al escanearla, la cámara del iPhone o Android ofrece "Agregar contacto" sin
+ * abrir internet, y si el QR se guarda en Google Wallet (Agregar a Wallet →
+ * Foto) la tarjeta queda ahí con todos los datos.
+ */
+export function buildQrVCard() {
+  return [
+    "BEGIN:VCARD",
+    "VERSION:3.0",
+    `N:${esc(CARD.lastName)};${esc(CARD.firstName)};;;`,
+    `FN:${esc(CARD.fullName)}`,
+    `ORG:${esc(CARD.company)}`,
+    `TITLE:${esc(CARD.role)}`,
+    `TEL;TYPE=CELL:${CARD.phone}`,
+    `EMAIL:${CARD.email}`,
+    `URL:${CARD.cardUrl}`,
+    `ADR;TYPE=WORK:;;;${esc(CARD.city)};${esc(CARD.region)};;${esc(CARD.country)}`,
+    "END:VCARD",
+  ].join("\r\n");
+}
+
+/** Opciones compartidas por los QR (página y PNG descargable). */
+export const QR_OPTIONS = { errorCorrectionLevel: "Q", margin: 0 } as const;

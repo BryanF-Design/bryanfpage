@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import QRCode from "qrcode";
 
 import { DigitalCard } from "@/components/digital-card";
-import { CARD } from "@/lib/contact-card";
+import { CARD, QR_OPTIONS, buildQrVCard } from "@/lib/contact-card";
 
 const TITLE = "Bryan F. · Tarjeta digital | BryanF Design";
 const DESCRIPTION =
@@ -45,14 +45,14 @@ const personJsonLd = {
 };
 
 export default async function TarjetaPage() {
-  // El QR se dibuja en el servidor como SVG: nítido a cualquier tamaño y sin
-  // JavaScript extra en el teléfono.
-  const qrSvg = await QRCode.toString(CARD.cardUrl, {
-    type: "svg",
-    errorCorrectionLevel: "H",
-    margin: 0,
-    color: { dark: "#101e19", light: "#00000000" },
-  });
+  // Los QR se dibujan en el servidor como SVG: nítidos a cualquier tamaño y
+  // sin JavaScript extra en el teléfono. Uno lleva el contacto completo (para
+  // la cámara y Google Wallet) y otro solo el enlace a esta página.
+  const color = { dark: "#101e19", light: "#00000000" };
+  const [qrContactSvg, qrLinkSvg] = await Promise.all([
+    QRCode.toString(buildQrVCard(), { ...QR_OPTIONS, type: "svg", color }),
+    QRCode.toString(CARD.cardUrl, { ...QR_OPTIONS, type: "svg", color }),
+  ]);
 
   return (
     <>
@@ -60,7 +60,7 @@ export default async function TarjetaPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
       />
-      <DigitalCard qrSvg={qrSvg} />
+      <DigitalCard qrContactSvg={qrContactSvg} qrLinkSvg={qrLinkSvg} />
     </>
   );
 }

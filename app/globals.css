@@ -1202,3 +1202,71 @@ html.fx-on [data-fx="panel"]:not([data-fx-in]) > * {
     translate: 0 -6%;
   }
 }
+
+/* ── Tarjeta digital (/tarjeta) ─────────────────────────────────────────
+   Animación constante: la tarjeta flota y se mece en 3D, el aro de la foto
+   gira y un brillo la barre de vez en cuando. Con "reducir movimiento" las
+   reglas globales de arriba la dejan quieta. */
+.dc-float {
+  animation: dc-float 7s ease-in-out infinite;
+}
+
+@keyframes dc-float {
+  0%,
+  100% {
+    transform: translateY(0) rotateX(4deg) rotateY(-9deg);
+  }
+  25% {
+    transform: translateY(-8px) rotateX(-2deg) rotateY(-2deg);
+  }
+  50% {
+    transform: translateY(-3px) rotateX(3deg) rotateY(9deg);
+  }
+  75% {
+    transform: translateY(-10px) rotateX(-3deg) rotateY(3deg);
+  }
+}
+
+.dc-ring {
+  background: conic-gradient(
+    from 0deg,
+    hsl(var(--lime)),
+    hsl(var(--forest)),
+    hsl(var(--lime-soft)),
+    hsl(var(--lime))
+  );
+  animation: dc-spin 6s linear infinite;
+}
+
+.dc-spin-hint {
+  animation: dc-spin 3.5s cubic-bezier(0.6, 0, 0.3, 1) infinite;
+}
+
+@keyframes dc-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.dc-sheen {
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    hsl(0 0% 100% / 0.16) 47%,
+    hsl(0 0% 100% / 0.28) 50%,
+    hsl(0 0% 100% / 0.16) 53%,
+    transparent 65%
+  );
+  background-size: 250% 100%;
+  animation: dc-sheen 5s ease-in-out infinite;
+}
+
+@keyframes dc-sheen {
+  0% {
+    background-position: 130% 0;
+  }
+  45%,
+  100% {
+    background-position: -130% 0;
+  }
+}
