@@ -11,7 +11,7 @@
 
 import { getSiteUrl } from "./site-url";
 
-const INTERNAL_TO = "bryanf@bryanfdesign.com.mx";
+const INTERNAL_TO = "bryanf@bryanfdesign.com";
 
 export interface OrderConfirmation {
   provider: "stripe" | "mercadopago";

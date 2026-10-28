@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
     const fromEmail =
       process.env.MAIL_FROM ||
       "BryanF Design <no-reply@bryanfdesign.com.mx>";
-    const to = ["bryanf@bryanfdesign.com.mx", "pandita250599@gmail.com"];
+    const to = ["bryanf@bryanfdesign.com", "pandita250599@gmail.com"];
 
     const summaryHtml = summaryItems
       .map(

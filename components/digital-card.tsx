@@ -41,7 +41,7 @@ const details = [
       <>
         bryanf@
         <wbr />
-        bryanfdesign.com.mx
+        bryanfdesign.com
       </>
     ),
     href: `mailto:${CARD.email}`,
@@ -76,18 +76,24 @@ function isExternal(href: string) {
 export function DigitalCard({
   qrContactSvg,
   qrLinkSvg,
+  walletEnabled,
 }: {
   qrContactSvg: string;
   qrLinkSvg: string;
+  /** Hay credenciales de Google Wallet: se muestra "Agregar a Google Wallet". */
+  walletEnabled: boolean;
 }) {
   const [copied, setCopied] = useState(false);
   const [canShare, setCanShare] = useState(false);
   const [saveInView, setSaveInView] = useState(true);
+  const [walletError, setWalletError] = useState(false);
   const copyTimer = useRef<number>();
   const saveRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     setCanShare(typeof navigator !== "undefined" && typeof navigator.share === "function");
+    // /tarjeta/google-wallet regresa aquí con ?wallet=error si no pudo crear el pase.
+    setWalletError(new URLSearchParams(window.location.search).get("wallet") === "error");
     return () => window.clearTimeout(copyTimer.current);
   }, []);
 
@@ -179,6 +185,24 @@ export function DigitalCard({
             <UserPlus aria-hidden className="h-5 w-5" />
           </span>
         </a>
+
+        {walletEnabled && (
+          <a
+            href="/tarjeta/google-wallet"
+            rel="nofollow"
+            onClick={() => trackEvent("card_google_wallet")}
+            className="flex h-14 items-center justify-center gap-2.5 rounded-full bg-black text-[0.9375rem] font-semibold text-white shadow-[0_14px_30px_-16px_rgb(0_0_0/0.8)] transition-transform active:scale-[0.98]"
+          >
+            <Wallet aria-hidden className="h-5 w-5" />
+            Agregar a Google Wallet
+          </a>
+        )}
+        {walletError && (
+          <p role="status" className="rounded-2xl bg-white px-4 py-3 text-center text-sm text-ink/75">
+            Google Wallet no respondió. Intenta de nuevo o usa{" "}
+            <strong className="font-semibold text-ink">Guardar contacto</strong>.
+          </p>
+        )}
 
         {/* ── Datos ──────────────────────────────────────────────── */}
         <section aria-label="Datos de contacto" className="rounded-[2rem] bg-white p-2 shadow-[0_18px_40px_-28px_hsl(var(--ink)/0.45)]">
@@ -313,7 +337,7 @@ export function DigitalCard({
             Descargar QR para Google Wallet
           </a>
           <p className="mt-3 text-xs leading-relaxed text-ink/55">
-            En Google Wallet toca <strong className="font-semibold text-ink/75">Agregar a Wallet → Foto</strong>{" "}
+            {walletEnabled && "¿Prefieres la foto? "}En Google Wallet toca <strong className="font-semibold text-ink/75">Agregar a Wallet → Foto</strong>{" "}
             y elige la imagen: el pase guarda el QR con mi nombre, teléfono, correo y sitio. Quien lo
             escanee me agrega a sus contactos al instante.
           </p>

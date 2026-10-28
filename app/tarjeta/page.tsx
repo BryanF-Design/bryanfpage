@@ -3,6 +3,7 @@ import QRCode from "qrcode";
 
 import { DigitalCard } from "@/components/digital-card";
 import { CARD, QR_OPTIONS, buildQrVCard } from "@/lib/contact-card";
+import { isWalletConfigured } from "@/lib/google-wallet";
 
 const TITLE = "Bryan F. · Tarjeta digital | BryanF Design";
 const DESCRIPTION =
@@ -60,7 +61,11 @@ export default async function TarjetaPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
       />
-      <DigitalCard qrContactSvg={qrContactSvg} qrLinkSvg={qrLinkSvg} />
+      <DigitalCard
+        qrContactSvg={qrContactSvg}
+        qrLinkSvg={qrLinkSvg}
+        walletEnabled={isWalletConfigured()}
+      />
     </>
   );
 }

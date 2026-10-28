@@ -127,10 +127,10 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
         <>
           bryanf@
           <wbr />
-          bryanfdesign.com.mx
+          bryanfdesign.com
         </>
       ),
-      href: "mailto:bryanf@bryanfdesign.com.mx",
+      href: "mailto:bryanf@bryanfdesign.com",
       external: false,
     },
     {

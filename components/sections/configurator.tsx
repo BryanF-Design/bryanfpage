@@ -420,7 +420,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
       projectTotal,
       currency
     )}\n${t.configurator.payNow}: ${formatMoney(payableNow, currency)}`;
-    window.location.href = `mailto:bryanf@bryanfdesign.com.mx?subject=${encodeURIComponent(
+    window.location.href = `mailto:bryanf@bryanfdesign.com?subject=${encodeURIComponent(
       t.configurator.emailQuoteSubject
     )}&body=${encodeURIComponent(body)}`;
   }
@@ -1015,7 +1015,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                       variant="outline"
                       className="w-full whitespace-normal text-center leading-tight"
                     >
-                      <a href="mailto:bryanf@bryanfdesign.com.mx?subject=Comprobante%20de%20transferencia%20-%20BryanF%20Design">
+                      <a href="mailto:bryanf@bryanfdesign.com?subject=Comprobante%20de%20transferencia%20-%20BryanF%20Design">
                         {t.configurator.sendEmail}
                       </a>
                     </Button>

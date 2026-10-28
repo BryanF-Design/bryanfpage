@@ -14,7 +14,7 @@ export const CARD = {
   bio: "Diseño la experiencia y también escribo el código. Páginas web rápidas, animadas y pensadas para vender.",
   phone: "+525663012505",
   phoneLabel: "+52 56 6301 2505",
-  email: "bryanf@bryanfdesign.com.mx",
+  email: "bryanf@bryanfdesign.com",
   whatsapp: "https://wa.me/525663012505",
   website: SITE_URL,
   websiteLabel: "bryanfdesign.com",
