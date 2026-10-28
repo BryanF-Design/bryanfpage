@@ -22,6 +22,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.8,
     },
+    // Tarjeta digital: fuera de la navegación, se comparte por QR o enlace.
+    {
+      url: `${SITE_URL}/tarjeta`,
+      lastModified: new Date("2026-10-28T00:00:00.000Z"),
+      changeFrequency: "yearly",
+      priority: 0.4,
+    },
     { url: `${SITE_URL}/privacidad`, changeFrequency: "yearly", priority: 0.3 },
     { url: `${SITE_URL}/terminos`, changeFrequency: "yearly", priority: 0.3 },
   ];
