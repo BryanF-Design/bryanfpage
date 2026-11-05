@@ -253,9 +253,9 @@ export const INVENTORY: InventoryItem[] = [
   { id: "ai", name: "Illustrator", slot: "design", tier: "core", source: { kind: "img", src: "/img/cv/logos/illustrator.svg" } },
   { id: "pr", name: "Premiere Pro", slot: "design", tier: "core", source: { kind: "img", src: "/img/cv/logos/premiere.svg" } },
   { id: "ae", name: "After Effects", slot: "design", tier: "core", source: { kind: "img", src: "/img/cv/logos/after-effects.svg" } },
-  { id: "afd", name: "Affinity Designer", slot: "design", tier: "core", source: { kind: "si", icon: "SiAffinitydesigner", color: "#4CB4F5" } },
-  { id: "afp", name: "Affinity Photo", slot: "design", tier: "core", source: { kind: "si", icon: "SiAffinityphoto", color: "#C886FF" } },
-  { id: "afpub", name: "Affinity Publisher", slot: "design", tier: "core", source: { kind: "si", icon: "SiAffinitypublisher", color: "#FF6F8B" } },
+  { id: "afd", name: "Affinity Designer", slot: "design", tier: "core", source: { kind: "img", src: "/img/cv/logos/affinity-designer.svg" } },
+  { id: "afp", name: "Affinity Photo", slot: "design", tier: "core", source: { kind: "img", src: "/img/cv/logos/affinity-photo.svg" } },
+  { id: "afpub", name: "Affinity Publisher", slot: "design", tier: "core", source: { kind: "img", src: "/img/cv/logos/affinity-publisher.svg" } },
   { id: "vscode", name: "VS Code", slot: "design", tier: "core", source: { kind: "img", src: "/img/cv/logos/vscode.svg" } },
   // Liderazgo y operación: habilidades, no software.
   { id: "teams", name: "teams", slot: "lead", tier: "core", source: { kind: "lucide", icon: "Users" } },

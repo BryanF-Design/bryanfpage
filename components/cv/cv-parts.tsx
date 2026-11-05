@@ -4,9 +4,6 @@ import Image from "next/image";
 import { useCallback, useRef, type CSSProperties, type PointerEvent, type ReactNode } from "react";
 import type { IconType } from "react-icons";
 import {
-  SiAffinitydesigner,
-  SiAffinityphoto,
-  SiAffinitypublisher,
   SiCss,
   SiGit,
   SiGithub,
@@ -52,9 +49,6 @@ import { cn } from "@/lib/utils";
 import s from "./cv.module.css";
 
 const SI: Record<string, IconType> = {
-  SiAffinitydesigner,
-  SiAffinityphoto,
-  SiAffinitypublisher,
   SiCss,
   SiGit,
   SiGithub,
