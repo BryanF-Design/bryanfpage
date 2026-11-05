@@ -16,6 +16,7 @@ export function CvPrintSheet({ t }: { t: CvDict }) {
   const inv = t.inventory;
   const itemName = (id: string, slot: string, name: string) => {
     if (slot === "lead") return inv.leadNames[id as keyof typeof inv.leadNames] ?? name;
+    if (id in inv.aiNames) return inv.aiNames[id as keyof typeof inv.aiNames];
     if (id in inv.autoNames) return inv.autoNames[id as keyof typeof inv.autoNames];
     if (id in inv.infraNames) return inv.infraNames[id as keyof typeof inv.infraNames];
     return name;

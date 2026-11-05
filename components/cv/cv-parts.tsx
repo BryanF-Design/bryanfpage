@@ -26,6 +26,9 @@ import {
 import {
   BadgeCheck,
   BellRing,
+  Bot,
+  Braces,
+  MessageSquareCode,
   Clapperboard,
   ClipboardList,
   FileText,
@@ -72,6 +75,9 @@ const SI: Record<string, IconType> = {
 const LUCIDE: Record<string, LucideIcon> = {
   BadgeCheck,
   BellRing,
+  Bot,
+  Braces,
+  MessageSquareCode,
   Clapperboard,
   ClipboardList,
   FileText,

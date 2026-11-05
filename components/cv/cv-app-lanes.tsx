@@ -33,25 +33,30 @@ type App = { name: string } & ({ Icon: IconType; color: string } | { src: string
 // (oscurecidos donde el original no se lee sobre blanco).
 const APPS: App[] = [
   { name: "React", Icon: SiReact, color: "#149ECA" },
+  { name: "Claude", src: "/img/cv/logos/claude.svg" },
   { name: "Next.js", Icon: SiNextdotjs, color: "#000000" },
   { name: "TypeScript", Icon: SiTypescript, color: "#3178C6" },
   { name: "JavaScript", Icon: SiJavascript, color: "#E8C400" },
   { name: "Figma", src: "/img/cv/logos/figma.svg" },
+  { name: "ChatGPT", src: "/img/cv/logos/openai-dark.svg" },
   { name: "Node.js", Icon: SiNodedotjs, color: "#5FA04E" },
   { name: "Tailwind CSS", Icon: SiTailwindcss, color: "#06B6D4" },
   { name: "Photoshop", src: "/img/cv/logos/photoshop.svg" },
   { name: "HTML5", Icon: SiHtml5, color: "#E34F26" },
   { name: "CSS3", Icon: SiCss, color: "#2965F1" },
   { name: "VS Code", src: "/img/cv/logos/vscode.svg" },
+  { name: "Gemini", src: "/img/cv/logos/gemini.svg" },
   { name: "Git", Icon: SiGit, color: "#F05032" },
   { name: "GitHub", Icon: SiGithub, color: "#181717" },
   { name: "Illustrator", src: "/img/cv/logos/illustrator.svg" },
   { name: "Vercel", Icon: SiVercel, color: "#000000" },
+  { name: "Perplexity", src: "/img/cv/logos/perplexity.svg" },
   { name: "Three.js", Icon: SiThreedotjs, color: "#000000" },
   { name: "n8n", src: "/img/cv/logos/n8n-icon.svg" },
   { name: "PHP", Icon: SiPhp, color: "#777BB4" },
   { name: "After Effects", src: "/img/cv/logos/after-effects.svg" },
   { name: "WordPress", Icon: SiWordpress, color: "#21759B" },
+  { name: "Grok", src: "/img/cv/logos/grok-dark.svg" },
   { name: "Stripe", Icon: SiStripe, color: "#635BFF" },
   { name: "Premiere Pro", src: "/img/cv/logos/premiere.svg" },
   { name: "Linux", Icon: SiLinux, color: "#000000" },
@@ -71,9 +76,9 @@ const CURSORS = [
 ];
 
 const LANES = [
-  { top: "7%", dur: 62, reverse: false, from: 0 },
-  { top: "41%", dur: 80, reverse: true, from: 9 },
-  { top: "77%", dur: 70, reverse: false, from: 18 },
+  { top: "7%", dur: 70, reverse: false, from: 0 },
+  { top: "41%", dur: 88, reverse: true, from: 11 },
+  { top: "77%", dur: 78, reverse: false, from: 22 },
 ];
 
 function Sticker({ app, index, cursor }: { app: App; index: number; cursor?: (typeof CURSORS)[number] }) {
@@ -155,7 +160,7 @@ export function CvAppLanes({ className }: { className?: string }) {
   return (
     <div aria-hidden className={cn("pointer-events-none absolute inset-0 overflow-hidden", className)}>
       {LANES.map((lane, li) => {
-        const apps = Array.from({ length: 9 }, (_, i) => APPS[(lane.from + i) % APPS.length]);
+        const apps = Array.from({ length: 11 }, (_, i) => APPS[(lane.from + i) % APPS.length]);
         const row = [...apps, ...apps];
         return (
           <div

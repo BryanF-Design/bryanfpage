@@ -69,6 +69,7 @@ const es = {
       "UX/UI Designer",
       "Dirección audiovisual",
       "Customer Service",
+      "Integración de IA"
     ],
     powersTitle: "Habilidades especiales",
     powers: [
@@ -210,6 +211,7 @@ const es = {
     hint: "Toca un objeto para ver su ficha.",
     slots: {
       front: "Front-end y web",
+      ai: "Inteligencia artificial",
       infra: "Infraestructura",
       auto: "Automatización",
       design: "Diseño y video",
@@ -226,6 +228,7 @@ const es = {
       service: "Customer Service",
       video: "Dirección de grabaciones",
     },
+    aiNames: { prompts: "Prompt engineering", aiApi: "IA por API", agents: "Agentes con IA" },
     autoNames: { forms: "Formularios", notify: "Notificaciones" },
     infraNames: { mail: "Correo empresarial" },
   },
@@ -321,7 +324,7 @@ const es = {
       misiones:
         "Estas son sus misiones. La principal: dos años al frente de desarrollo y operación en Partum Design, en paralelo a Indusecc. Toca cada una para ver los detalles.",
       inventario:
-        "¡Mira todo el equipo que carga! React, Next.js, Vercel, DNS, n8n, Adobe… y habilidades de liderazgo. Toca un objeto para ver su ficha.",
+        "¡Mira todo el equipo que carga! React, Next.js, Vercel, DNS, n8n, Adobe… y habilidades de liderazgo. Toca un objeto para ver su ficha. Además usa, controla y programa IA: Claude, ChatGPT, Gemini, Grok y Perplexity.",
       logros:
         "La sala de trofeos: apps de reservas, catálogos médicos, sitios corporativos y su propia plataforma. Cada logo es el oficial de la marca.",
       academia:

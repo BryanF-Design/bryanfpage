@@ -64,6 +64,7 @@ const ja: CvDict = {
       "UX/UI Designer",
       "映像ディレクション",
       "Customer Service",
+      "AI連携"
     ],
     powersTitle: "特殊スキル",
     powers: [
@@ -196,6 +197,7 @@ const ja: CvDict = {
     hint: "アイテムをタップすると詳細が見られます。",
     slots: {
       front: "フロントエンド・Web",
+      ai: "AI（人工知能）",
       infra: "インフラ",
       auto: "自動化",
       design: "デザイン・映像",
@@ -212,6 +214,7 @@ const ja: CvDict = {
       service: "カスタマーサービス",
       video: "撮影ディレクション",
     },
+    aiNames: { prompts: "プロンプト設計", aiApi: "API経由のAI", agents: "AIエージェント" },
     autoNames: { forms: "フォーム", notify: "通知" },
     infraNames: { mail: "ビジネスメール" },
   },
@@ -302,7 +305,7 @@ const ja: CvDict = {
       misiones:
         "これが彼のクエスト。メインは Partum Design での2年間の開発・運用統括、Indusecc と並行です。タップすると詳細が見られます。",
       inventario:
-        "すごい装備の数！React、Next.js、Vercel、DNS、n8n、Adobe… そしてリーダーシップ。アイテムをタップしてみて。",
+        "すごい装備の数！React、Next.js、Vercel、DNS、n8n、Adobe… そしてリーダーシップ。アイテムをタップしてみて。さらに Claude、ChatGPT、Gemini、Grok、Perplexity などのAIを使いこなし、プログラムもできます。",
       logros:
         "トロフィールームです。予約アプリ、医療カタログ、コーポレートサイト、そして自身のプラットフォーム。ロゴはすべて公式のものです。",
       academia:

@@ -80,6 +80,13 @@ const personJsonLd = {
       "Dirección de equipos",
       "Producción audiovisual",
       "Customer Service",
+      "Inteligencia artificial",
+      "Claude",
+      "ChatGPT",
+      "Gemini",
+      "Grok",
+      "Perplexity",
+      "Integración de IA por API",
     ],
     hasOccupation: QUESTS.slice(0, 3).map((q) => ({
       "@type": "Occupation",

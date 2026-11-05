@@ -64,6 +64,7 @@ const de: CvDict = {
       "UX/UI Designer",
       "Videoproduktion",
       "Customer Service",
+      "KI-Integration"
     ],
     powersTitle: "Spezialfähigkeiten",
     powers: [
@@ -205,6 +206,7 @@ const de: CvDict = {
     hint: "Tippe auf einen Gegenstand für seine Karte.",
     slots: {
       front: "Front-end & Web",
+      ai: "Künstliche Intelligenz",
       infra: "Infrastruktur",
       auto: "Automatisierung",
       design: "Design & Video",
@@ -221,6 +223,7 @@ const de: CvDict = {
       service: "Customer Service",
       video: "Drehregie",
     },
+    aiNames: { prompts: "Prompt Engineering", aiApi: "KI per API", agents: "KI-Agenten" },
     autoNames: { forms: "Formulare", notify: "Benachrichtigungen" },
     infraNames: { mail: "Firmen-E-Mail" },
   },
@@ -316,7 +319,7 @@ const de: CvDict = {
       misiones:
         "Das sind seine Quests. Die Hauptquest: zwei Jahre Leitung von Entwicklung und Betrieb bei Partum Design, parallel zu Indusecc. Tippe auf jede für Details.",
       inventario:
-        "Schau, wie viel Ausrüstung er trägt! React, Next.js, Vercel, DNS, n8n, Adobe… und Führungsqualitäten. Tippe auf einen Gegenstand.",
+        "Schau, wie viel Ausrüstung er trägt! React, Next.js, Vercel, DNS, n8n, Adobe… und Führungsqualitäten. Tippe auf einen Gegenstand. Außerdem nutzt, steuert und programmiert er KI: Claude, ChatGPT, Gemini, Grok und Perplexity.",
       logros:
         "Der Trophäenraum: Buchungs-Apps, Medizinkataloge, Unternehmensseiten und seine eigene Plattform. Jedes Logo ist das offizielle der Marke.",
       academia:

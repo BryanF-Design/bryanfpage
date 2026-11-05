@@ -209,7 +209,7 @@ export type ItemSource =
 export interface InventoryItem {
   id: string;
   name: string;
-  slot: "front" | "infra" | "auto" | "design" | "lead";
+  slot: "front" | "ai" | "infra" | "auto" | "design" | "lead";
   /** "core" = stack principal declarado; "extra" = también publicado en el portafolio. */
   tier: "core" | "extra";
   source: ItemSource;
@@ -229,6 +229,17 @@ export const INVENTORY: InventoryItem[] = [
   { id: "php", name: "PHP", slot: "front", tier: "extra", source: { kind: "si", icon: "SiPhp", color: "#8892BF" } },
   { id: "wordpress", name: "WordPress", slot: "front", tier: "extra", source: { kind: "si", icon: "SiWordpress", color: "#3C8DC5" } },
   { id: "stripe", name: "Stripe", slot: "front", tier: "extra", source: { kind: "si", icon: "SiStripe", color: "#8F87FF" } },
+  // Inteligencia artificial: las usa, las controla y las programa (vía API).
+  // Logos oficiales de cada marca (paquete @lobehub/icons); Grok y ChatGPT
+  // en su versión monocromática blanca para las fichas oscuras.
+  { id: "claude", name: "Claude", slot: "ai", tier: "core", source: { kind: "img", src: "/img/cv/logos/claude.svg" } },
+  { id: "chatgpt", name: "ChatGPT", slot: "ai", tier: "core", source: { kind: "img", src: "/img/cv/logos/openai-light.svg" } },
+  { id: "gemini", name: "Gemini", slot: "ai", tier: "core", source: { kind: "img", src: "/img/cv/logos/gemini.svg" } },
+  { id: "grok", name: "Grok", slot: "ai", tier: "core", source: { kind: "img", src: "/img/cv/logos/grok-light.svg" } },
+  { id: "perplexity", name: "Perplexity", slot: "ai", tier: "core", source: { kind: "img", src: "/img/cv/logos/perplexity.svg" } },
+  { id: "prompts", name: "prompts", slot: "ai", tier: "core", source: { kind: "lucide", icon: "MessageSquareCode" } },
+  { id: "aiApi", name: "aiApi", slot: "ai", tier: "core", source: { kind: "lucide", icon: "Braces" } },
+  { id: "agents", name: "agents", slot: "ai", tier: "core", source: { kind: "lucide", icon: "Bot" } },
   // Infraestructura y despliegues.
   { id: "git", name: "Git", slot: "infra", tier: "core", source: { kind: "si", icon: "SiGit", color: "#F05032" } },
   { id: "github", name: "GitHub", slot: "infra", tier: "core", source: { kind: "si", icon: "SiGithub", color: "#FFFFFF" } },
@@ -268,7 +279,7 @@ export const INVENTORY: InventoryItem[] = [
   { id: "video", name: "video", slot: "lead", tier: "core", source: { kind: "lucide", icon: "Clapperboard" } },
 ];
 
-export const INVENTORY_SLOTS = ["front", "infra", "auto", "design", "lead"] as const;
+export const INVENTORY_SLOTS = ["front", "ai", "infra", "auto", "design", "lead"] as const;
 export type InventorySlot = (typeof INVENTORY_SLOTS)[number];
 
 

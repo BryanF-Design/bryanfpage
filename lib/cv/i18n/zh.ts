@@ -57,7 +57,7 @@ const zh: CvDict = {
     summary:
       "专注于 Web 开发、数字化解决方案架构与技术运营。在 Partum Design 负责开发部门和项目运营协调两年多，同时在 Indusecc 承担技术与管理职责。将全栈开发、应用与平台、UX/UI、Web 基础设施、DNS、主机与邮件，与团队管理、拍摄统筹、客户服务和关键故障处理结合在一起。",
     classesTitle: "已解锁职业",
-    classes: ["Tech Architect", "Operations Manager", "Full-Stack Developer", "UX/UI Designer", "影像制作统筹", "Customer Service"],
+    classes: ["Tech Architect", "Operations Manager", "Full-Stack Developer", "UX/UI Designer", "影像制作统筹", "Customer Service", "AI 集成"],
     powersTitle: "特殊技能",
     powers: [
       { title: "开发", desc: "把业务需求转化为可用的界面、网站和 Web 体验。" },
@@ -175,6 +175,7 @@ const zh: CvDict = {
     hint: "点击物品查看详情。",
     slots: {
       front: "前端与 Web",
+      ai: "人工智能",
       infra: "基础设施",
       auto: "自动化",
       design: "设计与视频",
@@ -191,6 +192,7 @@ const zh: CvDict = {
       service: "客户服务",
       video: "拍摄执导",
     },
+    aiNames: { prompts: "提示词工程", aiApi: "通过 API 调用 AI", agents: "AI 智能体" },
     autoNames: { forms: "表单", notify: "通知" },
     infraNames: { mail: "企业邮箱" },
   },
@@ -278,7 +280,7 @@ const zh: CvDict = {
     lines: {
       perfil: "你好！我是 Lumina，带你浏览 Bryan 的简历。这是他的玩家卡：既能开发、设计架构，也能统筹运营。",
       misiones: "这些是他的任务。主线：在 Partum Design 负责开发与运营两年，同时兼任 Indusecc。点击每个任务查看详情。",
-      inventario: "看看他的装备！React、Next.js、Vercel、DNS、n8n、Adobe……还有领导技能。点击物品看看吧。",
+      inventario: "看看他的装备！React、Next.js、Vercel、DNS、n8n、Adobe……还有领导技能。点击物品看看吧。他还会使用、调控并编程 AI：Claude、ChatGPT、Gemini、Grok 和 Perplexity。",
       logros: "这里是奖杯室：预约应用、医疗目录、企业官网，还有他自己的平台。每个标志都是品牌官方标志。",
       academia: "你知道吗？他从计算机系统起步，现在攻读数字设计与动画，所以能把代码和设计结合起来。",
       contacto: "导览结束！如果 Bryan 适合你的团队，可以通过 WhatsApp 或邮件联系他，也可以把简历保存为 PDF。",

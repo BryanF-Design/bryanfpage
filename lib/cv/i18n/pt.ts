@@ -64,6 +64,7 @@ const pt: CvDict = {
       "UX/UI Designer",
       "Direção audiovisual",
       "Customer Service",
+      "Integração de IA"
     ],
     powersTitle: "Habilidades especiais",
     powers: [
@@ -205,6 +206,7 @@ const pt: CvDict = {
     hint: "Toque em um item para ver a ficha.",
     slots: {
       front: "Front-end e web",
+      ai: "Inteligência artificial",
       infra: "Infraestrutura",
       auto: "Automação",
       design: "Design e vídeo",
@@ -221,6 +223,7 @@ const pt: CvDict = {
       service: "Customer Service",
       video: "Direção de gravações",
     },
+    aiNames: { prompts: "Engenharia de prompts", aiApi: "IA via API", agents: "Agentes de IA" },
     autoNames: { forms: "Formulários", notify: "Notificações" },
     infraNames: { mail: "E-mail corporativo" },
   },
@@ -316,7 +319,7 @@ const pt: CvDict = {
       misiones:
         "Estas são as missões dele. A principal: dois anos à frente de desenvolvimento e operação na Partum Design, em paralelo à Indusecc. Toque em cada uma para ver detalhes.",
       inventario:
-        "Olha quanto equipamento ele carrega! React, Next.js, Vercel, DNS, n8n, Adobe… e habilidades de liderança. Toque em um item para ver a ficha.",
+        "Olha quanto equipamento ele carrega! React, Next.js, Vercel, DNS, n8n, Adobe… e habilidades de liderança. Toque em um item para ver a ficha. Ele também usa, controla e programa IA: Claude, ChatGPT, Gemini, Grok e Perplexity.",
       logros:
         "A sala de troféus: apps de agendamento, catálogos médicos, sites corporativos e a própria plataforma. Cada logo é o oficial da marca.",
       academia:

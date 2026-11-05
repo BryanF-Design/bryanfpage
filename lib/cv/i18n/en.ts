@@ -64,6 +64,7 @@ const en: CvDict = {
       "UX/UI Designer",
       "Video production lead",
       "Customer Service",
+      "AI integration"
     ],
     powersTitle: "Special abilities",
     powers: [
@@ -205,6 +206,7 @@ const en: CvDict = {
     hint: "Tap an item to see its card.",
     slots: {
       front: "Front-end & web",
+      ai: "Artificial intelligence",
       infra: "Infrastructure",
       auto: "Automation",
       design: "Design & video",
@@ -221,6 +223,7 @@ const en: CvDict = {
       service: "Customer Service",
       video: "Directing shoots",
     },
+    aiNames: { prompts: "Prompt engineering", aiApi: "AI via API", agents: "AI agents" },
     autoNames: { forms: "Forms", notify: "Notifications" },
     infraNames: { mail: "Business email" },
   },
@@ -316,7 +319,7 @@ const en: CvDict = {
       misiones:
         "These are his quests. The main one: two years leading development and operations at Partum Design, alongside Indusecc. Tap each one for details.",
       inventario:
-        "Look at all the gear he carries! React, Next.js, Vercel, DNS, n8n, Adobe… plus leadership skills. Tap an item to see its card.",
+        "Look at all the gear he carries! React, Next.js, Vercel, DNS, n8n, Adobe… plus leadership skills. Tap an item to see its card. He also uses, steers and programs AI: Claude, ChatGPT, Gemini, Grok and Perplexity.",
       logros:
         "The trophy room: booking apps, medical catalogs, corporate sites and his own platform. Every logo is the brand's official one.",
       academia:
