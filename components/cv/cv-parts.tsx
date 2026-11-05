@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useRef, type CSSProperties, type PointerEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, type CSSProperties, type PointerEvent, type ReactNode } from "react";
 import type { IconType } from "react-icons";
 import {
   SiCss,
@@ -236,7 +236,7 @@ export function Chip({
         tone === "dark" && "bg-white/[0.07] text-white/85 ring-1 ring-inset ring-white/10",
         tone === "lime" && "bg-[var(--cv-lime)] text-[#0c1512]",
         tone === "light" && "bg-white text-[#0c1512]",
-        tone === "outline" && "text-[var(--cv-lime)] ring-1 ring-inset ring-[var(--cv-lime)]/60",
+        tone === "outline" && "text-[var(--cv-lime)] ring-1 ring-inset ring-[#b4e332]/60",
         className
       )}
     >
@@ -244,5 +244,109 @@ export function Chip({
     </span>
   );
 }
+
+/**
+ * Filas horizontales que se arrastran: con el dedo es scroll nativo y con
+ * mouse se agarra y se lanza (con inercia). Si hubo arrastre, el clic que
+ * termina el gesto se cancela para no activar la pill que quedó debajo.
+ * La rueda vertical del mouse también desplaza la fila.
+ */
+export function useDragScroll<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let down = false;
+    let moved = false;
+    let startX = 0;
+    let startLeft = 0;
+    let lastX = 0;
+    let lastT = 0;
+    let velocity = 0;
+    let raf = 0;
+
+    const onDown = (e: globalThis.PointerEvent) => {
+      if (e.pointerType !== "mouse" || e.button !== 0) return;
+      cancelAnimationFrame(raf);
+      down = true;
+      moved = false;
+      startX = lastX = e.clientX;
+      startLeft = el.scrollLeft;
+      lastT = performance.now();
+      velocity = 0;
+    };
+    const onMove = (e: globalThis.PointerEvent) => {
+      if (!down) return;
+      const dx = e.clientX - startX;
+      if (!moved && Math.abs(dx) > 5) {
+        moved = true;
+        el.setPointerCapture(e.pointerId);
+        el.dataset.dragging = "true";
+      }
+      if (!moved) return;
+      const now = performance.now();
+      velocity = (e.clientX - lastX) / Math.max(1, now - lastT);
+      lastX = e.clientX;
+      lastT = now;
+      el.scrollLeft = startLeft - dx;
+    };
+    const onUp = (e: globalThis.PointerEvent) => {
+      if (!down) return;
+      down = false;
+      if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+      delete el.dataset.dragging;
+      // Inercia: la fila sigue deslizándose y frena sola.
+      let v = velocity * 16;
+      const glide = () => {
+        if (Math.abs(v) < 0.4) return;
+        el.scrollLeft -= v;
+        v *= 0.92;
+        raf = requestAnimationFrame(glide);
+      };
+      if (moved) raf = requestAnimationFrame(glide);
+    };
+    const onClick = (e: MouseEvent) => {
+      if (moved) {
+        e.preventDefault();
+        e.stopPropagation();
+        moved = false;
+      }
+    };
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      if (el.scrollWidth <= el.clientWidth) return;
+      const atStart = el.scrollLeft <= 0 && e.deltaY < 0;
+      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1 && e.deltaY > 0;
+      if (atStart || atEnd) return;
+      e.preventDefault();
+      el.scrollLeft += e.deltaY;
+    };
+
+    el.addEventListener("pointerdown", onDown);
+    el.addEventListener("pointermove", onMove);
+    el.addEventListener("pointerup", onUp);
+    el.addEventListener("pointercancel", onUp);
+    el.addEventListener("click", onClick, true);
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      cancelAnimationFrame(raf);
+      el.removeEventListener("pointerdown", onDown);
+      el.removeEventListener("pointermove", onMove);
+      el.removeEventListener("pointerup", onUp);
+      el.removeEventListener("pointercancel", onUp);
+      el.removeEventListener("click", onClick, true);
+      el.removeEventListener("wheel", onWheel);
+    };
+  }, []);
+
+  return ref;
+}
+
+/** Clases de una fila arrastrable (sin barra, con desvanecido en los bordes). */
+export const dragRowClass = cn(
+  s.dragRow,
+  "flex snap-x snap-proximity overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+);
 
 export { s as cvStyles };

@@ -271,15 +271,6 @@ export const INVENTORY: InventoryItem[] = [
 export const INVENTORY_SLOTS = ["front", "infra", "auto", "design", "lead"] as const;
 export type InventorySlot = (typeof INVENTORY_SLOTS)[number];
 
-/** Pegatinas flotantes de la pantalla de título (como en un portafolio de papel). */
-export const START_STICKERS = [
-  { src: "/img/cv/logos/photoshop.svg", alt: "Photoshop" },
-  { src: "/img/cv/logos/illustrator.svg", alt: "Illustrator" },
-  { src: "/img/cv/logos/figma.svg", alt: "Figma" },
-  { src: "/img/cv/logos/after-effects.svg", alt: "After Effects" },
-  { src: "/img/cv/logos/vscode.svg", alt: "VS Code" },
-  { src: "/img/cv/logos/n8n.svg", alt: "n8n" },
-] as const;
 
 /** Línea de tiempo de experiencia (años desde el primer trabajo en 2018). */
 export const CAREER_START = 2018;

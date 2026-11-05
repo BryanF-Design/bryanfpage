@@ -40,10 +40,57 @@ import {
 import type { CvDict } from "@/lib/cv/i18n";
 import { cn } from "@/lib/utils";
 
-import { Chip, ItemIcon, LevelHeader, LogoTile, Tilt, cvStyles as s } from "./cv-parts";
+import {
+  Chip,
+  ItemIcon,
+  LevelHeader,
+  LogoTile,
+  Tilt,
+  cvStyles as s,
+  dragRowClass,
+  useDragScroll,
+} from "./cv-parts";
 import { PlayerCard } from "./cv-player-card";
 
 type LevelProps = { t: CvDict; index: number };
+
+/**
+ * Lista que en teléfono es un carrusel arrastrable y desde `sm` (o nunca, con
+ * `always`) vuelve a ser rejilla normal.
+ */
+function DragRow({
+  className,
+  gridClassName,
+  children,
+  always = false,
+}: {
+  className?: string;
+  gridClassName?: string;
+  children: React.ReactNode;
+  always?: boolean;
+}) {
+  const ref = useDragScroll<HTMLUListElement>();
+  return (
+    <ul
+      ref={ref}
+      data-drag-row=""
+      className={cn(
+        dragRowClass,
+        s.stagger,
+        "-mx-4 gap-2.5 px-4 pb-1",
+        !always &&
+          "sm:mx-0 sm:grid sm:cursor-auto sm:overflow-visible sm:px-0 sm:pb-0 sm:[-webkit-mask-image:none] sm:[mask-image:none]",
+        !always && gridClassName,
+        className
+      )}
+    >
+      {children}
+    </ul>
+  );
+}
+
+/** Ancho de cada tarjeta dentro del carrusel móvil. */
+const SLIDE = "w-[80%] shrink-0 snap-start sm:w-auto";
 
 const POWER_ICONS: LucideIcon[] = [Code2, Network, Zap, Blocks, Clapperboard, Server, Handshake, Palette];
 
@@ -73,7 +120,7 @@ export function ProfileLevel({ t, index }: LevelProps) {
       </div>
 
       <Card className="relative overflow-hidden">
-        <span aria-hidden className="absolute -right-10 -top-10 size-40 rounded-full bg-[var(--cv-lime)]/10 blur-2xl" />
+        <span aria-hidden className="absolute -right-10 -top-10 size-40 rounded-full bg-[#b4e332]/10 blur-2xl" />
         <p className="relative text-pretty text-[0.98rem] leading-relaxed text-white/85 md:text-[1.05rem]">{p.summary}</p>
       </Card>
 
@@ -102,11 +149,11 @@ export function ProfileLevel({ t, index }: LevelProps) {
 
       <div>
         <SectionTitle icon={Sparkle}>{p.powersTitle}</SectionTitle>
-        <ul className={cn(s.stagger, "mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4")}>
+        <DragRow className="mt-4" gridClassName="sm:grid-cols-2 sm:gap-3 xl:grid-cols-4">
           {p.powers.map((power, i) => {
             const Icon = POWER_ICONS[i] ?? Sparkle;
             return (
-              <li key={power.title} style={{ "--i": i } as CSSProperties}>
+              <li key={power.title} style={{ "--i": i } as CSSProperties} className={SLIDE}>
                 <Tilt className="h-full rounded-[1.4rem]">
                   <div className={cn(s.glass, "group flex h-full flex-col rounded-[1.4rem] p-4")}>
                     <div className="flex items-center justify-between">
@@ -122,7 +169,7 @@ export function ProfileLevel({ t, index }: LevelProps) {
               </li>
             );
           })}
-        </ul>
+        </DragRow>
       </div>
     </div>
   );
@@ -175,7 +222,7 @@ function QuestDetail({ quest, t }: { quest: Quest; t: CvDict }) {
         : quest.period;
   return (
     <article className={cn(s.glass, s.biteBr, "relative overflow-hidden rounded-[1.8rem] p-5 md:p-7")}>
-      <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[var(--cv-lime)] via-[var(--cv-lime)]/40 to-transparent" />
+      <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[var(--cv-lime)] via-[#b4e332]/40 to-transparent" />
       <div className="flex flex-col items-start gap-4 sm:flex-row">
         <QuestLogos quest={quest} size="lg" />
         <div className="min-w-0 flex-1">
@@ -258,7 +305,7 @@ export function QuestsLevel({ t, index }: LevelProps) {
           "group relative flex w-full items-center gap-3 rounded-2xl p-3 text-left transition-all duration-300",
           selected
             ? "bg-white text-[#0c1512] shadow-[0_14px_30px_-12px_rgb(180_227_50/0.6)]"
-            : cn(s.glass, "hover:-translate-y-0.5 hover:border-[var(--cv-lime)]/50"),
+            : cn(s.glass, "hover:-translate-y-0.5 hover:border-[#b4e332]/50"),
           compact ? "min-h-[4rem]" : "min-h-[5rem]"
         )}
       >
@@ -282,13 +329,13 @@ export function QuestsLevel({ t, index }: LevelProps) {
     <div className={cn(s.levelEnter, "space-y-5")}>
       <LevelHeader index={index} levelLabel={t.ui.level} eyebrow={t.quests.eyebrow} title={t.quests.title} />
 
-      <ul className={cn(s.stagger, "grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3")}>
+      <DragRow gridClassName="sm:grid-cols-2 xl:grid-cols-3">
         {featured.map((quest, i) => (
-          <li key={quest.id} style={{ "--i": i } as CSSProperties}>
+          <li key={quest.id} style={{ "--i": i } as CSSProperties} className={cn(SLIDE, "w-[78%] pt-2 sm:pt-0")}>
             {button(quest)}
           </li>
         ))}
-      </ul>
+      </DragRow>
 
       {/* En pantalla solo la misión elegida; al imprimir, todas. */}
       {QUESTS.map((quest) => (
@@ -299,11 +346,13 @@ export function QuestsLevel({ t, index }: LevelProps) {
 
       <div>
         <SectionTitle icon={BriefcaseBusiness}>{t.quests.earlier}</SectionTitle>
-        <ul className="mt-3 grid gap-2.5 sm:grid-cols-2">
-          {earlier.map((quest) => (
-            <li key={quest.id}>{button(quest, true)}</li>
+        <DragRow className="mt-3" gridClassName="sm:grid-cols-2">
+          {earlier.map((quest, i) => (
+            <li key={quest.id} style={{ "--i": i } as CSSProperties} className={cn(SLIDE, "w-[72%]")}>
+              {button(quest, true)}
+            </li>
           ))}
-        </ul>
+        </DragRow>
       </div>
     </div>
   );
@@ -351,7 +400,7 @@ export function InventoryLevel({ t, index }: LevelProps) {
         className={cn(
           s.glass,
           "flex min-h-[5.25rem] items-center gap-4 rounded-[1.4rem] p-4 transition-colors",
-          pickedItem && "border-[var(--cv-lime)]/50"
+          pickedItem && "border-[#b4e332]/50"
         )}
       >
         {pickedItem ? (
@@ -380,7 +429,7 @@ export function InventoryLevel({ t, index }: LevelProps) {
         return (
           <section key={slot} aria-label={t.inventory.slots[slot]}>
             <SectionTitle icon={Icon}>{t.inventory.slots[slot]}</SectionTitle>
-            <ul className={cn(s.stagger, "mt-3 grid grid-cols-3 gap-2.5 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-7")}>
+            <ul className={cn(s.stagger, "mt-3 grid grid-cols-4 gap-2 sm:gap-2.5 md:grid-cols-5 xl:grid-cols-7")}>
               {items.map((item, i) => {
                 const name = itemName(item, t);
                 return (
@@ -397,8 +446,8 @@ export function InventoryLevel({ t, index }: LevelProps) {
                         picked === item.id && "!border-[var(--cv-lime)]"
                       )}
                     >
-                      <ItemIcon item={item} className="h-7 w-7 md:h-8 md:w-8" />
-                      <span className="line-clamp-2 text-[0.68rem] font-semibold leading-tight text-white/80 md:text-[0.72rem]">
+                      <ItemIcon item={item} className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />
+                      <span className="line-clamp-2 text-[0.6rem] font-semibold leading-tight text-white/80 sm:text-[0.68rem] md:text-[0.72rem]">
                         {name}
                       </span>
                       {item.tier === "core" && (
@@ -425,7 +474,7 @@ export function TrophiesLevel({ t, index }: LevelProps) {
       <LevelHeader index={index} levelLabel={t.ui.level} eyebrow={t.trophies.eyebrow} title={t.trophies.title} />
 
       {/* Estante: un botón por trofeo. */}
-      <ul className="-mx-1 flex snap-x gap-2.5 overflow-x-auto px-1 pb-2 [scrollbar-width:thin]">
+      <DragRow always className="md:-mx-1 md:px-1">
         {TROPHIES.map((trophy, i) => {
           const selected = trophy.id === active;
           return (
@@ -447,7 +496,7 @@ export function TrophiesLevel({ t, index }: LevelProps) {
             </li>
           );
         })}
-      </ul>
+      </DragRow>
 
       {TROPHIES.map((trophy) => {
         const item = t.trophies.items[trophy.id as keyof CvDict["trophies"]["items"]];
@@ -474,7 +523,7 @@ export function TrophiesLevel({ t, index }: LevelProps) {
                       alt={trophy.name}
                       fill
                       sizes="(min-width: 1280px) 520px, (min-width: 1024px) 60vw, 100vw"
-                      className="object-cover object-top transition-transform duration-[1200ms] ease-out hover:scale-[1.04]"
+                      className="object-cover object-top transition-transform [transition-duration:1200ms] ease-out hover:scale-[1.04]"
                     />
                   </div>
                 </div>
@@ -564,7 +613,7 @@ export function TrophiesLevel({ t, index }: LevelProps) {
                 href={project.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={cn(s.glass, "inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-colors hover:border-[var(--cv-lime)]/60")}
+                className={cn(s.glass, "inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-colors hover:border-[#b4e332]/60")}
               >
                 {project.name}
                 <ArrowUpRight aria-hidden className="h-3.5 w-3.5 text-[var(--cv-lime)]" />
@@ -677,7 +726,7 @@ export function ContactLevel({ t, index }: LevelProps) {
         <div className="relative grid items-end gap-6 md:grid-cols-[1fr_auto]">
           <div>
             <span className={cn(s.selected, "inline-block bg-[var(--cv-lime)] px-4 py-1 md:px-6")}>
-              <span className="block font-display text-[3.4rem] font-black leading-[0.95] tracking-[-0.04em] [font-stretch:125%] sm:text-7xl md:text-8xl">
+              <span className="block font-display text-[2.35rem] font-black leading-[0.95] tracking-[-0.04em] [font-stretch:118%] min-[420px]:text-[2.9rem] sm:text-7xl sm:[font-stretch:125%] md:text-8xl">
                 {c.thank}
               </span>
               <span aria-hidden className={s.handleBl} />
@@ -686,12 +735,12 @@ export function ContactLevel({ t, index }: LevelProps) {
             <p className={cn(s.scriptWord, "-mt-1 ml-10 -rotate-3 text-5xl sm:text-6xl md:ml-24 md:text-7xl")}>{c.script}!!</p>
           </div>
           <Image
-            src="/img/brand/bryan-hero.webp"
+            src="/img/cv/bryan-photo.webp"
             alt=""
-            width={704}
-            height={1184}
-            sizes="(min-width: 768px) 180px, 120px"
-            className="pointer-events-none -mb-6 hidden h-auto w-[150px] justify-self-end drop-shadow-[0_18px_24px_rgb(0_0_0/0.35)] sm:block md:-mb-10 md:w-[190px]"
+            width={760}
+            height={1013}
+            sizes="(min-width: 768px) 200px, 150px"
+            className="pointer-events-none -mb-6 hidden h-auto w-[160px] justify-self-end drop-shadow-[0_18px_24px_rgb(0_0_0/0.35)] sm:block md:-mb-10 md:w-[200px]"
           />
         </div>
       </div>
@@ -705,7 +754,7 @@ export function ContactLevel({ t, index }: LevelProps) {
               {...(href.endsWith(".vcf") ? { download: "bryan-f.vcf" } : {})}
               className={cn(
                 "group flex min-h-[3.75rem] items-center justify-between gap-3 rounded-2xl px-5 font-bold transition-all duration-200 hover:-translate-y-0.5",
-                primary ? "bg-[var(--cv-lime)] text-[#0c1512]" : cn(s.glass, "hover:border-[var(--cv-lime)]/60")
+                primary ? "bg-[var(--cv-lime)] text-[#0c1512]" : cn(s.glass, "hover:border-[#b4e332]/60")
               )}
             >
               {label}

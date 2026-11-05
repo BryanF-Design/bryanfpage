@@ -576,31 +576,406 @@
   transition-duration: 0.001ms !important;
 }
 
-/* ── Impresión / PDF: todos los niveles, uno tras otro ─────────────────── */
+/* ── Impresión / PDF: una hoja de CV limpia (ver CvPrintSheet) ───────── */
+.printSheet {
+  display: none;
+}
+
 @media print {
-  .root {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-    background: var(--cv-bg);
+  @page {
+    size: A4;
+    margin: 9mm 11mm;
   }
-  .backdrop,
-  .start {
+  .root {
+    min-height: 0;
+    background: #fff;
+    color: #111;
+    overflow: visible;
+  }
+  .root > *:not(.printSheet) {
     display: none !important;
   }
-  .glass {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    background: var(--cv-panel);
+  .printSheet {
+    display: block;
+    color: #16201c;
+    font-size: 8.5pt;
+    line-height: 1.34;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
-  .panel {
-    display: block !important;
-    break-inside: auto;
-    break-before: page;
+}
+
+.psHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 0 10px;
+  border-bottom: 3px solid #b4e332;
+}
+.psPhoto {
+  width: 68px;
+  height: 68px;
+  border-radius: 14px;
+  object-fit: cover;
+  object-position: top;
+  flex: none;
+}
+.psHeadText {
+  flex: 1;
+  min-width: 0;
+}
+.psHeadText h1 {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 21pt;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.psRole {
+  margin: 3px 0 5px;
+  font-weight: 700;
+  color: #4b7a06;
+  font-size: 10pt;
+}
+.psContact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  margin: 0;
+  font-size: 8.4pt;
+  color: #3c4a44;
+}
+.psLogo {
+  width: 70px;
+  height: auto;
+  flex: none;
+}
+
+.psGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 31%;
+  gap: 18px;
+  margin-top: 12px;
+}
+.psGrid section {
+  margin-bottom: 8px;
+}
+.psGrid h2 {
+  margin: 0 0 5px;
+  padding-bottom: 2px;
+  font-family: var(--font-display), sans-serif;
+  font-size: 9pt;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #0c1512;
+  border-bottom: 1px solid #dfe5d8;
+}
+.psGrid p {
+  margin: 0 0 4px;
+}
+.psGrid ul {
+  margin: 2px 0 0;
+  padding-left: 13px;
+}
+.psGrid aside {
+  padding-left: 14px;
+  border-left: 1px solid #e6ebe0;
+}
+
+.psJob {
+  margin-bottom: 6px;
+  break-inside: avoid;
+}
+.psJobHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 9.6pt;
+}
+.psJobHead span {
+  flex: none;
+  font-size: 8.4pt;
+  font-weight: 700;
+  color: #4b7a06;
+}
+.psJobRole {
+  font-weight: 600;
+  font-style: italic;
+  color: #3c4a44;
+}
+.psJob li {
+  margin-bottom: 1px;
+}
+.psMuted {
+  color: #6b7770;
+}
+.psProjects li {
+  margin-bottom: 3px;
+  break-inside: avoid;
+}
+.psTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding-left: 0 !important;
+  list-style: none;
+}
+.psTags li {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #eef7d6;
+  border: 1px solid #c9e58a;
+  font-size: 8pt;
+  font-weight: 600;
+}
+.psList {
+  font-size: 8.6pt;
+}
+.psEdu {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 6px;
+  font-size: 8.6pt;
+}
+.psCourses {
+  padding-left: 0 !important;
+  list-style: none;
+  font-size: 8.2pt;
+}
+.psCourses li {
+  margin-bottom: 2px;
+}
+.psCourses b {
+  color: #4b7a06;
+}
+.psFooter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid #e6ebe0;
+  font-size: 7.6pt;
+  color: #6b7770;
+  text-align: center;
+}
+
+/* ── Filas arrastrables ────────────────────────────────────────────────── */
+.dragRow {
+  cursor: grab;
+  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 28px), transparent 100%);
+  mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 28px), transparent 100%);
+  touch-action: pan-x pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.dragRow[data-dragging="true"] {
+  cursor: grabbing;
+  scroll-snap-type: none;
+}
+.dragRow[data-dragging="true"] * {
+  pointer-events: none;
+}
+.dragRow img {
+  -webkit-user-drag: none;
+}
+
+/* ── Menú principal: carriles de apps arrastradas por cursores ─────────── */
+.lane {
+  position: absolute;
+  left: 0;
+  display: flex;
+  align-items: center;
+  width: max-content;
+  padding-left: 40px;
+  animation: lane-move 70s linear infinite;
+  will-change: transform;
+}
+.lane[data-paused="true"] {
+  animation-play-state: paused;
+}
+
+@keyframes lane-move {
+  from {
+    transform: translateX(0);
   }
-  .panel:first-of-type {
-    break-before: auto;
+  to {
+    transform: translateX(-50%);
   }
-  .root * {
-    animation: none !important;
+}
+
+.appSticker {
+  --dx: 0px;
+  --dy: 0px;
+  position: relative;
+  flex: none;
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+  transform: translate(var(--dx), calc(var(--y, 0px) + var(--dy)));
+  transition: filter 0.2s ease;
+}
+.appSticker[data-grabbed="true"] {
+  cursor: grabbing;
+  z-index: 5;
+  filter: drop-shadow(0 18px 18px rgb(12 21 18 / 0.35));
+}
+
+.appTile {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow:
+    0 0 0 2px #0c1512,
+    4px 5px 0 #0c1512;
+  rotate: var(--rot, 0deg);
+  animation: app-bob var(--bob, 4s) ease-in-out infinite;
+}
+.appTile svg,
+.appTile img {
+  width: 58%;
+  height: 58%;
+  object-fit: contain;
+  -webkit-user-drag: none;
+}
+
+@media (min-width: 640px) {
+  .appTile {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    box-shadow:
+      0 0 0 2px #0c1512,
+      5px 6px 0 #0c1512;
   }
+}
+
+@keyframes app-bob {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -9px;
+  }
+}
+
+/* Cursor con nombre: tironea la pegatina como si la arrastrara. */
+.appCursor {
+  position: absolute;
+  left: 72%;
+  top: 70%;
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
+  pointer-events: none;
+  animation: cursor-tug 2.6s ease-in-out infinite;
+}
+.appCursor svg {
+  width: 20px;
+  height: 20px;
+  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.25));
+}
+.appCursor span {
+  margin-top: 14px;
+  padding: 2px 7px;
+  border-radius: 999px 999px 999px 4px;
+  background: var(--c);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+@keyframes cursor-tug {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  40% {
+    transform: translate(5px, 3px);
+  }
+  70% {
+    transform: translate(-2px, 5px);
+  }
+}
+
+/* ── Preloader ─────────────────────────────────────────────────────────── */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 170;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(60% 50% at 50% 45%, rgb(180 227 50 / 0.14), transparent 70%),
+    #050a08;
+  color: #fff;
+  /* Se va solo aunque JavaScript no llegue a correr. */
+  animation: preloader-out 0.5s var(--cv-ease) 1.55s forwards;
+}
+.preloaderDone {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  animation: none;
+}
+
+@keyframes preloader-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(1.04);
+  }
+}
+
+.loadBar {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 4px;
+  padding: 5px;
+  border: 2px solid var(--cv-lime);
+  border-radius: 10px;
+}
+.loadBar span {
+  height: 14px;
+  border-radius: 3px;
+  background: var(--cv-lime);
+  opacity: 0;
+  animation: load-seg 0.12s steps(1) forwards;
+  animation-delay: calc(var(--i) * 105ms + 150ms);
+}
+
+@keyframes load-seg {
+  to {
+    opacity: 1;
+  }
+}
+
+.preloaderLumina {
+  animation: bob 1.4s ease-in-out infinite;
+}
+
+/* ── Lumina compacta ───────────────────────────────────────────────────── */
+.dock {
+  background: linear-gradient(170deg, rgb(15 28 23 / 0.94) 0%, rgb(7 13 11 / 0.96) 100%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid rgb(180 227 50 / 0.75);
+  box-shadow:
+    0 0 0 3px rgb(5 10 8 / 0.85),
+    0 18px 40px -16px rgb(0 0 0 / 0.85),
+    0 0 30px -10px rgb(180 227 50 / 0.45);
+}
+
+.progressFill {
+  transform-origin: left;
+  transition: transform 0.6s var(--cv-ease);
 }

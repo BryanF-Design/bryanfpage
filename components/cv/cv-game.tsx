@@ -17,7 +17,7 @@ import {
 import { LEVELS, type LevelId } from "@/lib/cv/data";
 import { CV_DICTIONARIES } from "@/lib/cv/i18n";
 import { useLanguage } from "@/lib/i18n/context";
-import { LOCALE_META, isLocale, type Locale } from "@/lib/i18n/locales";
+import { isLocale, type Locale } from "@/lib/i18n/locales";
 import { cn } from "@/lib/utils";
 
 import { CvBackdrop } from "./cv-backdrop";
@@ -31,7 +31,9 @@ import {
   TrophiesLevel,
 } from "./cv-levels";
 import { LuminaGuide } from "./cv-lumina";
-import { cvStyles as s } from "./cv-parts";
+import { cvStyles as s, dragRowClass, useDragScroll } from "./cv-parts";
+import { CvPreloader } from "./cv-preloader";
+import { CvPrintSheet } from "./cv-print-sheet";
 import { PlayerCard } from "./cv-player-card";
 import { CvStart } from "./cv-start";
 
@@ -104,6 +106,7 @@ export function CvGame() {
   const [guideOpen, setGuideOpen] = useState(true);
   const [showDetected, setShowDetected] = useState(true);
   const stageRef = useRef<HTMLDivElement>(null);
+  const tabsRowRef = useDragScroll<HTMLDivElement>();
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const focusTab = useCallback((id: LevelId) => {
     // Hay dos listas (riel y fila móvil); se enfoca la que está visible.
@@ -136,6 +139,15 @@ export function CvGame() {
   useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
+
+  // La pill del nivel activo siempre queda a la vista en la fila móvil.
+  useEffect(() => {
+    const row = tabsRowRef.current;
+    const pill = tabRefs.current[`horizontal-${level}`];
+    if (!row || !pill || row.offsetParent === null) return;
+    const target = pill.offsetLeft - (row.clientWidth - pill.offsetWidth) / 2;
+    row.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
+  }, [level, tabsRowRef]);
 
   const chooseLanguage = useCallback(
     (next: Locale) => {
@@ -208,6 +220,29 @@ export function CvGame() {
     return () => window.removeEventListener("keydown", onKey);
   }, [started, start, step, goTo]);
 
+  // Teléfono: deslizar el escenario a los lados cambia de nivel (salvo que el
+  // gesto empiece en una fila que ya se arrastra sola).
+  const swipe = useRef<{ x: number; y: number; t: number } | null>(null);
+  function onStageTouchStart(e: React.TouchEvent) {
+    const target = e.target as HTMLElement;
+    if (target.closest("[data-drag-row], input, textarea, select")) {
+      swipe.current = null;
+      return;
+    }
+    const p = e.touches[0];
+    swipe.current = { x: p.clientX, y: p.clientY, t: Date.now() };
+  }
+  function onStageTouchEnd(e: React.TouchEvent) {
+    const start = swipe.current;
+    swipe.current = null;
+    if (!start) return;
+    const p = e.changedTouches[0];
+    const dx = p.clientX - start.x;
+    const dy = p.clientY - start.y;
+    if (Date.now() - start.t > 600 || Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.8) return;
+    step(dx < 0 ? 1 : -1);
+  }
+
   // Patrón de pestañas: flechas dentro de la lista, con foco que sigue.
   function onTabKey(e: ReactKeyboardEvent<HTMLDivElement>) {
     const keysNext = ["ArrowRight", "ArrowDown"];
@@ -229,20 +264,18 @@ export function CvGame() {
 
   // Primer diálogo: Lumina dice qué idioma detectó (se va al cambiar de nivel).
   const detectedNote = showDetected
-    ? t.lumina.detected.replace("{lang}", `${LOCALE_META[lang].flag} ${t.langName}`)
+    ? t.lumina.detected.replace("{lang}", `${t.langName} (${lang.toUpperCase()})`)
     : null;
 
   const levelTabs = (orientation: "vertical" | "horizontal") => (
     <div
+      ref={orientation === "horizontal" ? tabsRowRef : undefined}
       role="tablist"
       aria-label={t.ui.levelSelect}
       aria-orientation={orientation}
       onKeyDown={onTabKey}
-      className={cn(
-        orientation === "vertical"
-          ? "flex flex-col gap-2"
-          : "-mx-3 flex gap-2 overflow-x-auto px-3 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-      )}
+      data-drag-row={orientation === "horizontal" ? "" : undefined}
+      className={cn(orientation === "vertical" ? "flex flex-col gap-2" : cn(dragRowClass, "-mx-3 gap-2 px-3 py-1"))}
     >
       {LEVELS.map((id, i) => {
         const Icon = LEVEL_ICONS[id];
@@ -261,7 +294,7 @@ export function CvGame() {
             tabIndex={active ? 0 : -1}
             onClick={() => goTo(id)}
             className={cn(
-              "group relative shrink-0 transition-all duration-300",
+              "group relative shrink-0 snap-center transition-all duration-300",
               orientation === "vertical"
                 ? "flex w-full flex-col items-center gap-1 rounded-[1.3rem] px-1 py-2.5"
                 : "flex items-center gap-2 rounded-full py-2 pl-2 pr-4",
@@ -300,6 +333,8 @@ export function CvGame() {
 
   return (
     <div className={cn(s.root)}>
+      <CvPreloader label={t.ui.loading} />
+      <CvPrintSheet t={t} />
       <CvBackdrop levelIndex={levelIndex} />
       {!started && (
         <CvStart t={t} lang={lang} leaving={leaving} onStart={start} onLanguage={chooseLanguage} />
@@ -340,18 +375,37 @@ export function CvGame() {
       </header>
 
       {/* Selector de niveles en teléfono y tableta: fila pegada arriba. */}
-      <nav className="sticky top-0 z-30 mt-3 bg-gradient-to-b from-[#050a08] via-[#050a08]/90 to-transparent px-3 pb-3 pt-2 print:hidden sm:px-5 lg:hidden">
+      <nav className="sticky top-0 z-30 mt-2 bg-gradient-to-b from-[#050a08] via-[#050a08]/95 to-transparent px-3 pb-3 pt-2 print:hidden sm:px-5 lg:hidden">
         {levelTabs("horizontal")}
+        {/* Barra de avance del recorrido. */}
+        <div aria-hidden className="mt-2 flex gap-1">
+          {LEVELS.map((id, i) => (
+            <span
+              key={id}
+              className={cn(
+                "h-1 flex-1 rounded-full transition-colors duration-500",
+                i <= levelIndex ? "bg-[var(--cv-lime)]" : "bg-white/10"
+              )}
+            />
+          ))}
+        </div>
       </nav>
 
-      <div className="relative z-10 mx-auto grid max-w-[1440px] gap-4 px-3 pb-56 pt-1 sm:px-5 lg:grid-cols-[92px_minmax(0,1fr)_300px] lg:gap-5 lg:pt-6 xl:grid-cols-[100px_minmax(0,1fr)_330px]">
+      <div className="relative z-10 mx-auto grid max-w-[1440px] gap-4 px-3 pb-32 pt-1 sm:px-5 lg:pb-16 lg:grid-cols-[92px_minmax(0,1fr)_300px] lg:gap-5 lg:pt-6 xl:grid-cols-[100px_minmax(0,1fr)_330px]">
         {/* Riel vertical de niveles (escritorio). */}
         <nav className="hidden print:hidden lg:block">
           <div className="sticky top-6">{levelTabs("vertical")}</div>
         </nav>
 
         {/* Escenario: todos los niveles están en el HTML; solo uno se ve. */}
-        <main ref={stageRef} id="main-content" tabIndex={-1} className="min-w-0 scroll-mt-20 outline-none">
+        <main
+          ref={stageRef}
+          id="main-content"
+          tabIndex={-1}
+          onTouchStart={onStageTouchStart}
+          onTouchEnd={onStageTouchEnd}
+          className="min-w-0 scroll-mt-28 outline-none"
+        >
           {LEVELS.map((id, i) => {
             const Level = LEVEL_COMPONENTS[id];
             const active = id === level;
@@ -362,7 +416,7 @@ export function CvGame() {
                 role="tabpanel"
                 aria-labelledby={`cv-tab-vertical-${id}`}
                 hidden={!active}
-                className={cn(s.panel, "relative")}
+                className="relative"
               >
                 {/* El fondo lleva la "mordida"; el número de nivel vive en ella. */}
                 <div aria-hidden className={cn(s.glass, s.bite, "absolute inset-0 rounded-[2rem] md:rounded-[2.4rem]")} />

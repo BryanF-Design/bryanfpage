@@ -1270,3 +1270,15 @@ html.fx-on [data-fx="panel"]:not([data-fx-in]) > * {
     background-position: -130% 0;
   }
 }
+
+/* Impresión: hoja blanca y sin botones flotantes (el CV de /cv imprime su
+   propia hoja; ver components/cv/cv-print-sheet.tsx). */
+@media print {
+  html,
+  body {
+    background: #fff !important;
+  }
+  .fab-slot {
+    display: none !important;
+  }
+}

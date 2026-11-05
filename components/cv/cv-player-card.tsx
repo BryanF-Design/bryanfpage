@@ -25,14 +25,14 @@ export function PlayerCard({ t, compact = false }: { t: CvDict; compact?: boolea
   ];
 
   return (
-    <Tilt max={5} className={cn("rounded-[2rem]", compact ? "mt-10" : "mt-16")}>
+    <Tilt max={5} className={cn("rounded-[2rem]", compact ? "mt-20" : "mt-16")}>
       <div className="relative rounded-[2rem] bg-white p-4 pt-0 text-[#0c1512] shadow-[0_30px_60px_-28px_rgb(180_227_50/0.55)] sm:p-5 sm:pt-0">
         <div className={cn("flex gap-4", compact ? "items-end" : "flex-col")}>
           {/* Retrato: el recorte sale del marco hacia arriba. */}
           <div
             className={cn(
               "relative shrink-0 overflow-visible",
-              compact ? "-mt-10 h-36 w-32 sm:h-40 sm:w-36" : "-mt-16 h-56 w-full"
+              compact ? "-mt-12 h-40 w-32 sm:h-44 sm:w-36" : "-mt-16 h-60 w-full"
             )}
           >
             <span
@@ -40,13 +40,13 @@ export function PlayerCard({ t, compact = false }: { t: CvDict; compact?: boolea
               className="absolute inset-x-0 bottom-0 top-[22%] rounded-[1.5rem] bg-[var(--cv-lime)] [background-image:linear-gradient(rgb(12_21_18/0.1)_1px,transparent_1px),linear-gradient(90deg,rgb(12_21_18/0.1)_1px,transparent_1px)] [background-size:16px_16px]"
             />
             <Image
-              src="/img/brand/bryan-cutout.webp"
+              src="/img/cv/bryan-photo.webp"
               alt={t.ui.player}
-              width={1122}
-              height={1114}
+              width={760}
+              height={1013}
               priority={!compact}
-              sizes={compact ? "160px" : "300px"}
-              className="absolute bottom-0 left-1/2 h-full w-auto max-w-none object-contain object-bottom drop-shadow-[0_10px_14px_rgb(12_21_18/0.3)] [transform:translateX(-50%)_translateZ(40px)]"
+              sizes={compact ? "160px" : "320px"}
+              className="absolute inset-x-0 bottom-0 h-[112%] w-full rounded-b-[1.5rem] object-cover object-top drop-shadow-[0_10px_14px_rgb(12_21_18/0.3)] [transform:translateZ(40px)]"
             />
             <span className={cn(s.pixel, "absolute left-2 top-[26%] rounded-full bg-[#0c1512] px-2 py-0.5 text-[0.6rem] text-[var(--cv-lime)]")}>
               {t.ui.player}

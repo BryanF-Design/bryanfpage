@@ -5,6 +5,8 @@ const ja: CvDict = {
   ui: {
     pressStart: "スタートを押す",
     startHint: "Enterで開始 · 矢印キーで移動",
+    dragHint: "アプリをドラッグできます · Enterで開始",
+    readMore: "全文を読む",
     skipIntro: "履歴書へ直接進む",
     next: "次へ",
     prev: "戻る",

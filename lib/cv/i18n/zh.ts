@@ -5,6 +5,8 @@ const zh: CvDict = {
   ui: {
     pressStart: "按下开始",
     startHint: "按 Enter 开始 · 方向键移动",
+    dragHint: "可以拖动这些应用 · 按 Enter 开始",
+    readMore: "展开全文",
     skipIntro: "直接查看简历",
     next: "下一步",
     prev: "上一步",

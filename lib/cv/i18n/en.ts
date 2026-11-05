@@ -5,6 +5,8 @@ const en: CvDict = {
   ui: {
     pressStart: "Press Start",
     startHint: "Enter to begin · arrow keys to move",
+    dragHint: "Drag the apps around · Enter to start",
+    readMore: "Read all",
     skipIntro: "Skip to the CV",
     next: "Next",
     prev: "Back",

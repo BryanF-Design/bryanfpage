@@ -50,7 +50,7 @@ const personJsonLd = {
     alternateName: CV_CONTACT.shortName,
     jobTitle: "Líder de Desarrollo Web y Aplicaciones · Tech Architect · Operations Manager",
     description: es.profile.summary,
-    image: `${SITE_URL}/img/brand/bryan-cutout.webp`,
+    image: `${SITE_URL}/img/cv/bryan-photo-full.webp`,
     email: `mailto:${CV_CONTACT.email}`,
     telephone: CV_CONTACT.phone,
     url: CV_CONTACT.website,

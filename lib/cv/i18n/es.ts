@@ -10,6 +10,8 @@ const es = {
   ui: {
     pressStart: "Presiona Start",
     startHint: "Enter para empezar · flechas para moverte",
+    dragHint: "Arrastra las apps · Enter para empezar",
+    readMore: "Leer todo",
     skipIntro: "Ir directo al CV",
     next: "Siguiente",
     prev: "Anterior",
