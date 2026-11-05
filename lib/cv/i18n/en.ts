@@ -1,0 +1,333 @@
+import type { CvDict } from "./es";
+
+const en: CvDict = {
+  langName: "English",
+  ui: {
+    pressStart: "Press Start",
+    startHint: "Enter to begin · arrow keys to move",
+    skipIntro: "Skip to the CV",
+    next: "Next",
+    prev: "Back",
+    finish: "Finish tour",
+    restart: "Play again",
+    level: "Level",
+    levelSelect: "Select a level",
+    keysHint: "← → to change level · 1–6 to jump",
+    language: "Language",
+    print: "Save as PDF",
+    visit: "Visit",
+    close: "Close",
+    player: "Player 1",
+    playerClass: "Class",
+    playerClassValue: "Tech Lead · Web Architect",
+    guild: "Guild",
+    base: "Base",
+    baseValue: "State of Mexico · Open to relocation",
+    status: "Status",
+    statusValue: "Available for new quests",
+    xp: "Experience",
+    xpValue: "Since {year}",
+    languages: "Languages",
+    loading: "Loading world…",
+    guideOn: "Lumina's guide",
+    muteGuide: "Hide Lumina",
+    showGuide: "Show Lumina",
+    today: "now",
+  },
+  levels: {
+    perfil: { name: "Profile", tag: "Player" },
+    misiones: { name: "Quests", tag: "Experience" },
+    inventario: { name: "Inventory", tag: "Stack" },
+    logros: { name: "Trophies", tag: "Projects" },
+    academia: { name: "Academy", tag: "Education" },
+    contacto: { name: "Continue", tag: "Contact" },
+  },
+  start: {
+    welcome: "Welcome to my",
+    script: "Curriculum",
+    block: "VITAE.",
+    edition: "2026 Edition",
+    role: "Web & App Development Lead",
+  },
+  profile: {
+    eyebrow: "Player card",
+    title: "Development, architecture and operations in one player.",
+    summary:
+      "Professional in web development, digital solution architecture and technology operations. Over two years leading the development area and the operational coordination of digital projects at Partum Design, alongside technical and management duties at Indusecc. I combine Full-Stack development, apps and platforms, UX/UI, web infrastructure, DNS, hosting and email with team leadership, video production, customer service and critical incident resolution.",
+    classesTitle: "Unlocked classes",
+    classes: [
+      "Tech Architect",
+      "Operations Manager",
+      "Full-Stack Developer",
+      "UX/UI Designer",
+      "Video production lead",
+      "Customer Service",
+    ],
+    powersTitle: "Special abilities",
+    powers: [
+      { title: "Development", desc: "I turn business requirements into working interfaces, websites and web experiences." },
+      { title: "Architecture", desc: "I choose platforms, project structure, integrations and deployment strategy to fit the scope." },
+      { title: "Operations & leadership", desc: "I lead teams and several projects and clients at once: priorities, owners, deliveries and quality." },
+      { title: "Apps & platforms", desc: "I build and evolve products with bookings, user accounts, catalogs and operational tools." },
+      { title: "Video production", desc: "I coordinate shoots: schedule, crew, footage review and content delivery." },
+      { title: "Infrastructure", desc: "I diagnose and fix DNS, hosting, publishing, business email, SSL and migrations." },
+      { title: "Client & business", desc: "I define scope, explain technical decisions and support every rollout." },
+      { title: "Design", desc: "I bring together visual identity, usability, responsive design and business results." },
+    ],
+    studioLabel: "digital projects delivered by the BryanF Design studio since 2020",
+    marketsLabel: "Mexico · Spain · France",
+  },
+  quests: {
+    eyebrow: "Quest log",
+    title: "Professional experience",
+    kinds: {
+      main: "Main quest",
+      side: "Side quest",
+      guild: "Own guild",
+      past: "Completed quest",
+    },
+    concurrent: "Alongside Partum",
+    noDate: "Dates to be confirmed",
+    scope: "Scope",
+    techTitle: "Technical",
+    opsTitle: "Operations & leadership",
+    loot: "Skill loot",
+    earlier: "Earlier quests",
+    items: {
+      partum: {
+        role: "Head of Web Development · Tech Architect · Operations Manager",
+        scope:
+          "Cross-cutting ownership of development and operations: from gathering needs and designing the architecture to production, maintenance and follow-up.",
+        tech: [
+          "I lead the development area and decisions on technology, structure and maintenance.",
+          "Responsive web experiences with HTML, CSS, JavaScript, React, Next.js and Tailwind CSS.",
+          "Workflows and deployments with Git/GitHub, Vercel and hosting; domains, DNS, email, SSL and migrations.",
+          "I handle site outages, email that stops arriving, misconfigured DNS and restores (Plesk/IONOS).",
+          "Integrations with APIs, forms, webhooks and n8n automations.",
+        ],
+        ops: [
+          "I lead development, design, marketing, video production and support teams.",
+          "I run several clients and projects at once: discovery, build, shooting, review, launch and support.",
+          "I coordinate and direct client video shoots, from planning to deliverable sign-off.",
+          "I translate client requests into technical tasks, review quality and manage releases.",
+        ],
+        loot: ["Next.js", "React", "Vercel", "DNS", "n8n", "Plesk", "Leadership", "QA"],
+      },
+      indusecc: {
+        role: "Tech Architect · Operations Manager",
+        scope:
+          "Technical architecture, development coordination and operational support for the digital environment of an ISO, training and continuous-improvement consultancy.",
+        tech: [
+          "Architecture and maintenance of the company's digital solutions.",
+          "Follow-up on web development, technical changes, integrations and service availability.",
+          "Domains, hosting, DNS, email and digital services for assigned projects.",
+        ],
+        ops: [
+          "I plan work, set priorities and supervise deliverables across concurrent projects.",
+          "I coordinate communication between technical leads, administration and management.",
+          "I standardize procedures and keep every project's status visible.",
+        ],
+        loot: ["Architecture", "Infrastructure", "Processes", "Coordination"],
+      },
+      bryanf: {
+        role: "Founder · Full-Stack · UX/UI · Digital consultant",
+        scope:
+          "My independent studio: I guide companies from the first diagnosis to the launch and growth of their platforms.",
+        tech: [
+          "I design, build and maintain web apps and platforms: users, bookings, catalogs and requests.",
+          "Corporate sites, landing pages, online stores and custom solutions.",
+          "Payments, forms, automations, analytics, deployments, domains and DNS.",
+        ],
+        ops: [
+          "Direct client work: meetings, scope, priorities and post-launch follow-up.",
+          "Proposals, quotes, documentation and visual identity for each project.",
+        ],
+        loot: ["Next.js", "Stripe", "Three.js", "Figma", "Sales", "Product"],
+      },
+      teleperformance: {
+        role: "Operations Manager for Boost Mobile · Customer Service",
+        scope: "Customer care and experience on a telecommunications account.",
+        tech: [
+          "Supervised customer service activities and follow-up on quality procedures.",
+          "Handled and escalated incidents and resolved conflicts in demanding situations.",
+        ],
+        ops: [
+          "Team coordination, staff organization and operational priorities.",
+          "Professional communication in English and Spanish.",
+        ],
+        loot: ["Customer Service", "Leadership", "English", "Escalation"],
+      },
+      hermanmiller: {
+        role: "Graphic designer",
+        scope: "Visual material for internal and external campaigns, plus support on UX/UI projects.",
+        tech: [
+          "Graphic material consistent with the brand.",
+          "Took part in interface and user experience design projects.",
+        ],
+        ops: ["Worked with other areas to keep visual consistency and usability."],
+        loot: ["Design", "UX/UI", "Brand"],
+      },
+      ocadeoro: {
+        role: "Community Manager · Digital marketing",
+        scope: "Social media, content and community for an e-sports team.",
+        tech: ["Content and community strategies.", "Metric tracking and campaign tuning."],
+        ops: [],
+        loot: ["Content", "Metrics"],
+      },
+      cero: {
+        role: "Graphic & creative designer",
+        scope: "Book covers and visual identity for authors and content creators.",
+        tech: ["Concept and creation of book covers."],
+        ops: [],
+        loot: ["Editorial", "Identity"],
+      },
+      itaca: {
+        role: "Sales & customer service",
+        scope: "Sales of educational services with phone support and follow-up.",
+        tech: [],
+        ops: [],
+        loot: ["Sales"],
+      },
+      moslo: {
+        role: "Sales & customer service",
+        scope: "Phone support, sales management and customer follow-up.",
+        tech: [],
+        ops: [],
+        loot: ["Sales"],
+      },
+    },
+  },
+  inventory: {
+    eyebrow: "Inventory",
+    title: "Gear and tools",
+    hint: "Tap an item to see its card.",
+    slots: {
+      front: "Front-end & web",
+      infra: "Infrastructure",
+      auto: "Automation",
+      design: "Design & video",
+      lead: "Leadership",
+    },
+    tiers: { core: "Main gear", extra: "Extra gear" },
+    leadNames: {
+      teams: "Team leadership",
+      multi: "Concurrent projects",
+      clients: "Multi-client management",
+      qa: "QA & validation",
+      incidents: "Incident handling",
+      docs: "Technical docs",
+      service: "Customer Service",
+      video: "Directing shoots",
+    },
+    autoNames: { forms: "Forms", notify: "Notifications" },
+    infraNames: { mail: "Business email" },
+  },
+  trophies: {
+    eyebrow: "Trophy room",
+    title: "Featured projects",
+    credits: {
+      own: "Own brand",
+      bryanf: "BryanF Design portfolio",
+      partum: "Built by Partum Design",
+    },
+    items: {
+      bryanf: {
+        sector: "Web design & development",
+        desc: "My platform: portfolio, services, package configurator, online payments and Lumina, the AI assistant.",
+      },
+      cortmart: {
+        sector: "Booking app",
+        desc: "Booking and loyalty platform: services and prices, barber and time slot, accounts, QR stamp card and admin panel.",
+      },
+      mcspine: {
+        sector: "Medical technology",
+        desc: "Spine implant catalog by anatomical zone, product sheets and a quote flow.",
+      },
+      mixteca: {
+        sector: "Agri-export",
+        desc: "Digital presence for vegetables and herbs: company, products, commercial strengths and contact.",
+      },
+      gecomex: {
+        sector: "Logistics & foreign trade",
+        desc: "Corporate site for logistics and international customs services.",
+      },
+      koi: {
+        sector: "Architecture & interiors",
+        desc: "Editorial experience: projects, creative process and visual brand storytelling.",
+      },
+      partum: {
+        sector: "B2B tech consultancy",
+        desc: "The agency's ecosystem of services, software, quotes and commercial proposals.",
+      },
+    },
+    more: "More quests on the map",
+  },
+  academy: {
+    eyebrow: "Academy",
+    title: "Education",
+    education: [
+      { school: "Universidad Tecnológica de México (UNITEC)", degree: "Bachelor's in Digital Design and Animation", period: "2023 –" },
+      { school: "Tecnológico de Estudios Superiores de Ecatepec", degree: "Computer Systems Engineering (coursework)", period: "2018 – 2020" },
+    ],
+    coursesTitle: "Power-ups",
+    courses: [
+      { year: "2023", name: "Adobe certificate program", org: "Travesía Educación" },
+      { year: "2020", name: "Premiere Pro: the movie in one click", org: "Domestika" },
+      { year: "2020", name: "After Effects: animation from imagination", org: "Domestika" },
+      { year: "2020", name: "Illustrator: vector art", org: "Crehana" },
+      { year: "2019", name: "Marketing in the digital age", org: "Google Foundation" },
+      { year: "2018", name: "Mobile app development", org: "Google Foundation" },
+      { year: "2018", name: "Wireless networking fundamentals", org: "" },
+      { year: "2012", name: "IT technician", org: "CCPM" },
+    ],
+    languagesTitle: "Languages",
+    languages: [
+      { name: "Spanish", level: "Native" },
+      { name: "English", level: "Advanced" },
+    ],
+  },
+  contact: {
+    eyebrow: "Continue?",
+    thank: "THANK",
+    script: "you for playing",
+    text: "If your team needs technical leadership, design judgment and the ability to deliver, let's talk.",
+    whatsapp: "WhatsApp",
+    email: "Email",
+    website: "Portfolio",
+    vcard: "Save contact",
+    print: "Save CV as PDF",
+    roles: "Roles I'm looking for",
+    rolesList: [
+      "Web Development Lead",
+      "Technical Operations Manager",
+      "Web Solutions Architect",
+      "Full-Stack · React / Next.js",
+    ],
+  },
+  lumina: {
+    name: "Lumina",
+    role: "Your guide",
+    detected: "I detected your language: {lang}. You can change it up top anytime.",
+    lines: {
+      perfil:
+        "Hi! I'm Lumina and I'll guide you through Bryan's CV. Here's his player card: someone who builds, designs the architecture and also runs operations.",
+      misiones:
+        "These are his quests. The main one: two years leading development and operations at Partum Design, alongside Indusecc. Tap each one for details.",
+      inventario:
+        "Look at all the gear he carries! React, Next.js, Vercel, DNS, n8n, Adobe… plus leadership skills. Tap an item to see its card.",
+      logros:
+        "The trophy room: booking apps, medical catalogs, corporate sites and his own platform. Every logo is the brand's official one.",
+      academia:
+        "Did you know he started in computer systems and now studies Digital Design and Animation? That's why he blends code and design.",
+      contacto:
+        "End of the tour! If Bryan fits your team, message him on WhatsApp or email. You can also save the CV as a PDF.",
+    },
+  },
+  meta: {
+    title: "Bryan F. · Interactive CV | Web Development Lead",
+    description:
+      "Interactive CV of Bryan Fernando López: web & app development lead, Tech Architect and Operations Manager. Explore it like a video game with Lumina as your guide.",
+  },
+};
+
+export default en;

@@ -1,0 +1,333 @@
+import type { CvDict } from "./es";
+
+const pt: CvDict = {
+  langName: "Português",
+  ui: {
+    pressStart: "Aperte Start",
+    startHint: "Enter para começar · setas para navegar",
+    skipIntro: "Ir direto ao CV",
+    next: "Próximo",
+    prev: "Anterior",
+    finish: "Encerrar tour",
+    restart: "Ver de novo",
+    level: "Nível",
+    levelSelect: "Escolha um nível",
+    keysHint: "← → para trocar de nível · 1–6 para pular",
+    language: "Idioma",
+    print: "Salvar em PDF",
+    visit: "Visitar",
+    close: "Fechar",
+    player: "Jogador 1",
+    playerClass: "Classe",
+    playerClassValue: "Tech Lead · Arquiteto web",
+    guild: "Guilda",
+    base: "Base",
+    baseValue: "Estado do México · Aberto a mudança",
+    status: "Status",
+    statusValue: "Disponível para novas missões",
+    xp: "Experiência",
+    xpValue: "Desde {year}",
+    languages: "Idiomas",
+    loading: "Carregando mundo…",
+    guideOn: "Guia da Lumina",
+    muteGuide: "Ocultar Lumina",
+    showGuide: "Mostrar Lumina",
+    today: "hoje",
+  },
+  levels: {
+    perfil: { name: "Perfil", tag: "Jogador" },
+    misiones: { name: "Missões", tag: "Experiência" },
+    inventario: { name: "Inventário", tag: "Stack" },
+    logros: { name: "Troféus", tag: "Projetos" },
+    academia: { name: "Academia", tag: "Formação" },
+    contacto: { name: "Continuar", tag: "Contato" },
+  },
+  start: {
+    welcome: "Bem-vindo ao meu",
+    script: "Curriculum",
+    block: "VITAE.",
+    edition: "Edição 2026",
+    role: "Líder de desenvolvimento web e aplicativos",
+  },
+  profile: {
+    eyebrow: "Ficha do jogador",
+    title: "Desenvolvimento, arquitetura e operação em um só jogador.",
+    summary:
+      "Profissional de desenvolvimento web, arquitetura de soluções digitais e operações de tecnologia. Mais de dois anos à frente da área de desenvolvimento e da coordenação operacional de projetos na Partum Design, com funções técnicas e de gestão na Indusecc. Uno desenvolvimento Full-Stack, apps e plataformas, UX/UI, infraestrutura web, DNS, hospedagem e e-mail com liderança de equipes, gravações, atendimento ao cliente e resolução de incidentes críticos.",
+    classesTitle: "Classes desbloqueadas",
+    classes: [
+      "Tech Architect",
+      "Operations Manager",
+      "Full-Stack Developer",
+      "UX/UI Designer",
+      "Direção audiovisual",
+      "Customer Service",
+    ],
+    powersTitle: "Habilidades especiais",
+    powers: [
+      { title: "Desenvolvimento", desc: "Transformo requisitos de negócio em interfaces, sites e experiências web funcionais." },
+      { title: "Arquitetura", desc: "Escolho plataformas, estrutura do projeto, integrações e estratégia de deploy conforme o escopo." },
+      { title: "Operação e liderança", desc: "Lidero equipes e vários projetos e clientes ao mesmo tempo: prioridades, responsáveis, entregas e qualidade." },
+      { title: "Apps e plataformas", desc: "Crio e evoluo produtos com reservas, contas de usuário, catálogos e ferramentas operacionais." },
+      { title: "Produção audiovisual", desc: "Coordeno gravações: agenda, equipe, revisão de material e entrega de conteúdo." },
+      { title: "Infraestrutura", desc: "Diagnostico e resolvo DNS, hospedagem, publicação, e-mail corporativo, SSL e migrações." },
+      { title: "Cliente e negócio", desc: "Defino o escopo, explico decisões técnicas e acompanho cada implementação." },
+      { title: "Design", desc: "Uno identidade visual, usabilidade, responsividade e resultados de negócio." },
+    ],
+    studioLabel: "projetos digitais impulsionados pelo estúdio BryanF Design desde 2020",
+    marketsLabel: "México · Espanha · França",
+  },
+  quests: {
+    eyebrow: "Registro de missões",
+    title: "Experiência profissional",
+    kinds: {
+      main: "Missão principal",
+      side: "Missão paralela",
+      guild: "Guilda própria",
+      past: "Missão concluída",
+    },
+    concurrent: "Em paralelo à Partum",
+    noDate: "Datas a confirmar",
+    scope: "Escopo",
+    techTitle: "Técnico",
+    opsTitle: "Operação e liderança",
+    loot: "Espólio de habilidades",
+    earlier: "Missões anteriores",
+    items: {
+      partum: {
+        role: "Responsável por Desenvolvimento Web · Tech Architect · Operations Manager",
+        scope:
+          "Responsabilidade transversal sobre desenvolvimento e operação: do levantamento de necessidades e da arquitetura até a produção, manutenção e acompanhamento.",
+        tech: [
+          "Lidero a área de desenvolvimento e as decisões de tecnologia, estrutura e manutenção.",
+          "Experiências web responsivas com HTML, CSS, JavaScript, React, Next.js e Tailwind CSS.",
+          "Fluxos e deploys com Git/GitHub, Vercel e hospedagem; domínios, DNS, e-mail, SSL e migrações.",
+          "Resolvo sites fora do ar, e-mails que param de chegar, DNS mal configurado e restaurações (Plesk/IONOS).",
+          "Integrações com APIs, formulários, webhooks e automações com n8n.",
+        ],
+        ops: [
+          "Lidero equipes de desenvolvimento, design, marketing, produção audiovisual e suporte.",
+          "Conduzo vários clientes e projetos ao mesmo tempo: diagnóstico, desenvolvimento, gravação, revisão, publicação e suporte.",
+          "Coordeno e dirijo gravações para clientes, do planejamento à validação das entregas.",
+          "Traduzo pedidos de clientes em tarefas técnicas, reviso a qualidade e gerencio lançamentos.",
+        ],
+        loot: ["Next.js", "React", "Vercel", "DNS", "n8n", "Plesk", "Liderança", "QA"],
+      },
+      indusecc: {
+        role: "Tech Architect · Operations Manager",
+        scope:
+          "Arquitetura técnica, coordenação de desenvolvimento e suporte operacional do ambiente digital de uma consultoria ISO, de treinamento e melhoria contínua.",
+        tech: [
+          "Arquitetura e manutenção das soluções digitais da empresa.",
+          "Acompanhamento de desenvolvimento web, mudanças técnicas, integrações e disponibilidade.",
+          "Domínios, hospedagem, DNS, e-mail e serviços digitais dos projetos atribuídos.",
+        ],
+        ops: [
+          "Planejo atividades, defino prioridades e supervisiono entregas em projetos simultâneos.",
+          "Coordeno a comunicação entre responsáveis técnicos, áreas administrativas e diretoria.",
+          "Padronizo procedimentos e mantenho visível o status de cada projeto.",
+        ],
+        loot: ["Arquitetura", "Infraestrutura", "Processos", "Coordenação"],
+      },
+      bryanf: {
+        role: "Fundador · Full-Stack · UX/UI · Consultor digital",
+        scope:
+          "Meu estúdio independente: acompanho empresas do diagnóstico ao lançamento e à evolução de suas plataformas.",
+        tech: [
+          "Projeto, crio e mantenho aplicações web e plataformas: usuários, reservas, catálogos e solicitações.",
+          "Sites corporativos, landing pages, lojas virtuais e soluções sob medida.",
+          "Pagamentos, formulários, automações, analytics, deploys, domínios e DNS.",
+        ],
+        ops: [
+          "Contato direto com clientes: reuniões, escopo, prioridades e acompanhamento pós-lançamento.",
+          "Propostas, orçamentos, documentação e identidade visual de cada projeto.",
+        ],
+        loot: ["Next.js", "Stripe", "Three.js", "Figma", "Vendas", "Produto"],
+      },
+      teleperformance: {
+        role: "Gerente de operação para Boost Mobile · Customer Service",
+        scope: "Atendimento e experiência do cliente em uma conta de telecomunicações.",
+        tech: [
+          "Supervisão das atividades de atendimento e acompanhamento dos procedimentos de qualidade.",
+          "Atendimento e escalonamento de incidentes e resolução de conflitos em cenários exigentes.",
+        ],
+        ops: [
+          "Coordenação de equipes, organização de pessoal e prioridades operacionais.",
+          "Comunicação profissional em inglês e espanhol.",
+        ],
+        loot: ["Customer Service", "Liderança", "Inglês", "Escalonamento"],
+      },
+      hermanmiller: {
+        role: "Designer gráfico",
+        scope: "Material visual para campanhas internas e externas e apoio em projetos de UX/UI.",
+        tech: [
+          "Material gráfico coerente com a marca.",
+          "Participação em projetos de design de interfaces e experiência do usuário.",
+        ],
+        ops: ["Colaboração com outras áreas para manter coerência visual e usabilidade."],
+        loot: ["Design", "UX/UI", "Marca"],
+      },
+      ocadeoro: {
+        role: "Community Manager · Marketing digital",
+        scope: "Redes sociais, conteúdo e comunidade de uma equipe de e-sports.",
+        tech: ["Estratégias de conteúdo e comunidade.", "Acompanhamento de métricas e ajuste de campanhas."],
+        ops: [],
+        loot: ["Conteúdo", "Métricas"],
+      },
+      cero: {
+        role: "Designer gráfico e criativo",
+        scope: "Capas editoriais e identidade visual para autores e criadores de conteúdo.",
+        tech: ["Conceito e criação de capas de livros."],
+        ops: [],
+        loot: ["Editorial", "Identidade"],
+      },
+      itaca: {
+        role: "Vendas e atendimento ao cliente",
+        scope: "Venda de serviços educacionais com suporte e acompanhamento por telefone.",
+        tech: [],
+        ops: [],
+        loot: ["Vendas"],
+      },
+      moslo: {
+        role: "Vendas e atendimento ao cliente",
+        scope: "Atendimento telefônico, gestão comercial e acompanhamento de clientes.",
+        tech: [],
+        ops: [],
+        loot: ["Vendas"],
+      },
+    },
+  },
+  inventory: {
+    eyebrow: "Inventário",
+    title: "Equipamento e ferramentas",
+    hint: "Toque em um item para ver a ficha.",
+    slots: {
+      front: "Front-end e web",
+      infra: "Infraestrutura",
+      auto: "Automação",
+      design: "Design e vídeo",
+      lead: "Liderança",
+    },
+    tiers: { core: "Equipamento principal", extra: "Equipamento extra" },
+    leadNames: {
+      teams: "Liderança de equipes",
+      multi: "Projetos simultâneos",
+      clients: "Gestão multicliente",
+      qa: "QA e validação",
+      incidents: "Gestão de incidentes",
+      docs: "Documentação técnica",
+      service: "Customer Service",
+      video: "Direção de gravações",
+    },
+    autoNames: { forms: "Formulários", notify: "Notificações" },
+    infraNames: { mail: "E-mail corporativo" },
+  },
+  trophies: {
+    eyebrow: "Sala de troféus",
+    title: "Projetos em destaque",
+    credits: {
+      own: "Marca própria",
+      bryanf: "Portfólio BryanF Design",
+      partum: "Desenvolvido pela Partum Design",
+    },
+    items: {
+      bryanf: {
+        sector: "Design e desenvolvimento web",
+        desc: "Minha plataforma: portfólio, serviços, configurador de pacotes, pagamentos on-line e Lumina, a assistente com IA.",
+      },
+      cortmart: {
+        sector: "App de agendamento",
+        desc: "Plataforma de agendamento e fidelidade: serviços e preços, barbeiro e horário, contas, cartão de selos com QR e painel admin.",
+      },
+      mcspine: {
+        sector: "Tecnologia médica",
+        desc: "Catálogo de implantes de coluna por região anatômica, fichas de produto e fluxo de cotação.",
+      },
+      mixteca: {
+        sector: "Agroexportação",
+        desc: "Presença digital para hortaliças e ervas aromáticas: empresa, produtos, diferenciais e contato.",
+      },
+      gecomex: {
+        sector: "Logística e comércio exterior",
+        desc: "Site corporativo para serviços de logística e despacho aduaneiro internacional.",
+      },
+      koi: {
+        sector: "Arquitetura e interiores",
+        desc: "Experiência editorial: projetos, processo criativo e narrativa visual da marca.",
+      },
+      partum: {
+        sector: "Consultoria de tecnologia B2B",
+        desc: "Ecossistema de serviços, software, cotações e propostas comerciais da agência.",
+      },
+    },
+    more: "Mais missões no mapa",
+  },
+  academy: {
+    eyebrow: "Academia",
+    title: "Formação",
+    education: [
+      { school: "Universidad Tecnológica de México (UNITEC)", degree: "Graduação em Design Digital e Animação", period: "2023 –" },
+      { school: "Tecnológico de Estudios Superiores de Ecatepec", degree: "Engenharia de Sistemas Computacionais (estudos cursados)", period: "2018 – 2020" },
+    ],
+    coursesTitle: "Power-ups",
+    courses: [
+      { year: "2023", name: "Curso avançado de Adobe", org: "Travesía Educación" },
+      { year: "2020", name: "Premiere Pro: o filme em um clique", org: "Domestika" },
+      { year: "2020", name: "After Effects: animação a partir da imaginação", org: "Domestika" },
+      { year: "2020", name: "Illustrator: arte vetorial", org: "Crehana" },
+      { year: "2019", name: "Marketing na era digital", org: "Fundação Google" },
+      { year: "2018", name: "Desenvolvimento de apps móveis", org: "Fundação Google" },
+      { year: "2018", name: "Fundamentos de redes sem fio", org: "" },
+      { year: "2012", name: "Técnico em Informática", org: "CCPM" },
+    ],
+    languagesTitle: "Idiomas",
+    languages: [
+      { name: "Espanhol", level: "Nativo" },
+      { name: "Inglês", level: "Avançado" },
+    ],
+  },
+  contact: {
+    eyebrow: "Continuar?",
+    thank: "OBRIGADO",
+    script: "por jogar",
+    text: "Se você busca liderança técnica, olhar de design e capacidade de execução para sua equipe, vamos conversar.",
+    whatsapp: "WhatsApp",
+    email: "E-mail",
+    website: "Portfólio",
+    vcard: "Salvar contato",
+    print: "Salvar CV em PDF",
+    roles: "Cargos que busco",
+    rolesList: [
+      "Líder de Desenvolvimento Web",
+      "Technical Operations Manager",
+      "Web Solutions Architect",
+      "Full-Stack · React / Next.js",
+    ],
+  },
+  lumina: {
+    name: "Lumina",
+    role: "Sua guia",
+    detected: "Detectei seu idioma: {lang}. Você pode trocá-lo lá em cima quando quiser.",
+    lines: {
+      perfil:
+        "Oi! Eu sou a Lumina e vou te guiar pelo CV do Bryan. Esta é a ficha dele: um jogador que desenvolve, projeta a arquitetura e ainda lidera a operação.",
+      misiones:
+        "Estas são as missões dele. A principal: dois anos à frente de desenvolvimento e operação na Partum Design, em paralelo à Indusecc. Toque em cada uma para ver detalhes.",
+      inventario:
+        "Olha quanto equipamento ele carrega! React, Next.js, Vercel, DNS, n8n, Adobe… e habilidades de liderança. Toque em um item para ver a ficha.",
+      logros:
+        "A sala de troféus: apps de agendamento, catálogos médicos, sites corporativos e a própria plataforma. Cada logo é o oficial da marca.",
+      academia:
+        "Sabia que ele começou em sistemas computacionais e hoje estuda Design Digital e Animação? Por isso une código e design.",
+      contacto:
+        "Fim do tour! Se o Bryan combina com sua equipe, mande uma mensagem no WhatsApp ou por e-mail. Você também pode salvar o CV em PDF.",
+    },
+  },
+  meta: {
+    title: "Bryan F. · CV interativo | Líder de Desenvolvimento Web",
+    description:
+      "CV interativo de Bryan Fernando López: líder de desenvolvimento web e aplicativos, Tech Architect e Operations Manager. Explore como um videogame com a Lumina como guia.",
+  },
+};
+
+export default pt;

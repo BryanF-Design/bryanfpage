@@ -35,7 +35,8 @@ export function LanguageNotice() {
   }, []);
 
   useEffect(() => {
-    if (document.querySelector('main[data-language="es-only"]')) {
+    // El CV anuncia el idioma detectado en el primer diálogo de Lumina.
+    if (document.querySelector('main[data-language="es-only"]') || pathname?.startsWith("/cv")) {
       setVisible(false);
       return;
     }

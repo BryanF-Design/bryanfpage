@@ -29,6 +29,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "yearly",
       priority: 0.4,
     },
+    // CV interactivo: carta de presentación en 7 idiomas, guiada por Lumina.
+    {
+      url: `${SITE_URL}/cv`,
+      lastModified: new Date("2026-11-05T00:00:00.000Z"),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
     { url: `${SITE_URL}/privacidad`, changeFrequency: "yearly", priority: 0.3 },
     { url: `${SITE_URL}/terminos`, changeFrequency: "yearly", priority: 0.3 },
   ];

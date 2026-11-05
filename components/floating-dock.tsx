@@ -112,8 +112,9 @@ export function FloatingDock() {
     return () => window.removeEventListener("lumina:visibility", onChatVisibility);
   }, []);
 
-  // La tarjeta digital trae su propia barra de contacto fija.
-  const onCard = pathname?.startsWith("/tarjeta") ?? false;
+  // La tarjeta digital trae su propia barra de contacto fija y el CV tiene a
+  // Lumina abajo con sus propios botones.
+  const onCard = (pathname?.startsWith("/tarjeta") || pathname?.startsWith("/cv")) ?? false;
   const hidden = onCard || !pastHero || footerInView || configuratorInView || chatOpen;
 
   return (
