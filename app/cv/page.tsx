@@ -87,6 +87,13 @@ const personJsonLd = {
       "Grok",
       "Perplexity",
       "Integración de IA por API",
+      "Meta Ads",
+      "Google Ads",
+      "Google Analytics",
+      "Google Tag Manager",
+      "Google Search Console",
+      "Microsoft Clarity",
+      "SEO técnico",
     ],
     hasOccupation: QUESTS.slice(0, 3).map((q) => ({
       "@type": "Occupation",

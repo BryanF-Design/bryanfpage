@@ -16,6 +16,7 @@ import {
   Languages,
   LockOpen,
   Mail,
+  Megaphone,
   Network,
   Palette,
   Printer,
@@ -365,6 +366,7 @@ function itemName(item: InventoryItem, t: CvDict) {
   const inv = t.inventory;
   if (item.slot === "lead") return inv.leadNames[item.id as keyof typeof inv.leadNames] ?? item.name;
   if (item.id in inv.aiNames) return inv.aiNames[item.id as keyof typeof inv.aiNames];
+  if (item.id in inv.mktNames) return inv.mktNames[item.id as keyof typeof inv.mktNames];
   if (item.id in inv.autoNames) return inv.autoNames[item.id as keyof typeof inv.autoNames];
   if (item.id in inv.infraNames) return inv.infraNames[item.id as keyof typeof inv.infraNames];
   return item.name;
@@ -373,6 +375,7 @@ function itemName(item: InventoryItem, t: CvDict) {
 const SLOT_ICONS: Record<(typeof INVENTORY_SLOTS)[number], LucideIcon> = {
   front: Code2,
   ai: Bot,
+  mkt: Megaphone,
   infra: Server,
   auto: Zap,
   design: Palette,

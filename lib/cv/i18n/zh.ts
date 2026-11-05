@@ -176,6 +176,7 @@ const zh: CvDict = {
     slots: {
       front: "前端与 Web",
       ai: "人工智能",
+      mkt: "营销与数据分析",
       infra: "基础设施",
       auto: "自动化",
       design: "设计与视频",
@@ -192,6 +193,7 @@ const zh: CvDict = {
       service: "客户服务",
       video: "拍摄执导",
     },
+    mktNames: { seo: "技术 SEO", pixels: "像素与转化跟踪", campaigns: "广告投放与数据" },
     aiNames: { prompts: "提示词工程", aiApi: "通过 API 调用 AI", agents: "AI 智能体" },
     autoNames: { forms: "表单", notify: "通知" },
     infraNames: { mail: "企业邮箱" },

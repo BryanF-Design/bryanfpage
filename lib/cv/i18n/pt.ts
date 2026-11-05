@@ -207,6 +207,7 @@ const pt: CvDict = {
     slots: {
       front: "Front-end e web",
       ai: "Inteligência artificial",
+      mkt: "Marketing e analytics",
       infra: "Infraestrutura",
       auto: "Automação",
       design: "Design e vídeo",
@@ -223,6 +224,7 @@ const pt: CvDict = {
       service: "Customer Service",
       video: "Direção de gravações",
     },
+    mktNames: { seo: "SEO técnico", pixels: "Pixels e conversões", campaigns: "Campanhas e métricas" },
     aiNames: { prompts: "Engenharia de prompts", aiApi: "IA via API", agents: "Agentes de IA" },
     autoNames: { forms: "Formulários", notify: "Notificações" },
     infraNames: { mail: "E-mail corporativo" },

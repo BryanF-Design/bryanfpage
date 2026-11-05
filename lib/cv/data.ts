@@ -209,7 +209,7 @@ export type ItemSource =
 export interface InventoryItem {
   id: string;
   name: string;
-  slot: "front" | "ai" | "infra" | "auto" | "design" | "lead";
+  slot: "front" | "ai" | "mkt" | "infra" | "auto" | "design" | "lead";
   /** "core" = stack principal declarado; "extra" = también publicado en el portafolio. */
   tier: "core" | "extra";
   source: ItemSource;
@@ -240,6 +240,16 @@ export const INVENTORY: InventoryItem[] = [
   { id: "prompts", name: "prompts", slot: "ai", tier: "core", source: { kind: "lucide", icon: "MessageSquareCode" } },
   { id: "aiApi", name: "aiApi", slot: "ai", tier: "core", source: { kind: "lucide", icon: "Braces" } },
   { id: "agents", name: "agents", slot: "ai", tier: "core", source: { kind: "lucide", icon: "Bot" } },
+  // Marketing, medición y analítica (logos oficiales a color).
+  { id: "metaads", name: "Meta Ads", slot: "mkt", tier: "core", source: { kind: "img", src: "/img/cv/logos/meta.svg" } },
+  { id: "googleads", name: "Google Ads", slot: "mkt", tier: "core", source: { kind: "img", src: "/img/cv/logos/google-ads.svg" } },
+  { id: "ga4", name: "Google Analytics", slot: "mkt", tier: "core", source: { kind: "img", src: "/img/cv/logos/google-analytics.svg" } },
+  { id: "gtm", name: "Google Tag Manager", slot: "mkt", tier: "core", source: { kind: "img", src: "/img/cv/logos/google-tag-manager.svg" } },
+  { id: "gsc", name: "Search Console", slot: "mkt", tier: "core", source: { kind: "img", src: "/img/cv/logos/google-search-console.svg" } },
+  { id: "clarity", name: "Microsoft Clarity", slot: "mkt", tier: "core", source: { kind: "img", src: "/img/cv/logos/microsoft-clarity.svg" } },
+  { id: "seo", name: "seo", slot: "mkt", tier: "core", source: { kind: "lucide", icon: "Search" } },
+  { id: "pixels", name: "pixels", slot: "mkt", tier: "core", source: { kind: "lucide", icon: "Target" } },
+  { id: "campaigns", name: "campaigns", slot: "mkt", tier: "core", source: { kind: "lucide", icon: "ChartNoAxesCombined" } },
   // Infraestructura y despliegues.
   { id: "git", name: "Git", slot: "infra", tier: "core", source: { kind: "si", icon: "SiGit", color: "#F05032" } },
   { id: "github", name: "GitHub", slot: "infra", tier: "core", source: { kind: "si", icon: "SiGithub", color: "#FFFFFF" } },
@@ -279,7 +289,7 @@ export const INVENTORY: InventoryItem[] = [
   { id: "video", name: "video", slot: "lead", tier: "core", source: { kind: "lucide", icon: "Clapperboard" } },
 ];
 
-export const INVENTORY_SLOTS = ["front", "ai", "infra", "auto", "design", "lead"] as const;
+export const INVENTORY_SLOTS = ["front", "ai", "mkt", "infra", "auto", "design", "lead"] as const;
 export type InventorySlot = (typeof INVENTORY_SLOTS)[number];
 
 

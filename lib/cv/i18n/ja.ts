@@ -198,6 +198,7 @@ const ja: CvDict = {
     slots: {
       front: "フロントエンド・Web",
       ai: "AI（人工知能）",
+      mkt: "マーケティング・分析",
       infra: "インフラ",
       auto: "自動化",
       design: "デザイン・映像",
@@ -214,6 +215,7 @@ const ja: CvDict = {
       service: "カスタマーサービス",
       video: "撮影ディレクション",
     },
+    mktNames: { seo: "テクニカルSEO", pixels: "ピクセル・コンバージョン", campaigns: "広告運用・指標" },
     aiNames: { prompts: "プロンプト設計", aiApi: "API経由のAI", agents: "AIエージェント" },
     autoNames: { forms: "フォーム", notify: "通知" },
     infraNames: { mail: "ビジネスメール" },

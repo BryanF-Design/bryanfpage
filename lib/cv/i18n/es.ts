@@ -212,6 +212,7 @@ const es = {
     slots: {
       front: "Front-end y web",
       ai: "Inteligencia artificial",
+      mkt: "Marketing y analítica",
       infra: "Infraestructura",
       auto: "Automatización",
       design: "Diseño y video",
@@ -228,6 +229,7 @@ const es = {
       service: "Customer Service",
       video: "Dirección de grabaciones",
     },
+    mktNames: { seo: "SEO técnico", pixels: "Píxeles y conversiones", campaigns: "Campañas y métricas" },
     aiNames: { prompts: "Prompt engineering", aiApi: "IA por API", agents: "Agentes con IA" },
     autoNames: { forms: "Formularios", notify: "Notificaciones" },
     infraNames: { mail: "Correo empresarial" },
