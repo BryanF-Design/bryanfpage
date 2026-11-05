@@ -296,7 +296,7 @@ export function CvGame() {
             className={cn(
               "group relative shrink-0 snap-center transition-all duration-300",
               orientation === "vertical"
-                ? "flex w-full flex-col items-center gap-1 rounded-[1.3rem] px-1 py-2.5"
+                ? "flex w-full flex-col items-center gap-1 rounded-[1.3rem] px-1 py-2.5 [@media(max-height:820px)]:py-1.5"
                 : "flex items-center gap-2 rounded-full py-2 pl-2 pr-4",
               active
                 ? "bg-[var(--cv-lime)] text-[#0c1512] shadow-[0_10px_30px_-10px_rgb(180_227_50/0.8)]"
@@ -306,7 +306,7 @@ export function CvGame() {
             <span
               className={cn(
                 "grid place-items-center rounded-full transition-transform duration-300 group-hover:scale-110",
-                orientation === "vertical" ? "size-10" : "size-8",
+                orientation === "vertical" ? "size-10 [@media(max-height:820px)]:size-8" : "size-8",
                 active ? "bg-[#0c1512] text-[var(--cv-lime)]" : "bg-white/[0.06]"
               )}
             >
@@ -319,7 +319,7 @@ export function CvGame() {
               aria-hidden
               className={cn(
                 s.pixel,
-                orientation === "vertical" ? "text-[0.55rem]" : "hidden",
+                orientation === "vertical" ? "text-[0.55rem] [@media(max-height:820px)]:hidden" : "hidden",
                 active ? "text-[#0c1512]/60" : "text-white/35"
               )}
             >
@@ -441,8 +441,25 @@ export function CvGame() {
 
         {/* Columna lateral: la ficha del jugador. */}
         <aside className="hidden lg:block">
-          <div className="sticky top-6">
+          {/* Ficha + Lumina juntas: nunca se enciman. Si la pantalla es baja,
+              la columna se desplaza sola sin barra visible. */}
+          <div className="sticky top-2 -mx-3 max-h-[calc(100dvh-0.5rem)] overflow-y-auto px-3 pb-6 pt-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <PlayerCard t={t} />
+            {started && (
+              <LuminaGuide
+                variant="aside"
+                t={t}
+                level={level}
+                levelIndex={levelIndex}
+                total={LEVELS.length}
+                open={guideOpen}
+                detectedNote={detectedNote}
+                onClose={() => setGuideOpen(false)}
+                onOpen={() => setGuideOpen(true)}
+                onPrev={() => step(-1)}
+                onNext={() => step(1)}
+              />
+            )}
           </div>
         </aside>
       </div>

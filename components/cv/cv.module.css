@@ -979,3 +979,14 @@
   transform-origin: left;
   transition: transform 0.6s var(--cv-ease);
 }
+
+/* Desde tableta la fila vuelve a ser rejilla: sin máscara (recorta todo lo
+   que sobresale del borde), sin scroll y sin cursor de agarre. */
+@media (min-width: 640px) {
+  .dragRowSm {
+    -webkit-mask-image: none;
+    mask-image: none;
+    overflow: visible !important;
+    cursor: auto;
+  }
+}

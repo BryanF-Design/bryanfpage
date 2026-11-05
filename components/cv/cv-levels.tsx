@@ -29,6 +29,7 @@ import { FaGithub, FaLinkedinIn, FaWhatsapp } from "react-icons/fa";
 
 import {
   CV_CONTACT,
+  EDUCATION_LOGOS,
   INVENTORY,
   INVENTORY_SLOTS,
   QUESTS,
@@ -79,7 +80,7 @@ function DragRow({
         s.stagger,
         "-mx-4 gap-2.5 px-4 pb-1",
         !always &&
-          "sm:mx-0 sm:grid sm:cursor-auto sm:overflow-visible sm:px-0 sm:pb-0 sm:[-webkit-mask-image:none] sm:[mask-image:none]",
+          cn(s.dragRowSm, "sm:mx-0 sm:grid sm:px-0 sm:pb-0"),
         !always && gridClassName,
         className
       )}
@@ -311,13 +312,13 @@ export function QuestsLevel({ t, index }: LevelProps) {
       >
         <QuestLogos quest={quest} size={compact ? "sm" : "md"} />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-bold">{quest.company}</span>
+          <span className={cn("line-clamp-2 block text-sm font-bold leading-tight", selected && "pr-10")}>{quest.company}</span>
           <span className={cn(s.pixel, "mt-0.5 block text-[0.62rem] uppercase", selected ? "text-[#0c1512]/60" : "text-white/50")}>
             {t.quests.kinds[quest.kind]}
           </span>
         </span>
         {selected && (
-          <span aria-hidden className={cn(s.pixel, "absolute -top-2 right-3 rounded-full bg-[var(--cv-lime)] px-2 py-0.5 text-[0.6rem] text-[#0c1512]")}>
+          <span aria-hidden className={cn(s.pixel, "absolute right-2 top-2 rounded-full bg-[var(--cv-lime)] px-1.5 py-px text-[0.55rem] text-[#0c1512]")}>
             ▶ ON
           </span>
         )}
@@ -331,7 +332,7 @@ export function QuestsLevel({ t, index }: LevelProps) {
 
       <DragRow gridClassName="sm:grid-cols-2 xl:grid-cols-3">
         {featured.map((quest, i) => (
-          <li key={quest.id} style={{ "--i": i } as CSSProperties} className={cn(SLIDE, "w-[78%] pt-2 sm:pt-0")}>
+          <li key={quest.id} style={{ "--i": i } as CSSProperties} className={cn(SLIDE, "w-[78%]")}>
             {button(quest)}
           </li>
         ))}
@@ -643,15 +644,24 @@ export function AcademyLevel({ t, index }: LevelProps) {
                   i === 0 ? "bg-white text-[#0c1512]" : cn(s.glass)
                 )}
               >
-                <div className="flex items-center justify-between">
-                  <span
-                    className={cn(
-                      "grid size-12 place-items-center rounded-2xl",
-                      i === 0 ? "bg-[#0c1512] text-[var(--cv-lime)]" : "bg-[var(--cv-lime)] text-[#0c1512]"
-                    )}
-                  >
-                    <GraduationCap aria-hidden className="h-6 w-6" />
-                  </span>
+                <div className="flex items-center justify-between gap-3">
+                  {EDUCATION_LOGOS[i] ? (
+                    <LogoTile
+                      logo={EDUCATION_LOGOS[i]!}
+                      alt={ed.school}
+                      className="size-16 shrink-0 rounded-2xl ring-1 ring-[#0c1512]/10"
+                      imgClassName="h-[84%] w-[84%]"
+                    />
+                  ) : (
+                    <span
+                      className={cn(
+                        "grid size-16 shrink-0 place-items-center rounded-2xl",
+                        i === 0 ? "bg-[#0c1512] text-[var(--cv-lime)]" : "bg-[var(--cv-lime)] text-[#0c1512]"
+                      )}
+                    >
+                      <GraduationCap aria-hidden className="h-7 w-7" />
+                    </span>
+                  )}
                   <span className={cn(s.pixel, "text-xs", i === 0 ? "text-[#0c1512]/60" : "text-white/60")}>
                     {ed.period.endsWith("–") ? `${ed.period} ${t.ui.today}` : ed.period}
                   </span>

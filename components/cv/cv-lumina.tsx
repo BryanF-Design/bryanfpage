@@ -11,16 +11,18 @@ import { cn } from "@/lib/utils";
 
 import { cvStyles as s } from "./cv-parts";
 
-const EXPRESSION: Record<LevelId, string> = {
-  perfil: "/img/brand/lumina-normal.webp",
-  misiones: "/img/brand/lumina-enfocada.webp",
-  inventario: "/img/brand/lumina-sorprendida.webp",
-  logros: "/img/brand/lumina-sorprendida.webp",
-  academia: "/img/brand/lumina-duda.webp",
-  contacto: "/img/brand/lumina-normal.webp",
+
+// Miniaturas: la cara recortada de cada expresión (160 px), sin escalar ni
+// mover con CSS, para que siempre quede centrada.
+const FACE: Record<LevelId, string> = {
+  perfil: "/img/cv/lumina-face-normal.webp",
+  misiones: "/img/cv/lumina-face-enfocada.webp",
+  inventario: "/img/cv/lumina-face-sorprendida.webp",
+  logros: "/img/cv/lumina-face-sorprendida.webp",
+  academia: "/img/cv/lumina-face-duda.webp",
+  contacto: "/img/cv/lumina-face-normal.webp",
 };
 
-const DESKTOP = "(min-width: 1024px)";
 
 /** Texto que se escribe letra por letra, como en un RPG. */
 function useTypewriter(text: string, enabled: boolean) {
@@ -68,6 +70,7 @@ export function LuminaGuide({
   onOpen,
   onPrev,
   onNext,
+  variant = "fixed",
 }: {
   t: CvDict;
   level: LevelId;
@@ -79,27 +82,32 @@ export function LuminaGuide({
   onOpen: () => void;
   onPrev: () => void;
   onNext: () => void;
+  /** "fixed": dock flotante (teléfono y tableta). "aside": dentro de la
+   *  columna derecha en escritorio, debajo de la ficha, sin encimarse. */
+  variant?: "fixed" | "aside";
 }) {
+  const aside = variant === "aside";
   const reduced = useReducedMotionPreference();
   const line = t.lumina.lines[level];
   const { shown, done, finish } = useTypewriter(line, open && !reduced);
   const [expanded, setExpanded] = useState(false);
   const isLast = levelIndex === total - 1;
 
-  // Cada nivel nuevo: en escritorio se abre; en teléfono queda en dos líneas.
+  // Cada nivel nuevo: en la columna se abre; en el dock queda en dos líneas.
   useEffect(() => {
-    setExpanded(window.matchMedia(DESKTOP).matches);
-  }, [level]);
+    setExpanded(aside);
+  }, [level, aside]);
 
   // Al leer (scroll), Lumina se hace a un lado.
   useEffect(() => {
+    if (aside) return; // en la columna no tapa nada: se queda abierta
     const y0 = window.scrollY;
     const onScroll = () => {
       if (Math.abs(window.scrollY - y0) > 160) setExpanded(false);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [level]);
+  }, [level, aside]);
 
   if (!open) {
     return (
@@ -107,23 +115,95 @@ export function LuminaGuide({
         type="button"
         onClick={onOpen}
         aria-label={t.ui.showGuide}
-        className="fixed bottom-[var(--fab-edge)] right-3 z-[118] grid size-[3.4rem] place-items-center overflow-hidden rounded-full bg-[var(--cv-lime)] ring-4 ring-[#050a08] transition-transform duration-200 hover:scale-105 print:hidden sm:right-6"
+        className={cn(
+          "grid size-[3.4rem] place-items-center overflow-hidden rounded-full bg-[var(--cv-lime)] ring-4 ring-[#050a08] transition-transform duration-200 hover:scale-105 print:hidden",
+          aside ? "relative mt-4" : "fixed bottom-[var(--fab-edge)] right-3 z-[118] sm:right-6 lg:hidden"
+        )}
       >
-        <Image src={EXPRESSION[level]} alt="" width={120} height={156} sizes="64px" className="mt-3 h-auto w-[3.2rem] scale-[1.3]" />
+        <Image src={FACE[level]} alt="" width={160} height={160} sizes="56px" className="size-full rounded-full object-cover" />
       </button>
     );
   }
 
   const progress = (levelIndex + 1) / total;
 
+  // Escritorio: tarjeta vertical en la columna derecha, texto a todo lo ancho.
+  if (aside) {
+    return (
+      <div role="region" aria-label={t.ui.guideOn} className="relative mt-4 print:hidden">
+        <div className={cn(s.dock, s.dialogIn, "relative rounded-[1.3rem] p-3")}>
+          <span aria-hidden className="absolute inset-x-5 -top-[2px] h-[3px] overflow-hidden rounded-full bg-white/10">
+            <span className={cn(s.progressFill, "block h-full bg-[var(--cv-lime)]")} style={{ transform: `scaleX(${progress})` }} />
+          </span>
+          <div className="flex items-center gap-2.5">
+            <span aria-hidden className="relative size-11 shrink-0 overflow-hidden rounded-full bg-[var(--cv-lime)] ring-2 ring-[var(--cv-lime)]">
+              <Image key={FACE[level]} src={FACE[level]} alt="" width={160} height={160} sizes="48px" className={cn(s.luminaSwap, "size-full object-cover")} />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className={cn(s.pixel, "rounded bg-[var(--cv-lime)] px-1.5 py-px text-[0.6rem] font-bold text-[#0c1512]")}>{t.lumina.name}</span>
+              <span className="mt-0.5 block text-[0.68rem] text-white/50">{t.lumina.role}</span>
+            </span>
+            <span className={cn(s.pixel, "text-[0.6rem] text-white/45")}>
+              {String(levelIndex + 1).padStart(2, "0")}/{String(total).padStart(2, "0")}
+            </span>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label={t.ui.muteGuide}
+              className="grid size-7 place-items-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              <X aria-hidden className="h-4 w-4" />
+            </button>
+          </div>
+          <p className="sr-only" aria-live="polite">
+            {line}
+          </p>
+          <p aria-hidden onClick={finish} className="mt-2.5 min-h-[3.6rem] text-[0.84rem] leading-snug text-white/90">
+            {shown}
+            {!done && <span className={s.caret} />}
+          </p>
+          {detectedNote ? (
+            <p className="mt-2 flex items-start gap-1.5 text-[0.68rem] leading-snug text-[var(--cv-lime)]">
+              <Globe aria-hidden className="mt-0.5 h-3 w-3 shrink-0" />
+              {detectedNote}
+            </p>
+          ) : null}
+          <div className="mt-3 flex items-center justify-between gap-2">
+            <button
+              type="button"
+              onClick={onPrev}
+              disabled={levelIndex === 0}
+              className="inline-flex h-9 items-center gap-1 rounded-full px-3 text-xs font-semibold text-white/70 transition-colors hover:bg-white/10 hover:text-white disabled:pointer-events-none disabled:opacity-30"
+            >
+              <ChevronLeft aria-hidden className="h-4 w-4" />
+              {t.ui.prev}
+            </button>
+            <button
+              type="button"
+              onClick={onNext}
+              className={cn(
+                s.pixel,
+                "inline-flex h-9 items-center gap-1.5 rounded-full bg-[var(--cv-lime)] px-4 text-[0.68rem] font-bold uppercase text-[#0c1512] transition-transform duration-200 hover:-translate-y-0.5"
+              )}
+            >
+              {isLast ? t.ui.restart : t.ui.next}
+              {isLast ? <RotateCcw aria-hidden className="h-3.5 w-3.5" /> : <ChevronRight aria-hidden className={cn("h-4 w-4", s.nextArrow)} />}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       role="region"
       aria-label={t.ui.guideOn}
       className={cn(
-        "fixed bottom-[var(--fab-edge)] z-[118] print:hidden",
-        "left-[calc(var(--fab-size)+1rem)] right-3 sm:left-[calc(var(--fab-size)+2.25rem)] sm:right-6",
-        "lg:left-auto lg:right-[max(1.25rem,calc((100vw-1440px)/2+1.25rem))] lg:w-[300px] xl:w-[330px]"
+        "print:hidden",
+        aside
+          ? "relative mt-4"
+          : "fixed bottom-[var(--fab-edge)] left-[calc(var(--fab-size)+1rem)] right-3 z-[118] sm:left-[calc(var(--fab-size)+2.25rem)] sm:right-6 lg:hidden"
       )}
     >
       <div className={cn(s.dock, s.dialogIn, "relative rounded-[1.3rem]")}>
@@ -132,22 +212,6 @@ export function LuminaGuide({
           <span className={cn(s.progressFill, "block h-full bg-[var(--cv-lime)]")} style={{ transform: `scaleX(${progress})` }} />
         </span>
 
-        {/* Retrato grande al estar abierta en escritorio. */}
-        {expanded ? (
-          <div className="pointer-events-none absolute bottom-[calc(100%-8px)] left-3 hidden w-[4.6rem] lg:block">
-            <div className={s.luminaBob}>
-              <Image
-                key={EXPRESSION[level]}
-                src={EXPRESSION[level]}
-                alt=""
-                width={864}
-                height={1121}
-                sizes="96px"
-                className={cn(s.luminaSwap, "h-auto w-full drop-shadow-[0_10px_18px_rgb(0_0_0/0.6)]")}
-              />
-            </div>
-          </div>
-        ) : null}
 
         <button
           type="button"
@@ -164,7 +228,7 @@ export function LuminaGuide({
             onClick={onPrev}
             disabled={levelIndex === 0}
             aria-label={t.ui.prev}
-            className="grid size-10 shrink-0 lg:hidden place-items-center rounded-full bg-white/[0.07] text-white transition-colors hover:bg-white/15 disabled:opacity-30"
+            className="grid size-10 shrink-0 place-items-center rounded-full bg-white/[0.07] text-white transition-colors hover:bg-white/15 disabled:opacity-30"
           >
             <ChevronLeft aria-hidden className="h-5 w-5" />
           </button>
@@ -174,17 +238,16 @@ export function LuminaGuide({
             aria-hidden
             className={cn(
               "relative size-11 shrink-0 overflow-hidden rounded-full bg-[var(--cv-lime)] ring-2 ring-[var(--cv-lime)]",
-              expanded && "lg:hidden"
             )}
           >
             <Image
-              key={EXPRESSION[level]}
-              src={EXPRESSION[level]}
+              key={FACE[level]}
+              src={FACE[level]}
               alt=""
-              width={120}
-              height={156}
-              sizes="56px"
-              className={cn(s.luminaSwap, "absolute left-1/2 top-1 h-auto w-[3.1rem] max-w-none -translate-x-1/2 scale-[1.25]")}
+              width={160}
+              height={160}
+              sizes="48px"
+              className={cn(s.luminaSwap, "size-full object-cover")}
             />
           </span>
 

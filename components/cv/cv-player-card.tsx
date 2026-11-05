@@ -32,7 +32,7 @@ export function PlayerCard({ t, compact = false }: { t: CvDict; compact?: boolea
           <div
             className={cn(
               "relative shrink-0 overflow-visible",
-              compact ? "-mt-12 h-40 w-32 sm:h-44 sm:w-36" : "-mt-16 h-60 w-full"
+              compact ? "-mt-12 h-40 w-32 sm:h-44 sm:w-36" : "-mt-16 h-52 w-full [@media(max-height:860px)]:h-40"
             )}
           >
             <span
@@ -48,12 +48,13 @@ export function PlayerCard({ t, compact = false }: { t: CvDict; compact?: boolea
               sizes={compact ? "160px" : "320px"}
               className="absolute inset-x-0 bottom-0 h-[112%] w-full rounded-b-[1.5rem] object-cover object-top drop-shadow-[0_10px_14px_rgb(12_21_18/0.3)] [transform:translateZ(40px)]"
             />
-            <span className={cn(s.pixel, "absolute left-2 top-[26%] rounded-full bg-[#0c1512] px-2 py-0.5 text-[0.6rem] text-[var(--cv-lime)]")}>
-              {t.ui.player}
-            </span>
           </div>
 
           <div className="min-w-0 flex-1 pb-1">
+            {/* La etiqueta va con el texto, nunca encima de la foto. */}
+            <span className={cn(s.pixel, "mb-1.5 inline-block rounded-full bg-[#0c1512] px-2 py-0.5 text-[0.6rem] text-[var(--cv-lime)]")}>
+              {t.ui.player}
+            </span>
             <p className="flex items-center gap-1.5 text-xs font-semibold text-[#0c1512]/60">
               <span aria-hidden className={cn(s.pulse, "size-2 rounded-full bg-[#2fbf4a]")} />
               {t.ui.statusValue}
@@ -64,8 +65,15 @@ export function PlayerCard({ t, compact = false }: { t: CvDict; compact?: boolea
         </div>
 
         <dl className={cn("mt-4 space-y-2", compact && "sm:grid sm:grid-cols-3 sm:gap-2 sm:space-y-0")}>
-          {rows.map(({ Icon, label, value }) => (
-            <div key={label} className="flex items-start gap-2.5 rounded-xl bg-[#0c1512]/[0.04] px-3 py-2">
+          {rows.map(({ Icon, label, value }, i) => (
+            <div
+              key={label}
+              className={cn(
+                "flex items-start gap-2.5 rounded-xl bg-[#0c1512]/[0.04] px-3 py-2",
+                // En escritorio muy bajo basta con la clase; el resto está en el CV.
+                !compact && i > 0 && "[@media(max-height:780px)]:hidden"
+              )}
+            >
               <Icon aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-[#0c1512]/70" />
               <div className="min-w-0">
                 <dt className={cn(s.pixel, "text-[0.58rem] uppercase text-[#0c1512]/50")}>{label}</dt>
@@ -75,8 +83,10 @@ export function PlayerCard({ t, compact = false }: { t: CvDict; compact?: boolea
           ))}
         </dl>
 
-        {/* Trayectoria: una barra por año desde el primer trabajo. */}
-        <div className="mt-4">
+        {/* Trayectoria: una barra por año desde el primer trabajo. En
+            escritorio bajo se omite (también está en Academia) para que la
+            ficha y Lumina quepan juntas. */}
+        <div className={cn("mt-4", !compact && "[@media(max-height:1000px)]:hidden")}>
           <div className="flex items-center justify-between">
             <span className={cn(s.pixel, "flex items-center gap-1.5 text-[0.62rem] uppercase text-[#0c1512]/60")}>
               <Crosshair aria-hidden className="h-3.5 w-3.5" />
@@ -102,7 +112,7 @@ export function PlayerCard({ t, compact = false }: { t: CvDict; compact?: boolea
           </div>
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center gap-1.5">
+        <div className={cn("mt-4 flex flex-wrap items-center gap-1.5", !compact && "[@media(max-height:1000px)]:hidden")}>
           <span className={cn(s.pixel, "mr-1 text-[0.6rem] uppercase text-[#0c1512]/50")}>{t.ui.languages}</span>
           {t.academy.languages.map((l, i) => (
             <span key={l.name} className="rounded-full bg-[#0c1512] px-2.5 py-1 text-[0.7rem] font-semibold text-white">

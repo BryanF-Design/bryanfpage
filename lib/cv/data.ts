@@ -272,5 +272,16 @@ export const INVENTORY_SLOTS = ["front", "infra", "auto", "design", "lead"] as c
 export type InventorySlot = (typeof INVENTORY_SLOTS)[number];
 
 
+/**
+ * Logos de las escuelas, en el mismo orden que `academy.education`.
+ * TESE: escudo oficial del Tecnológico de Estudios Superiores de Ecatepec.
+ * UNITEC: falta el archivo oficial; al tenerlo, guárdalo en
+ * public/img/cv/logos/unitec.webp y reemplaza `null` por su ficha.
+ */
+export const EDUCATION_LOGOS: (CvLogo | null)[] = [
+  null,
+  { src: "/img/cv/logos/tese.webp", w: 300, h: 300, tone: "light" },
+];
+
 /** Línea de tiempo de experiencia (años desde el primer trabajo en 2018). */
 export const CAREER_START = 2018;
