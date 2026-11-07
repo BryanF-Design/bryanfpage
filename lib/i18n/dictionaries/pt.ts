@@ -17,6 +17,9 @@ const pt: Dictionary = {
     serviciosEntrada: "Serviços de entrada",
     lumina: "Lumina",
     servicios: "Serviços",
+    conoceme: "Conheça o Bryan",
+    contacto: "Contato",
+    casos: "Estudos de caso",
   },
   marquee: {
     words: ["Design", "Código", "SEO", "Performance", "E-commerce", "Branding"],
@@ -640,6 +643,48 @@ const pt: Dictionary = {
   },
   languageSwitcher: {
     label: "Idioma",
+  },
+  /** Inicio compacto: bloques que enlazan a las páginas movidas. */
+  home: {
+    presence: "Projetos no México, Espanha e França",
+    presenceLink: "Ver onde",
+    casesAll: "Ver todos os casos",
+    casesCta: "Ver caso completo",
+    bryanEyebrow: "Fundador",
+    bryanLine: "Eu desenho a experiência e também escrevo o código: você trabalha direto comigo, da ideia ao lançamento.",
+    bryanCta: "Conheça o Bryan",
+    luminaEyebrow: "Assessora IA",
+    luminaLine: "A Lumina tira suas dúvidas na hora, mostra projetos como o seu e deixa o orçamento pronto.",
+    luminaCta: "Conheça a Lumina",
+    luminaChat: "Falar com a Lumina",
+    faqMore: "Ver todas as perguntas",
+  },
+  /** Páginas a las que se movieron secciones del inicio. */
+  pages: {
+    breadcrumb: "Navegação estrutural",
+    conoceme: {
+      eyebrow: "Fundador",
+      title: "Conheça o Bryan",
+      subtitle: "Quem desenha e programa o seu site, como trabalha e com quais ferramentas.",
+    },
+    lumina: {
+      eyebrow: "Assessora IA",
+      title: "Lumina, sua assessora na BryanF Design",
+      subtitle: "Pergunte o que quiser: preços, prazos ou o que o seu site precisa. Ela responde na hora e leva você ao orçamento.",
+    },
+    contacto: {
+      eyebrow: "Contato",
+      title: "Vamos falar do seu projeto",
+      subtitle: "Fale conosco pelo canal que preferir. Abaixo estão as respostas às perguntas mais comuns e os lugares onde já trabalhamos.",
+      whatsapp: "WhatsApp",
+      email: "E-mail",
+      phone: "Telefone",
+    },
+    casos: {
+      eyebrow: "Estudos de caso",
+      title: "Estudos de caso completos",
+      subtitle: "O problema, a decisão de design e o resultado de cada projeto, contados em detalhe.",
+    },
   },
 };
 

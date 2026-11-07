@@ -7,6 +7,10 @@ const nextConfig = {
       { protocol: "https", hostname: "lottie.host" },
     ],
   },
+  // "Fundador" y "Conóceme" son la misma página.
+  async redirects() {
+    return [{ source: "/fundador", destination: "/conoceme", permanent: false }];
+  },
   // Clean URLs for the legacy pages still served as static files from /public
   // (legal pages + post-payment briefing, pending migration to Next routes).
   // `/crear-web` ya NO se reescribe: ahora es una ruta React real

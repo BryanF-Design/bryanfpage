@@ -17,6 +17,9 @@ const zh: Dictionary = {
     serviciosEntrada: "入门服务",
     lumina: "Lumina",
     servicios: "服务",
+    conoceme: "认识 Bryan",
+    contacto: "联系我们",
+    casos: "案例研究",
   },
   marquee: {
     words: ["设计", "代码", "SEO", "性能", "电商", "品牌"],
@@ -584,6 +587,48 @@ const zh: Dictionary = {
   },
   languageSwitcher: {
     label: "语言",
+  },
+  /** Inicio compacto: bloques que enlazan a las páginas movidas. */
+  home: {
+    presence: "项目遍及墨西哥、西班牙和法国",
+    presenceLink: "查看地点",
+    casesAll: "查看全部案例",
+    casesCta: "查看完整案例",
+    bryanEyebrow: "创始人",
+    bryanLine: "我设计体验，也亲自写代码：从构思到上线，你都直接与我合作。",
+    bryanCta: "认识 Bryan",
+    luminaEyebrow: "AI 顾问",
+    luminaLine: "Lumina 即时解答你的疑问，展示与你类似的项目，并为你准备好报价。",
+    luminaCta: "认识 Lumina",
+    luminaChat: "与 Lumina 对话",
+    faqMore: "查看全部问题",
+  },
+  /** Páginas a las que se movieron secciones del inicio. */
+  pages: {
+    breadcrumb: "面包屑导航",
+    conoceme: {
+      eyebrow: "创始人",
+      title: "认识 Bryan",
+      subtitle: "谁来设计和开发你的网站，他如何工作，使用哪些工具。",
+    },
+    lumina: {
+      eyebrow: "AI 顾问",
+      title: "Lumina，BryanF Design 的顾问",
+      subtitle: "价格、周期或网站需求，尽管问她。她会即时回答，并带你前往报价。",
+    },
+    contacto: {
+      eyebrow: "联系我们",
+      title: "聊聊你的项目",
+      subtitle: "通过你喜欢的方式联系我们。下方是常见问题的解答，以及我们曾经工作过的地方。",
+      whatsapp: "WhatsApp",
+      email: "邮箱",
+      phone: "电话",
+    },
+    casos: {
+      eyebrow: "案例研究",
+      title: "完整案例研究",
+      subtitle: "每个项目的问题、设计决策与成果，详细呈现。",
+    },
   },
 };
 

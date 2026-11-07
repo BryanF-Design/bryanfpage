@@ -275,7 +275,7 @@ function useLocalTimes() {
   });
 }
 
-export function WorldPresence() {
+export function WorldPresence({ chapter = 9 }: { chapter?: number } = {}) {
   const { t } = useLanguage();
   const decorative3dEnabled = useDecorative3dEnabled();
   const times = useLocalTimes();
@@ -318,7 +318,7 @@ export function WorldPresence() {
             eyebrow={t.world.eyebrow}
             title={t.world.title}
             subtitle={t.world.subtitle}
-            chapter={{ index: 9 }}
+            chapter={{ index: chapter }}
           />
 
           <div className="mt-auto">

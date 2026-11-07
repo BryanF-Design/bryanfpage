@@ -18,6 +18,9 @@ const es = {
     serviciosEntrada: "Servicios de entrada",
     lumina: "Lumina",
     servicios: "Servicios",
+    conoceme: "Conoce a Bryan",
+    contacto: "Contacto",
+    casos: "Casos de estudio",
   },
   marquee: {
     words: ["Diseño", "Código", "SEO", "Performance", "E-commerce", "Branding"],
@@ -670,6 +673,48 @@ const es = {
   },
   languageSwitcher: {
     label: "Idioma",
+  },
+  /** Inicio compacto: bloques que enlazan a las páginas movidas. */
+  home: {
+    presence: "Proyectos en México, España y Francia",
+    presenceLink: "Ver dónde",
+    casesAll: "Ver todos los casos",
+    casesCta: "Ver caso completo",
+    bryanEyebrow: "Fundador",
+    bryanLine: "Diseño la experiencia y también escribo el código: trabajas directo conmigo, de la idea al lanzamiento.",
+    bryanCta: "Conoce a Bryan",
+    luminaEyebrow: "Asesora IA",
+    luminaLine: "Lumina resuelve tus dudas al instante, te enseña proyectos como el tuyo y te deja la cotización armada.",
+    luminaCta: "Conoce a Lumina",
+    luminaChat: "Hablar con Lumina",
+    faqMore: "Ver todas las preguntas",
+  },
+  /** Páginas a las que se movieron secciones del inicio. */
+  pages: {
+    breadcrumb: "Ruta de navegación",
+    conoceme: {
+      eyebrow: "Fundador",
+      title: "Conoce a Bryan",
+      subtitle: "Quién diseña y programa tu web, cómo trabaja y con qué herramientas.",
+    },
+    lumina: {
+      eyebrow: "Asesora IA",
+      title: "Lumina, tu asesora en BryanF Design",
+      subtitle: "Pregúntale lo que quieras: precios, tiempos o qué necesita tu web. Te responde al instante y te lleva a la cotización.",
+    },
+    contacto: {
+      eyebrow: "Contacto",
+      title: "Hablemos de tu proyecto",
+      subtitle: "Escríbenos por el canal que prefieras. Abajo están las respuestas a las preguntas más comunes y los lugares donde hemos trabajado.",
+      whatsapp: "WhatsApp",
+      email: "Correo",
+      phone: "Teléfono",
+    },
+    casos: {
+      eyebrow: "Casos de estudio",
+      title: "Casos de estudio completos",
+      subtitle: "El problema, la decisión de diseño y el resultado de cada proyecto, contado en detalle.",
+    },
   },
 } as const;
 

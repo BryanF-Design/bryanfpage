@@ -57,7 +57,7 @@ function LuminaAvatar({ src, className }: { src: string; className?: string }) {
  * escuchar el scroll). A un lado, la cabecera, una frase de Lumina y la
  * llamada al chat.
  */
-export function LuminaJourney() {
+export function LuminaJourney({ chapter = 8 }: { chapter?: number } = {}) {
   const { t } = useLanguage();
 
   const steps = t.luminaJourney.steps;
@@ -72,7 +72,7 @@ export function LuminaJourney() {
             eyebrow={t.luminaJourney.eyebrow}
             title={t.luminaJourney.title}
             subtitle={t.luminaJourney.subtitle}
-            chapter={{ index: 8 }}
+            chapter={{ index: chapter }}
             className="relative px-1 pt-1 sm:px-0 sm:pt-0 lg:col-span-5 lg:col-start-8 lg:row-start-1"
           />
 

@@ -8,6 +8,7 @@ import { FaWhatsapp } from "react-icons/fa";
 
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n/context";
+import { useHomeHref } from "@/lib/use-home-href";
 import { mobileShot } from "@/lib/projects";
 import { cn } from "@/lib/utils";
 
@@ -80,6 +81,7 @@ function Phone({ slug, sizes }: { slug: string; sizes: string }) {
  */
 export function ClosingCta() {
   const { t, locale } = useLanguage();
+  const pricesHref = useHomeHref("precios");
   // El rótulo gigante se ajusta a la longitud real: los títulos largos
   // (francés, alemán) bajan un punto y el japonés/chino gana interlineado.
   const cjk = locale === "ja" || locale === "zh";
@@ -195,7 +197,7 @@ export function ClosingCta() {
                   size="lg"
                   className="w-full bg-lime pr-2.5 text-ink sm:w-auto sm:flex-1 sm:pl-6"
                 >
-                  <Link href="#precios">
+                  <Link href={pricesHref}>
                     {t.closingCta.ctaPrimary}
                     <ButtonArrow
                       tone="ink"

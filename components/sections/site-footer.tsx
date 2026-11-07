@@ -90,9 +90,14 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
     { label: t.nav.inicio, href: "/" },
     { label: t.nav.proceso, href: "/#proceso" },
     { label: t.nav.proyectos, href: "/#projects" },
+    { label: t.nav.casos, href: "/casos" },
     { label: t.nav.serviciosEntrada, href: "/#servicios-entrada" },
     { label: t.nav.precios, href: "/#precios" },
     { label: t.nav.faq, href: "/#faq" },
+    // Secciones que se mudaron del inicio a su propia página.
+    { label: t.nav.conoceme, href: "/conoceme" },
+    { label: t.nav.lumina, href: "/lumina" },
+    { label: t.nav.contacto, href: "/contacto" },
   ];
 
   const services = [

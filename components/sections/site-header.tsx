@@ -56,7 +56,7 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
   const links = [
     { label: t.nav.proyectos, href: "/#projects" },
     { label: t.nav.servicios, href: "/#servicios-entrada" },
-    { label: t.nav.lumina, href: "/#lumina" },
+    { label: t.nav.lumina, href: "/lumina" },
     { label: t.nav.precios, href: "/#precios" },
     { label: t.nav.faq, href: "/#faq" },
   ];

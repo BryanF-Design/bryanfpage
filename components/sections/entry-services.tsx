@@ -225,7 +225,7 @@ function MiniCardMock({ fromLabel }: { fromLabel: string }) {
  * carrusel en vez de ocupar su propio panel.
  * Cada ficha abre el chat de Lumina con la pregunta ya escrita.
  */
-export function EntryServices() {
+export function EntryServices({ chapter = 6 }: { chapter?: number } = {}) {
   const { t } = useLanguage();
   const items = t.entryServices.items;
   const featured = items[items.length - 1];
@@ -264,7 +264,7 @@ export function EntryServices() {
             eyebrow={t.entryServices.eyebrow}
             title={t.entryServices.title}
             subtitle={t.entryServices.subtitle}
-            chapter={{ index: 6 }}
+            chapter={{ index: chapter }}
             className="relative [&_h2]:text-[clamp(2.1rem,3.4vw,3.35rem)] [&_p]:text-[0.975rem] md:[&_p]:text-base"
           />
 

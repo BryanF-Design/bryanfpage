@@ -29,6 +29,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.85,
     },
+    // Secciones que se mudaron del inicio a su propia página (2026-11-07).
+    ...["/conoceme", "/lumina", "/contacto", "/casos"].map((path) => ({
+      url: `${SITE_URL}${path}`,
+      lastModified: new Date("2026-11-07T00:00:00.000Z"),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
     // Tarjeta digital: fuera de la navegación, se comparte por QR o enlace.
     {
       url: `${SITE_URL}/tarjeta`,

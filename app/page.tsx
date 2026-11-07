@@ -2,7 +2,8 @@
 
 import type { CSSProperties } from "react";
 import dynamic from "next/dynamic";
-import { Sparkle } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight, Globe2, Sparkle } from "lucide-react";
 import { HeroPop } from "@/components/sections/hero-pop";
 import { StatCounter } from "@/components/ui/stat-counter";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
@@ -16,35 +17,23 @@ import { SITE_URL } from "@/lib/seo/service-pages";
 // small (main lever on mobile TBT). SSR stays on (default) for all of these
 // so their text/links are still present in the server HTML for SEO/crawlers
 // — only the client JS is deferred into separate chunks.
-const MeetBryan = dynamic(() =>
-  import("@/components/sections/meet-bryan").then((m) => m.MeetBryan)
-);
 const ClosingCta = dynamic(() =>
   import("@/components/sections/closing-cta").then((m) => m.ClosingCta)
 );
 const ProcessOrbital = dynamic(() =>
   import("@/components/sections/process-orbital").then((m) => m.ProcessOrbital)
 );
-const StackOrbit = dynamic(() =>
-  import("@/components/sections/stack-orbit").then((m) => m.StackOrbit)
-);
 const ProjectsShowcase = dynamic(() =>
   import("@/components/sections/projects-showcase").then((m) => m.ProjectsShowcase)
 );
-const ProjectCases = dynamic(() =>
-  import("@/components/sections/projects-showcase").then((m) => m.ProjectCases)
+const ProjectCasesCompact = dynamic(() =>
+  import("@/components/sections/projects-showcase").then((m) => m.ProjectCasesCompact)
 );
-const WorldPresence = dynamic(() =>
-  import("@/components/sections/world-presence").then((m) => m.WorldPresence)
+const HomeTeasers = dynamic(() =>
+  import("@/components/sections/home-teasers").then((m) => m.HomeTeasers)
 );
 const ClientsMarquee = dynamic(() =>
   import("@/components/sections/clients-marquee").then((m) => m.ClientsMarquee)
-);
-const LuminaFeature = dynamic(() =>
-  import("@/components/sections/lumina-feature").then((m) => m.LuminaFeature)
-);
-const LuminaJourney = dynamic(() =>
-  import("@/components/sections/lumina-journey").then((m) => m.LuminaJourney)
 );
 const EntryServices = dynamic(() =>
   import("@/components/sections/entry-services").then((m) => m.EntryServices)
@@ -57,21 +46,32 @@ const SiteFooter = dynamic(() =>
   import("@/components/sections/site-footer").then((m) => m.SiteFooter)
 );
 // Client-only widgets, no SEO content: skip SSR entirely to shave initial payload.
+const LegacyHashRedirect = dynamic(
+  () => import("@/components/legacy-hash-redirect").then((m) => m.LegacyHashRedirect),
+  { ssr: false }
+);
 const LuminaChat = dynamic(
   () => import("@/components/lumina-chat").then((m) => m.LuminaChat),
   { ssr: false }
 );
 
-// Las preguntas frecuentes del home como FAQPage. Se arman con el diccionario
-// en español porque el HTML del servidor siempre sale en español: el marcado
-// coincide palabra por palabra con lo que lee el rastreador.
+/**
+ * Preguntas clave que se quedan en el inicio (índices del diccionario):
+ * tiempos, costos, qué se necesita para empezar y qué se entrega. Todas las
+ * demás viven en /contacto.
+ */
+const KEY_FAQ = [0, 3, 4, 5] as const;
+
+// Las preguntas frecuentes del home como FAQPage (solo las visibles). Se arman
+// con el diccionario en español porque el HTML del servidor siempre sale en
+// español: el marcado coincide palabra por palabra con lo que lee el rastreador.
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "@id": `${SITE_URL}/#faq`,
   url: `${SITE_URL}/`,
   inLanguage: "es-MX",
-  mainEntity: DICTIONARIES.es.faq.items.map((item) => ({
+  mainEntity: KEY_FAQ.map((i) => DICTIONARIES.es.faq.items[i]).map((item) => ({
     "@type": "Question",
     name: item.title,
     acceptedAnswer: { "@type": "Answer", text: item.content },
@@ -171,43 +171,54 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
+            {/* Presencia: una sola línea (el mapa completo está en /contacto). */}
+            <Link
+              href="/contacto#presencia"
+              data-fx="up"
+              style={{ "--fx-delay": "240ms" } as CSSProperties}
+              className="group col-span-2 flex min-h-14 items-center gap-3 rounded-full bg-white py-1.5 pl-1.5 pr-2 shadow-soft transition-transform duration-200 hover:-translate-y-0.5 sm:col-span-3"
+            >
+              <span className="grid size-11 shrink-0 place-items-center rounded-full bg-ink text-lime">
+                <Globe2 aria-hidden className="h-5 w-5" />
+              </span>
+              <span className="min-w-0 flex-1 text-pretty text-sm font-semibold leading-snug text-ink sm:text-base">
+                {t.home.presence}
+              </span>
+              <span className="hidden text-sm font-semibold text-ink/60 sm:inline">{t.home.presenceLink}</span>
+              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-lime text-ink">
+                <ArrowUpRight aria-hidden className="h-4 w-4 transition-transform duration-300 group-hover:rotate-45" />
+              </span>
+            </Link>
           </section>
         </div>
 
-        <ProjectsShowcase withCases={false} />
+        <ProjectsShowcase withCases={false} compactFeatured />
 
         <MarqueeBand words={t.marquee.words} outline />
 
-        {/* Casos de estudio: después de la cinta, para que el portafolio no
-            sea un solo bloque de tres pantallas. */}
-        <ProjectCases />
+        {/* Casos de estudio en tarjetas compactas: el resultado en una línea y
+            el caso completo en /casos. */}
+        <ProjectCasesCompact />
 
-        <MeetBryan />
+        {/* Bryan y Lumina, en corto: su historia completa vive en /conoceme y
+            /lumina. */}
+        <HomeTeasers />
 
-        <ProcessOrbital />
+        <ProcessOrbital chapter={3} />
 
-        <StackOrbit />
+        <EntryServices chapter={4} />
 
-        <LuminaFeature />
-
-        <EntryServices />
-
-        <Configurator />
-
-        {/* El recorrido con Lumina termina en el pago: va después del cotizador
-            y así las dos secciones de Lumina no quedan seguidas. */}
-        <LuminaJourney />
-
-        <WorldPresence />
+        <Configurator chapter={5} />
 
         <ClientsMarquee />
 
-        <Faq />
+        <Faq chapter={6} only={KEY_FAQ} moreHref="/contacto#faq" />
 
         <ClosingCta />
       </main>
 
       <LuminaChat />
+      <LegacyHashRedirect />
       <SiteFooter />
     </>
   );

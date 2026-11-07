@@ -17,6 +17,9 @@ const ja: Dictionary = {
     serviciosEntrada: "エントリーサービス",
     lumina: "Lumina",
     servicios: "サービス",
+    conoceme: "Bryanについて",
+    contacto: "お問い合わせ",
+    casos: "事例紹介",
   },
   marquee: {
     words: ["デザイン", "コード", "SEO", "パフォーマンス", "EC", "ブランディング"],
@@ -632,6 +635,48 @@ const ja: Dictionary = {
   },
   languageSwitcher: {
     label: "言語",
+  },
+  /** Inicio compacto: bloques que enlazan a las páginas movidas. */
+  home: {
+    presence: "メキシコ・スペイン・フランスでのプロジェクト",
+    presenceLink: "場所を見る",
+    casesAll: "すべての事例を見る",
+    casesCta: "事例の詳細を見る",
+    bryanEyebrow: "創業者",
+    bryanLine: "体験をデザインし、コードも自分で書きます。アイデアから公開まで、私と直接やり取りできます。",
+    bryanCta: "Bryanについて",
+    luminaEyebrow: "AIアドバイザー",
+    luminaLine: "Luminaが疑問にすぐ答え、あなたに近い事例を紹介し、見積もりまで用意します。",
+    luminaCta: "Luminaについて",
+    luminaChat: "Luminaと話す",
+    faqMore: "すべての質問を見る",
+  },
+  /** Páginas a las que se movieron secciones del inicio. */
+  pages: {
+    breadcrumb: "パンくずリスト",
+    conoceme: {
+      eyebrow: "創業者",
+      title: "Bryanについて",
+      subtitle: "あなたのウェブをデザインし開発する人物、その働き方と使うツール。",
+    },
+    lumina: {
+      eyebrow: "AIアドバイザー",
+      title: "Lumina — BryanF Designのアドバイザー",
+      subtitle: "料金、期間、ウェブに必要なことなど、何でも聞いてください。すぐに答えて見積もりへご案内します。",
+    },
+    contacto: {
+      eyebrow: "お問い合わせ",
+      title: "プロジェクトについて話しましょう",
+      subtitle: "お好きな方法でご連絡ください。下によくある質問への回答と、これまでの活動拠点があります。",
+      whatsapp: "WhatsApp",
+      email: "メール",
+      phone: "電話",
+    },
+    casos: {
+      eyebrow: "事例紹介",
+      title: "事例の詳細",
+      subtitle: "各プロジェクトの課題、デザインの判断、そして成果を詳しく紹介します。",
+    },
   },
 };
 

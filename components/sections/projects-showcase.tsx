@@ -21,7 +21,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-import { projects, desktopShot, mobileShot, type Project } from "@/lib/projects";
+import { projects, desktopShot, mobileShot, tabletShot, type Project } from "@/lib/projects";
 import { SitePreview } from "@/components/site-preview";
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { SectionHeading } from "@/components/sections/section-heading";
@@ -467,12 +467,76 @@ function LaunchList({
 }
 
 /** Tarjeta grande: el lanzamiento destacado en escritorio y en teléfono. */
-function FeaturedProject({ project }: { project: Project }) {
+function FeaturedProject({ project, compact = false }: { project: Project; compact?: boolean }) {
   const { t } = useLanguage();
   const [lead, ...tail] = project.name.split(" ");
   const desc = t.projects.descs[project.slug] ?? project.desc;
   const host = hostname(project.url);
   const live = project.shots === false;
+
+  if (compact) {
+    // Inicio: una sola franja — nombre, descripción y acción a la izquierda,
+    // la captura de escritorio a la derecha (sin el teléfono encimado).
+    return (
+      <article className="panel panel-forest relative grid items-center gap-5 overflow-hidden p-4 sm:p-6 lg:grid-cols-12 lg:gap-8 lg:p-8">
+        <span
+          aria-hidden
+          className="dot-cluster pointer-events-none absolute -bottom-6 right-[-1rem] h-40 w-56 opacity-25 [mask-image:radial-gradient(circle_at_70%_70%,black,transparent_72%)]"
+        />
+        <div className="relative z-[1] flex flex-col items-start gap-4 lg:col-span-5">
+          <span className="tag-pill pr-4">
+            <span className="seal">
+              <Sparkle aria-hidden className="h-3.5 w-3.5 fill-ink" />
+            </span>
+            {t.hero.featured}
+          </span>
+          <h3 className="text-white">
+            <span className="display-xl block text-[clamp(2.75rem,5.4vw,4.75rem)]">{lead}</span>
+            {tail.length > 0 && (
+              <span className="mt-1 block font-serif text-[clamp(1.9rem,3.2vw,3rem)] italic leading-[0.9] text-lime">
+                {tail.join(" ")}
+              </span>
+            )}
+          </h3>
+          {desc && (
+            <p className="max-w-md text-pretty text-base leading-relaxed text-white/80">{desc}</p>
+          )}
+          <div className="flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:items-center">
+            <Button asChild size="lg" className="w-full pr-2.5 sm:w-auto">
+              <a href={project.url} target="_blank" rel="noopener noreferrer">
+                {t.projects.visitSite}
+                <span className="sr-only"> — {project.name}</span>
+                <ButtonArrow tone="ink" className="-mr-0.5 ml-auto sm:ml-2" />
+              </a>
+            </Button>
+            <span className="inline-flex h-10 items-center gap-2 self-start rounded-full bg-white/10 px-3.5 text-sm font-semibold text-white sm:self-auto">
+              <LiveDot className="text-lime" />
+              {host}
+            </span>
+          </div>
+        </div>
+        <div className="relative lg:col-span-7">
+          <div className="surface-white rounded-card p-1.5 shadow-float sm:p-2">
+            <BrowserBar host={host} />
+            <div className="relative aspect-[16/9] overflow-hidden rounded-inner bg-mint">
+              {live ? (
+                <SitePreview name={project.name} host={host} />
+              ) : (
+                <Image
+                  src={desktopShot(project.slug)}
+                  alt={`${project.name} — captura del sitio en escritorio`}
+                  fill
+                  sizes="(min-width: 1024px) 50vw, 92vw"
+                  quality={75}
+                  className="object-cover object-top"
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      </article>
+    );
+  }
 
   return (
     <article className="panel panel-forest relative grid items-center gap-6 overflow-hidden p-4 pt-[4.25rem] sm:p-7 sm:pt-20 md:gap-8 lg:grid-cols-12 lg:gap-6 lg:p-10 lg:pt-10">
@@ -581,6 +645,18 @@ export function ProjectCases() {
   const [active, setActive] = useState(0);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const slug: CaseSlug = CASE_SLUGS[active];
+
+  // Las tarjetas compactas del inicio enlazan a /casos#<slug>: ese caso abre
+  // ya seleccionado (y también si el hash cambia estando en la página).
+  useEffect(() => {
+    const sync = () => {
+      const index = CASE_SLUGS.indexOf(window.location.hash.slice(1) as CaseSlug);
+      if (index >= 0) setActive(index);
+    };
+    sync();
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
   const project = bySlug.get(slug);
   const projectCase = t.projects.cases[slug];
 
@@ -754,6 +830,98 @@ export function ProjectCases() {
 }
 
 /**
+ * Casos de estudio en el inicio — versión compacta: una tarjeta por caso con
+ * su captura móvil, el resultado en una línea y el enlace al caso completo
+ * (Problema / Decisión / Resultado) en /casos.
+ */
+/** Koi abre con una portada crema casi vacía: su miniatura usa la captura de
+ *  tableta recortada a la casa (como en las landings de servicio). */
+const KOI_SLUG = "koi-arquitectura-vercel-app";
+
+export function ProjectCasesCompact() {
+  const { t } = useLanguage();
+
+  return (
+    <section
+      id="casos-de-estudio"
+      aria-label={t.projects.casesTitle}
+      className="panel p-5 shadow-soft sm:p-7 lg:p-10"
+    >
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+        <SectionHeading
+          eyebrow={t.projects.casesEyebrow}
+          title={t.projects.casesTitle}
+          subtitle={t.projects.casesSubtitle}
+        />
+        <Button asChild size="lg" variant="outline" className="shrink-0 self-start lg:self-auto">
+          <Link href="/casos">
+            {t.home.casesAll}
+            <ArrowUpRight aria-hidden className="h-4 w-4" />
+          </Link>
+        </Button>
+      </div>
+
+      {/* En teléfono, carrusel con imán (la siguiente tarjeta asoma); desde
+          sm, retícula de dos y, en xl, de cuatro. */}
+      <ul
+        role="list"
+        className="-mx-5 mt-7 flex snap-x snap-mandatory scroll-px-5 gap-2.5 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:mt-9 xl:grid-cols-4 [&::-webkit-scrollbar]:hidden"
+      >
+        {CASE_SLUGS.map((slug, index) => {
+          const project = bySlug.get(slug);
+          if (!project) return null;
+          const projectCase = t.projects.cases[slug];
+          return (
+            <li
+              key={slug}
+              data-fx="up"
+              style={fx((index % 4) * 70)}
+              className="w-[82%] min-w-0 shrink-0 snap-start max-sm:[&>*]:!transform-none max-sm:[&>*]:!opacity-100 sm:w-auto"
+            >
+              <Link
+                href={`/casos#${slug}`}
+                className="group flex h-full flex-col gap-4 rounded-card bg-mint p-2 ring-1 ring-ink/[0.05] transition-transform duration-300 hover:-translate-y-1 sm:p-2.5"
+              >
+                <span className="relative aspect-[16/10] overflow-hidden rounded-inner bg-white">
+                  <Image
+                    src={slug === KOI_SLUG ? tabletShot(slug) : desktopShot(slug)}
+                    alt={`${project.name} — captura del sitio`}
+                    fill
+                    sizes="(min-width: 1280px) 20rem, (min-width: 640px) 45vw, 92vw"
+                    className={cn(
+                      "object-cover transition-transform duration-700 group-hover:scale-[1.04]",
+                      slug === KOI_SLUG ? "object-[50%_62%]" : "object-top"
+                    )}
+                  />
+                </span>
+                <span className="flex flex-1 flex-col gap-2 px-2 pb-2 sm:px-3 sm:pb-3">
+                  <span className="text-lg font-bold leading-snug text-ink">{project.name}</span>
+                  <span className="text-pretty text-[0.9375rem] leading-snug text-ink/75">
+                    <span className="mr-1.5 text-xs font-bold uppercase tracking-[0.08em] text-forest">
+                      {t.projects.caseLabels.result}
+                    </span>
+                    {projectCase.result}
+                  </span>
+                  <span className="mt-auto flex items-center justify-between gap-3 pt-2 text-sm font-semibold text-ink">
+                    {t.home.casesCta}
+                    <span className="grid size-10 shrink-0 place-items-center rounded-full bg-ink text-lime">
+                      <ArrowUpRight
+                        aria-hidden
+                        className="h-4 w-4 transition-transform duration-300 group-hover:rotate-45"
+                      />
+                    </span>
+                  </span>
+                </span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+/**
  * Portafolio — catálogo tipo app.
  *
  * Cabecera en bento (titular + contador lima), el lanzamiento destacado en
@@ -766,7 +934,10 @@ export function ProjectCases() {
  * Los casos de estudio son su propia sección (`ProjectCases`). Mientras la
  * página no la monte aparte, el portafolio la incluye al final (`withCases`).
  */
-export function ProjectsShowcase({ withCases = true }: { withCases?: boolean } = {}) {
+export function ProjectsShowcase({
+  withCases = true,
+  compactFeatured = false,
+}: { withCases?: boolean; compactFeatured?: boolean } = {}) {
   const { t } = useLanguage();
   const [showAll, setShowAll] = useState(false);
   const [focusRest, setFocusRest] = useState(false);
@@ -896,7 +1067,7 @@ export function ProjectsShowcase({ withCases = true }: { withCases?: boolean } =
 
       {/* El lanzamiento destacado. */}
       <div data-fx="panel" className="min-w-0">
-        <FeaturedProject project={featuredProject} />
+        <FeaturedProject project={featuredProject} compact={compactFeatured} />
       </div>
 
       {/* Recientes. De md en adelante, retícula (seis fichas: filas completas

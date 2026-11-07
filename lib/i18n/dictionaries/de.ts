@@ -17,6 +17,9 @@ const de: Dictionary = {
     serviciosEntrada: "Einstiegsleistungen",
     lumina: "Lumina",
     servicios: "Leistungen",
+    conoceme: "Lerne Bryan kennen",
+    contacto: "Kontakt",
+    casos: "Fallstudien",
   },
   marquee: {
     words: ["Design", "Code", "SEO", "Performance", "E-Commerce", "Branding"],
@@ -640,6 +643,48 @@ const de: Dictionary = {
   },
   languageSwitcher: {
     label: "Sprache",
+  },
+  /** Inicio compacto: bloques que enlazan a las páginas movidas. */
+  home: {
+    presence: "Projekte in Mexiko, Spanien und Frankreich",
+    presenceLink: "Wo genau",
+    casesAll: "Alle Fallstudien",
+    casesCta: "Ganze Fallstudie lesen",
+    bryanEyebrow: "Gründer",
+    bryanLine: "Ich gestalte das Erlebnis und schreibe auch den Code: Du arbeitest direkt mit mir, von der Idee bis zum Launch.",
+    bryanCta: "Lerne Bryan kennen",
+    luminaEyebrow: "KI-Beraterin",
+    luminaLine: "Lumina beantwortet deine Fragen sofort, zeigt dir Projekte wie deins und bereitet dein Angebot vor.",
+    luminaCta: "Lerne Lumina kennen",
+    luminaChat: "Mit Lumina sprechen",
+    faqMore: "Alle Fragen ansehen",
+  },
+  /** Páginas a las que se movieron secciones del inicio. */
+  pages: {
+    breadcrumb: "Brotkrümelnavigation",
+    conoceme: {
+      eyebrow: "Gründer",
+      title: "Lerne Bryan kennen",
+      subtitle: "Wer deine Website gestaltet und programmiert, wie er arbeitet und mit welchen Werkzeugen.",
+    },
+    lumina: {
+      eyebrow: "KI-Beraterin",
+      title: "Lumina, deine Beraterin bei BryanF Design",
+      subtitle: "Frag sie, was du willst: Preise, Zeiten oder was deine Website braucht. Sie antwortet sofort und bringt dich zum Angebot.",
+    },
+    contacto: {
+      eyebrow: "Kontakt",
+      title: "Lass uns über dein Projekt sprechen",
+      subtitle: "Schreib uns über den Kanal, der dir am liebsten ist. Unten findest du Antworten auf die häufigsten Fragen und die Orte, an denen wir gearbeitet haben.",
+      whatsapp: "WhatsApp",
+      email: "E-Mail",
+      phone: "Telefon",
+    },
+    casos: {
+      eyebrow: "Fallstudien",
+      title: "Vollständige Fallstudien",
+      subtitle: "Das Problem, die Designentscheidung und das Ergebnis jedes Projekts, ausführlich erzählt.",
+    },
   },
 };
 

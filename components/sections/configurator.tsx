@@ -158,7 +158,10 @@ function formatMXN(value: number) {
 
 const QUOTE_KEY = "bryanf_quote_v1";
 
-export function Configurator({ hideHeading = false }: { hideHeading?: boolean } = {}) {
+export function Configurator({
+  hideHeading = false,
+  chapter = 7,
+}: { hideHeading?: boolean; chapter?: number } = {}) {
   const { t } = useLanguage();
   const PLANS = getPlans(t);
   const MODULES = getModules(t);
@@ -465,7 +468,7 @@ export function Configurator({ hideHeading = false }: { hideHeading?: boolean } 
                 eyebrow={t.configurator.eyebrow}
                 title={t.configurator.title}
                 subtitle={t.configurator.subtitle}
-                chapter={{ index: 7 }}
+                chapter={{ index: chapter }}
                 className="relative px-1 sm:px-0 [&_p]:text-[0.975rem] md:[&_p]:text-base"
               />
             </>

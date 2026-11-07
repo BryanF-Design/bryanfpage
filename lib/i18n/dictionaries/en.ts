@@ -17,6 +17,9 @@ const en: Dictionary = {
     serviciosEntrada: "Entry-level services",
     lumina: "Lumina",
     servicios: "Services",
+    conoceme: "Meet Bryan",
+    contacto: "Contact",
+    casos: "Case studies",
   },
   marquee: {
     words: ["Design", "Code", "SEO", "Performance", "E-commerce", "Branding"],
@@ -640,6 +643,48 @@ const en: Dictionary = {
   },
   languageSwitcher: {
     label: "Language",
+  },
+  /** Inicio compacto: bloques que enlazan a las páginas movidas. */
+  home: {
+    presence: "Projects in Mexico, Spain and France",
+    presenceLink: "See where",
+    casesAll: "See all case studies",
+    casesCta: "Read the full case",
+    bryanEyebrow: "Founder",
+    bryanLine: "I design the experience and write the code too: you work directly with me, from idea to launch.",
+    bryanCta: "Meet Bryan",
+    luminaEyebrow: "AI advisor",
+    luminaLine: "Lumina answers your questions instantly, shows you projects like yours and leaves your quote ready.",
+    luminaCta: "Meet Lumina",
+    luminaChat: "Talk to Lumina",
+    faqMore: "See all questions",
+  },
+  /** Páginas a las que se movieron secciones del inicio. */
+  pages: {
+    breadcrumb: "Breadcrumb",
+    conoceme: {
+      eyebrow: "Founder",
+      title: "Meet Bryan",
+      subtitle: "Who designs and builds your website, how he works and with which tools.",
+    },
+    lumina: {
+      eyebrow: "AI advisor",
+      title: "Lumina, your advisor at BryanF Design",
+      subtitle: "Ask her anything: prices, timelines or what your website needs. She answers instantly and takes you to your quote.",
+    },
+    contacto: {
+      eyebrow: "Contact",
+      title: "Let's talk about your project",
+      subtitle: "Reach us on whichever channel you prefer. Below are answers to the most common questions and the places we've worked.",
+      whatsapp: "WhatsApp",
+      email: "Email",
+      phone: "Phone",
+    },
+    casos: {
+      eyebrow: "Case studies",
+      title: "Full case studies",
+      subtitle: "The problem, the design decision and the result of each project, told in detail.",
+    },
   },
 };
 

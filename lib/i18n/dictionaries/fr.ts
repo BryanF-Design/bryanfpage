@@ -17,6 +17,9 @@ const fr: Dictionary = {
     serviciosEntrada: "Services d'entrée",
     lumina: "Lumina",
     servicios: "Services",
+    conoceme: "Découvrir Bryan",
+    contacto: "Contact",
+    casos: "Études de cas",
   },
   marquee: {
     words: ["Design", "Code", "SEO", "Performance", "E-commerce", "Branding"],
@@ -640,6 +643,48 @@ const fr: Dictionary = {
   },
   languageSwitcher: {
     label: "Langue",
+  },
+  /** Inicio compacto: bloques que enlazan a las páginas movidas. */
+  home: {
+    presence: "Des projets au Mexique, en Espagne et en France",
+    presenceLink: "Voir où",
+    casesAll: "Voir toutes les études de cas",
+    casesCta: "Lire le cas complet",
+    bryanEyebrow: "Fondateur",
+    bryanLine: "Je conçois l'expérience et j'écris aussi le code : vous travaillez directement avec moi, de l'idée au lancement.",
+    bryanCta: "Découvrir Bryan",
+    luminaEyebrow: "Conseillère IA",
+    luminaLine: "Lumina répond à vos questions sur-le-champ, vous montre des projets comme le vôtre et prépare votre devis.",
+    luminaCta: "Découvrir Lumina",
+    luminaChat: "Parler avec Lumina",
+    faqMore: "Voir toutes les questions",
+  },
+  /** Páginas a las que se movieron secciones del inicio. */
+  pages: {
+    breadcrumb: "Fil d'Ariane",
+    conoceme: {
+      eyebrow: "Fondateur",
+      title: "Découvrir Bryan",
+      subtitle: "Qui conçoit et développe votre site, comment il travaille et avec quels outils.",
+    },
+    lumina: {
+      eyebrow: "Conseillère IA",
+      title: "Lumina, votre conseillère chez BryanF Design",
+      subtitle: "Posez-lui toutes vos questions : prix, délais ou besoins de votre site. Elle répond sur-le-champ et vous mène au devis.",
+    },
+    contacto: {
+      eyebrow: "Contact",
+      title: "Parlons de votre projet",
+      subtitle: "Écrivez-nous sur le canal de votre choix. Plus bas, les réponses aux questions les plus fréquentes et les lieux où nous avons travaillé.",
+      whatsapp: "WhatsApp",
+      email: "E-mail",
+      phone: "Téléphone",
+    },
+    casos: {
+      eyebrow: "Études de cas",
+      title: "Études de cas complètes",
+      subtitle: "Le problème, la décision de design et le résultat de chaque projet, racontés en détail.",
+    },
   },
 };
 

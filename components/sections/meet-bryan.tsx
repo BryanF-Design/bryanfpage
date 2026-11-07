@@ -9,6 +9,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import { ChapterMark } from "@/components/sections/chapter-mark";
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n/context";
+import { useHomeHref } from "@/lib/use-home-href";
 import { cn } from "@/lib/utils";
 
 const WHATSAPP = "https://wa.me/525663012505";
@@ -78,8 +79,9 @@ function withAccent(text: string, accent: string, className: string): ReactNode 
  * lado a lado y el relato debajo a todo lo ancho; desde xl el relato ocupa la
  * columna derecha a dos filas.
  */
-export function MeetBryan() {
+export function MeetBryan({ chapter = 3 }: { chapter?: number } = {}) {
   const { t, locale } = useLanguage();
+  const processHref = useHomeHref("proceso");
   const { lead, rest } = splitTitle(t.about.title);
   // Instrument Serif no trae glifos CJK: en japonés y chino la cita va recta.
   const cjk = locale === "ja" || locale === "zh";
@@ -176,7 +178,7 @@ export function MeetBryan() {
           className="min-w-0 md:col-span-12 md:row-start-2 xl:col-span-7 xl:col-start-6 xl:row-span-2 xl:row-start-1"
         >
           <div className="panel flex h-full flex-col p-5 shadow-soft sm:p-8 lg:p-12">
-            <ChapterMark label={t.about.eyebrow} index={3} />
+            <ChapterMark label={t.about.eyebrow} index={chapter} />
 
             <h2 id="bryan-title" className="mt-5 text-ink sm:mt-6 lg:mt-9">
               {lead && (
@@ -253,7 +255,7 @@ export function MeetBryan() {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="h-12 sm:h-14">
-                <Link href="#proceso">{t.about.ctaSecondary}</Link>
+                <Link href={processHref}>{t.about.ctaSecondary}</Link>
               </Button>
             </div>
           </div>

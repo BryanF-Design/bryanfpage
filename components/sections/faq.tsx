@@ -27,9 +27,20 @@ const WHATSAPP = "https://wa.me/525663012505";
  * las dos salidas: WhatsApp y el chat. Filas redondeadas tipo app, número en
  * círculo y un botón redondo "+" que gira a "×"; la abierta se enciende en lima.
  */
-export function Faq() {
+export function Faq({
+  chapter = 10,
+  only,
+  moreHref,
+}: {
+  chapter?: number;
+  /** Índices (del diccionario) de las preguntas a mostrar; sin esto, todas. */
+  only?: readonly number[];
+  /** Enlace a la lista completa (el inicio muestra solo las clave). */
+  moreHref?: string;
+} = {}) {
   const { t } = useLanguage();
-  const items = t.faq.items.map((item, index) => ({
+  const source = only ? only.map((i) => t.faq.items[i]).filter(Boolean) : t.faq.items;
+  const items = source.map((item, index) => ({
     id: String(index + 1),
     ...item,
   }));
@@ -52,7 +63,7 @@ export function Faq() {
             eyebrow={t.faq.eyebrow}
             title={t.faq.title}
             subtitle={t.faq.subtitle}
-            chapter={{ index: 10 }}
+            chapter={{ index: chapter }}
             align="center"
             className="relative px-2"
           />
@@ -118,6 +129,17 @@ export function Faq() {
                   ))}
                 </Accordion>
               </div>
+              {moreHref && (
+                <Link
+                  href={moreHref}
+                  className="group relative z-10 mx-auto mt-4 flex min-h-12 w-fit items-center gap-3 rounded-full bg-white/10 py-1.5 pl-5 pr-1.5 text-sm font-semibold text-white ring-1 ring-white/15 transition-colors hover:bg-lime hover:text-ink sm:text-[0.9375rem]"
+                >
+                  {t.home.faqMore}
+                  <span aria-hidden className="grid size-9 place-items-center rounded-full bg-lime text-ink transition-colors group-hover:bg-ink group-hover:text-lime">
+                    <ArrowUpRight className="h-4 w-4" />
+                  </span>
+                </Link>
+              )}
             </div>
           </div>
 

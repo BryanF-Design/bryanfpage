@@ -24,6 +24,7 @@ import {
 import { Sparkle } from "lucide-react";
 
 import { SectionHeading } from "@/components/sections/section-heading";
+import { useHomeHref } from "@/lib/use-home-href";
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
@@ -68,8 +69,9 @@ const GROUP_TONES: Record<Category, string> = {
  * Las píldoras de filtro (como las de la referencia de AirPods) resaltan una
  * familia sin mover la retícula: las demás fichas solo se atenúan.
  */
-export function StackOrbit() {
+export function StackOrbit({ chapter = 5 }: { chapter?: number } = {}) {
   const { t } = useLanguage();
+  const projectsHref = useHomeHref("projects");
   const [filter, setFilter] = useState<Filter>("all");
 
   const countFor = (f: Filter) =>
@@ -92,7 +94,7 @@ export function StackOrbit() {
             eyebrow={t.stack.eyebrow}
             title={t.stack.title}
             subtitle={t.stack.subtitle}
-            chapter={{ index: 5 }}
+            chapter={{ index: chapter }}
             className="relative"
           />
 
@@ -130,7 +132,7 @@ export function StackOrbit() {
 
             <div className="flex flex-col gap-2.5 sm:flex-row lg:flex-col xl:flex-row">
               <Button asChild size="lg" variant="ink" className="pr-2.5">
-                <Link href="#projects">
+                <Link href={projectsHref}>
                   {t.stack.ctaPrimary}
                   <ButtonArrow tone="lime" className="ml-auto -mr-0.5 sm:ml-2" />
                 </Link>

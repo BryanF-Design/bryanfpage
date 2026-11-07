@@ -61,7 +61,7 @@ function useBelowMd() {
  * en fila, como carrusel con imán que deja asomar la siguiente ficha. El
  * último paso (el seguimiento, lo que sigue después del lanzamiento) va en lima.
  */
-export function ProcessOrbital() {
+export function ProcessOrbital({ chapter = 4 }: { chapter?: number } = {}) {
   const { t } = useLanguage();
   const steps = t.process.steps;
   const total = steps.length;
@@ -87,7 +87,7 @@ export function ProcessOrbital() {
             <SectionHeading
               eyebrow={t.process.eyebrow}
               title={accentLastWord(t.process.title)}
-              chapter={{ index: 4 }}
+              chapter={{ index: chapter }}
               className="lg:col-span-7"
             />
             <div className="flex flex-col gap-5 lg:col-span-5 lg:pb-2 lg:pt-14">
