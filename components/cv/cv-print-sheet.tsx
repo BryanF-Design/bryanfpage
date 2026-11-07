@@ -31,7 +31,7 @@ export function CvPrintSheet({ t }: { t: CvDict }) {
       <header className={s.psHeader}>
         <Image src="/img/cv/bryan-photo-full.webp" alt="" width={720} height={960} className={s.psPhoto} sizes="120px" />
         <div className={s.psHeadText}>
-          <h1>{CV_CONTACT.fullName}</h1>
+          <p className={s.psName}>{CV_CONTACT.fullName}</p>
           <p className={s.psRole}>{t.start.role} · Tech Architect · Operations Manager</p>
           <p className={s.psContact}>
             <span>{CV_CONTACT.email}</span>
@@ -82,7 +82,7 @@ export function CvPrintSheet({ t }: { t: CvDict }) {
             <ul className={s.psProjects}>
               {TROPHIES.map((p) => (
                 <li key={p.id}>
-                  <strong>{p.name}</strong> — {t.trophies.items[p.id as keyof CvDict["trophies"]["items"]].desc}{" "}
+                  <strong>{p.name}</strong>: {t.trophies.items[p.id as keyof CvDict["trophies"]["items"]].desc}{" "}
                   <span className={s.psMuted}>({host(p.url)})</span>
                 </li>
               ))}
@@ -131,7 +131,7 @@ export function CvPrintSheet({ t }: { t: CvDict }) {
               {t.academy.courses.map((c, i) => (
                 <li key={`${c.year}-${i}`}>
                   <b>{c.year}</b> {c.name}
-                  {c.org ? ` — ${c.org}` : ""}
+                  {c.org ? `, ${c.org}` : ""}
                 </li>
               ))}
             </ul>

@@ -76,7 +76,7 @@ export function NotFoundContent() {
       <div className="panel relative flex flex-1 flex-col gap-5 p-4 shadow-soft sm:p-6 lg:gap-8 lg:p-10">
         {/* Barra superior: la marca regresa al inicio. */}
         <div className="flex items-center justify-between gap-3">
-          <Link href="/" aria-label={`BryanF Design — ${t.nav.inicio}`} className="flex shrink-0 items-center rounded-full">
+          <Link href="/" aria-label={`${t.nav.inicio}: BryanF Design`} className="flex shrink-0 items-center rounded-full">
             <Image
               src="/img/brand/logo-dark.png"
               alt="BryanF Design"

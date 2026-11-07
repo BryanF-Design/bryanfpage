@@ -105,9 +105,9 @@ export async function sendOrderConfirmation(
         <li><strong>Folio:</strong> ${folio}</li>
         <li><strong>Monto cobrado:</strong> ${amount}</li>
         <li><strong>Método:</strong> ${escapeHtml(method)}</li>
-        <li><strong>Modalidad:</strong> ${escapeHtml(order.modalidad || "—")}</li>
+        <li><strong>Modalidad:</strong> ${escapeHtml(order.modalidad || "Sin dato")}</li>
         <li><strong>Concepto:</strong> ${escapeHtml(order.description || "Proyecto web")}</li>
-        <li><strong>Cliente:</strong> ${escapeHtml(order.customerName || "—")} ${
+        <li><strong>Cliente:</strong> ${escapeHtml(order.customerName || "Sin dato")} ${
     order.customerEmail ? `(${escapeHtml(order.customerEmail)})` : ""
   }</li>
         <li><strong>Referencia:</strong> ${escapeHtml(order.reference)}</li>
@@ -116,7 +116,7 @@ export async function sendOrderConfirmation(
 
   const internalRes = await sendEmail(
     INTERNAL_TO,
-    `Pago confirmado ${folio} — ${amount}`,
+    `Pago confirmado ${folio} · ${amount}`,
     internalHtml
   );
 
@@ -137,7 +137,7 @@ export async function sendOrderConfirmation(
       </div>`;
     const customerRes = await sendEmail(
       order.customerEmail,
-      `Tu comprobante ${folio} — BryanF Design`,
+      `Tu comprobante ${folio} · BryanF Design`,
       customerHtml
     );
     customerOk = customerRes.ok;

@@ -125,7 +125,7 @@ export function DigitalCard({
     try {
       await navigator.share({
         title: `${CARD.fullName} · ${CARD.company}`,
-        text: `${CARD.fullName} — ${CARD.role}. Guarda mi contacto:`,
+        text: `${CARD.fullName}, ${CARD.role}. Guarda mi contacto:`,
         url: CARD.cardUrl,
       });
     } catch {
@@ -295,7 +295,7 @@ export function DigitalCard({
             ) : (
               <a
                 href={`https://wa.me/?text=${encodeURIComponent(
-                  `${CARD.fullName} — ${CARD.role}. Guarda su contacto: ${CARD.cardUrl}`
+                  `${CARD.fullName}, ${CARD.role}. Guarda su contacto: ${CARD.cardUrl}`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"

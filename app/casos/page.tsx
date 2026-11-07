@@ -3,9 +3,9 @@ import { createPageMetadata } from "@/lib/seo/page-metadata";
 
 export const metadata = createPageMetadata({
   path: "/casos",
-  title: "Casos de estudio | BryanF Design",
+  title: "Casos de estudio de diseño web | BryanF Design",
   description:
-    "Casos de estudio de BryanF Design: el problema, la decisión de diseño y el resultado de proyectos reales como Koi Arquitectura y NKMOH Café.",
+    "Cómo resolví proyectos reales de diseño y desarrollo web, como Koi Arquitectura y NKMOH Café: el problema, la decisión de diseño y el resultado."
 });
 
 export default function Page() {

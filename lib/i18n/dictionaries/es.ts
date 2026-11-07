@@ -33,11 +33,11 @@ const es = {
     titlePrefix: "Haz que",
     titleHighlight: "pase.",
     subtitle:
-      "Hago sitios que se entienden, responden rápido y llevan a una acción. De la primera conversación al lanzamiento, trabajas directamente conmigo.",
+      "Hago sitios que se entienden a la primera, cargan rápido y facilitan que te escriban. Desde la primera plática hasta el lanzamiento, hablas directo conmigo.",
     scrollHint: "Desliza para recorrer el Civic",
     sideTop: "Webs que",
     sideHighlight: "venden",
-    panelTitle: "Diseño y código que convierten visitas en clientes",
+    panelTitle: "Diseño y código para que te encuentren y te escriban",
     available: "Agenda abierta para nuevos proyectos",
     proof: "+100 proyectos lanzados",
     features: ["Entrega desde 3 días", "SEO técnico incluido", "Pago en línea seguro"],
@@ -73,13 +73,13 @@ const es = {
     years: "años",
     yearsCaption: "de experiencia",
     projects: "proyectos",
-    projectsCaption: "digitales impulsados con éxito",
+    projectsCaption: "digitales entregados",
     deliveryPrefix: "Desde",
     days: "días",
     deliveryCaption: "días hábiles de entrega",
   },
   process: {
-    eyebrow: "Cómo trabajamos",
+    eyebrow: "Cómo trabajo",
     title: "Un proceso claro, de la idea al lanzamiento",
     subtitle:
       "Te digo qué sigue, qué necesito y cuándo lo verás. Las entregas empiezan desde 3 días hábiles y sigo contigo después del lanzamiento.",
@@ -88,27 +88,27 @@ const es = {
       {
         title: "Cotización",
         content:
-          "Te compartimos una propuesta clara: alcance, tiempos y precio. Sin letras chiquitas.",
+          "Te mando una propuesta clara con alcance, tiempos y precio. Sin letras chiquitas.",
       },
       {
         title: "Brief",
         content:
-          "Entendemos tu negocio, tus objetivos y a quién le hablas. Definimos estrategia y contenido.",
+          "Platicamos de tu negocio, de lo que quieres lograr y de a quién le hablas. Con eso definimos el contenido.",
       },
       {
         title: "Desarrollo",
         content:
-          "Diseño UX/UI y código rápido y limpio: responsive, animado y optimizado para Core Web Vitals.",
+          "Diseño la interfaz y la programo: que se vea bien en el celular, cargue rápido y pase las Core Web Vitals.",
       },
       {
         title: "Lanzamiento",
         content:
-          "SEO técnico, despliegue y medición. Tu sitio queda listo para vender desde el día uno.",
+          "Publico tu sitio con SEO técnico y medición, para que desde el primer día sepas quién llega y qué busca.",
       },
       {
         title: "Seguimiento",
         content:
-          "1 mes de seguimiento post-entrega y acceso a Access BryanF, tu panel técnico, para asegurar el correcto funcionamiento del sitio.",
+          "Te acompaño un mes después de la entrega y tienes acceso a Access BryanF, tu panel técnico, para que todo siga funcionando bien.",
       },
     ],
   },
@@ -116,7 +116,7 @@ const es = {
     eyebrow: "Stack",
     title: "Los lenguajes que manejo",
     subtitle:
-      "Elijo cada herramienta por lo que el proyecto necesita. No por moda, sino para que el sitio cargue bien, escale y sea fácil de mantener.",
+      "Elijo cada herramienta por lo que tu proyecto necesita, no por moda: que el sitio cargue bien, crezca contigo y sea fácil de mantener.",
     ctaPrimary: "Ver proyectos",
     ctaSecondary: "Trabajemos juntos",
     filtersLabel: "Filtrar herramientas por tipo",
@@ -126,13 +126,13 @@ const es = {
   projects: {
     eyebrow: "Portafolio",
     titlePrefix: "Webs que",
-    rotatingWords: ["venden", "convierten", "conectan", "destacan"],
+    rotatingWords: ["funcionan", "conectan", "destacan", "crecen"],
     subtitle:
-      "Cada proyecto aquí está en línea y resolvió una necesidad distinta. Puedes abrirlos y recorrer el trabajo real.",
+      "Todos estos proyectos están en línea y cada uno resolvió algo distinto. Ábrelos y recórrelos con calma.",
     visitSite: "Visitar sitio",
     showMore: "Mostrar más proyectos",
-    title: "Trabajo real que ya está vendiendo.",
-    titleAccent: "vendiendo",
+    title: "Trabajo real que ya está funcionando.",
+    titleAccent: "funcionando",
     live: "En línea",
     countLabel: "sitios en línea que puedes abrir y recorrer",
     recent: "Recientes",
@@ -218,9 +218,9 @@ const es = {
   },
   world: {
     eyebrow: "Presencia",
-    title: "Dónde hemos trabajado",
+    title: "Dónde he trabajado",
     subtitle:
-      "El trabajo nos ha llevado por México, España y Francia: proyectos reales, con clientes reales, en tres husos horarios.",
+      "He trabajado con clientes de México, España y Francia, en tres husos horarios distintos.",
     dragHint: "Arrastra el globo para girarlo",
     locations: {
       mexico: "México",
@@ -237,16 +237,16 @@ const es = {
   clients: {
     eyebrow: "Clientes",
     label: "Marcas que han confiado",
-    subtitle: "Del corporativo al estudio independiente: el mismo cuidado en cada entrega.",
+    subtitle: "Del corporativo al estudio independiente, cada proyecto recibe el mismo cuidado.",
     brands: "marcas",
   },
   entryServices: {
     eyebrow: "Servicios de entrada",
-    title: "Presencia profesional sin construir un sitio completo",
+    title: "Si aún no necesitas un sitio completo, empieza por aquí",
     subtitle:
-      "Si todavía no necesitas una web completa, arranca aquí: identidad de contacto lista en días, con la misma calidad de diseño.",
+      "Una tarjeta, una firma de correo o una página sencilla para verte profesional desde ya, con el mismo cuidado en el diseño.",
     cta: "Preguntar por este servicio",
-    note: "Precios en pesos mexicanos (MXN). ¿Tu proyecto es más grande? Podemos combinarlo con un sitio completo — pregúntale a Lumina.",
+    note: "Precios en pesos mexicanos (MXN). ¿Tu proyecto es más grande? Lo combinamos con un sitio completo; pregúntale a Lumina.",
     fromPrice: (price: string) => `Desde ${price}`,
     items: [
       {
@@ -305,7 +305,7 @@ const es = {
         id: "landingEsencial",
         name: "Landing page esencial",
         price: "Desde $2,400 MXN",
-        desc: "Una página real, lista para vender o presentarte, sin el alcance de un sitio completo.",
+        desc: "Una página sencilla para presentarte o lanzar algo, sin el alcance de un sitio completo.",
         features: [
           "Ideal para profesionistas, eventos y negocios locales",
           "SEO técnico básico incluido",
@@ -325,11 +325,11 @@ const es = {
     plans: {
       full: {
         name: "Desarrollo Web",
-        desc: "Tu sitio profesional a la medida, rápido y orientado a vender.",
+        desc: "Tu sitio a la medida, rápido y pensado para que te contacten.",
       },
       update: {
         name: "Actualización",
-        desc: "Renueva tu web actual con diseño y performance reales.",
+        desc: "Una renovación de verdad para tu web actual: diseño y velocidad.",
       },
       maintenance: {
         name: "Mantenimiento",
@@ -357,7 +357,7 @@ const es = {
     apply: "Aplicar",
     couponNoneEntered: "",
     couponNoneActive:
-      "No hay cupones activos por el momento. Revisa nuestras redes o pregunta a Lumina.",
+      "Por ahora no hay cupones activos. Revisa mis redes o pregúntale a Lumina.",
     summary: "Tu resumen",
     totalProject: "Total proyecto",
     payNow: "A pagar ahora",
@@ -383,7 +383,7 @@ const es = {
     sendWhatsapp: "Enviar comprobante por WhatsApp",
     sendEmail: "Enviar comprobante por correo",
     emailQuote: "Enviar cotización por correo",
-    emailQuoteSubject: "Mi cotización — BryanF Design",
+    emailQuoteSubject: "Mi cotización · BryanF Design",
     securePaymentPrefix: "Pago seguro. Al continuar aceptas nuestros",
     terms: "Términos",
     and: "y",
@@ -409,40 +409,40 @@ const es = {
       {
         title: "¿Cuáles son los tiempos de entrega?",
         content:
-          "Los tiempos de entrega empiezan desde 3 días una vez que nos hayas proporcionado la información completa de tu empresa.",
+          "Desde 3 días hábiles, contando a partir de que tengo toda la información de tu negocio.",
       },
       {
         title: "¿Cuántos cambios puedo pedir?",
         content:
-          "En BryanF Design no manejamos un límite de cambios. La satisfacción total del cliente es lo más importante para entregar un producto de calidad.",
+          "No pongo un límite de cambios. Prefiero ajustar lo necesario hasta que tu sitio quede como lo imaginaste.",
       },
       {
-        title: "¿Cuál es su horario de atención?",
+        title: "¿Cuál es tu horario de atención?",
         content:
-          "Nuestro horario es de Lunes a Viernes de 9:00 AM a 7:00 PM, hora de Ciudad de México (CDMX).",
+          "De lunes a viernes, de 9:00 a 19:00, hora de la Ciudad de México.",
       },
       {
         title: "¿Cuáles son los costos?",
         content:
-          "Los costos empiezan a partir de los $3,500 MXN y pueden variar dependiendo de las necesidades específicas de tu proyecto.",
+          "Los proyectos empiezan en $3,500 MXN. El precio final depende de lo que necesites, y antes de arrancar te paso una propuesta con todo claro.",
       },
       {
         title: "¿Qué se necesita para empezar?",
         content:
-          "La información general de tu empresa, una breve llamada para recopilar requerimientos clave y un 50% de anticipo. El otro 50% se liquida al entregar y aprobar el proyecto.",
+          "La información general de tu negocio, una llamada corta para entender lo que necesitas y un anticipo del 50%. El otro 50% lo pagas cuando el proyecto está entregado y aprobado.",
       },
       {
         title: "¿Qué se me entrega al final?",
         content:
-          "Los accesos totales a la página web y a los correos (en caso de haberse creado), además de una capacitación breve, de no más de 30 minutos, para el manejo básico de tu sitio.",
+          "Todos los accesos a tu página y a tus correos (si los creamos), además de una capacitación corta, de máximo 30 minutos, para que manejes lo básico de tu sitio.",
       },
       {
         title: "¿Qué incluye trabajar juntos?",
         content:
-          "Dominio y host gratuito por un año, correos ilimitados (1 GB cada uno), un diseño completamente personalizado y la satisfacción de un producto final garantizado.",
+          "Dominio y hosting gratis por un año, correos ilimitados (1 GB cada uno) y un diseño hecho desde cero para tu marca. El resultado final va garantizado.",
       },
     ],
-    notFound: "¿No encontraste tu respuesta? Escríbenos y lo platicamos.",
+    notFound: "¿No encontraste tu respuesta? Escríbeme y lo platicamos.",
     sendWhatsapp: "Mandar WhatsApp",
     bubble: "¿Dudas?",
   },
@@ -458,7 +458,7 @@ const es = {
     title: "Soy Bryan. Yo diseño la experiencia y también escribo el código.",
     subtitle:
       "Trabajo contigo sin capas de agencia. La misma persona que escucha tu idea toma las decisiones de diseño y lleva el proyecto hasta producción.",
-    role: "Diseñador & desarrollador",
+    role: "Diseñador y desarrollador",
     photoAlt: "Bryan diseñando y desarrollando en su escritorio",
     inspirationLabel: "Lo que llevo al trabajo",
     inspiration:
@@ -561,7 +561,7 @@ const es = {
       { title: "Te enseña proyectos como el tuyo", desc: "Elige del portafolio los sitios más parecidos a tu giro." },
       { title: "Te deja tu web armada", desc: "Arma el cotizador frente a ti y le pasa tu resumen a Bryan." },
     ],
-    privacy: "No pedimos datos sensibles en el chat. Tu conversación vive sólo en este dispositivo.",
+    privacy: "No pedimos datos sensibles en el chat. Tu conversación se queda solo en este dispositivo.",
     quotePresets: ["Cotiza tu sitio a medida", "Cotiza tu tienda en línea", "Cotiza tu mantenimiento"],
     presetsTitle: "Cotiza en un clic",
     quickLabel: "Preguntas rápidas",
@@ -579,8 +579,8 @@ const es = {
     ],
   },
   footer: {
-    tagline: "Diseño que vende",
-    taglineRest: ", no sólo que luce. Webs rápidas, animadas y a la medida, desde México.",
+    tagline: "Diseño con intención",
+    taglineRest: ". Webs rápidas, claras y hechas a tu medida, desde México.",
     navLabel: "Navegación",
     servicesLabel: "Servicios",
     legalLabel: "Legal y contacto",
@@ -618,8 +618,8 @@ const es = {
     close: "Cerrar",
     send: "Enviar",
     open: "Abrir chat con Lumina",
-    teaser: "¿Buscas crear tu web? Pregúntame precios, tiempos o cómo empezamos ✨",
-    teaserShort: "¿Dudas con tu web? Pregúntame ✨",
+    teaser: "¿Estás pensando en tu web? Pregúntame precios, tiempos o por dónde empezar.",
+    teaserShort: "¿Dudas con tu web? Pregúntame.",
     typing: "Escribiendo…",
     retry: "Reintentar",
     actions: {
@@ -632,10 +632,10 @@ const es = {
     },
     languageInstruction: "español",
     errorFallback:
-      "Ahorita no puedo responder, pero escríbenos por <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a> y te atendemos al instante.",
+      "Ahorita no puedo responder. Escríbele a Bryan por <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a> y te contesta en cuanto pueda.",
     misunderstood: "Perdona, no te entendí. ¿Lo intentamos de nuevo?",
     connectionError:
-      "Tuvimos un problema de conexión. Escríbenos por <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a>.",
+      "Se cortó la conexión. Escríbele a Bryan por <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a>.",
   },
   languageNotice: {
     text:
@@ -705,7 +705,7 @@ const es = {
     contacto: {
       eyebrow: "Contacto",
       title: "Hablemos de tu proyecto",
-      subtitle: "Escríbenos por el canal que prefieras. Abajo están las respuestas a las preguntas más comunes y los lugares donde hemos trabajado.",
+      subtitle: "Escríbeme por donde te quede más cómodo. Abajo están las respuestas a las preguntas más comunes y los lugares donde he trabajado.",
       whatsapp: "WhatsApp",
       email: "Correo",
       phone: "Teléfono",

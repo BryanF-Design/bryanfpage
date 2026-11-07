@@ -7,9 +7,19 @@ const nextConfig = {
       { protocol: "https", hostname: "lottie.host" },
     ],
   },
-  // "Fundador" y "Conóceme" son la misma página.
+  // "Fundador" y "Conóceme" son la misma página. Las URLs .html vienen del
+  // sitio estático anterior (siguen en /public y Google las vio como
+  // duplicadas de su versión limpia): todas apuntan a una sola URL.
   async redirects() {
-    return [{ source: "/fundador", destination: "/conoceme", permanent: false }];
+    return [
+      { source: "/fundador", destination: "/conoceme", permanent: false },
+      { source: "/conoce-a-bryan", destination: "/conoceme", permanent: true },
+      { source: "/index.html", destination: "/", permanent: true },
+      { source: "/crear-web.html", destination: "/crear-web", permanent: true },
+      { source: "/privacidad.html", destination: "/privacidad", permanent: true },
+      { source: "/terminos.html", destination: "/terminos", permanent: true },
+      { source: "/gracias.html", destination: "/gracias", permanent: true },
+    ];
   },
   // Clean URLs for the legacy pages still served as static files from /public
   // (legal pages + post-payment briefing, pending migration to Next routes).

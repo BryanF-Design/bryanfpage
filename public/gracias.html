@@ -19,7 +19,7 @@
   <meta property="og:image" content="https://www.bryanfdesign.com/img/og-bryanf-apex.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="BryanF Design — Haz que pase" />
+  <meta property="og:image:alt" content="BryanF Design: Haz que pase" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="¡Gracias por tu compra! – BryanF Design" />
   <meta name="twitter:description" content="Gracias por contratar BryanF Design. Completa tu briefing para arrancar tu proyecto web." />
@@ -444,6 +444,9 @@
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-4GLGP6X573"></script>
   <script>
+    /* Solo se mide en producción y fuera de navegadores marcados como
+       internos (?interno=1). Igual que TRACKING_GUARD en lib/analytics.ts. */
+    (function(){try{var h=location.hostname;var prod=["www.bryanfdesign.com","bryanfdesign.com"].indexOf(h)>-1;var off=false;try{var q=new URLSearchParams(location.search).get("interno");if(q==="1")localStorage.setItem("bfd-interno","1");if(q==="0")localStorage.removeItem("bfd-interno");off=localStorage.getItem("bfd-interno")==="1";}catch(e){}window.__bfdNoTrack=!prod||off;if(window.__bfdNoTrack){window["ga-disable-G-4GLGP6X573"]=true;}}catch(e){}})();
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
@@ -451,7 +454,7 @@
     gtag('config', 'G-4GLGP6X573');
   </script>
   <script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
+    if (!window.__bfdNoTrack) (function(c,l,a,r,i,t,y){
         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
         t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
@@ -481,7 +484,7 @@
       <i class="fa-solid fa-circle-check"></i>
     </div>
     <h1>¡Gracias por tu <span>confianza!</span></h1>
-    <p class="gracias-hero__sub">Tu pago fue procesado exitosamente. Ahora completa tu briefing para que podamos arrancar tu proyecto de inmediato. 🚀</p>
+    <p class="gracias-hero__sub">Tu pago quedó registrado. Ahora cuéntame de tu proyecto en este briefing para arrancar cuanto antes.</p>
   </section>
 
   <!-- Progress steps -->
@@ -507,8 +510,8 @@
   <!-- Form -->
   <main class="gracias-card" id="main-content" tabindex="-1">
     <div class="gracias-form-wrap">
-      <h2>Cuéntanos sobre tu proyecto</h2>
-      <p>Esta información nos ayuda a personalizar tu sitio y entregar exactamente lo que necesitas. Toma menos de 3 minutos.</p>
+      <h2>Cuéntame de tu proyecto</h2>
+      <p>Con esto armo tu sitio a tu medida y te entrego justo lo que necesitas. Te toma menos de 3 minutos.</p>
 
       <form id="graciasBriefForm" novalidate>
         <div class="gf-grid">
@@ -548,7 +551,7 @@
           <!-- Idea del proyecto -->
           <div class="gf-field gf-field--full">
             <label for="gb-idea">Descripción del proyecto *</label>
-            <textarea id="gb-idea" name="projectIdea" rows="4" placeholder="Cuéntanos qué hace tu negocio, qué quieres lograr con tu sitio, a quién va dirigido y cualquier referencia visual que te guste." required></textarea>
+            <textarea id="gb-idea" name="projectIdea" rows="4" placeholder="Cuéntame qué hace tu negocio, qué quieres lograr con tu sitio, a quién va dirigido y cualquier referencia visual que te guste." required></textarea>
           </div>
           <!-- Secciones -->
           <div class="gf-field gf-field--full">
@@ -631,22 +634,22 @@
           <div class="gracias-next-item">
             <div class="gracias-next-item__icon"><i class="fa-solid fa-envelope-open-text"></i></div>
             <div class="gracias-next-item__text">
-              <strong>Revisamos tu briefing</strong>
-              <span>Nuestro equipo lo analiza en menos de 24 horas hábiles y te enviamos una propuesta detallada.</span>
+              <strong>Reviso tu briefing</strong>
+              <span>Lo reviso en menos de 24 horas hábiles y te mando una propuesta detallada.</span>
             </div>
           </div>
           <div class="gracias-next-item">
             <div class="gracias-next-item__icon"><i class="fa-solid fa-video"></i></div>
             <div class="gracias-next-item__text">
               <strong>Kickoff por videollamada</strong>
-              <span>Agendamos una sesión de arranque para alinear expectativas, tiempos y siguiente pasos.</span>
+              <span>Agendamos una videollamada de arranque para ponernos de acuerdo en expectativas, tiempos y siguientes pasos.</span>
             </div>
           </div>
           <div class="gracias-next-item">
             <div class="gracias-next-item__icon"><i class="fa-solid fa-rocket"></i></div>
             <div class="gracias-next-item__text">
               <strong>¡Arrancamos a construir!</strong>
-              <span>Comenzamos el desarrollo y te mantenemos informado con actualizaciones semanales.</span>
+              <span>Empiezo el desarrollo y te mantengo al tanto con avances cada semana.</span>
             </div>
           </div>
         </div>
@@ -663,8 +666,48 @@
 
       // Pre-fill from URL params (Stripe/MP redirect)
       var params = new URLSearchParams(window.location.search);
-      var paymentRef = params.get('payment_intent') || params.get('preference_id') || params.get('collection_id') || '';
-      var paymentMethod = params.get('source') || (params.get('payment_intent') ? 'stripe' : (params.get('collection_id') ? 'mercadopago' : ''));
+      var paymentRef = params.get('session_id') || params.get('payment_intent') || params.get('payment_id') || params.get('preference_id') || params.get('collection_id') || '';
+      var paymentMethod = params.get('provider') || params.get('source') || (params.get('payment_intent') ? 'stripe' : (params.get('collection_id') ? 'mercadopago' : ''));
+      var payStatus = params.get('status') || '';
+
+      // Eventos clave de GA4 (marcarlos como "evento clave" en GA4 >
+      // Administrar > Eventos): visita a /gracias y compra con su monto.
+      function track(name, data) {
+        try { if (typeof gtag === 'function') gtag('event', name, data || {}); } catch (_) {}
+        try { if (!window.__bfdNoTrack && typeof window.clarity === 'function') window.clarity('event', name); } catch (_) {}
+      }
+      track('thank_you_view', { payment_status: payStatus || 'sin_estado', payment_provider: paymentMethod || 'sin_dato' });
+      var payValue = parseFloat(params.get('value') || '');
+      var payCurrency = (params.get('currency') || 'MXN').toUpperCase();
+      if (payStatus === 'success' || params.get('collection_status') === 'approved') {
+        // Una sola vez por transacción: recargar la página no duplica la compra.
+        var txId = paymentRef || params.get('external_reference') || ('bf-' + Date.now());
+        var seenKey = 'bfd-purchase-' + txId;
+        var already = false;
+        try { already = localStorage.getItem(seenKey) === '1'; } catch (_) {}
+        if (!already) {
+          var purchase = {
+            transaction_id: txId,
+            currency: payCurrency,
+            payment_type: paymentMethod || 'sin_dato',
+            items: [{ item_id: 'proyecto-web', item_name: 'Proyecto web BryanF Design', quantity: 1 }]
+          };
+          if (isFinite(payValue) && payValue > 0) { purchase.value = payValue; purchase.items[0].price = payValue; }
+          track('purchase', purchase);
+          try { localStorage.setItem(seenKey, '1'); } catch (_) {}
+        }
+      }
+
+      // El texto del encabezado según cómo terminó el pago (antes siempre
+      // decía que se había registrado, aunque se hubiera cancelado).
+      var heroSub = document.querySelector('.gracias-hero__sub');
+      if (heroSub) {
+        if (payStatus === 'cancel' || payStatus === 'failure') {
+          heroSub.textContent = 'Tu pago no se completó. Puedes intentarlo de nuevo desde el cotizador o escribirme por WhatsApp y lo resolvemos juntos.';
+        } else if (payStatus === 'pending') {
+          heroSub.textContent = 'Tu pago está en proceso. En cuanto se confirme te aviso; mientras, cuéntame de tu proyecto en este briefing.';
+        }
+      }
 
       function setStatus(msg, color) {
         statusEl.style.display = 'block';
@@ -677,19 +720,19 @@
         return [
           '*🎉 NUEVO BRIEFING - BRYANF DESIGN*',
           '',
-          '*Nombre:* ' + (data.fullName || '—'),
-          '*Negocio:* ' + (data.businessName || '—'),
-          '*WhatsApp:* ' + (data.phone || '—'),
-          '*Correo:* ' + (data.email || '—'),
-          '*Tipo de proyecto:* ' + (data.projectType || '—'),
-          '*Estilo:* ' + (data.style || '—'),
-          '*Plazo:* ' + (data.deadline || '—'),
-          '*Materiales:* ' + (data.materials || '—'),
+          '*Nombre:* ' + (data.fullName || 'Sin dato'),
+          '*Negocio:* ' + (data.businessName || 'Sin dato'),
+          '*WhatsApp:* ' + (data.phone || 'Sin dato'),
+          '*Correo:* ' + (data.email || 'Sin dato'),
+          '*Tipo de proyecto:* ' + (data.projectType || 'Sin dato'),
+          '*Estilo:* ' + (data.style || 'Sin dato'),
+          '*Plazo:* ' + (data.deadline || 'Sin dato'),
+          '*Materiales:* ' + (data.materials || 'Sin dato'),
           '',
           '*Descripción:*',
-          data.projectIdea || '—',
+          data.projectIdea || 'Sin dato',
           '',
-          '*Secciones:* ' + (data.sections || '—'),
+          '*Secciones:* ' + (data.sections || 'Sin dato'),
           '*Referencias:* ' + (data.references || 'Sin referencias'),
           '*Notas:* ' + (data.notes || 'Sin notas'),
           '',
@@ -704,7 +747,7 @@
 
         // Basic validation
         if (!data.fullName || !data.businessName || !data.phone) {
-          setStatus('❌ Completa nombre, negocio y WhatsApp para continuar.', '#ff7b7b');
+          setStatus('Completa tu nombre, tu negocio y tu WhatsApp para continuar.', '#ff7b7b');
           return;
         }
 
@@ -725,7 +768,12 @@
           });
         } catch (_) {}
 
-        setStatus('✅ ¡Briefing enviado! Abriendo WhatsApp para confirmar…', '#b4e332');
+        setStatus('¡Listo, recibí tu briefing! Te abro WhatsApp para confirmar.', '#b4e332');
+        track('brief_submit', {
+          project_type: data.projectType || 'sin_dato',
+          payment_provider: paymentMethod || 'sin_dato',
+          method: 'gracias_form'
+        });
 
         setTimeout(function() {
           window.open(

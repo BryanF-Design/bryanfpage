@@ -386,7 +386,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                     <span className="relative aspect-[4/3] w-20 shrink-0 overflow-hidden rounded-inner bg-mint sm:w-full lg:w-28 xl:w-full">
                       <Image
                         src={caseShot(featured).src}
-                        alt={`${featured.name} — captura del sitio`}
+                        alt={`Captura del sitio de ${featured.name}`}
                         fill
                         sizes="(min-width: 1280px) 15rem, (min-width: 1024px) 7rem, (min-width: 640px) 15rem, 5rem"
                         className={cn(
@@ -433,8 +433,8 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                 <LandingHeading
                   id="problemas-title"
                   index={1}
-                  eyebrow="Problemas reales"
-                  title="Lo que esta página ayuda a resolver"
+                  eyebrow="Lo más común"
+                  title="Lo que me cuentan muchos negocios"
                   className="pb-6 sm:pb-7 lg:pb-0"
                 />
                 {/* Lumina duda sobre un disco lima, con su globo de diálogo. */}
@@ -466,7 +466,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
           <div suppressHydrationWarning data-fx="right" className="min-w-0 lg:col-span-7" style={fx(90)}>
             <div className="panel flex h-full flex-col gap-1 p-2 shadow-soft sm:p-3">
               <div className="flex items-center justify-between gap-3 px-3 pb-1 pt-3 sm:px-4">
-                <span className="text-sm font-semibold text-muted-foreground">Situaciones frecuentes</span>
+                <span className="text-sm font-semibold text-muted-foreground">Lo que más escucho</span>
                 <span className="inline-flex h-7 min-w-7 items-center justify-center rounded-full bg-ink px-2.5 text-xs font-bold text-lime">
                   {page.problems.length}
                 </span>
@@ -492,7 +492,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                 href="#solucion"
                 className="group mt-1 flex min-h-12 items-center justify-between gap-3 rounded-full py-1 pl-3 pr-1 text-sm font-semibold text-ink transition-colors hover:bg-ink/[0.04] sm:pl-4"
               >
-                Así lo resolvemos
+                Así lo resuelvo
                 <span className="grid size-10 shrink-0 place-items-center rounded-full bg-ink text-lime">
                   <ArrowDown
                     aria-hidden
@@ -516,14 +516,14 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                 id="solucion-title"
                 index={2}
                 eyebrow="Solución"
-                title="Una ejecución completa, no una pieza suelta"
+                title="De principio a fin, con la misma persona"
                 className="relative"
               />
               <p className="relative mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-white/85 md:text-xl">
                 {page.solution}
               </p>
               <p className="relative mt-8 font-serif text-[clamp(1.75rem,3vw,2.5rem)] italic leading-none text-lime lg:mt-auto lg:pt-10">
-                Diseño, código y estrategia.
+                Lo diseño y lo programo yo.
               </p>
 
               <span className="notch notch-br">
@@ -588,7 +588,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
               id="proceso-title"
               index={3}
               eyebrow="Proceso"
-              title="Cómo avanzamos sin improvisar"
+              title="Cómo vamos a trabajar"
             />
             <div aria-hidden className="hidden items-center gap-1.5 pb-3 lg:flex">
               {page.process.map((step, i) => (
@@ -655,10 +655,10 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
               <LandingHeading
                 id="diferenciadores-title"
                 index={4}
-                eyebrow="Diferenciadores"
+                eyebrow="Por qué conmigo"
                 title={
                   <>
-                    Por qué construirlo con <span className="text-lime">{BRAND_NAME}</span>
+                    Por qué hacerlo con <span className="text-lime">{BRAND_NAME}</span>
                   </>
                 }
               />
@@ -722,7 +722,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                 id="preguntas-title"
                 index={5}
                 eyebrow="Preguntas frecuentes"
-                title="Respuestas antes de cotizar"
+                title="Lo que suelen preguntarme"
                 className="relative"
               />
               <div className="panel-ink relative mt-auto flex flex-col gap-4 rounded-card p-5 sm:p-6">
@@ -731,7 +731,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                     <MessageCircle aria-hidden className="h-5 w-5" />
                   </span>
                   <p className="text-[0.975rem] font-semibold leading-snug text-white">
-                    ¿Tu duda no está aquí? Escríbenos y lo platicamos.
+                    ¿Tu duda no está aquí? Escríbeme y lo platicamos.
                   </p>
                 </div>
                 <Button asChild className="w-full justify-between pl-6 pr-2">
@@ -776,14 +776,13 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
               <LandingHeading
                 id="casos-title"
                 index={6}
-                eyebrow="Casos como referencia"
-                title="Evidencia disponible sin inventar métricas"
+                eyebrow="Proyectos reales"
+                title="Trabajo que puedes abrir y revisar"
                 className="lg:col-span-7"
               />
               <p className="max-w-xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg lg:col-span-5 lg:pb-1.5">
-                Estos proyectos existen en el portafolio del sitio y sirven como
-                referencia visual. No se agregan resultados, rankings ni métricas
-                que no estén documentadas.
+                Estos proyectos están en línea y son parte de mi portafolio.
+                Ábrelos para ver cómo resolví casos parecidos al tuyo.
               </p>
             </div>
             <ul className="-mx-5 mt-8 flex snap-x snap-mandatory scroll-px-5 gap-2.5 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:mt-10 [&::-webkit-scrollbar]:hidden">
@@ -799,7 +798,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                       <span className="relative aspect-[16/11] overflow-hidden rounded-inner bg-white">
                         <Image
                           src={caseShot(project).src}
-                          alt={`${project.name} — captura del sitio`}
+                          alt={`Captura del sitio de ${project.name}`}
                           fill
                           sizes="(min-width: 1024px) 28rem, (min-width: 640px) 31vw, 78vw"
                           className={cn(
@@ -847,7 +846,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                 id="relacionados-title"
                 index={7}
                 eyebrow="Enlaces relacionados"
-                title="Servicios que suelen conectarse"
+                title="Otros servicios que te pueden servir"
                 size="md"
                 className="lg:col-span-4"
               />
@@ -889,7 +888,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                   id="contacto-title"
                   className="display-xl text-balance text-[clamp(2.75rem,6.2vw,5.75rem)] text-ink"
                 >
-                  Cuéntanos qué necesitas construir o mejorar
+                  Cuéntame qué necesitas construir o mejorar
                 </h2>
               </div>
               <div className="flex flex-col lg:col-span-5">
@@ -909,9 +908,9 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                 <div className="panel-ink relative z-10 flex flex-col gap-6 rounded-card p-5 shadow-float sm:p-7">
                   <Sparkle aria-hidden className="absolute right-5 top-5 h-6 w-6 fill-lime text-lime" />
                   <p className="pr-8 text-pretty text-base leading-relaxed text-white/80 md:text-[1.0625rem]">
-                    Te respondemos con una ruta clara: alcance recomendado,
-                    prioridades, tiempos aproximados y datos que necesitamos para
-                    cotizar sin inflar el proyecto.
+                    Te respondo con una propuesta clara: qué te recomiendo, qué va
+                    primero, cuánto tiempo toma y qué necesito de ti para
+                    cotizar, sin inflar el proyecto.
                   </p>
                   <div className="flex flex-col gap-2.5">
                     <Button asChild size="lg" className="w-full justify-between bg-lime pl-6 pr-2.5 text-ink">

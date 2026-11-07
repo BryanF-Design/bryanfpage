@@ -1,4 +1,4 @@
-import { GA_MEASUREMENT_ID } from "@/lib/analytics";
+import { GA_MEASUREMENT_ID, TRACKING_GUARD } from "@/lib/analytics";
 
 /**
  * Etiqueta de Google (gtag.js) tal cual la entrega GA4, dentro del <head> del
@@ -16,6 +16,7 @@ export function GoogleAnalytics() {
         id="google-analytics-init"
         dangerouslySetInnerHTML={{
           __html: `
+  ${TRACKING_GUARD}
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());

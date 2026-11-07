@@ -147,7 +147,7 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
             href="/"
             onClick={() => setOpen(false)}
             className="flex h-11 shrink-0 items-center rounded-full px-1"
-            aria-label="BryanF Design — inicio"
+            aria-label="Inicio de BryanF Design"
           >
             <Image
               src="/img/brand/logo-dark.png"

@@ -104,7 +104,7 @@ function buildObject(issuerId: string) {
     cardTitle: text(CARD.company),
     header: text(CARD.fullName),
     subheader: text(CARD.role),
-    heroImage: image(`${CARD.website}/img/og-bryanf-apex.png`, `${CARD.company} — ${CARD.tagline}`),
+    heroImage: image(`${CARD.website}/img/og-bryanf-apex.png`, `${CARD.company} · ${CARD.tagline}`),
     barcode: {
       type: "QR_CODE",
       value: buildQrVCard(),

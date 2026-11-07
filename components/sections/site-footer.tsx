@@ -181,7 +181,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                 <Link
                   href="/"
                   className="rounded-full max-md:inline-flex max-md:min-h-11 max-md:items-center"
-                  aria-label="BryanF Design — inicio"
+                  aria-label="Inicio de BryanF Design"
                 >
                   <Image
                     src="/img/brand/logo-light.png"

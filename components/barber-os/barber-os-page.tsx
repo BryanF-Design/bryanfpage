@@ -478,8 +478,8 @@ export function BarberOsPage() {
               className="lg:col-span-7"
             />
             <p className="max-w-xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg lg:col-span-5 lg:pb-1.5">
-              Un sistema completo, no una agenda suelta: reservas, lealtad, cobros
-              y reportes conectados entre sí. Cada visita alimenta todo lo demás.
+              Reservas, lealtad, cobros y reportes conectados entre sí: cada
+              visita que confirmas actualiza todo lo demás, sin capturar dos veces.
             </p>
           </div>
 

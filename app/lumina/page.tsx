@@ -5,7 +5,7 @@ export const metadata = createPageMetadata({
   path: "/lumina",
   title: "Lumina, la asesora IA de BryanF Design",
   description:
-    "Pregúntale a Lumina por precios, tiempos o qué necesita tu web: responde al instante, te enseña proyectos reales y te deja la cotización armada.",
+    "Pregúntale a Lumina por precios, tiempos o lo que necesita tu web. Te contesta al momento, te enseña proyectos reales y te deja la cotización lista."
 });
 
 export default function Page() {

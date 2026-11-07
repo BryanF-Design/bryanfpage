@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "BryanF Design — Diseño y desarrollo web en México",
+    name: "BryanF Design · Diseño y desarrollo web en México",
     short_name: "BryanF Design",
     description:
-      "Páginas web rápidas, animadas y pensadas para vender. Arma tu web y paga en línea.",
+      "Páginas web rápidas, claras y a tu medida. Arma tu web y paga en línea.",
     start_url: "/",
     scope: "/",
     display: "standalone",

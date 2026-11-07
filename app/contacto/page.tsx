@@ -5,9 +5,9 @@ import { SITE_URL } from "@/lib/seo/service-pages";
 
 export const metadata = createPageMetadata({
   path: "/contacto",
-  title: "Contacto | BryanF Design",
+  title: "Contacto y preguntas frecuentes | BryanF Design",
   description:
-    "Escríbenos por WhatsApp, correo o teléfono. Respuestas a las preguntas frecuentes sobre tiempos, costos y entregables, y proyectos en México, España y Francia.",
+    "Escríbeme por WhatsApp, correo o teléfono. Aquí también resuelvo las dudas más comunes sobre tiempos, costos y entregables de tu página web."
 });
 
 // Todas las preguntas frecuentes viven aquí; el HTML del servidor sale en

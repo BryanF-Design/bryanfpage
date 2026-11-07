@@ -96,7 +96,9 @@ export async function POST(req: NextRequest) {
         moneda: currency,
         ...metadata,
       },
-      success_url: `${siteUrl}/gracias?status=success&provider=stripe`,
+      // value/currency/session_id: /gracias registra la compra en GA4 (purchase).
+      // {CHECKOUT_SESSION_ID} lo sustituye Stripe al redirigir.
+      success_url: `${siteUrl}/gracias?status=success&provider=stripe&value=${payable}&currency=${currency}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/gracias?status=cancel&provider=stripe`,
     });
 

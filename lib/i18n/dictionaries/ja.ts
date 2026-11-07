@@ -35,7 +35,7 @@ const ja: Dictionary = {
     scrollHint: "スクロールしてCivicをめぐる",
     sideTop: "売れる",
     sideHighlight: "ウェブ",
-    panelTitle: "訪問者を顧客に変えるデザインとコード",
+    panelTitle: "見つけてもらい、連絡したくなるデザインとコード",
     available: "新規プロジェクト受付中",
     proof: "100件以上の公開実績",
     features: ["最短3日で納品", "テクニカルSEO込み", "安全なオンライン決済"],
@@ -71,7 +71,7 @@ const ja: Dictionary = {
     years: "年",
     yearsCaption: "の経験",
     projects: "件",
-    projectsCaption: "のプロジェクトを成功に導きました",
+    projectsCaption: "のプロジェクトを納品しました",
     deliveryPrefix: "最短",
     days: "営業日",
     deliveryCaption: "営業日で納品",
@@ -96,7 +96,7 @@ const ja: Dictionary = {
       },
       {
         title: "公開",
-        content: "テクニカルSEO、公開、計測まで対応。初日から成果を出せる状態でお渡しします。",
+        content: "テクニカルSEOと計測を整えて公開します。初日から、誰が訪れて何を探しているかがわかります。",
       },
       {
         title: "アフターサポート",
@@ -121,8 +121,8 @@ const ja: Dictionary = {
     subtitle: "どのお客様にも本当の成果をもたらすウェブサイトです。それぞれオーダーメイドで設計・制作しました。気になるものをタップして見てみてください。",
     visitSite: "サイトを見る",
     showMore: "もっと見る",
-    title: "すでに成果を生んでいる、実際の仕事。",
-    titleAccent: "成果",
+    title: "すでに公開されている、実際の仕事。",
+    titleAccent: "公開",
     live: "公開中",
     countLabel: "公開中のサイト。実際に開いて確かめられます。",
     recent: "最新",
@@ -236,7 +236,7 @@ const ja: Dictionary = {
     subtitle:
       "まだ本格的なウェブサイトが必要なければ、ここから始めましょう。数日で完成する、同じ品質のコンタクトアイデンティティです。",
     cta: "このサービスを相談する",
-    note: "価格はメキシコペソ(MXN)です。もっと大きなプロジェクトをお考えなら、フルサイトと組み合わせることもできます — Luminaにご相談ください。",
+    note: "価格はメキシコペソ(MXN)です。もっと大きなプロジェクトをお考えなら、フルサイトと組み合わせることもできます。Luminaにご相談ください。",
     fromPrice: (price: string) => `${price}から`,
     items: [
       {
@@ -295,7 +295,7 @@ const ja: Dictionary = {
         id: "landingEsencial",
         name: "エッセンシャルランディングページ",
         price: "$2,400 MXNから",
-        desc: "フルサイトほどの規模はなくても、実際に販売や自己紹介に使える1ページです。",
+        desc: "フルサイトほどの規模はなくても、自己紹介や新しい取り組みの発表に使えるシンプルな1ページです。",
         features: [
           "個人事業主、イベント、地域ビジネスに最適",
           "基本的なテクニカルSEOを含む",
@@ -314,7 +314,7 @@ const ja: Dictionary = {
     plans: {
       full: {
         name: "ウェブ制作",
-        desc: "販売につながる、速くてオーダーメイドのプロフェッショナルサイト。",
+        desc: "問い合わせにつながる、速くてオーダーメイドのサイト。",
       },
       update: {
         name: "リニューアル",
@@ -370,7 +370,7 @@ const ja: Dictionary = {
     sendWhatsapp: "WhatsAppで領収書を送る",
     sendEmail: "メールで領収書を送る",
     emailQuote: "見積もりをメールで送る",
-    emailQuoteSubject: "私の見積もり — BryanF Design",
+    emailQuoteSubject: "私の見積もり · BryanF Design",
     securePaymentPrefix: "安全な決済です。続行すると、以下に同意したことになります：",
     terms: "利用規約",
     and: "・",
@@ -522,7 +522,7 @@ const ja: Dictionary = {
     eyebrow: "あなたのAIアドバイザー",
     titlePrefix: "彼女は",
     subtitle:
-      "Luminaはこのサイトに住んでいて、料金・納期・モジュール・進め方まで全部知っています。何でも聞いてください — いつでも即答で、あなたのサイトづくりをお手伝いします。",
+      "Luminaはこのサイトに住んでいて、料金・納期・モジュール・進め方まで全部知っています。何でも聞いてください。いつでも即答で、あなたのサイトづくりをお手伝いします。",
     cta: "Luminaとチャット",
     status: "オンライン 24/7",
     hint: "タップで表情が変わります",
@@ -549,8 +549,8 @@ const ja: Dictionary = {
     ],
   },
   footer: {
-    tagline: "売れるデザイン",
-    taglineRest: "、見た目だけではありません。メキシコから、速くてアニメーション豊か、オーダーメイドのウェブサイトをお届けします。",
+    tagline: "意図のあるデザイン",
+    taglineRest: "。メキシコから、速くてわかりやすい、オーダーメイドのウェブサイトをお届けします。",
     navLabel: "ナビゲーション",
     servicesLabel: "サービス",
     legalLabel: "法的情報とお問い合わせ",
@@ -661,7 +661,7 @@ const ja: Dictionary = {
     },
     lumina: {
       eyebrow: "AIアドバイザー",
-      title: "Lumina — BryanF Designのアドバイザー",
+      title: "Lumina、BryanF Designのアドバイザー",
       subtitle: "料金、期間、ウェブに必要なことなど、何でも聞いてください。すぐに答えて見積もりへご案内します。",
     },
     contacto: {

@@ -86,7 +86,9 @@ export async function POST(req: NextRequest) {
             },
           ],
           back_urls: {
-            success: `${siteUrl}/gracias?status=success&provider=mercadopago`,
+            // value/currency: /gracias registra la compra en GA4 (purchase);
+            // Mercado Pago agrega payment_id y external_reference al volver.
+            success: `${siteUrl}/gracias?status=success&provider=mercadopago&value=${unitPrice}&currency=${currencyId}`,
             failure: `${siteUrl}/gracias?status=failure&provider=mercadopago`,
             pending: `${siteUrl}/gracias?status=pending&provider=mercadopago`,
           },

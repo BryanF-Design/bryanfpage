@@ -35,7 +35,7 @@ const de: Dictionary = {
     scrollHint: "Scrollen, um den Civic zu umrunden",
     sideTop: "Websites, die",
     sideHighlight: "verkaufen",
-    panelTitle: "Design und Code, die Besucher zu Kunden machen",
+    panelTitle: "Design und Code, damit man dich findet und dir schreibt",
     available: "Offen für neue Projekte",
     proof: "100+ gelaunchte Projekte",
     features: ["Lieferung ab 3 Tagen", "Technisches SEO inklusive", "Sichere Online-Zahlung"],
@@ -71,7 +71,7 @@ const de: Dictionary = {
     years: "Jahre",
     yearsCaption: "Erfahrung",
     projects: "Projekte",
-    projectsCaption: "erfolgreich umgesetzt",
+    projectsCaption: "umgesetzt",
     deliveryPrefix: "Ab",
     days: "Werktagen",
     deliveryCaption: "Werktage bis zur Lieferung",
@@ -96,7 +96,7 @@ const de: Dictionary = {
       },
       {
         title: "Launch",
-        content: "Technisches SEO, Deployment und Tracking. Deine Seite ist ab Tag eins verkaufsbereit.",
+        content: "Ich bringe deine Website mit technischem SEO und Tracking online, damit du ab Tag eins siehst, wer kommt und was gesucht wird.",
       },
       {
         title: "Betreuung",
@@ -119,12 +119,12 @@ const de: Dictionary = {
   projects: {
     eyebrow: "Portfolio",
     titlePrefix: "Websites, die",
-    rotatingWords: ["verkaufen", "konvertieren", "verbinden", "überzeugen"],
+    rotatingWords: ["funktionieren", "verbinden", "überzeugen", "wachsen"],
     subtitle: "Websites mit echter Wirkung für jeden Kunden. Jede maßgeschneidert entworfen und gebaut. Tippe auf eine, um sie zu besuchen.",
     visitSite: "Website besuchen",
     showMore: "Mehr Projekte anzeigen",
-    title: "Echte Projekte, die bereits verkaufen.",
-    titleAccent: "verkaufen",
+    title: "Echte Projekte, die bereits laufen.",
+    titleAccent: "laufen",
     live: "Online",
     countLabel: "Live-Websites zum Öffnen und Erkunden",
     recent: "Neueste",
@@ -238,7 +238,7 @@ const de: Dictionary = {
     subtitle:
       "Wenn Sie noch keine komplette Website brauchen, fangen Sie hier an: eine fertige Kontaktidentität in wenigen Tagen, mit derselben Designqualität.",
     cta: "Nach diesem Service fragen",
-    note: "Preise in mexikanischen Pesos (MXN). Größeres Projekt geplant? Wir können es mit einer kompletten Website kombinieren — fragen Sie Lumina.",
+    note: "Preise in mexikanischen Pesos (MXN). Größeres Projekt geplant? Wir können es mit einer kompletten Website kombinieren; frag einfach Lumina.",
     fromPrice: (price: string) => `Ab ${price}`,
     items: [
       {
@@ -297,7 +297,7 @@ const de: Dictionary = {
         id: "landingEsencial",
         name: "Essenzielle Landingpage",
         price: "Ab $2.400 MXN",
-        desc: "Eine echte Seite, bereit zu verkaufen oder Sie vorzustellen, ohne den Umfang einer kompletten Website.",
+        desc: "Eine einfache Seite, um dich vorzustellen oder etwas zu starten, ohne den Umfang einer kompletten Website.",
         features: [
           "Ideal für Freiberufler, Events und lokale Unternehmen",
           "Grundlegendes technisches SEO inklusive",
@@ -316,7 +316,7 @@ const de: Dictionary = {
     plans: {
       full: {
         name: "Webentwicklung",
-        desc: "Deine maßgeschneiderte, professionelle Website – schnell und auf Verkauf ausgelegt.",
+        desc: "Deine maßgeschneiderte Website, schnell und so gebaut, dass man dich kontaktiert.",
       },
       update: {
         name: "Auffrischung",
@@ -372,7 +372,7 @@ const de: Dictionary = {
     sendWhatsapp: "Beleg per WhatsApp senden",
     sendEmail: "Beleg per E-Mail senden",
     emailQuote: "Angebot per E-Mail senden",
-    emailQuoteSubject: "Mein Angebot — BryanF Design",
+    emailQuoteSubject: "Mein Angebot · BryanF Design",
     securePaymentPrefix: "Sichere Zahlung. Mit dem Fortfahren akzeptierst du unsere",
     terms: "AGB",
     and: "und",
@@ -513,13 +513,13 @@ const de: Dictionary = {
   },
   luminaJourney: {
     eyebrow: "So funktioniert's",
-    title: "Von der Idee zum Projekt — bei jedem Schritt dabei",
+    title: "Von der Idee zum Projekt, bei jedem Schritt dabei",
     subtitle:
       "Lumina ist kein Chatbot, der nur antwortet. Sie begleitet dich den ganzen Weg, in Minuten.",
     steps: [
       { title: "Lernt dich kennen", desc: "Du sagst, was du brauchst; sie versteht dein Geschäft, dein Ziel und deine Zielgruppe." },
       { title: "Empfiehlt", desc: "Schlägt das passende Paket und die Module vor und erklärt, warum." },
-      { title: "Erstellt dein Angebot", desc: "Stellt dein Budget sofort zusammen — klare Preise, kein Kleingedrucktes." },
+      { title: "Erstellt dein Angebot", desc: "Stellt dein Budget sofort zusammen: klare Preise, kein Kleingedrucktes." },
       { title: "Führt zur Kasse", desc: "Zahle per Karte, Mercado Pago oder Überweisung. Anzahlung oder Vollzahlung, du entscheidest." },
       { title: "Bleibt an deiner Seite", desc: "Du erhältst Beleg und Vorgangsnummer, füllst dein Briefing aus, und wir starten." },
     ],
@@ -529,7 +529,7 @@ const de: Dictionary = {
     eyebrow: "Deine KI-Beraterin",
     titlePrefix: "Das ist",
     subtitle:
-      "Lumina lebt auf dieser Website und kennt alles, was wir tun: Preise, Zeiten, Module und Ablauf. Frag sie, was du willst — sie antwortet sofort, rund um die Uhr, und hilft dir, deine Website zusammenzustellen.",
+      "Lumina lebt auf dieser Website und kennt alles, was wir tun: Preise, Zeiten, Module und Ablauf. Frag sie, was du willst: sie antwortet sofort, rund um die Uhr, und hilft dir, deine Website zusammenzustellen.",
     cta: "Mit Lumina chatten",
     status: "Online 24/7",
     hint: "Tippe sie an, um ihre Stimmung zu ändern",
@@ -556,8 +556,8 @@ const de: Dictionary = {
     ],
   },
   footer: {
-    tagline: "Design, das verkauft",
-    taglineRest: ", nicht nur gut aussieht. Schnelle, animierte, maßgeschneiderte Websites, aus Mexiko.",
+    tagline: "Design mit Absicht",
+    taglineRest: ". Schnelle, klare, maßgeschneiderte Websites, aus Mexiko.",
     navLabel: "Navigation",
     servicesLabel: "Leistungen",
     legalLabel: "Rechtliches & Kontakt",
@@ -605,7 +605,7 @@ const de: Dictionary = {
     },
     languageInstruction: "Deutsch",
     errorFallback:
-      "Ich kann gerade nicht antworten, aber schreib uns auf <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a> — wir helfen dir sofort weiter.",
+      "Ich kann gerade nicht antworten, aber schreib uns auf <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a>, Bryan meldet sich so bald wie möglich.",
     misunderstood: "Entschuldige, das habe ich nicht verstanden. Nochmal versuchen?",
     connectionError:
       "Es gab ein Verbindungsproblem. Schreib uns auf <a href='https://wa.me/525663012505' target='_blank'>WhatsApp</a>.",

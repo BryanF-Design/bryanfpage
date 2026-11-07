@@ -213,7 +213,7 @@ export const barberOsMetadata: Metadata = {
         url: "/img/og-bryanf-apex.png",
         width: 1200,
         height: 630,
-        alt: `${BRAND_NAME} — Haz que pase`,
+        alt: `${BRAND_NAME}: Haz que pase`,
       },
     ],
   },

@@ -35,7 +35,7 @@ const fr: Dictionary = {
     scrollHint: "Faites défiler pour contourner la Civic",
     sideTop: "Des sites qui",
     sideHighlight: "vendent",
-    panelTitle: "Design et code qui transforment les visites en clients",
+    panelTitle: "Design et code pour qu'on vous trouve et qu'on vous écrive",
     available: "Ouvert aux nouveaux projets",
     proof: "+100 projets lancés",
     features: ["Livraison dès 3 jours", "SEO technique inclus", "Paiement en ligne sécurisé"],
@@ -71,7 +71,7 @@ const fr: Dictionary = {
     years: "ans",
     yearsCaption: "d'expérience",
     projects: "projets",
-    projectsCaption: "menés avec succès",
+    projectsCaption: "livrés",
     deliveryPrefix: "Dès",
     days: "jours",
     deliveryCaption: "jours ouvrés de livraison",
@@ -96,7 +96,7 @@ const fr: Dictionary = {
       },
       {
         title: "Lancement",
-        content: "SEO technique, mise en ligne et suivi. Votre site est prêt à vendre dès le premier jour.",
+        content: "Je mets votre site en ligne avec le SEO technique et le suivi, pour savoir dès le premier jour qui arrive et ce qu'il cherche.",
       },
       {
         title: "Suivi",
@@ -119,12 +119,12 @@ const fr: Dictionary = {
   projects: {
     eyebrow: "Portfolio",
     titlePrefix: "Des sites qui",
-    rotatingWords: ["vendent", "convertissent", "connectent", "se démarquent"],
+    rotatingWords: ["fonctionnent", "connectent", "se démarquent", "grandissent"],
     subtitle: "Des sites qui font une vraie différence pour chaque client. Chacun conçu et construit sur mesure. Touchez-en un pour le visiter.",
     visitSite: "Visiter le site",
     showMore: "Voir plus de projets",
-    title: "Du vrai travail qui vend déjà.",
-    titleAccent: "vend déjà",
+    title: "Du vrai travail, déjà en ligne.",
+    titleAccent: "déjà en ligne",
     live: "En ligne",
     countLabel: "sites en ligne à ouvrir et à parcourir",
     recent: "Récents",
@@ -238,7 +238,7 @@ const fr: Dictionary = {
     subtitle:
       "Si vous n'avez pas encore besoin d'un site complet, commencez ici : une identité de contact prête en quelques jours, avec la même qualité de design.",
     cta: "Se renseigner sur ce service",
-    note: "Prix en pesos mexicains (MXN). Un projet plus grand en tête ? On peut le combiner avec un site complet — demandez à Lumina.",
+    note: "Prix en pesos mexicains (MXN). Un projet plus grand en tête ? On peut le combiner avec un site complet ; demandez à Lumina.",
     fromPrice: (price: string) => `Dès ${price}`,
     items: [
       {
@@ -297,7 +297,7 @@ const fr: Dictionary = {
         id: "landingEsencial",
         name: "Landing page essentielle",
         price: "À partir de $2 400 MXN",
-        desc: "Une vraie page, prête à vendre ou à vous présenter, sans l'ampleur d'un site complet.",
+        desc: "Une page simple pour vous présenter ou lancer quelque chose, sans l'ampleur d'un site complet.",
         features: [
           "Idéal pour les indépendants, événements et commerces locaux",
           "SEO technique de base inclus",
@@ -316,7 +316,7 @@ const fr: Dictionary = {
     plans: {
       full: {
         name: "Développement web",
-        desc: "Votre site professionnel sur mesure, rapide et pensé pour vendre.",
+        desc: "Votre site sur mesure, rapide et pensé pour qu'on vous contacte.",
       },
       update: {
         name: "Refonte",
@@ -372,7 +372,7 @@ const fr: Dictionary = {
     sendWhatsapp: "Envoyer le justificatif par WhatsApp",
     sendEmail: "Envoyer le justificatif par e-mail",
     emailQuote: "Recevoir le devis par e-mail",
-    emailQuoteSubject: "Mon devis — BryanF Design",
+    emailQuoteSubject: "Mon devis · BryanF Design",
     securePaymentPrefix: "Paiement sécurisé. En continuant, vous acceptez nos",
     terms: "Conditions générales",
     and: "et",
@@ -441,7 +441,7 @@ const fr: Dictionary = {
     photoAlt: "Bryan en train de concevoir et de développer à son bureau",
     inspirationLabel: "Ce que j'apporte au travail",
     inspiration:
-      "Je m'inspire des voitures hautes performances — ma préférée est la Honda Civic Type R 2016 —, du savoir-faire qui consiste à bien faire du premier coup et de la logique d'un réseau bien construit. Je ne les colle pas comme décoration : je les traduis en précision, rythme et connexion.",
+      "Je m'inspire des voitures hautes performances (ma préférée est la Honda Civic Type R 2016), du savoir-faire qui consiste à bien faire du premier coup et de la logique d'un réseau bien construit. Je ne les colle pas comme décoration : je les traduis en précision, rythme et connexion.",
     inspirationAccent: "précision, rythme et connexion",
     chips: ["Design + code", "Contact direct", "Performance intentionnelle"],
     principlesLabel: "Ma façon de travailler · précision, rythme et connexion",
@@ -529,7 +529,7 @@ const fr: Dictionary = {
     eyebrow: "Votre conseillère IA",
     titlePrefix: "Voici",
     subtitle:
-      "Lumina vit sur ce site et connaît tout ce que nous faisons : tarifs, délais, modules et processus. Posez-lui vos questions — elle répond instantanément, à toute heure, et vous aide à composer votre site.",
+      "Lumina vit sur ce site et connaît tout ce que nous faisons : tarifs, délais, modules et processus. Posez-lui vos questions : elle répond instantanément, à toute heure, et vous aide à composer votre site.",
     cta: "Discuter avec Lumina",
     status: "En ligne 24/7",
     hint: "Touchez-la pour changer son humeur",
@@ -556,8 +556,8 @@ const fr: Dictionary = {
     ],
   },
   footer: {
-    tagline: "Un design qui vend",
-    taglineRest: ", pas seulement qui a de l'allure. Des sites rapides, animés et sur mesure, depuis le Mexique.",
+    tagline: "Un design réfléchi",
+    taglineRest: ". Des sites rapides, clairs et sur mesure, depuis le Mexique.",
     navLabel: "Navigation",
     servicesLabel: "Services",
     legalLabel: "Mentions légales et contact",

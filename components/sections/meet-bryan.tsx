@@ -152,7 +152,7 @@ export function MeetBryan({ chapter = 3 }: { chapter?: number } = {}) {
 
             <Image
               src="/img/brand/bryan-cutout.webp"
-              alt={`Bryan F. — ${t.about.role}`}
+              alt={`Bryan F., ${t.about.role}`}
               width={1122}
               height={1114}
               sizes="(min-width: 1280px) 34rem, (min-width: 768px) 40vw, (min-width: 640px) 21rem, 58vw"

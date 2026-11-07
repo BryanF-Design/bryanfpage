@@ -450,6 +450,7 @@ export function LuminaChat() {
 
   function openChat() {
     markTeased();
+    if (!openRef.current) trackEvent("lumina_open", { source: teaser ? "teaser" : "fab" });
     setOpen((o) => !o);
     setTeaser(false);
     setMood("Sorprendida");
@@ -463,6 +464,7 @@ export function LuminaChat() {
   useEffect(() => {
     function onOpenEvent(e: Event) {
       markTeased();
+      if (!openRef.current) trackEvent("lumina_open", { source: "page" });
       setOpen(true);
       setTeaser(false);
       setMood("Sorprendida");
@@ -632,7 +634,7 @@ export function LuminaChat() {
                       <span className="mt-0.5 line-clamp-2 text-xs text-ink/60">{desc}</span>
                     </span>
                     <ArrowUpRight aria-hidden className="h-4 w-4 shrink-0 text-forest transition-transform group-hover:rotate-45" />
-                    <span className="sr-only"> — {t.lumina.actions.visit}</span>
+                    <span className="sr-only">: {t.lumina.actions.visit}</span>
                   </a>
                 </li>
               );

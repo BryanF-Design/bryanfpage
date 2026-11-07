@@ -348,7 +348,7 @@ function ProjectTile({
       >
         <Image
           src={mobileShot(project.slug)}
-          alt={`${project.name} — versión móvil del sitio`}
+          alt={`Versión móvil del sitio de ${project.name}`}
           fill
           sizes={rail ? "(max-width: 639px) 80vw, (max-width: 767px) 46vw, 1px" : "(max-width: 767px) 50vw, 1px"}
           quality={70}
@@ -356,7 +356,7 @@ function ProjectTile({
         />
         <Image
           src={desktopShot(project.slug)}
-          alt={`${project.name} — captura del sitio`}
+          alt={`Captura del sitio de ${project.name}`}
           fill
           sizes="(min-width: 1024px) 32vw, (min-width: 768px) 50vw, 1px"
           quality={70}
@@ -505,7 +505,7 @@ function FeaturedProject({ project, compact = false }: { project: Project; compa
             <Button asChild size="lg" className="w-full pr-2.5 sm:w-auto">
               <a href={project.url} target="_blank" rel="noopener noreferrer">
                 {t.projects.visitSite}
-                <span className="sr-only"> — {project.name}</span>
+                <span className="sr-only">: {project.name}</span>
                 <ButtonArrow tone="ink" className="-mr-0.5 ml-auto sm:ml-2" />
               </a>
             </Button>
@@ -524,7 +524,7 @@ function FeaturedProject({ project, compact = false }: { project: Project; compa
               ) : (
                 <Image
                   src={desktopShot(project.slug)}
-                  alt={`${project.name} — captura del sitio en escritorio`}
+                  alt={`Captura del sitio de ${project.name} en escritorio`}
                   fill
                   sizes="(min-width: 1024px) 50vw, 92vw"
                   quality={75}
@@ -588,7 +588,7 @@ function FeaturedProject({ project, compact = false }: { project: Project; compa
         <Button asChild size="lg" className="mt-1 w-full pr-2.5 sm:w-auto">
           <a href={project.url} target="_blank" rel="noopener noreferrer">
             {t.projects.visitSite}
-            <span className="sr-only"> — {project.name}</span>
+            <span className="sr-only">: {project.name}</span>
             <ButtonArrow tone="ink" className="-mr-0.5 ml-auto sm:ml-2" />
           </a>
         </Button>
@@ -608,7 +608,7 @@ function FeaturedProject({ project, compact = false }: { project: Project; compa
               ) : (
                 <Image
                   src={desktopShot(project.slug)}
-                  alt={`${project.name} — captura del sitio en escritorio`}
+                  alt={`Captura del sitio de ${project.name} en escritorio`}
                   fill
                   sizes="(min-width: 1024px) 50vw, 86vw"
                   quality={75}
@@ -620,7 +620,7 @@ function FeaturedProject({ project, compact = false }: { project: Project; compa
           <PhoneMock
             slug={project.slug}
             cover={live ? { name: project.name, host } : undefined}
-            alt={`${project.name} — captura del sitio en móvil`}
+            alt={`Captura del sitio de ${project.name} en móvil`}
             sizes="(min-width: 1024px) 15rem, 30vw"
             className="scroll-float absolute bottom-0 left-0 w-[27%] max-w-[15rem] md:w-[30%]"
           />
@@ -769,7 +769,7 @@ export function ProjectCases() {
           >
             <PhoneMock
               slug={slug}
-              alt={`${project.name} — captura del sitio en móvil`}
+              alt={`Captura del sitio de ${project.name} en móvil`}
               sizes="(min-width: 1024px) 20rem, 13rem"
               className="w-[12.5rem] translate-y-[30%] sm:w-[14.5rem] sm:translate-y-[22%] lg:w-[min(19.5rem,62%)] lg:translate-y-[7%]"
             />
@@ -819,7 +819,7 @@ export function ProjectCases() {
           <Button asChild variant="ink" size="lg" className="w-full pr-2.5 sm:w-fit">
             <a href={project.url} target="_blank" rel="noopener noreferrer">
               {t.projects.visitSite}
-              <span className="sr-only"> — {project.name}</span>
+              <span className="sr-only">: {project.name}</span>
               <ButtonArrow tone="lime" className="-mr-0.5 ml-auto sm:ml-2" />
             </a>
           </Button>
@@ -885,7 +885,7 @@ export function ProjectCasesCompact() {
                 <span className="relative aspect-[16/10] overflow-hidden rounded-inner bg-white">
                   <Image
                     src={slug === KOI_SLUG ? tabletShot(slug) : desktopShot(slug)}
-                    alt={`${project.name} — captura del sitio`}
+                    alt={`Captura del sitio de ${project.name}`}
                     fill
                     sizes="(min-width: 1280px) 20rem, (min-width: 640px) 45vw, 92vw"
                     className={cn(

@@ -338,7 +338,7 @@ const es = {
   meta: {
     title: "Bryan F. · CV interactivo | Líder de Desarrollo Web",
     description:
-      "CV interactivo de Bryan Fernando López: líder de desarrollo web y aplicaciones, Tech Architect y Operations Manager. Recórrelo como un videojuego con Lumina como guía.",
+      "CV interactivo de Bryan Fernando López, líder de desarrollo web y aplicaciones. Recórrelo como un videojuego, con Lumina como guía.",
   },
 };
 

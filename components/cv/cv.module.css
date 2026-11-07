@@ -624,7 +624,7 @@
   flex: 1;
   min-width: 0;
 }
-.psHeadText h1 {
+.psHeadText .psName {
   margin: 0;
   font-family: var(--font-display), sans-serif;
   font-size: 21pt;

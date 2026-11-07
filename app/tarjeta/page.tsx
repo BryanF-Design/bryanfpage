@@ -7,7 +7,7 @@ import { isWalletConfigured } from "@/lib/google-wallet";
 
 const TITLE = "Bryan F. · Tarjeta digital | BryanF Design";
 const DESCRIPTION =
-  "Tarjeta de presentación digital de Bryan F., diseñador y desarrollador web en Ciudad de México. Guarda el contacto, escríbele por WhatsApp o comparte la tarjeta con un QR.";
+  "Tarjeta digital de Bryan F., diseñador y desarrollador web en la CDMX. Guarda el contacto, escríbele por WhatsApp o comparte la tarjeta con un QR.";
 
 export const metadata: Metadata = {
   title: TITLE,

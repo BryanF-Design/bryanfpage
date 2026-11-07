@@ -16,16 +16,34 @@ function labelOf(el: HTMLElement) {
   return (el.getAttribute("aria-label") || el.textContent || "").replace(/\s+/g, " ").trim().slice(0, 80);
 }
 
+/** Enlaces internos que cuentan como CTA: cotizador, contacto y pago. */
+const CTA_HREF = /#precios|\/crear-web|\/contacto(?:$|[#?])/;
+
 /**
  * Un solo listener delegado mide las conversiones de todo el sitio, sin
- * tocar cada botón: WhatsApp, correo y teléfono como `generate_lead`, y los
- * CTA que llevan al cotizador como `cta_click`. Los clics salientes ya los
- * mide la medición mejorada de GA4.
+ * tocar cada botón:
+ *  - WhatsApp, correo y teléfono → `generate_lead` (con `method`).
+ *  - Enlaces al cotizador, a /contacto o cualquier elemento con
+ *    `data-track-cta` → `cta_click`.
+ * El envío del brief (`brief_submit`) y la compra (`purchase`) se miden en
+ * public/gracias.html. Los clics salientes ya los mide la medición mejorada
+ * de GA4.
  */
 export function ClickTracking() {
   useEffect(() => {
     function onClick(event: MouseEvent) {
       const target = event.target as Element | null;
+
+      // Botones (no enlaces) marcados como CTA.
+      const marked = target?.closest<HTMLElement>("[data-track-cta]");
+      if (marked && !marked.matches("a[href]")) {
+        trackEvent("cta_click", {
+          cta_text: marked.dataset.trackCta || labelOf(marked),
+          location: locationOf(marked),
+        });
+        return;
+      }
+
       const link = target?.closest<HTMLAnchorElement>("a[href]");
       if (!link) return;
 
@@ -39,7 +57,7 @@ export function ClickTracking() {
         trackEvent("generate_lead", { method: "email", location });
       } else if (href.startsWith("tel:")) {
         trackEvent("generate_lead", { method: "phone", location });
-      } else if (/#precios|\/crear-web/.test(href)) {
+      } else if (CTA_HREF.test(href) || link.hasAttribute("data-track-cta")) {
         trackEvent("cta_click", { cta_text: labelOf(link), cta_href: href, location });
       }
     }

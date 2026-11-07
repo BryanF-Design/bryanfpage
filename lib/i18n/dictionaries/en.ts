@@ -35,7 +35,7 @@ const en: Dictionary = {
     scrollHint: "Scroll to orbit the Civic",
     sideTop: "Websites that",
     sideHighlight: "sell",
-    panelTitle: "Design and code that turn visits into clients",
+    panelTitle: "Design and code that help people find you and reach out",
     available: "Now booking new projects",
     proof: "100+ projects launched",
     features: ["Delivery from 3 days", "Technical SEO included", "Secure online payment"],
@@ -71,7 +71,7 @@ const en: Dictionary = {
     years: "years",
     yearsCaption: "of experience",
     projects: "projects",
-    projectsCaption: "shipped successfully",
+    projectsCaption: "delivered",
     deliveryPrefix: "From",
     days: "days",
     deliveryCaption: "business days to launch",
@@ -96,7 +96,7 @@ const en: Dictionary = {
       },
       {
         title: "Launch",
-        content: "Technical SEO, deployment, and tracking. Your site is ready to sell from day one.",
+        content: "I launch your site with technical SEO and tracking, so from day one you can see who visits and what they look for.",
       },
       {
         title: "Support",
@@ -119,12 +119,12 @@ const en: Dictionary = {
   projects: {
     eyebrow: "Portfolio",
     titlePrefix: "Sites that",
-    rotatingWords: ["sell", "convert", "connect", "stand out"],
+    rotatingWords: ["work", "connect", "stand out", "grow"],
     subtitle: "Sites that make a real impact for every client. Each one designed and built to order. Tap any of them to visit.",
     visitSite: "Visit site",
     showMore: "Show more projects",
-    title: "Real work that's already selling.",
-    titleAccent: "selling",
+    title: "Real work that's already up and running.",
+    titleAccent: "up and running",
     live: "Live",
     countLabel: "live sites you can open and explore",
     recent: "Recent",
@@ -134,7 +134,7 @@ const en: Dictionary = {
     casesSubtitle: "The problem, the decision and the result behind four projects.",
     casesEyebrow: "Behind the build",
     launchedTitle: "Just launched",
-    launchedNote: "Already live — open them and look around.",
+    launchedNote: "Already live. Open them and look around.",
     nextTitle: "Your site could be next.",
     moreLabel: "more projects",
     descs: {
@@ -238,7 +238,7 @@ const en: Dictionary = {
     subtitle:
       "If you don't need a complete site yet, start here: a ready contact identity in days, with the same design quality.",
     cta: "Ask about this service",
-    note: "Prices in Mexican pesos (MXN). Bigger project in mind? We can combine it with a full site — ask Lumina.",
+    note: "Prices in Mexican pesos (MXN). Bigger project in mind? We can combine it with a full site; just ask Lumina.",
     fromPrice: (price: string) => `From ${price}`,
     items: [
       {
@@ -297,7 +297,7 @@ const en: Dictionary = {
         id: "landingEsencial",
         name: "Essential landing page",
         price: "From $2,400 MXN",
-        desc: "A real page, ready to sell or introduce you, without the scope of a full site.",
+        desc: "A simple page to introduce yourself or launch something, without the scope of a full site.",
         features: [
           "Great for professionals, events, and local businesses",
           "Basic technical SEO included",
@@ -316,7 +316,7 @@ const en: Dictionary = {
     plans: {
       full: {
         name: "Web Development",
-        desc: "Your custom professional site, fast and built to sell.",
+        desc: "Your custom site, fast and made so people get in touch.",
       },
       update: {
         name: "Refresh",
@@ -372,7 +372,7 @@ const en: Dictionary = {
     sendWhatsapp: "Send receipt via WhatsApp",
     sendEmail: "Send receipt via email",
     emailQuote: "Email me this quote",
-    emailQuoteSubject: "My quote — BryanF Design",
+    emailQuoteSubject: "My quote · BryanF Design",
     securePaymentPrefix: "Secure payment. By continuing you accept our",
     terms: "Terms",
     and: "and",
@@ -414,7 +414,7 @@ const en: Dictionary = {
       {
         title: "What do I get at the end?",
         content:
-          "Full access to your website and email accounts (if created), plus a short training session — no more than 30 minutes — on the basics of managing your site.",
+          "Full access to your website and email accounts (if created), plus a short training session (30 minutes at most) on the basics of managing your site.",
       },
       {
         title: "What's included when we work together?",
@@ -441,7 +441,7 @@ const en: Dictionary = {
     photoAlt: "Bryan designing and developing at his desk",
     inspirationLabel: "What I bring to the work",
     inspiration:
-      "I'm inspired by high-performance cars—my favorite is the 2016 Honda Civic Type R—the craft of getting things right the first time and the logic of a well-built network. I don't paste them on as decoration: I translate them into precision, rhythm and connection.",
+      "I'm inspired by high-performance cars (my favorite is the 2016 Honda Civic Type R), the craft of getting things right the first time and the logic of a well-built network. I don't paste them on as decoration: I translate them into precision, rhythm and connection.",
     inspirationAccent: "precision, rhythm and connection",
     chips: ["Design + code", "Direct contact", "Performance with purpose"],
     principlesLabel: "How I work · precision, rhythm and connection",
@@ -529,7 +529,7 @@ const en: Dictionary = {
     eyebrow: "Your AI advisor",
     titlePrefix: "Meet",
     subtitle:
-      "Lumina lives on this site and knows everything we do: pricing, timelines, modules, and process. Ask her anything — she answers instantly, any time, and helps you spec out your site.",
+      "Lumina lives on this site and knows everything we do: pricing, timelines, modules, and process. Ask her anything: she answers instantly, any time, and helps you spec out your site.",
     cta: "Chat with Lumina",
     status: "Online 24/7",
     hint: "Tap her to change her mood",
@@ -556,8 +556,8 @@ const en: Dictionary = {
     ],
   },
   footer: {
-    tagline: "Design that sells",
-    taglineRest: ", not just looks good. Fast, animated, custom-built sites, from Mexico.",
+    tagline: "Design with intent",
+    taglineRest: ". Fast, clear, custom-built sites, from Mexico.",
     navLabel: "Navigation",
     servicesLabel: "Services",
     legalLabel: "Legal & contact",

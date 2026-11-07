@@ -52,12 +52,12 @@ const instrumentSerif = Instrument_Serif({
 });
 
 const SITE_DESCRIPTION =
-  "¿Buscas crear una página web para tu negocio? Diseño y desarrollo web a medida en México: sitios rápidos, animados y pensados para vender. Entrega desde 3 días. Haz que pase.";
+  "Diseño y desarrollo web en México, desde la CDMX. Hago páginas web rápidas, claras y a tu medida para negocios de todo el país. Entregas desde 3 días hábiles.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Crea tu Página Web en México | BryanF Design",
+    default: "Diseño y desarrollo web en México | BryanF Design",
     // Service metadata already owns its complete title. A global suffix
     // duplicated the brand and pushed several titles past the useful SERP width.
     template: "%s",
@@ -69,6 +69,10 @@ export const metadata: Metadata = {
   publisher: "BryanF Design",
   category: "Diseño y desarrollo web",
   keywords: [
+    "diseño y desarrollo web México",
+    "diseño web CDMX",
+    "diseño web DF",
+    "desarrollo de sitios web",
     "crear una página web",
     "crear pagina web",
     "diseño web",
@@ -92,23 +96,23 @@ export const metadata: Metadata = {
     locale: "es_MX",
     url: SITE_URL,
     siteName: "BryanF Design",
-    title: "Crea tu Página Web en México | BryanF Design",
+    title: "Diseño y desarrollo web en México | BryanF Design",
     description:
-      "Diseño y desarrollo web a medida: sitios rápidos, animados y orientados a conversión. Arma tu web y arrancamos.",
+      "Páginas web a la medida de tu negocio, rápidas y claras, hechas desde la CDMX para todo México. Arma tu web y arrancamos.",
     images: [
       {
         url: "/img/og-bryanf-apex.png",
         width: 1200,
         height: 630,
-        alt: "BryanF Design — Haz que pase. Precisión, ritmo y conexión.",
+        alt: "BryanF Design. Haz que pase: precisión, ritmo y conexión.",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Crea tu Página Web en México | BryanF Design",
+    title: "Diseño y desarrollo web en México | BryanF Design",
     description:
-      "Diseño y desarrollo web a medida: sitios rápidos, animados y orientados a conversión.",
+      "Páginas web a la medida de tu negocio, rápidas y claras, hechas desde la CDMX para todo México.",
     images: ["/img/og-bryanf-apex.png"],
   },
   robots: {

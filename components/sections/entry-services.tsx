@@ -348,7 +348,7 @@ export function EntryServices({ chapter = 6 }: { chapter?: number } = {}) {
                 >
                   <span>
                     {t.entryServices.cta}
-                    <span className="sr-only"> — {item.name}</span>
+                    <span className="sr-only">: {item.name}</span>
                   </span>
                   <ButtonArrow tone="ink" className="mr-0 size-8 [button:hover>&]:bg-lime [button:hover>&]:text-ink" />
                 </Button>
@@ -397,7 +397,7 @@ export function EntryServices({ chapter = 6 }: { chapter?: number } = {}) {
               >
                 <span>
                   {t.entryServices.cta}
-                  <span className="sr-only"> — {featured.name}</span>
+                  <span className="sr-only">: {featured.name}</span>
                 </span>
                 <ButtonArrow tone="lime" className="mr-0 size-8" />
               </Button>
@@ -465,7 +465,7 @@ export function EntryServices({ chapter = 6 }: { chapter?: number } = {}) {
                 >
                   <span>
                     {t.entryServices.cta}
-                    <span className="sr-only"> — {featured.name}</span>
+                    <span className="sr-only">: {featured.name}</span>
                   </span>
                   <ButtonArrow tone="lime" className="-mr-0.5 ml-2" />
                 </Button>

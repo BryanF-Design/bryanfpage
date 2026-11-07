@@ -103,6 +103,9 @@ export function HeroPop() {
           >
             {t.hero.titleHighlight}
           </span>
+          {/* El titular visible es la frase de marca; el h1 también dice qué
+              es el sitio (lo leen buscadores y lectores de pantalla). */}
+          <span className="sr-only"> {t.hero.eyebrow}</span>
         </h1>
         <div aria-hidden className="hidden xl:block" />
         <p
@@ -276,7 +279,7 @@ export function HeroPop() {
                 ) : (
                   <Image
                     src={desktopShot(FEATURED.slug)}
-                    alt={`${FEATURED.name} — captura del sitio`}
+                    alt={`Captura del sitio de ${FEATURED.name}`}
                     fill
                     sizes="(min-width: 1280px) 22rem, 10rem"
                     className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
