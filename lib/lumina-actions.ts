@@ -113,7 +113,8 @@ export function quoteHref(quote: LuminaQuote) {
   const params = new URLSearchParams({ plan: quote.plan });
   if (quote.modules.length) params.set("modules", quote.modules.join(","));
   if (quote.sections) params.set("sections", String(quote.sections));
-  return `/crear-web?${params.toString()}`;
+  // #precios: se llega directo al cotizador ya armado, no a la portada.
+  return `/crear-web?${params.toString()}#precios`;
 }
 
 /** Evento que escucha el cotizador de la página para armarse en vivo. */

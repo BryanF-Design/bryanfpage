@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowDown, ArrowUpRight, Calculator, MessageCircle, RotateCcw, Send, X } from "lucide-react";
@@ -188,6 +190,47 @@ function useVisualViewportBox(enabled: boolean) {
   return box;
 }
 
+/** Al llegar a /crear-web desde "Ver mi cotización armada", el chat reaparece. */
+const REOPEN_KEY = "bryanf_lumina_reopen";
+
+/**
+ * ¿El resumen de pago del cotizador (#cotizador-resumen) está en pantalla?
+ * Se mide en cada scroll sobre el elemento actual (el cotizador se carga en
+ * diferido), igual que lib/use-configurator-in-view.ts.
+ */
+function usePayZoneVisible() {
+  const [visible, setVisible] = useState(false);
+  const pathname = usePathname();
+  useEffect(() => {
+    let frame = 0;
+    const measure = () => {
+      frame = 0;
+      const el = document.getElementById("cotizador-resumen");
+      if (!el) return setVisible(false);
+      const r = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // Basta con que una franja real del resumen (≥120px o la mitad de la
+      // pantalla) quede entre el 10% y el 90% del alto visible.
+      const shown = Math.min(r.bottom, vh * 0.9) - Math.max(r.top, vh * 0.1);
+      setVisible(shown > Math.min(120, vh * 0.5));
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(measure);
+    };
+    schedule();
+    const timers = [400, 1500].map((ms) => window.setTimeout(schedule, ms));
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      timers.forEach((id) => window.clearTimeout(id));
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [pathname]);
+  return visible;
+}
+
 /** true cuando el héroe (#home) ya quedó arriba; sin héroe, siempre true. */
 function usePastHero() {
   const [past, setPast] = useState(false);
@@ -218,6 +261,19 @@ export function LuminaChat() {
   const [teaserDue, setTeaserDue] = useState(false);
   const isPhone = useIsPhone();
   const pastHero = usePastHero();
+  const pathname = usePathname();
+  // Con el resumen de pago en pantalla, el panel se muda a la izquierda (o,
+  // si no cabe, se recoge en la píldora): nunca tapa los botones de pago.
+  const payZoneVisible = usePayZoneVisible();
+  const [dockLeft, setDockLeft] = useState(false);
+  // Texto especial para la burbuja (p. ej. "Tu cotización ya está armada").
+  const [teaserText, setTeaserText] = useState<string | null>(null);
+  // /lumina: el chat real vive dentro de la página (#lumina-chat-inline) en
+  // vez de un diálogo flotante encima de una maqueta.
+  const [inlineHost, setInlineHost] = useState<HTMLElement | null>(null);
+  const [inlineVisible, setInlineVisible] = useState(false);
+  const inlineHostRef = useRef<HTMLElement | null>(null);
+  inlineHostRef.current = inlineHost;
   const viewportBox = useVisualViewportBox(open && isPhone);
   const [messages, setMessages] = useState<Msg[]>([
     { role: "assistant", content: t.lumina.greeting },
@@ -265,6 +321,78 @@ export function LuminaChat() {
     root.style.setProperty("--lumina-fab", "calc(var(--fab-size) + var(--fab-gap))");
     return () => {
       root.style.removeProperty("--lumina-fab");
+    };
+  }, []);
+
+  // /lumina trae su lugar para el chat: ahí se muestra incrustado y el
+  // diálogo flotante no se usa (antes había dos chats a la vez).
+  useEffect(() => {
+    const find = () => setInlineHost(document.getElementById("lumina-chat-inline"));
+    find();
+    const id = window.setTimeout(find, 500);
+    return () => window.clearTimeout(id);
+  }, [pathname]);
+  useEffect(() => {
+    if (!inlineHost) {
+      setInlineVisible(false);
+      return;
+    }
+    setOpen(false);
+    const io = new IntersectionObserver(([entry]) => setInlineVisible(entry.isIntersecting), {
+      threshold: 0.2,
+    });
+    io.observe(inlineHost);
+    return () => io.disconnect();
+  }, [inlineHost]);
+
+  // El resumen de pago entra en pantalla con el chat abierto: el panel se
+  // muda a la izquierda; si la pantalla es angosta (no hay dónde), se recoge.
+  useEffect(() => {
+    if (!open) {
+      setDockLeft(false);
+      return;
+    }
+    if (isPhone || !payZoneVisible || dockLeft) return;
+    if (window.innerWidth >= 768) setDockLeft(true);
+    else setOpen(false);
+  }, [open, isPhone, payZoneVisible, dockLeft]);
+
+  // Llegando desde "Ver mi cotización armada" (otra página): el chat vuelve
+  // a abrirse con su historial. En teléfono la hoja taparía la cotización,
+  // así que reaparece como burbuja que la reabre con un toque.
+  useEffect(() => {
+    let flag: string | null = null;
+    try {
+      flag = window.sessionStorage.getItem(REOPEN_KEY);
+      window.sessionStorage.removeItem(REOPEN_KEY);
+    } catch {
+      /* sessionStorage bloqueado */
+    }
+    if (!flag) return;
+    const phone = window.matchMedia("(max-width: 639px)").matches;
+    const timer = window.setTimeout(() => {
+      markTeased();
+      if (phone) {
+        setTeaserText(t.lumina.quoteReady);
+        setTeaser(true);
+      } else {
+        setOpen(true);
+      }
+    }, 700);
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Ancho real del botón: el dock de WhatsApp se acomoda a su lado en escritorio.
+  useEffect(() => {
+    const fab = fabRef.current;
+    if (!fab || typeof ResizeObserver === "undefined") return;
+    const root = document.documentElement;
+    const ro = new ResizeObserver(() => root.style.setProperty("--lumina-fab-w", `${fab.offsetWidth}px`));
+    ro.observe(fab);
+    return () => {
+      ro.disconnect();
+      root.style.removeProperty("--lumina-fab-w");
     };
   }, []);
 
@@ -325,7 +453,7 @@ export function LuminaChat() {
   // teclado del teléfono encoge la hoja (el último mensaje no se esconde).
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-  }, [messages, open, loading, viewportBox?.height]);
+  }, [messages, open, loading, viewportBox?.height, inlineHost]);
 
   useEffect(() => {
     if (footerInView) {
@@ -421,36 +549,72 @@ export function LuminaChat() {
     return () => window.clearTimeout(dueAt);
   }, []);
 
+  const quietTeaser = !!inlineHost || !!pathname?.startsWith("/crear-web");
   useEffect(() => {
-    if (!teaserDue || hasTeasedRef.current || open || configuratorInView) return;
+    if (!teaserDue || hasTeasedRef.current || open || configuratorInView || quietTeaser) return;
     // Nunca encima del hero (ahí taparía la tarjeta destacada o los CTA).
     if (!pastHero) return;
     markTeased();
     setTeaser(true);
-  }, [teaserDue, open, configuratorInView, isPhone, pastHero]);
+  }, [teaserDue, open, configuratorInView, isPhone, pastHero, quietTeaser]);
 
   // El botón solo se aparta con el footer (que repite los contactos). Sobre
   // el hero no tapa nada (queda en el canto del panel) y en el cotizador se
   // queda compacto; en teléfono, dentro del cotizador, comparte fila con la
   // barra del total y se aparta mientras se ven los botones de pago (CSS:
   // `html.fab-config:not(.cfg-total-dock)` en globals.css).
-  const hideFab = !open && footerInView;
+  // En /lumina, mientras el chat incrustado está a la vista, el botón sobra.
+  // Con el resumen de pago en pantalla también se aparta: su esquina caía
+  // sobre los enlaces del resumen (el panel abierto tiene su propia ×).
+  const hideFab =
+    (!open && footerInView) || (!!inlineHost && inlineVisible) || (payZoneVisible && !isPhone);
 
-  const teaserShown = teaser && !open && !footerInView && !configuratorInView;
+  // Si el botón de Lumina se oculta (footer, chat incrustado de /lumina), el
+  // dock de WhatsApp baja a su lugar en vez de quedarse flotando con un hueco.
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle("lumina-fab-hidden", hideFab);
+    return () => root.classList.remove("lumina-fab-hidden");
+  }, [hideFab]);
+
+  // La burbuja de "cotización armada" sí puede salir dentro del cotizador.
+  const teaserShown =
+    teaser && !open && !footerInView && (!configuratorInView || teaserText !== null) && !inlineVisible;
   useEffect(() => {
     window.dispatchEvent(new CustomEvent("lumina:teaser", { detail: { open: teaserShown } }));
   }, [teaserShown]);
 
   // Se retira sola a los 7 s.
   useEffect(() => {
-    if (!teaser) return;
+    if (!teaser) {
+      setTeaserText(null);
+      return;
+    }
     const hideAt = window.setTimeout(() => setTeaser(false), 7_000);
     return () => window.clearTimeout(hideAt);
   }, [teaser]);
 
+  // /lumina: abrir el chat es llevar al visitante al chat de la página.
+  function focusInline(message?: string) {
+    const host = inlineHostRef.current;
+    if (!host) return;
+    host.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
+    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+      window.setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 350);
+    }
+    if (message) window.setTimeout(() => sendRef.current(message), 350);
+  }
+
   function openChat() {
     markTeased();
     if (!openRef.current) trackEvent("lumina_open", { source: teaser ? "teaser" : "fab" });
+    setTeaser(false);
+    if (inlineHostRef.current) {
+      focusInline();
+      return;
+    }
+    // Abrirlo con el resumen de pago a la vista: directo a la izquierda.
+    if (!openRef.current && !isPhone && payZoneVisible && window.innerWidth >= 768) setDockLeft(true);
     setOpen((o) => !o);
     setTeaser(false);
     setMood("Sorprendida");
@@ -465,11 +629,15 @@ export function LuminaChat() {
     function onOpenEvent(e: Event) {
       markTeased();
       if (!openRef.current) trackEvent("lumina_open", { source: "page" });
-      setOpen(true);
       setTeaser(false);
+      const message = (e as CustomEvent<{ message?: string }>).detail?.message;
+      if (inlineHostRef.current) {
+        focusInline(message);
+        return;
+      }
+      setOpen(true);
       setMood("Sorprendida");
       window.setTimeout(() => setMood("Normal"), 1400);
-      const message = (e as CustomEvent<{ message?: string }>).detail?.message;
       if (message) window.setTimeout(() => sendRef.current(message), 350);
     }
     window.addEventListener("lumina:open", onOpenEvent);
@@ -551,9 +719,13 @@ export function LuminaChat() {
       return;
     }
     // En teléfono la hoja tapa todo: se cierra para que se vea a dónde llevó.
-    // En escritorio solo se recoge al ir al cotizador (su panel tapaba el
-    // resumen y los botones de pago); la conversación queda guardada.
-    if (isPhone || id === "precios") setOpen(false);
+    // En escritorio, al ir al cotizador, el panel se muda a la izquierda para
+    // no tapar el resumen ni los botones de pago (si no cabe, se recoge).
+    if (isPhone) setOpen(false);
+    else if (id === "precios") {
+      if (window.innerWidth >= 768) setDockLeft(true);
+      else setOpen(false);
+    }
     window.setTimeout(
       () => {
         target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
@@ -575,6 +747,13 @@ export function LuminaChat() {
     trackEvent("lumina_action", { action: "quote", plan: quote.plan });
     // Con el cotizador en la página, se arma en vivo; si no, se abre ya armado.
     if (!document.getElementById("precios")) {
+      // El chat reaparece al llegar (con su historial) para que la cotización
+      // que armó Lumina no se pierda de vista.
+      try {
+        window.sessionStorage.setItem(REOPEN_KEY, "quote");
+      } catch {
+        /* sessionStorage bloqueado */
+      }
       window.location.href = quoteHref(quote);
       return;
     }
@@ -695,29 +874,10 @@ export function LuminaChat() {
   const statusText =
     mood === "Offline" ? t.lumina.offline : loading ? t.lumina.thinking : t.lumina.online;
 
-  return (
+  // El contenido del chat (cabecera, conversación y caja de texto), igual en
+  // el diálogo flotante y en el chat incrustado de /lumina.
+  const panelBody = (inline: boolean) => (
     <>
-      {/* Hoja de pantalla completa en móvil; hoja flotante redondeada desde sm. */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            ref={panelRef}
-            id="lumina-chat-panel"
-            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.98 }}
-            transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
-            style={
-              viewportBox
-                ? { top: viewportBox.top, height: viewportBox.height, bottom: "auto" }
-                : undefined
-            }
-            className="fixed inset-0 z-[130] flex h-[100dvh] w-full flex-col overflow-hidden bg-white text-ink outline-none sm:inset-auto sm:bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] sm:right-6 sm:h-auto sm:max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] sm:w-[min(92vw,24.5rem)] sm:origin-bottom-right sm:rounded-[2rem] sm:shadow-[0_40px_80px_-30px_hsl(var(--ink)/0.55)] sm:ring-1 sm:ring-ink/[0.06]"
-            role="dialog"
-            aria-modal={isPhone ? true : undefined}
-            aria-labelledby="lumina-chat-title"
-            tabIndex={-1}
-          >
             {/* Cabecera: avatar redondo con el ánimo de Lumina + estado. */}
             <div className="flex shrink-0 items-center gap-3 px-4 pb-3 pt-[max(0.875rem,env(safe-area-inset-top))] sm:px-5 sm:pt-4">
               <span className="relative size-12 shrink-0">
@@ -754,17 +914,19 @@ export function LuminaChat() {
                   {statusText}
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setOpen(false);
-                  restoreChatFocus();
-                }}
-                aria-label={t.lumina.close}
-                className="grid size-11 shrink-0 place-items-center rounded-full bg-ink/[0.05] text-ink transition-colors hover:bg-ink hover:text-white"
-              >
-                <X className="h-5 w-5" />
-              </button>
+              {!inline && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpen(false);
+                    restoreChatFocus();
+                  }}
+                  aria-label={t.lumina.close}
+                  className="grid size-11 shrink-0 place-items-center rounded-full bg-ink/[0.05] text-ink transition-colors hover:bg-ink hover:text-white"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              )}
             </div>
 
             {/* Conversación: lienzo menta con burbujas redondeadas. */}
@@ -774,7 +936,10 @@ export function LuminaChat() {
               aria-live="polite"
               aria-relevant="additions"
               aria-busy={loading}
-              className="mx-2.5 flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto overscroll-contain rounded-[1.6rem] bg-mint p-3 [scrollbar-width:thin] sm:mx-3 sm:max-h-[50vh] sm:min-h-[16rem] sm:flex-none sm:p-3.5"
+              className={cn(
+                "mx-2.5 flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto overscroll-contain rounded-[1.6rem] bg-mint p-3 [scrollbar-width:thin] sm:mx-3 sm:p-3.5",
+                !inline && "sm:max-h-[50vh] sm:min-h-[16rem] sm:flex-none"
+              )}
             >
               {messages.map((m, i) => {
                 const className = cn(
@@ -874,9 +1039,57 @@ export function LuminaChat() {
                 <Send aria-hidden className="h-[1.1rem] w-[1.1rem]" />
               </button>
             </form>
+    </>
+  );
+
+  return (
+    <>
+      {/* Hoja de pantalla completa en móvil; hoja flotante redondeada desde sm. */}
+      <AnimatePresence>
+        {open && !inlineHost && (
+          <motion.div
+            ref={panelRef}
+            id="lumina-chat-panel"
+            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.98 }}
+            transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+            style={
+              viewportBox
+                ? { top: viewportBox.top, height: viewportBox.height, bottom: "auto" }
+                : undefined
+            }
+            className={cn(
+              "fixed inset-0 z-[130] flex h-[100dvh] w-full flex-col overflow-hidden bg-white text-ink outline-none sm:inset-auto sm:bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] sm:h-auto sm:max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] sm:w-[min(92vw,24.5rem)] sm:rounded-[2rem] sm:shadow-[0_40px_80px_-30px_hsl(var(--ink)/0.55)] sm:ring-1 sm:ring-ink/[0.06]",
+              // A la izquierda mientras el resumen de pago está a la vista (en
+              // md y lg el resumen es ancho: un poco más angosto para no
+              // rozar la columna de los botones).
+              dockLeft
+                ? "sm:left-6 sm:origin-bottom-left md:w-[min(44vw,22rem)] xl:w-[min(92vw,24.5rem)]"
+                : "sm:right-6 sm:origin-bottom-right"
+            )}
+            role="dialog"
+            aria-modal={isPhone ? true : undefined}
+            aria-labelledby="lumina-chat-title"
+            tabIndex={-1}
+          >
+            {panelBody(false)}
           </motion.div>
         )}
       </AnimatePresence>
+
+      {inlineHost &&
+        createPortal(
+          <div
+            id="lumina-chat-panel"
+            role="region"
+            aria-labelledby="lumina-chat-title"
+            className="flex h-full min-h-[32rem] flex-col overflow-hidden rounded-[inherit] bg-white text-ink sm:min-h-[34rem]"
+          >
+            {panelBody(true)}
+          </div>,
+          inlineHost
+        )}
 
       {/* Burbuja proactiva: saluda una vez; tocarla abre el chat. */}
       <AnimatePresence>
@@ -900,8 +1113,8 @@ export function LuminaChat() {
                 className="min-w-0 flex-1 rounded-lg text-left text-sm font-semibold leading-snug sm:pt-0.5 sm:font-medium"
               >
                 <span className="block text-xs font-bold text-ink/70 max-sm:sr-only">{t.lumina.name}</span>
-                <span className="line-clamp-2 sm:hidden">{t.lumina.teaserShort}</span>
-                <span className="hidden sm:inline">{t.lumina.teaser}</span>
+                <span className={cn("sm:hidden", teaserText ? "line-clamp-3" : "line-clamp-2")}>{teaserText ?? t.lumina.teaserShort}</span>
+                <span className="hidden sm:inline">{teaserText ?? t.lumina.teaser}</span>
               </button>
               <button
                 type="button"

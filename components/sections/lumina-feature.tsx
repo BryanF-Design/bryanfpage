@@ -12,7 +12,6 @@ import {
   LayoutTemplate,
   MessageCircle,
   MousePointerClick,
-  Send,
   ShieldCheck,
   ShoppingBag,
   Sparkle,
@@ -127,15 +126,6 @@ export function LuminaFeature() {
     // primeNext solo agrega a la lista: no hace falta re-armar el ciclo por ella.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduced, sectionInView]);
-
-  // Con teclado, la pregunta enfocada se desliza completa a la vista: el
-  // navegador no mueve la fila si la ficha asoma a medias. Solo actúa cuando
-  // la fila de verdad se desliza (teléfono).
-  function revealQuick(el: HTMLElement) {
-    const row = el.parentElement;
-    if (!row || row.scrollWidth <= row.clientWidth || !el.matches(":focus-visible")) return;
-    el.scrollIntoView({ block: "nearest", inline: "nearest", behavior: reduced ? "auto" : "smooth" });
-  }
 
   return (
     <section
@@ -309,86 +299,26 @@ export function LuminaFeature() {
         </div>
       </div>
 
-      {/* B · Vista previa del chat: tarjeta tipo app. */}
+      {/* B · El chat de verdad. Antes era una maqueta (con un "Pregúntame"
+          tecleándose) y, al abrir el diálogo flotante, había dos chats a la
+          vez. Ahora LuminaChat se monta aquí dentro (#lumina-chat-inline)
+          con su conversación real e historial. */}
       <div
         data-fx="up"
         className="min-w-0 md:col-span-7 md:row-span-2 min-[1400px]:col-span-4 min-[1400px]:col-start-9 min-[1400px]:row-span-1 min-[1400px]:row-start-1"
         style={fxDelay(90)}
       >
-        <div className="panel flex h-full flex-col gap-3 p-3 shadow-soft sm:gap-4 sm:p-4 lg:p-5">
-          <div className="flex items-center gap-3 px-1 pt-1">
-            <span className="relative size-12 shrink-0">
-              <span className="absolute inset-0 overflow-hidden rounded-full bg-ink ring-[3px] ring-lime">
-                <Image src="/img/lumina/Normal.png" alt="" fill sizes="48px" className="object-cover" />
+        <div className="panel flex h-full flex-col overflow-hidden shadow-soft">
+          <div id="lumina-chat-inline" className="relative flex min-h-[32rem] flex-1 flex-col rounded-[inherit] sm:min-h-[34rem]">
+            {/* Mientras carga el chat (se hidrata en el navegador). */}
+            <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center text-sm font-medium text-muted-foreground [#lumina-chat-inline:has(>#lumina-chat-panel)_&]:hidden">
+              <span className="relative size-14 overflow-hidden rounded-full bg-ink ring-[3px] ring-lime">
+                <Image src="/img/lumina/avatar/normal.webp" alt="" fill sizes="56px" unoptimized className="object-cover" />
               </span>
-              <span aria-hidden className="absolute bottom-0 right-0 size-3.5 rounded-full border-[3px] border-white bg-forest" />
-            </span>
-            <div className="min-w-0 flex-1 leading-tight">
-              <p className="display-title text-xl text-ink">{t.lumina.name}</p>
-              <p className="mt-1 truncate text-sm font-medium text-muted-foreground">
-                {t.luminaSection.status}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => openLuminaChat()}
-              aria-label={t.lumina.open}
-              className="grid size-11 shrink-0 place-items-center rounded-full bg-ink text-lime transition-transform duration-300 hover:rotate-45 active:scale-95"
-            >
-              <ArrowUpRight aria-hidden className="h-5 w-5" />
-            </button>
-          </div>
-
-          <div className="flex flex-1 flex-col gap-3 rounded-[calc(var(--r-panel)-0.75rem)] bg-mint p-3 sm:p-4">
-            {/* El saludo es copia propia del diccionario (HTML de confianza). */}
-            <div
-              className="max-w-[90%] self-start rounded-[1.35rem] rounded-bl-md bg-white px-4 py-3 text-[0.9375rem] leading-relaxed text-ink shadow-[0_10px_24px_-18px_hsl(var(--ink)/0.5)]"
-              dangerouslySetInnerHTML={{ __html: t.lumina.greeting }}
-            />
-            <TypedPhrases phrases={t.luminaSection.phrases} />
-
-            {/* Preguntas rápidas: tocar una abre el chat y la envía. En
-                teléfono son una sola fila que se desliza (asoma la siguiente),
-                a sangre hasta el borde de la caja menta; desde md, columna. */}
-            <div
-              role="group"
-              aria-label={t.luminaSection.quickLabel}
-              className="-mx-3 mt-auto flex snap-x snap-mandatory scroll-px-3 gap-2 overflow-x-auto px-3 py-1.5 [scrollbar-width:none] sm:-mx-4 sm:scroll-px-4 sm:px-4 md:mx-0 md:snap-none md:flex-col md:items-end md:overflow-visible md:px-0 md:pb-0 md:pt-3 [&::-webkit-scrollbar]:hidden"
-            >
-              {t.lumina.quick.map((q) => (
-                <button
-                  key={q}
-                  type="button"
-                  onClick={() => openLuminaChat(q)}
-                  onFocus={(e) => revealQuick(e.currentTarget)}
-                  className="group inline-flex min-h-11 max-w-none shrink-0 snap-start items-center gap-2 whitespace-nowrap rounded-full bg-white py-2 pl-4 pr-2 text-left text-sm font-semibold text-ink ring-1 ring-ink/10 transition-[background-color,color,transform] duration-200 hover:-translate-y-0.5 hover:bg-ink hover:text-white active:scale-[0.97] md:max-w-full md:shrink md:snap-align-none md:whitespace-normal"
-                >
-                  {q}
-                  <span className="grid size-7 shrink-0 place-items-center rounded-full bg-lime text-ink">
-                    <ArrowUpRight aria-hidden className="h-3.5 w-3.5 transition-transform group-hover:rotate-45" />
-                  </span>
-                </button>
-              ))}
+              {t.lumina.online}
             </div>
           </div>
-
-          {/* Caja de texto de mentira: abre el chat de verdad. */}
-          <button
-            type="button"
-            onClick={() => openLuminaChat()}
-            aria-label={t.luminaSection.cta}
-            className="group flex h-14 w-full items-center gap-3 rounded-full bg-white pl-5 pr-1.5 text-left ring-1 ring-ink/[0.12] transition-shadow hover:ring-ink/30"
-          >
-            <span className="min-w-0 flex-1 truncate text-[0.9375rem] text-muted-foreground">
-              {t.lumina.placeholder}
-            </span>
-            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-lime text-ink transition-transform duration-300 group-hover:-rotate-12">
-              <Send aria-hidden className="h-[1.05rem] w-[1.05rem]" />
-            </span>
-          </button>
-
-          {/* Privacidad / límites: claridad, no letras chiquitas. */}
-          <p className="flex items-start gap-2 px-2 pb-1 text-sm leading-relaxed text-muted-foreground">
+          <p className="flex items-start gap-2 border-t border-ink/[0.06] px-4 py-3 text-sm leading-relaxed text-muted-foreground">
             <ShieldCheck aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-forest" />
             {t.luminaSection.privacy}
           </p>
@@ -501,69 +431,3 @@ function BadgeVisual({ index }: { index: number }) {
   );
 }
 
-/**
- * Burbuja de Lumina: escribe sus frases en ciclo (escribe, se queda, borra y
- * pasa a la siguiente) mientras está en pantalla; fuera de ella se detiene.
- * Con movimiento reducido muestra la primera frase completa y quieta.
- */
-function TypedPhrases({ phrases }: { phrases: string[] }) {
-  const reduced = useReducedMotionPreference();
-  const [text, setText] = useState("");
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { margin: "0px 0px -15% 0px" });
-
-  useEffect(() => {
-    const list = phrases.filter(Boolean);
-    if (reduced || list.length === 0) {
-      setText(list[0] ?? "");
-      return;
-    }
-    if (!inView) return;
-
-    let index = 0;
-    let char = 0;
-    let deleting = false;
-    let timer = 0;
-    const tick = () => {
-      const phrase = list[index % list.length];
-      if (!deleting) {
-        char++;
-        setText(phrase.slice(0, char));
-        if (char >= phrase.length) {
-          deleting = true;
-          timer = window.setTimeout(tick, 2600);
-          return;
-        }
-        timer = window.setTimeout(tick, 42);
-      } else {
-        char--;
-        setText(phrase.slice(0, char));
-        if (char <= 0) {
-          deleting = false;
-          index++;
-          timer = window.setTimeout(tick, 380);
-          return;
-        }
-        timer = window.setTimeout(tick, 18);
-      }
-    };
-    setText("");
-    timer = window.setTimeout(tick, 300);
-    return () => window.clearTimeout(timer);
-  }, [phrases, reduced, inView]);
-
-  return (
-    <div ref={ref} className="flex max-w-[90%] items-end gap-2 self-start">
-      {/* El texto que se escribe y borra es decorativo; el lector de
-          pantalla recibe la primera frase completa, una sola vez. */}
-      <span className="sr-only">{phrases[0]}</span>
-      <p aria-hidden className="min-h-[2.9rem] rounded-[1.35rem] rounded-bl-md bg-white px-4 py-3 text-[0.9375rem] font-semibold leading-relaxed text-ink shadow-[0_10px_24px_-18px_hsl(var(--ink)/0.5)]">
-        {text}
-        <span
-          aria-hidden
-          className="ml-0.5 inline-block h-[1.05em] w-[2px] translate-y-[3px] animate-pulse bg-forest motion-reduce:animate-none"
-        />
-      </p>
-    </div>
-  );
-}

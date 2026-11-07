@@ -1310,3 +1310,24 @@ html.fx-on [data-fx="panel"]:not([data-fx-in]) > * {
     display: none !important;
   }
 }
+
+/* Esquina inferior derecha sin amontonar. En escritorio con mouse el dock
+   (WhatsApp y "volver arriba") va a la izquierda del botón de Lumina, en la
+   misma fila, en vez de apilarse encima. Sin el botón de Lumina (footer, chat
+   incrustado de /lumina), el dock toma su lugar. Va al final del archivo para
+   ganarle a las utilidades de posición del componente. */
+@media (min-width: 1280px) and (pointer: fine) {
+  html .fab-slot-dock {
+    bottom: var(--fab-edge);
+    right: calc(1.5rem + var(--lumina-fab-w, var(--fab-size)) + var(--fab-gap));
+  }
+}
+html.lumina-fab-hidden .fab-slot-dock {
+  bottom: var(--fab-edge);
+}
+@media (min-width: 1280px) and (pointer: fine) {
+  html.lumina-fab-hidden .fab-slot-dock {
+    right: 1.5rem;
+  }
+}
+

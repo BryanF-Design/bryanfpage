@@ -131,7 +131,7 @@ export function FloatingDock() {
 
   return (
     <div
-      className="fab-slot fixed bottom-[calc(var(--fab-edge)+var(--lumina-fab,0px))] right-3 z-[119] sm:right-6"
+      className="fab-slot fab-slot-dock fixed bottom-[calc(var(--fab-edge)+var(--lumina-fab,0px))] right-3 z-[119] sm:right-6"
       data-hidden={hidden}
     >
       <div className="fab-dock">
