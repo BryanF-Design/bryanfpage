@@ -101,7 +101,7 @@ const en: Dictionary = {
       {
         title: "Support",
         content:
-          "1 month of post-launch support and access to Access BryanF, your technical dashboard, to keep the site running smoothly.",
+          "I stay with you for a month after delivery and give you access to Access BryanF, your online client space, where you can see your project calendar and keep your site's logins stored privately.",
       },
     ],
   },
@@ -114,6 +114,7 @@ const en: Dictionary = {
     ctaSecondary: "Let's work together",
     filtersLabel: "Filter tools by type",
     filters: { all: "All", front: "Frontend", back: "Backend", tools: "Tools" },
+    paymentGateway: "Payment gateway",
     countLabel: "tools I use every day",
   },
   projects: {
@@ -172,6 +173,7 @@ const en: Dictionary = {
       problem: "Problem",
       decision: "Decision",
       result: "Outcome",
+      metric: "By the numbers",
     },
     cases: {
       "koi-arquitectura-vercel-app": {
@@ -181,6 +183,8 @@ const en: Dictionary = {
           "Structure the story around listening, design, construction, and follow-up, using the project as evidence.",
         result:
           "A site that explains the process and the value of improving a space, then opens a direct path to contact.",
+        metric:
+          "4 service stages (listening, design, construction and follow-up) in a single journey, with direct contact at the end.",
       },
       "element-experiences-com": {
         problem:
@@ -189,6 +193,8 @@ const en: Dictionary = {
           "Separate the offer by experience type and support it with dates, difficulty levels, and clear booking or quote actions.",
         result:
           "A journey where each visitor can identify the right experience and reach the appropriate next step.",
+        metric:
+          "3 lines of offer (open routes, private experiences and corporate services), each with its own way to book or request a quote.",
       },
       "efficientplasticolors-com": {
         problem:
@@ -197,6 +203,8 @@ const en: Dictionary = {
           "Turn color into an interactive tool with Pantone® matching, product families, and a direct quote path.",
         result:
           "Visitors can explore shades and products and submit a WhatsApp request within the same flow.",
+        metric:
+          "From a technical catalog to 3 tools in one flow: Pantone® finder, catalog by family and quote via WhatsApp.",
       },
       "nkmohcafe-com": {
         problem:
@@ -205,6 +213,8 @@ const en: Dictionary = {
           "Combine the origin story, service profiles, and product details with clear paths to request a quote.",
         result:
           "The site distinguishes specialty coffee, commercial coffee, and custom grinding, then guides visitors toward an order.",
+        metric:
+          "3 separate coffee profiles (specialty, commercial and grinding), each with its own path to an order.",
       },
     },
   },
@@ -382,6 +392,39 @@ const en: Dictionary = {
     modeFullLabel: "Full payment",
     modeAdvanceLabel: "50% deposit",
     viewSummary: "View summary and pay",
+    payPrimaryAdvance: (amount: string) => `Pay ${amount} deposit`,
+    payPrimaryFull: (amount: string) => `Pay ${amount}`,
+    payPrimaryNote: "With a credit or debit card, through Stripe",
+    payAltPrefix: "or pay with",
+    payAltMercadoPago: "Mercado Pago",
+    payAltTransfer: "bank transfer",
+    payAltOr: "or",
+    todayAdvance: (now: string, rest: string) => `You pay ${now} today. The remaining ${rest} is due when I deliver the project and you approve it.`,
+    todayFull: (now: string) => `You pay ${now} today and nothing is left pending.`,
+    transferAlt: "If you prefer, pay by card or Mercado Pago and we start today.",
+    transferAltCard: "Pay by card",
+    checkoutOpen: (label: string) => `Your ${label} payment is open in another tab.`,
+    checkoutDone: "Did you finish your payment?",
+    verifyPayment: "Check payment",
+    retryPayment: "Try again",
+    checkingPayment: "Checking your payment…",
+    paymentConfirmed: "Done! Your payment is confirmed. Taking you to the next step…",
+    paymentPending: "Your payment shows as in progress. It can take a few minutes to confirm; check again in a moment.",
+    paymentNotFound: "I can't see your payment yet. If you already paid, wait a couple of minutes and check again; if not, try again.",
+    paymentFailed: "The payment didn't go through. You can try again or choose another method.",
+    verifyError: "I couldn't check your payment right now. If you already paid, message me on WhatsApp and I'll confirm it.",
+    popupBlocked: "Your browser blocked the payment tab. Open it here:",
+    openPayment: "Open payment",
+    dismissNotice: "Dismiss",
+    emailLabel: "Your email",
+    emailPlaceholder: "you@email.com",
+    emailSend: "Send",
+    emailSending: "Sending…",
+    emailSent: (email: string) => `I sent it to ${email}. If you don't see it in a few minutes, check your spam folder.`,
+    emailInvalid: "Check your email address, something seems to be missing.",
+    emailFailed: "I couldn't send it right now. I'll send it over WhatsApp instead:",
+    emailWhatsapp: "Get it on WhatsApp",
+    whatsappQuoteIntro: "Hi, I'd like to receive this quote:",
     none: "none",
   },
   faq: {
@@ -419,7 +462,7 @@ const en: Dictionary = {
       {
         title: "What's included when we work together?",
         content:
-          "Free domain and hosting for a year, unlimited email accounts (1 GB each), a fully custom design, and a final product we guarantee you'll be happy with.",
+          "A free domain and hosting for one year, unlimited email accounts (1 GB each) and a design made from scratch for your brand. I guarantee the site is delivered complete and working as we agreed, with whatever adjustments it takes until you approve it. The guarantee doesn't cover issues caused by someone else changing the code, outages on third-party servers or misuse of the admin panel after training.",
       },
     ],
     notFound: "Didn't find your answer? Message us and let's talk it through.",
@@ -427,7 +470,7 @@ const en: Dictionary = {
     bubble: "Questions?",
   },
   closingCta: {
-    title: "Ready for your brand to look like what it's worth?",
+    title: "Shall we start your website?",
     subtitle: "Build your site, choose how to pay (card, Mercado Pago, or transfer), and let's get started. Projects from $3,500 MXN.",
     ctaPrimary: "Build your site",
     ctaSecondary: "WhatsApp us directly",
@@ -441,8 +484,8 @@ const en: Dictionary = {
     photoAlt: "Bryan designing and developing at his desk",
     inspirationLabel: "What I bring to the work",
     inspiration:
-      "I'm inspired by high-performance cars (my favorite is the 2016 Honda Civic Type R), the craft of getting things right the first time and the logic of a well-built network. I don't paste them on as decoration: I translate them into precision, rhythm and connection.",
-    inspirationAccent: "precision, rhythm and connection",
+      "I love well-built cars and well-designed networks, and it shows in my work. One example: on the Efficient Plasticolors site I turned a technical color catalog into a Pantone® finder where clients find their shade and request a quote on WhatsApp without leaving the page. That's the detail I care about in every project: that every piece connects to the next one.",
+    inspirationAccent: "that every piece connects to the next one",
     chips: ["Design + code", "Direct contact", "Performance with purpose"],
     principlesLabel: "How I work · precision, rhythm and connection",
     principles: [
@@ -591,8 +634,9 @@ const en: Dictionary = {
     close: "Close",
     send: "Send",
     open: "Open chat with Lumina",
-    teaser: "Looking to build your site? Ask me about pricing, timelines, or where to start ✨",
-    teaserShort: "Need a website? Ask me ✨",
+    teaser: "Thinking about your website? Ask me about prices, timelines or where to start.",
+    teaserShort: "Questions about your website? Ask me.",
+    quoteReady: "Your quote is ready. Shall we keep talking?",
     typing: "Typing…",
     retry: "Retry",
     actions: {

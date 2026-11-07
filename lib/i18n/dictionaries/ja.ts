@@ -100,7 +100,8 @@ const ja: Dictionary = {
       },
       {
         title: "アフターサポート",
-        content: "納品後1か月のサポートと、サイトの安定稼働を支える技術ダッシュボード「Access BryanF」をご利用いただけます。",
+        content:
+          "納品後1か月間サポートし、オンラインのクライアントスペース「Access BryanF」をご利用いただけます。プロジェクトのカレンダーを確認でき、サイトのログイン情報を非公開で保管できます。",
       },
     ],
   },
@@ -112,6 +113,7 @@ const ja: Dictionary = {
     ctaSecondary: "一緒に働きましょう",
     filtersLabel: "種類でツールを絞り込む",
     filters: { all: "すべて", front: "フロントエンド", back: "バックエンド", tools: "ツール" },
+    paymentGateway: "決済サービス",
     countLabel: "日々使っているツール",
   },
   projects: {
@@ -170,6 +172,7 @@ const ja: Dictionary = {
       problem: "課題",
       decision: "判断",
       result: "成果",
+      metric: "数字で見る",
     },
     cases: {
       "koi-arquitectura-vercel-app": {
@@ -179,6 +182,8 @@ const ja: Dictionary = {
           "ヒアリング、設計、施工、アフターフォローの順に物語を構成し、実例を根拠として示す。",
         result:
           "プロセスと空間を改善する価値が伝わり、その流れのまま直接相談できるサイト。",
+        metric:
+          "傾聴・設計・施工・アフターケアの4段階を1つの流れにまとめ、最後に直接の問い合わせ導線を配置。",
       },
       "element-experiences-com": {
         problem:
@@ -187,6 +192,8 @@ const ja: Dictionary = {
           "体験の種類ごとに情報を整理し、日程、難易度、予約・見積もりへの明確な導線を設ける。",
         result:
           "訪問者が自分に合う体験を見分け、適切な次の行動へ進める構成。",
+        metric:
+          "オープンツアー・プライベート体験・法人向けサービスの3つのラインを分け、それぞれに予約・見積もりの導線を用意。",
       },
       "efficientplasticolors-com": {
         problem:
@@ -195,6 +202,8 @@ const ja: Dictionary = {
           "Pantone®検索、製品カテゴリー、直接見積もりを組み合わせ、色をインタラクティブなツールにする。",
         result:
           "色と製品を同じ流れで確認し、そのままWhatsAppで依頼を送れるサイト。",
+        metric:
+          "技術カタログを1つの流れの中の3つのツールに：Pantone® 検索、ファミリー別カタログ、WhatsApp での見積もり。",
       },
       "nkmohcafe-com": {
         problem:
@@ -203,6 +212,8 @@ const ja: Dictionary = {
           "産地の物語、サービス別の提案、商品情報を、明確な見積もり導線と組み合わせる。",
         result:
           "スペシャルティ、業務用、挽き方の違いが分かり、注文へ進めるサイト。",
+        metric:
+          "スペシャルティ・業務用・焙煎粉砕の3つのコーヒープロフィールを分け、それぞれ注文までの導線を用意。",
       },
     },
   },
@@ -380,6 +391,39 @@ const ja: Dictionary = {
     modeFullLabel: "全額支払い",
     modeAdvanceLabel: "前払い50%",
     viewSummary: "概要を見て支払う",
+    payPrimaryAdvance: (amount: string) => `前金 ${amount} を支払う`,
+    payPrimaryFull: (amount: string) => `${amount} を支払う`,
+    payPrimaryNote: "クレジットカード・デビットカードで（Stripe）",
+    payAltPrefix: "または",
+    payAltMercadoPago: "Mercado Pago",
+    payAltTransfer: "銀行振込",
+    payAltOr: "・",
+    todayAdvance: (now: string, rest: string) => `本日のお支払いは ${now} です。残りの ${rest} は、プロジェクトを納品して承認いただいた時点でお支払いください。`,
+    todayFull: (now: string) => `本日 ${now} をお支払いいただき、残金はありません。`,
+    transferAlt: "カードまたはMercado Pagoでお支払いいただければ、今日から始められます。",
+    transferAltCard: "カードで支払う",
+    checkoutOpen: (label: string) => `${label} の支払い画面が別のタブで開いています。`,
+    checkoutDone: "お支払いは完了しましたか？",
+    verifyPayment: "支払いを確認",
+    retryPayment: "もう一度試す",
+    checkingPayment: "お支払いを確認しています…",
+    paymentConfirmed: "完了です！お支払いを確認しました。次のステップへご案内します…",
+    paymentPending: "お支払いは処理中です。確認まで数分かかる場合があります。少ししてからもう一度ご確認ください。",
+    paymentNotFound: "まだお支払いを確認できません。お支払い済みの場合は数分待ってから再度ご確認ください。まだの場合はもう一度お試しください。",
+    paymentFailed: "お支払いが完了しませんでした。もう一度試すか、別の方法をお選びください。",
+    verifyError: "今はお支払いを確認できませんでした。お支払い済みの場合はWhatsAppでご連絡ください。こちらで確認します。",
+    popupBlocked: "ブラウザが支払いタブをブロックしました。こちらから開いてください：",
+    openPayment: "支払いを開く",
+    dismissNotice: "閉じる",
+    emailLabel: "メールアドレス",
+    emailPlaceholder: "you@email.com",
+    emailSend: "送信",
+    emailSending: "送信中…",
+    emailSent: (email: string) => `${email} に送りました。数分たっても届かない場合は、迷惑メールフォルダをご確認ください。`,
+    emailInvalid: "メールアドレスをご確認ください。何か足りないようです。",
+    emailFailed: "今は送信できませんでした。WhatsAppでお送りします：",
+    emailWhatsapp: "WhatsAppで受け取る",
+    whatsappQuoteIntro: "こんにちは。この見積もりを受け取りたいです：",
     none: "なし",
   },
   faq: {
@@ -413,7 +457,8 @@ const ja: Dictionary = {
       },
       {
         title: "ご依頼にはどんな内容が含まれますか？",
-        content: "1年間の無料ドメイン・ホスティング、無制限のメールアカウント（各1GB）、完全オーダーメイドのデザイン、そして最終成果物へのご満足をお約束します。",
+        content:
+          "1年間無料のドメインとホスティング、容量1GBずつのメールアカウント無制限、そしてブランドのためにゼロから作るデザインが含まれます。サイトは合意した内容どおりに完成・動作する状態で納品し、承認いただくまで必要な調整を行うことを保証します。第三者によるコード変更、外部サーバーの障害、研修後の管理画面の誤操作による不具合は保証の対象外です。",
       },
     ],
     notFound: "求めていた回答が見つかりませんでしたか？ご連絡いただければ、直接お話しします。",
@@ -421,7 +466,7 @@ const ja: Dictionary = {
     bubble: "質問ある？",
   },
   closingCta: {
-    title: "ブランドにふさわしい見た目にする準備はできていますか？",
+    title: "あなたのウェブ、始めましょうか？",
     subtitle: "サイトを作り、支払い方法（カード・Mercado Pago・銀行振込）を選んで、すぐに始めましょう。3,500メキシコペソから。",
     ctaPrimary: "サイトを作る",
     ctaSecondary: "WhatsAppで直接連絡",
@@ -434,8 +479,8 @@ const ja: Dictionary = {
     photoAlt: "デスクでデザインと開発をするBryan",
     inspirationLabel: "仕事に持ち込む視点",
     inspiration:
-      "高性能な車（特に2016年のホンダ・シビック TYPE Rが好きです）、一度で正しく仕上げる職人の姿勢、そしてよく設計されたネットワークの論理に惹かれます。それらを飾りとして貼るのではなく、精度・リズム・つながりへと翻訳します。",
-    inspirationAccent: "精度・リズム・つながり",
+      "よくできた車や、きちんと組まれたネットワークが好きで、それは仕事にも表れています。たとえば Efficient Plasticolors のサイトでは、技術的なカラーカタログを Pantone® 検索に作り替え、お客さまがページを離れずに色を見つけて WhatsApp で見積もりを依頼できるようにしました。どのプロジェクトでも大切にしているのは、ひとつひとつの要素が次につながることです。",
+    inspirationAccent: "ひとつひとつの要素が次につながること",
     chips: ["デザイン + コード", "直接対応", "意図のあるパフォーマンス"],
     principlesLabel: "私の仕事の軸 · 精度、リズム、つながり",
     principles: [
@@ -583,8 +628,9 @@ const ja: Dictionary = {
     close: "閉じる",
     send: "送信",
     open: "Luminaとチャットを開く",
-    teaser: "サイト制作をお考えですか？料金や納期、始め方について聞いてください ✨",
-    teaserShort: "サイトの相談、気軽にどうぞ ✨",
+    teaser: "ウェブサイトのことでお悩みですか？料金や期間、始め方を気軽に聞いてください。",
+    teaserShort: "サイトの相談、気軽にどうぞ。",
+    quoteReady: "見積もりができました。このまま相談を続けましょうか？",
     typing: "入力中…",
     retry: "再試行",
     actions: {

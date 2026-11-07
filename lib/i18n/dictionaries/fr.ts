@@ -101,7 +101,7 @@ const fr: Dictionary = {
       {
         title: "Suivi",
         content:
-          "1 mois de suivi après la livraison et accès à Access BryanF, votre tableau de bord technique, pour garantir le bon fonctionnement du site.",
+          "Je vous accompagne un mois après la livraison et vous donne accès à Access BryanF, votre espace client en ligne : vous y voyez le calendrier de votre projet et y gardez en privé les accès de votre site.",
       },
     ],
   },
@@ -114,6 +114,7 @@ const fr: Dictionary = {
     ctaSecondary: "Travaillons ensemble",
     filtersLabel: "Filtrer les outils par type",
     filters: { all: "Tout", front: "Front-end", back: "Back-end", tools: "Outils" },
+    paymentGateway: "Passerelle de paiement",
     countLabel: "outils que j'utilise au quotidien",
   },
   projects: {
@@ -172,6 +173,7 @@ const fr: Dictionary = {
       problem: "Problème",
       decision: "Décision",
       result: "Résultat",
+      metric: "En chiffres",
     },
     cases: {
       "koi-arquitectura-vercel-app": {
@@ -181,6 +183,8 @@ const fr: Dictionary = {
           "Structurer le récit autour de l'écoute, de la conception, de la construction et du suivi, projet à l'appui.",
         result:
           "Un site qui explique le processus et la valeur d'une intervention, puis ouvre un contact direct.",
+        metric:
+          "4 étapes du service (écoute, conception, construction et accompagnement) dans un seul parcours, avec un contact direct à la fin.",
       },
       "element-experiences-com": {
         problem:
@@ -189,6 +193,8 @@ const fr: Dictionary = {
           "Organiser l'offre par type d'expérience et l'appuyer par un calendrier, des niveaux et des actions claires pour réserver ou demander un devis.",
         result:
           "Un parcours où chaque visiteur identifie l'expérience adaptée et atteint la bonne étape suivante.",
+        metric:
+          "3 lignes d'offre (parcours ouverts, expériences privées et services aux entreprises), chacune avec sa façon de réserver ou de demander un devis.",
       },
       "efficientplasticolors-com": {
         problem:
@@ -197,6 +203,8 @@ const fr: Dictionary = {
           "Transformer la couleur en outil interactif avec recherche Pantone®, familles de produits et demande de devis directe.",
         result:
           "Le visiteur explore teintes et produits puis envoie une demande WhatsApp dans le même parcours.",
+        metric:
+          "D'un catalogue technique à 3 outils dans un même parcours : recherche Pantone®, catalogue par familles et devis par WhatsApp.",
       },
       "nkmohcafe-com": {
         problem:
@@ -205,6 +213,8 @@ const fr: Dictionary = {
           "Associer récit d'origine, profils de service et produit à des accès clairs vers la demande de devis.",
         result:
           "Le site distingue café de spécialité, café commercial et mouture personnalisée, puis guide vers la commande.",
+        metric:
+          "3 profils de café séparés (spécialité, commercial et mouture), chacun avec son propre chemin vers une commande.",
       },
     },
   },
@@ -382,6 +392,39 @@ const fr: Dictionary = {
     modeFullLabel: "Paiement complet",
     modeAdvanceLabel: "Acompte de 50 %",
     viewSummary: "Voir le résumé et payer",
+    payPrimaryAdvance: (amount: string) => `Payer l'acompte de ${amount}`,
+    payPrimaryFull: (amount: string) => `Payer ${amount}`,
+    payPrimaryNote: "Par carte de crédit ou de débit, via Stripe",
+    payAltPrefix: "ou payez avec",
+    payAltMercadoPago: "Mercado Pago",
+    payAltTransfer: "virement",
+    payAltOr: "ou",
+    todayAdvance: (now: string, rest: string) => `Aujourd'hui vous payez ${now}. Les ${rest} restants se règlent quand je vous livre le projet et que vous l'approuvez.`,
+    todayFull: (now: string) => `Aujourd'hui vous payez ${now} et il ne reste rien à régler.`,
+    transferAlt: "Si vous préférez, payez par carte ou Mercado Pago et on démarre aujourd'hui.",
+    transferAltCard: "Payer par carte",
+    checkoutOpen: (label: string) => `Votre paiement ${label} est ouvert dans un autre onglet.`,
+    checkoutDone: "Avez-vous terminé votre paiement ?",
+    verifyPayment: "Vérifier le paiement",
+    retryPayment: "Réessayer",
+    checkingPayment: "Je vérifie votre paiement…",
+    paymentConfirmed: "C'est fait ! Votre paiement est confirmé. Je vous emmène à l'étape suivante…",
+    paymentPending: "Votre paiement est en cours de traitement. La confirmation peut prendre quelques minutes ; revérifiez dans un instant.",
+    paymentNotFound: "Je ne vois pas encore votre paiement. Si vous avez déjà payé, attendez quelques minutes et revérifiez ; sinon, réessayez.",
+    paymentFailed: "Le paiement n'a pas abouti. Vous pouvez réessayer ou choisir un autre moyen.",
+    verifyError: "Je n'ai pas pu vérifier votre paiement pour l'instant. Si vous avez déjà payé, écrivez-moi sur WhatsApp et je le confirme.",
+    popupBlocked: "Votre navigateur a bloqué l'onglet de paiement. Ouvrez-le ici :",
+    openPayment: "Ouvrir le paiement",
+    dismissNotice: "Fermer l'avis",
+    emailLabel: "Votre e-mail",
+    emailPlaceholder: "vous@email.com",
+    emailSend: "Envoyer",
+    emailSending: "Envoi…",
+    emailSent: (email: string) => `Je l'ai envoyé à ${email}. Si vous ne le voyez pas d'ici quelques minutes, regardez dans vos spams.`,
+    emailInvalid: "Vérifiez votre e-mail, il semble manquer quelque chose.",
+    emailFailed: "Je n'ai pas pu l'envoyer pour l'instant. Je vous l'envoie par WhatsApp :",
+    emailWhatsapp: "Le recevoir sur WhatsApp",
+    whatsappQuoteIntro: "Bonjour, j'aimerais recevoir ce devis :",
     none: "aucun",
   },
   faq: {
@@ -419,7 +462,7 @@ const fr: Dictionary = {
       {
         title: "Que comprend une collaboration avec vous ?",
         content:
-          "Domaine et hébergement gratuits pendant un an, e-mails illimités (1 Go chacun), un design entièrement personnalisé et la garantie d'un résultat final à la hauteur.",
+          "Nom de domaine et hébergement offerts pendant un an, adresses e-mail illimitées (1 Go chacune) et un design créé de zéro pour votre marque. Je garantis que le site est livré complet et fonctionnel comme convenu, avec les ajustements nécessaires jusqu'à votre validation. La garantie ne couvre pas les pannes dues à des modifications du code par un tiers, aux coupures de serveurs externes ou à une mauvaise utilisation du panneau après la formation.",
       },
     ],
     notFound: "Vous n'avez pas trouvé votre réponse ? Écrivez-nous, on en discute.",
@@ -427,7 +470,7 @@ const fr: Dictionary = {
     bubble: "Des questions ?",
   },
   closingCta: {
-    title: "Prêt à ce que votre marque ait enfin l'allure qu'elle mérite ?",
+    title: "On commence votre site ?",
     subtitle: "Créez votre site, choisissez comment payer (carte, Mercado Pago ou virement) et on démarre. Projets dès 3 500 $ MXN.",
     ctaPrimary: "Créer mon site",
     ctaSecondary: "WhatsApp direct",
@@ -441,8 +484,8 @@ const fr: Dictionary = {
     photoAlt: "Bryan en train de concevoir et de développer à son bureau",
     inspirationLabel: "Ce que j'apporte au travail",
     inspiration:
-      "Je m'inspire des voitures hautes performances (ma préférée est la Honda Civic Type R 2016), du savoir-faire qui consiste à bien faire du premier coup et de la logique d'un réseau bien construit. Je ne les colle pas comme décoration : je les traduis en précision, rythme et connexion.",
-    inspirationAccent: "précision, rythme et connexion",
+      "J'aime les voitures bien construites et les réseaux bien pensés, et ça se voit dans mon travail. Un exemple : pour le site d'Efficient Plasticolors, j'ai transformé un catalogue technique de couleurs en un moteur de recherche Pantone® où le client trouve sa teinte et demande un devis sur WhatsApp sans quitter la page. C'est le détail que je soigne dans chaque projet : que chaque pièce se relie à la suivante.",
+    inspirationAccent: "que chaque pièce se relie à la suivante",
     chips: ["Design + code", "Contact direct", "Performance intentionnelle"],
     principlesLabel: "Ma façon de travailler · précision, rythme et connexion",
     principles: [
@@ -591,8 +634,9 @@ const fr: Dictionary = {
     close: "Fermer",
     send: "Envoyer",
     open: "Ouvrir le chat avec Lumina",
-    teaser: "Vous voulez créer votre site ? Demandez-moi les tarifs, les délais ou comment démarrer ✨",
-    teaserShort: "Un site en vue ? Parlons-en ✨",
+    teaser: "Vous pensez à votre site ? Posez-moi vos questions sur les prix, les délais ou par où commencer.",
+    teaserShort: "Des questions sur votre site ? Demandez-moi.",
+    quoteReady: "Votre devis est prêt. On continue la discussion ?",
     typing: "En train d'écrire…",
     retry: "Réessayer",
     actions: {

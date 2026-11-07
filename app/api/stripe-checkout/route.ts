@@ -102,7 +102,8 @@ export async function POST(req: NextRequest) {
       cancel_url: `${siteUrl}/gracias?status=cancel&provider=stripe`,
     });
 
-    return NextResponse.json({ checkoutUrl: session.url, amount: payable, currency });
+    // sessionId: el configurador lo usa para "Verificar pago" (/api/payment-status).
+    return NextResponse.json({ checkoutUrl: session.url, sessionId: session.id, amount: payable, currency });
   } catch (error) {
     console.error("Stripe checkout error:", error);
     return NextResponse.json(

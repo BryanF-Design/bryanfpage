@@ -108,7 +108,7 @@ const es = {
       {
         title: "Seguimiento",
         content:
-          "Te acompaño un mes después de la entrega y tienes acceso a Access BryanF, tu panel técnico, para que todo siga funcionando bien.",
+          "Te acompaño un mes después de la entrega y te doy acceso a Access BryanF, tu espacio de cliente en línea: ahí ves el calendario de tu proyecto y tienes guardados en privado los accesos de tu sitio.",
       },
     ],
   },
@@ -121,6 +121,7 @@ const es = {
     ctaSecondary: "Trabajemos juntos",
     filtersLabel: "Filtrar herramientas por tipo",
     filters: { all: "Todo", front: "Frontend", back: "Backend", tools: "Herramientas" },
+    paymentGateway: "Pasarela de pago",
     countLabel: "herramientas en mi día a día",
   },
   projects: {
@@ -180,6 +181,7 @@ const es = {
       problem: "Problema",
       decision: "Decisión",
       result: "Resultado",
+      metric: "En números",
     },
     cases: {
       "koi-arquitectura-vercel-app": {
@@ -189,6 +191,8 @@ const es = {
           "Ordenar el relato en escucha, diseño, construcción y acompañamiento, con el proyecto como evidencia.",
         result:
           "Un sitio que explica el proceso, el valor de intervenir y abre contacto directo en el mismo recorrido.",
+        metric:
+          "4 etapas del servicio (escucha, diseño, construcción y acompañamiento) en un solo recorrido, con contacto directo al final.",
       },
       "element-experiences-com": {
         problem:
@@ -197,6 +201,8 @@ const es = {
           "Separar la oferta por tipo de experiencia y sostenerla con calendario, niveles y acciones para reservar o cotizar.",
         result:
           "Un recorrido donde cada visitante identifica su experiencia y llega a la acción adecuada.",
+        metric:
+          "3 líneas de oferta (rutas abiertas, experiencias privadas y servicios corporativos), cada una con su forma de reservar o cotizar.",
       },
       "efficientplasticolors-com": {
         problem:
@@ -205,6 +211,8 @@ const es = {
           "Convertir el color en una herramienta interactiva: buscador Pantone®, catálogo por familias y cotización directa.",
         result:
           "El sitio permite explorar tonos y productos y generar una solicitud por WhatsApp desde el mismo flujo.",
+        metric:
+          "De un catálogo técnico a 3 herramientas en un mismo flujo: buscador Pantone®, catálogo por familias y cotización por WhatsApp.",
       },
       "nkmohcafe-com": {
         problem:
@@ -213,6 +221,8 @@ const es = {
           "Combinar relato de origen, perfiles de servicio y producto con accesos claros a cotización.",
         result:
           "El sitio diferencia especialidad, café comercial y molienda, y guía al visitante hacia un pedido.",
+        metric:
+          "3 perfiles de café separados (especialidad, comercial y molienda), cada uno con su propio camino hacia un pedido.",
       },
     },
   },
@@ -399,6 +409,39 @@ const es = {
     modeFullLabel: "Pago completo",
     modeAdvanceLabel: "50% anticipo",
     viewSummary: "Ver resumen y pagar",
+    payPrimaryAdvance: (amount: string) => `Pagar anticipo ${amount}`,
+    payPrimaryFull: (amount: string) => `Pagar ${amount}`,
+    payPrimaryNote: "Con tarjeta de crédito o débito, por Stripe",
+    payAltPrefix: "o paga con",
+    payAltMercadoPago: "Mercado Pago",
+    payAltTransfer: "transferencia",
+    payAltOr: "o",
+    todayAdvance: (now: string, rest: string) => `Hoy pagas ${now}. Los ${rest} restantes los pagas cuando te entregue el proyecto y lo apruebes.`,
+    todayFull: (now: string) => `Hoy pagas ${now} y no queda nada pendiente.`,
+    transferAlt: "Si prefieres, paga con tarjeta o Mercado Pago y arranca hoy.",
+    transferAltCard: "Pagar con tarjeta",
+    checkoutOpen: (label: string) => `Tu pago con ${label} está abierto en otra pestaña.`,
+    checkoutDone: "¿Ya terminaste tu pago?",
+    verifyPayment: "Verificar pago",
+    retryPayment: "Volver a intentarlo",
+    checkingPayment: "Revisando tu pago…",
+    paymentConfirmed: "¡Listo! Tu pago quedó confirmado. Te llevo al siguiente paso…",
+    paymentPending: "Tu pago aparece en proceso. Puede tardar unos minutos en confirmarse; vuelve a verificar en un momento.",
+    paymentNotFound: "Todavía no veo tu pago. Si ya pagaste, espera un par de minutos y vuelve a verificar; si no, vuelve a intentarlo.",
+    paymentFailed: "El pago no se completó. Puedes intentarlo de nuevo o elegir otro método.",
+    verifyError: "No pude revisar tu pago en este momento. Si ya pagaste, escríbeme por WhatsApp y lo confirmo.",
+    popupBlocked: "Tu navegador bloqueó la pestaña de pago. Ábrela desde aquí:",
+    openPayment: "Abrir pago",
+    dismissNotice: "Cerrar aviso",
+    emailLabel: "Tu correo",
+    emailPlaceholder: "tu@correo.com",
+    emailSend: "Enviar",
+    emailSending: "Enviando…",
+    emailSent: (email: string) => `Te la envié a ${email}. Si no la ves en unos minutos, revisa tu carpeta de spam.`,
+    emailInvalid: "Revisa tu correo, parece que le falta algo.",
+    emailFailed: "No pude enviarla en este momento. Te la paso por WhatsApp:",
+    emailWhatsapp: "Recibirla por WhatsApp",
+    whatsappQuoteIntro: "Hola, me gustaría recibir esta cotización:",
     none: "ninguno",
   },
   faq: {
@@ -439,7 +482,7 @@ const es = {
       {
         title: "¿Qué incluye trabajar juntos?",
         content:
-          "Dominio y hosting gratis por un año, correos ilimitados (1 GB cada uno) y un diseño hecho desde cero para tu marca. El resultado final va garantizado.",
+          "Dominio y hosting gratis por un año, correos ilimitados (1 GB cada uno) y un diseño hecho desde cero para tu marca. Te garantizo que el sitio se entrega completo y funcionando como lo acordamos, con los ajustes que hagan falta hasta que lo apruebes. La garantía no cubre fallas por cambios que otra persona haga al código, caídas de servidores ajenos o mal uso del panel después de la capacitación.",
       },
     ],
     notFound: "¿No encontraste tu respuesta? Escríbeme y lo platicamos.",
@@ -447,7 +490,7 @@ const es = {
     bubble: "¿Dudas?",
   },
   closingCta: {
-    title: "¿Listo para que tu marca se vea como lo que vale?",
+    title: "¿Empezamos tu web?",
     subtitle:
       "Arma tu web, elige cómo pagar (tarjeta, Mercado Pago o transferencia) y arrancamos. Proyectos desde $3,500 MXN.",
     ctaPrimary: "Arma tu web",
@@ -462,9 +505,9 @@ const es = {
     photoAlt: "Bryan diseñando y desarrollando en su escritorio",
     inspirationLabel: "Lo que llevo al trabajo",
     inspiration:
-      "Hay cosas que se me quedaron pegadas: el Type R que para mí siempre será el de 2016, el oficio de hacer las cosas bien a la primera y la lógica de una red bien hecha. En mi trabajo aparecen como atención al detalle, ritmo y sistemas que sí conectan.",
+      "Me gustan los autos bien hechos y las redes bien armadas, y eso se nota en mi trabajo. Un ejemplo: en el sitio de Efficient Plasticolors convertí un catálogo técnico de colores en un buscador Pantone® donde el cliente encuentra su tono y pide cotización por WhatsApp sin salir de la página. Ese es el detalle que cuido en cada proyecto: que cada pieza conecte con la siguiente.",
     // Fragmento final de `inspiration` que se resalta (debe aparecer tal cual).
-    inspirationAccent: "sistemas que sí conectan",
+    inspirationAccent: "que cada pieza conecte con la siguiente",
     chips: ["Diseño + código", "Trato directo", "Performance con intención"],
     principlesLabel: "Mi forma de trabajar · precisión, ritmo y conexión",
     principles: [
@@ -620,6 +663,7 @@ const es = {
     open: "Abrir chat con Lumina",
     teaser: "¿Estás pensando en tu web? Pregúntame precios, tiempos o por dónde empezar.",
     teaserShort: "¿Dudas con tu web? Pregúntame.",
+    quoteReady: "Tu cotización ya está armada. ¿Seguimos platicando?",
     typing: "Escribiendo…",
     retry: "Reintentar",
     actions: {

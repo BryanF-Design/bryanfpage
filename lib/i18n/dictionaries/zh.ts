@@ -87,7 +87,8 @@ const zh: Dictionary = {
       { title: "上线发布", content: "我会配好技术SEO和数据追踪再上线，从第一天起你就能看到谁来访、在找什么。" },
       {
         title: "后续支持",
-        content: "交付后提供1个月的跟进支持，并可使用Access BryanF技术面板，确保网站正常运行。",
+        content:
+          "交付后我会继续陪伴你一个月，并为你开通 Access BryanF，这是你的在线客户空间：你可以在那里查看项目日历，并私密保存网站的各项登录信息。",
       },
     ],
   },
@@ -99,6 +100,7 @@ const zh: Dictionary = {
     ctaSecondary: "一起合作",
     filtersLabel: "按类型筛选工具",
     filters: { all: "全部", front: "前端", back: "后端", tools: "工具" },
+    paymentGateway: "支付网关",
     countLabel: "我每天使用的工具",
   },
   projects: {
@@ -157,6 +159,7 @@ const zh: Dictionary = {
       problem: "问题",
       decision: "决策",
       result: "结果",
+      metric: "数据看点",
     },
     cases: {
       "koi-arquitectura-vercel-app": {
@@ -166,6 +169,8 @@ const zh: Dictionary = {
           "以倾听、设计、施工和后续陪伴组织叙事，并用实际项目作为依据。",
         result:
           "网站清楚说明流程与空间改造的价值，并在同一路径中提供直接联系入口。",
+        metric:
+          "把倾听、设计、施工和后续陪伴 4 个阶段整合成一条路径，最后直接联系。",
       },
       "element-experiences-com": {
         problem:
@@ -174,6 +179,8 @@ const zh: Dictionary = {
           "按体验类型划分内容，并通过日期、难度等级以及明确的预订和询价入口支撑选择。",
         result:
           "访客可以识别适合自己的体验，并进入正确的下一步。",
+        metric:
+          "区分 3 条产品线（开放路线、私人体验和企业服务），每条都有自己的预约或询价方式。",
       },
       "efficientplasticolors-com": {
         problem:
@@ -182,6 +189,8 @@ const zh: Dictionary = {
           "用Pantone®匹配、产品分类和直接询价，把颜色转化为互动工具。",
         result:
           "访客能在同一流程中探索色彩和产品，并通过WhatsApp提交需求。",
+        metric:
+          "从技术目录变成同一流程中的 3 个工具：Pantone® 搜索、按系列分类的目录和 WhatsApp 询价。",
       },
       "nkmohcafe-com": {
         problem:
@@ -190,6 +199,8 @@ const zh: Dictionary = {
           "把产地叙事、服务类型和产品信息与清晰的询价入口结合起来。",
         result:
           "网站区分精品咖啡、商用咖啡与定制研磨，并引导访客进入下单流程。",
+        metric:
+          "区分 3 种咖啡方向（精品、商用和研磨），每种都有通往订单的独立路径。",
       },
     },
   },
@@ -332,6 +343,39 @@ const zh: Dictionary = {
     modeFullLabel: "全款支付",
     modeAdvanceLabel: "50%定金",
     viewSummary: "查看摘要并付款",
+    payPrimaryAdvance: (amount: string) => `支付定金 ${amount}`,
+    payPrimaryFull: (amount: string) => `支付 ${amount}`,
+    payPrimaryNote: "使用信用卡或借记卡，通过 Stripe",
+    payAltPrefix: "或使用",
+    payAltMercadoPago: "Mercado Pago",
+    payAltTransfer: "银行转账",
+    payAltOr: "或",
+    todayAdvance: (now: string, rest: string) => `今天支付 ${now}。剩余的 ${rest} 在我交付项目、你确认通过后再支付。`,
+    todayFull: (now: string) => `今天支付 ${now}，之后没有待付款项。`,
+    transferAlt: "如果你愿意，可以用银行卡或 Mercado Pago 支付，今天就能开始。",
+    transferAltCard: "用银行卡支付",
+    checkoutOpen: (label: string) => `你的 ${label} 支付页面已在另一个标签页打开。`,
+    checkoutDone: "你已经完成支付了吗？",
+    verifyPayment: "核实付款",
+    retryPayment: "重新尝试",
+    checkingPayment: "正在核实你的付款…",
+    paymentConfirmed: "好了！你的付款已确认。我带你进入下一步…",
+    paymentPending: "你的付款正在处理中，确认可能需要几分钟，请稍后再核实一次。",
+    paymentNotFound: "我还没有看到你的付款。如果已经支付，请等几分钟再核实；如果没有，请重新尝试。",
+    paymentFailed: "付款未完成。你可以重新尝试，或选择其他方式。",
+    verifyError: "现在无法核实你的付款。如果已经支付，请通过 WhatsApp 联系我，我来确认。",
+    popupBlocked: "浏览器拦截了支付标签页，请从这里打开：",
+    openPayment: "打开支付页面",
+    dismissNotice: "关闭提示",
+    emailLabel: "你的邮箱",
+    emailPlaceholder: "you@email.com",
+    emailSend: "发送",
+    emailSending: "发送中…",
+    emailSent: (email: string) => `已发送到 ${email}。如果几分钟后还没收到，请查看垃圾邮件文件夹。`,
+    emailInvalid: "请检查邮箱地址，好像少了点什么。",
+    emailFailed: "现在发不出去。我通过 WhatsApp 发给你：",
+    emailWhatsapp: "通过 WhatsApp 接收",
+    whatsappQuoteIntro: "你好，我想收到这份报价：",
     none: "无",
   },
   faq: {
@@ -365,7 +409,8 @@ const zh: Dictionary = {
       },
       {
         title: "合作内容包括哪些？",
-        content: "一年免费域名和主机、无限邮箱账户（每个1GB）、完全定制的设计，以及最终成果满意保证。",
+        content:
+          "一年免费域名和主机、不限数量的邮箱（每个 1 GB），以及为你的品牌从零打造的设计。我保证网站按约定完整交付并正常运行，在你确认通过之前会做必要的调整。保修不包括他人修改代码、第三方服务器宕机或培训后错误使用后台造成的问题。",
       },
     ],
     notFound: "没有找到您想要的答案？联系我们，一起聊聊。",
@@ -373,7 +418,7 @@ const zh: Dictionary = {
     bubble: "有疑问？",
   },
   closingCta: {
-    title: "准备好让您的品牌展现应有的价值了吗？",
+    title: "开始做你的网站吧？",
     subtitle: "定制您的网站，选择支付方式（信用卡、Mercado Pago或银行转账），我们即刻开始。项目起价3,500墨西哥比索。",
     ctaPrimary: "定制网站",
     ctaSecondary: "直接WhatsApp联系",
@@ -386,8 +431,8 @@ const zh: Dictionary = {
     photoAlt: "Bryan在工作台前进行设计与开发",
     inspirationLabel: "我带入工作中的视角",
     inspiration:
-      "高性能汽车（我最喜欢的是2016款本田思域Type R）、一次就把事情做对的匠心，以及结构良好的网络逻辑都给我灵感。我不会把它们当作装饰贴上去，而是把它们转化为精准、节奏与连接。",
-    inspirationAccent: "精准、节奏与连接",
+      "我喜欢做工扎实的汽车和搭建得当的网络，这也体现在我的工作里。举个例子：在 Efficient Plasticolors 的网站上，我把一份技术色卡目录变成了 Pantone® 搜索工具，客户不用离开页面就能找到自己的颜色，并通过 WhatsApp 询价。我在每个项目里在意的细节就是：让每一部分都能连到下一部分。",
+    inspirationAccent: "让每一部分都能连到下一部分",
     chips: ["设计 + 代码", "直接沟通", "有目的的性能"],
     principlesLabel: "我的工作方式 · 精准、节奏与连接",
     principles: [
@@ -535,8 +580,9 @@ const zh: Dictionary = {
     close: "关闭",
     send: "发送",
     open: "打开与Lumina的对话",
-    teaser: "想要打造您的网站吗？问我价格、交付时间，或从哪里开始 ✨",
-    teaserShort: "网站有疑问？问我吧 ✨",
+    teaser: "在考虑做网站吗？问我价格、周期或者从哪里开始。",
+    teaserShort: "网站有疑问？问我吧。",
+    quoteReady: "你的报价已经准备好了。要继续聊吗？",
     typing: "正在输入…",
     retry: "重试",
     actions: {

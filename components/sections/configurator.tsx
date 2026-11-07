@@ -18,7 +18,7 @@ import {
   ShieldCheck,
   Sparkle,
   Store,
-  TicketPercent,
+  X,
   Wrench,
   type LucideIcon,
 } from "lucide-react";
@@ -158,6 +158,26 @@ function formatMXN(value: number) {
 
 const QUOTE_KEY = "bryanf_quote_v1";
 
+const EMAIL_RE = /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']{2,}$/;
+
+type Provider = "stripe" | "mercadopago";
+const PROVIDERS: Record<Provider, { endpoint: string; label: string }> = {
+  stripe: { endpoint: "/api/stripe-checkout", label: "Stripe" },
+  mercadopago: { endpoint: "/api/mercadopago", label: "Mercado Pago" },
+};
+
+/** Pago abierto en otra pestaña y lo que sabemos de él. */
+interface Checkout {
+  provider: Provider;
+  label: string;
+  url: string;
+  /** Sesión de Stripe o referencia externa de Mercado Pago (para verificar). */
+  ref: string;
+  amount: number;
+  currency: Currency;
+  phase: "open" | "closed" | "blocked" | "checking" | "paid" | "pending" | "not_found" | "failed" | "error";
+}
+
 export function Configurator({
   hideHeading = false,
   chapter = 7,
@@ -173,9 +193,15 @@ export function Configurator({
   const [mode, setMode] = useState<"liquidacion" | "anticipo">("liquidacion");
   const [currency, setCurrency] = useState<Currency>("MXN");
   const [restored, setRestored] = useState(false);
-  const [coupon, setCoupon] = useState("");
-  const [couponMsg, setCouponMsg] = useState("");
   const [loading, setLoading] = useState<string | null>(null);
+  // Pago abierto en otra pestaña: su estado y la referencia para verificarlo.
+  const [checkout, setCheckout] = useState<Checkout | null>(null);
+  const paymentWindowRef = useRef<Window | null>(null);
+  // "Enviar cotización por correo": formulario en línea.
+  const [emailOpen, setEmailOpen] = useState(false);
+  const [emailValue, setEmailValue] = useState("");
+  const [emailState, setEmailState] = useState<"idle" | "sending" | "sent" | "invalid" | "failed">("idle");
+  const [emailSentTo, setEmailSentTo] = useState("");
   const [status, setStatus] = useState("");
   const [transfer, setTransfer] = useState(false);
   const [copied, setCopied] = useState("");
@@ -353,17 +379,10 @@ export function Configurator({
       .map((i) => i.source)
       .join(", ") || t.configurator.none;
 
-  function applyCoupon() {
-    // No hay cupones activos por defecto (igual que el sitio actual).
-    if (!coupon.trim()) {
-      setCouponMsg("");
-      return;
-    }
-    setCouponMsg(t.configurator.couponNoneActive);
-  }
-
-  async function pay(endpoint: string, label: string) {
+  async function pay(provider: Provider) {
+    const { endpoint, label } = PROVIDERS[provider];
     setLoading(label);
+    setCheckout(null);
     setStatus(t.configurator.opening(label));
     try {
       const res = await fetch(endpoint, {
@@ -384,7 +403,7 @@ export function Configurator({
           metadata: {
             flow: "fast-track",
             modules: moduleList,
-            coupon: coupon.trim() || "none",
+            coupon: "none",
             currency,
           },
         }),
@@ -401,8 +420,27 @@ export function Configurator({
           value: payableNowMxn,
           currency,
         });
-        window.open(url, "_blank", "noopener,noreferrer");
-        setStatus(t.configurator.openedInTab(label));
+        // Se conserva la referencia a la pestaña (sin `noopener`, que la
+        // devolvía nula) para saber cuándo se cierra; `opener` se corta a mano.
+        const win = window.open(url, "_blank");
+        if (win) {
+          try {
+            win.opener = null;
+          } catch {
+            /* ventana ya en otro origen */
+          }
+        }
+        paymentWindowRef.current = win;
+        setStatus("");
+        setCheckout({
+          provider,
+          label,
+          url,
+          ref: String(data.sessionId || data.externalReference || ""),
+          amount: Number(data.amount) || payableNow,
+          currency: (data.currency as Currency) || currency,
+          phase: win ? "open" : "blocked",
+        });
       } else {
         setStatus(t.configurator.noPaymentLink);
       }
@@ -410,6 +448,99 @@ export function Configurator({
       setStatus(t.configurator.connectionError);
     } finally {
       setLoading(null);
+    }
+  }
+
+  // Cuando la pestaña de pago se cierra, el aviso "abierto en otra pestaña"
+  // cambia a "¿Ya terminaste tu pago?" con Verificar / Volver a intentarlo.
+  useEffect(() => {
+    if (checkout?.phase !== "open") return;
+    const id = window.setInterval(() => {
+      if (paymentWindowRef.current?.closed) {
+        setCheckout((c) => (c && c.phase === "open" ? { ...c, phase: "closed" } : c));
+      }
+    }, 800);
+    return () => window.clearInterval(id);
+  }, [checkout?.phase]);
+
+  async function verifyPayment() {
+    if (!checkout) return;
+    const current = checkout;
+    if (!current.ref) {
+      setCheckout({ ...current, phase: "error" });
+      return;
+    }
+    setCheckout({ ...current, phase: "checking" });
+    try {
+      const res = await fetch("/api/payment-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ provider: current.provider, ref: current.ref }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        state?: "paid" | "pending" | "failed" | "not_found";
+        amount?: number;
+        currency?: string;
+        paymentId?: string;
+      };
+      if (!res.ok || !data.state) {
+        setCheckout({ ...current, phase: "error" });
+        return;
+      }
+      setCheckout({ ...current, phase: data.state });
+      if (data.state === "paid") {
+        // El mismo destino que usa la pasarela al terminar: /gracias registra
+        // la compra y abre el brief.
+        const params = new URLSearchParams({
+          status: "success",
+          provider: current.provider,
+          value: String(data.amount ?? current.amount),
+          currency: (data.currency || current.currency).toUpperCase(),
+        });
+        if (current.provider === "stripe") params.set("session_id", current.ref);
+        else {
+          params.set("external_reference", current.ref);
+          if (data.paymentId) params.set("payment_id", data.paymentId);
+        }
+        window.setTimeout(() => window.location.assign(`/gracias?${params.toString()}`), 1200);
+      }
+    } catch {
+      setCheckout({ ...current, phase: "error" });
+    }
+  }
+
+  async function sendQuoteEmail() {
+    const email = emailValue.trim();
+    if (!EMAIL_RE.test(email)) {
+      setEmailState("invalid");
+      return;
+    }
+    setEmailState("sending");
+    try {
+      const res = await fetch("/api/quote-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          currency,
+          modalidad: mode,
+          selection: {
+            planId,
+            moduleIds: MODULES.filter((m) => mods[m.id]).map((m) => m.id),
+            sections,
+          },
+        }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+      if (res.ok && data.ok) {
+        setEmailSentTo(email);
+        setEmailState("sent");
+        trackEvent("generate_lead", { method: "quote_email", location: "precios" });
+      } else {
+        setEmailState(data.error === "invalid_email" ? "invalid" : "failed");
+      }
+    } catch {
+      setEmailState("failed");
     }
   }
 
@@ -423,18 +554,18 @@ export function Configurator({
     }
   }
 
-  // Enviar cotización por correo: abre el cliente de correo del usuario con el
-  // resumen ya redactado (sin backend, funciona siempre).
-  function emailQuote() {
-    const lines = items.map((it) => `• ${it.source}: ${display(it.price)}`).join("\n");
-    const body = `${t.configurator.summary}:\n${lines}\n\n${t.configurator.totalProject}: ${formatMoney(
-      projectTotal,
-      currency
-    )}\n${t.configurator.payNow}: ${formatMoney(payableNow, currency)}`;
-    window.location.href = `mailto:bryanf@bryanfdesign.com?subject=${encodeURIComponent(
-      t.configurator.emailQuoteSubject
-    )}&body=${encodeURIComponent(body)}`;
-  }
+  // Respaldo si el correo no sale: la misma cotización por WhatsApp.
+  const quoteWhatsapp = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(
+    [
+      t.configurator.whatsappQuoteIntro,
+      "",
+      ...items.map((it) => `• ${it.source}: ${display(it.price)}`),
+      "",
+      `${t.configurator.totalProject}: ${formatMoney(projectTotal, currency)}`,
+      `${t.configurator.payNow}: ${formatMoney(payableNow, currency)}`,
+    ].join("\n")
+  )}`;
+  const remaining = Math.max(0, projectTotal - payableNow);
 
   // La transferencia siempre es a cuenta mexicana: montos en MXN.
   const transferMsg = encodeURIComponent(
@@ -690,7 +821,7 @@ export function Configurator({
               </div>
             </fieldset>
 
-            <div className="mt-5 grid gap-5 sm:ml-14 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-4">
+            <div className="mt-5 grid gap-5 sm:ml-14 sm:gap-4">
               <div>
                 <p className="mb-2 px-1 text-xs font-semibold text-muted-foreground">
                   {t.configurator.currencyLabel}
@@ -718,49 +849,11 @@ export function Configurator({
                   ))}
                 </div>
               </div>
-              <div className="min-w-0">
-                <label
-                  htmlFor="configurator-coupon"
-                  className="mb-2 block px-1 text-xs font-semibold text-muted-foreground"
-                >
-                  {t.configurator.couponLabel}
-                </label>
-                <div className="flex items-center gap-1 rounded-full bg-mint p-1 pl-4 ring-1 ring-inset ring-ink/[0.06] focus-within:ring-2 focus-within:ring-ink">
-                  <TicketPercent aria-hidden className="h-5 w-5 shrink-0 text-ink/45" />
-                  <input
-                    id="configurator-coupon"
-                    name="coupon"
-                    value={coupon}
-                    onChange={(e) => setCoupon(e.target.value)}
-                    placeholder={t.configurator.couponPlaceholder}
-                    aria-describedby={couponMsg ? "configurator-coupon-status" : undefined}
-                    autoComplete="off"
-                    className="h-12 min-w-0 flex-1 bg-transparent px-2 text-[0.9375rem] font-medium text-ink outline-none placeholder:text-ink/60 focus-visible:outline-none"
-                  />
-                  <Button type="button" variant="ink" onClick={applyCoupon} className="h-12 shrink-0 px-5">
-                    {t.configurator.apply}
-                  </Button>
-                </div>
-              </div>
-              {(currency === "USD" || couponMsg) && (
-                <div className="flex flex-col gap-2 sm:col-span-2">
-                  {currency === "USD" && (
-                    <p className="flex items-start gap-2 px-1 text-[0.9375rem] leading-snug text-muted-foreground sm:text-sm">
-                      <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-lime-deep" />
-                      {t.configurator.currencyNote(String(USD_MXN_RATE))}
-                    </p>
-                  )}
-                  {couponMsg && (
-                    <p
-                      id="configurator-coupon-status"
-                      role="status"
-                      className="flex items-start gap-2 px-1 text-[0.9375rem] leading-snug text-muted-foreground sm:text-sm"
-                    >
-                      <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-signal" />
-                      {couponMsg}
-                    </p>
-                  )}
-                </div>
+              {currency === "USD" && (
+                <p className="flex items-start gap-2 px-1 text-[0.9375rem] leading-snug text-muted-foreground sm:text-sm">
+                  <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-lime-deep" />
+                  {t.configurator.currencyNote(String(USD_MXN_RATE))}
+                </p>
               )}
             </div>
           </Step>
@@ -777,6 +870,7 @@ export function Configurator({
       >
         <div
           ref={summaryRef}
+          id="cotizador-resumen"
           className="scroll-mt-[calc(var(--header-h)+var(--gutter))] xl:sticky xl:top-[calc(var(--header-h)+var(--gutter))]"
         >
           <div className="panel panel-ink relative grid gap-5 overflow-hidden p-4 pt-5 sm:p-7 md:grid-cols-2 md:gap-x-7 lg:gap-x-10 lg:p-9 xl:grid-cols-1 xl:p-7">
@@ -877,86 +971,67 @@ export function Configurator({
                     {formatMoney(projectTotal, currency)}
                   </span>
                 </div>
+                {/* Qué pasa con el resto: cuándo se paga y qué lo dispara. */}
+                <p className="relative mt-3 text-pretty text-sm leading-snug text-white/80">
+                  {mode === "anticipo"
+                    ? t.configurator.todayAdvance(formatMoney(payableNow, currency), formatMoney(remaining, currency))
+                    : t.configurator.todayFull(formatMoney(payableNow, currency))}
+                </p>
               </div>
             </div>
 
             <div className="relative flex min-w-0 flex-col gap-5">
-              {/* Botones de pago. */}
-              <div className="relative flex flex-col gap-2.5">
+              {/* Un solo botón principal (tarjeta, por Stripe) con el monto de
+                  hoy; las otras formas de pago, como alternativas en texto. */}
+              <div className="relative flex flex-col gap-2">
                 <Button
                   size="lg"
-                  onClick={() => pay("/api/stripe-checkout", "Stripe")}
+                  onClick={() => pay("stripe")}
                   disabled={!!loading || projectTotal <= 0}
-                  className="w-full justify-between whitespace-normal pl-2 pr-2.5 text-left leading-tight"
+                  className="h-auto min-h-16 w-full justify-between whitespace-normal py-2 pl-2 pr-2.5 text-left leading-tight"
                 >
                   <span className="flex items-center gap-3">
-                    <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white">
+                    <span className="grid size-11 shrink-0 place-items-center rounded-full bg-white">
                       {loading === "Stripe" ? (
                         <Loader2 className="h-4 w-4 animate-spin text-ink" />
                       ) : (
-                        <SiStripe
-                          className="h-4 w-4"
-                          style={{ color: STRIPE_BRAND }}
-                          aria-hidden
-                        />
+                        <SiStripe className="h-4 w-4" style={{ color: STRIPE_BRAND }} aria-hidden />
                       )}
                     </span>
-                    {t.configurator.payStripe}
+                    <span className="flex flex-col">
+                      <span className="text-[1.0625rem] font-bold tabular-nums">
+                        {mode === "anticipo"
+                          ? t.configurator.payPrimaryAdvance(formatMoney(payableNow, currency))
+                          : t.configurator.payPrimaryFull(formatMoney(payableNow, currency))}
+                      </span>
+                      <span className="mt-0.5 text-xs font-medium opacity-75">{t.configurator.payPrimaryNote}</span>
+                    </span>
                   </span>
                   <ButtonArrow tone="ink" className="mr-0 ml-2" />
                 </Button>
-                <Button
-                  size="lg"
-                  variant="white"
-                  onClick={() => pay("/api/mercadopago", "Mercado Pago")}
-                  disabled={!!loading || projectTotal <= 0}
-                  className="w-full justify-between whitespace-normal pl-2 pr-2.5 text-left leading-tight"
-                >
-                  <span className="flex items-center gap-3">
-                    <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#00B1EA]/10">
-                      {loading === "Mercado Pago" ? (
-                        <Loader2 className="h-4 w-4 animate-spin text-ink" />
-                      ) : (
-                        <SiMercadopago
-                          className="h-5 w-5"
-                          style={{ color: MERCADOPAGO_BRAND }}
-                          aria-hidden
-                        />
-                      )}
-                    </span>
-                    {t.configurator.payMercadoPago}
-                  </span>
-                  <ButtonArrow tone="ink" className="mr-0 ml-2" />
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={() => setTransfer((prev) => !prev)}
-                  aria-expanded={transfer}
-                  aria-controls="bank-transfer-details"
-                  className="w-full justify-start gap-3 whitespace-normal border-white/20 pl-2 text-left leading-tight text-white hover:border-white/50 hover:bg-white/[0.06]"
-                >
-                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white/10 text-lime">
-                    <Building2 className="h-4 w-4" />
-                  </span>
-                  {t.configurator.payTransfer}
-                  <Plus
-                    aria-hidden
-                    className={cn(
-                      "ml-auto mr-2 h-4 w-4 transition-transform duration-300",
-                      transfer && "rotate-45"
-                    )}
-                  />
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={emailQuote}
-                  disabled={projectTotal <= 0}
-                  className="w-full text-white/80 hover:bg-white/[0.06] hover:text-white"
-                >
-                  <Mail className="h-4 w-4" />
-                  {t.configurator.emailQuote}
-                </Button>
+
+                <p className="flex flex-wrap items-center justify-center gap-x-1 text-sm text-white/70">
+                  <span>{t.configurator.payAltPrefix}</span>
+                  <button
+                    type="button"
+                    onClick={() => pay("mercadopago")}
+                    disabled={!!loading || projectTotal <= 0}
+                    className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-1.5 font-semibold text-white underline decoration-white/40 underline-offset-4 transition-colors hover:text-lime hover:decoration-lime disabled:opacity-50"
+                  >
+                    {loading === "Mercado Pago" && <Loader2 aria-hidden className="h-3.5 w-3.5 animate-spin" />}
+                    {t.configurator.payAltMercadoPago}
+                  </button>
+                  <span>{t.configurator.payAltOr}</span>
+                  <button
+                    type="button"
+                    onClick={() => setTransfer((prev) => !prev)}
+                    aria-expanded={transfer}
+                    aria-controls="bank-transfer-details"
+                    className="inline-flex min-h-11 items-center rounded-full px-1.5 font-semibold text-white underline decoration-white/40 underline-offset-4 transition-colors hover:text-lime hover:decoration-lime"
+                  >
+                    {t.configurator.payAltTransfer}
+                  </button>
+                </p>
               </div>
 
               {status && (
@@ -967,6 +1042,77 @@ export function Configurator({
                   <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-lime" />
                   {status}
                 </p>
+              )}
+
+              {/* El pago abierto en otra pestaña: se puede verificar, reintentar
+                  o descartar, y cambia solo cuando esa pestaña se cierra. */}
+              {checkout && (
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="relative flex flex-col gap-3 rounded-inner bg-white/[0.07] p-4 pr-12 text-sm leading-snug text-white/85 ring-1 ring-inset ring-white/10"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setCheckout(null)}
+                    aria-label={t.configurator.dismissNotice}
+                    className="absolute right-1 top-1 grid size-11 place-items-center rounded-full text-white/60 transition-colors hover:text-white"
+                  >
+                    <X aria-hidden className="h-4 w-4" />
+                  </button>
+                  <p className="flex items-start gap-2.5">
+                    {checkout.phase === "checking" ? (
+                      <Loader2 aria-hidden className="mt-0.5 h-4 w-4 shrink-0 animate-spin text-lime" />
+                    ) : (
+                      <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-lime" />
+                    )}
+                    <span>
+                      {checkout.phase === "open" && (
+                        <>
+                          {t.configurator.checkoutOpen(checkout.label)} {t.configurator.checkoutDone}
+                        </>
+                      )}
+                      {checkout.phase === "closed" && t.configurator.checkoutDone}
+                      {checkout.phase === "blocked" && t.configurator.popupBlocked}
+                      {checkout.phase === "checking" && t.configurator.checkingPayment}
+                      {checkout.phase === "paid" && t.configurator.paymentConfirmed}
+                      {checkout.phase === "pending" && t.configurator.paymentPending}
+                      {checkout.phase === "not_found" && t.configurator.paymentNotFound}
+                      {checkout.phase === "failed" && t.configurator.paymentFailed}
+                      {checkout.phase === "error" && t.configurator.verifyError}
+                    </span>
+                  </p>
+                  {checkout.phase === "blocked" ? (
+                    <Button asChild size="sm" className="self-start">
+                      <a href={checkout.url} target="_blank" rel="noopener noreferrer">
+                        {t.configurator.openPayment}
+                      </a>
+                    </Button>
+                  ) : checkout.phase !== "paid" && checkout.phase !== "checking" ? (
+                    <div className="flex flex-wrap gap-2">
+                      <Button size="sm" onClick={verifyPayment} className="bg-lime text-ink">
+                        {t.configurator.verifyPayment}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => pay(checkout.provider)}
+                        disabled={!!loading}
+                        className="border-white/25 text-white hover:border-white/60"
+                      >
+                        {t.configurator.retryPayment}
+                      </Button>
+                      {checkout.phase === "error" && (
+                        <Button asChild size="sm" variant="ghost" className="text-white/85 hover:text-white">
+                          <a href={`https://wa.me/${WA_PHONE}`} target="_blank" rel="noopener noreferrer">
+                            <FaWhatsapp aria-hidden className="h-4 w-4" />
+                            WhatsApp
+                          </a>
+                        </Button>
+                      )}
+                    </div>
+                  ) : null}
+                </div>
               )}
 
               {/* Datos para transferencia. */}
@@ -1031,8 +1177,113 @@ export function Configurator({
                       </a>
                     </Button>
                   </div>
+                  {/* Quien ve una CLABE puede preferir arrancar hoy con tarjeta. */}
+                  <div className="mt-4 flex flex-col gap-2.5 border-t border-dashed border-white/15 pt-4">
+                    <p className="text-pretty text-sm leading-snug text-white/80">{t.configurator.transferAlt}</p>
+                    <div className="flex flex-wrap gap-2">
+                      <Button size="sm" onClick={() => pay("stripe")} disabled={!!loading} className="bg-lime text-ink">
+                        <SiStripe aria-hidden className="h-3.5 w-3.5" />
+                        {t.configurator.transferAltCard}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => pay("mercadopago")}
+                        disabled={!!loading}
+                        className="border-white/25 text-white hover:border-white/60"
+                      >
+                        <SiMercadopago aria-hidden className="h-4 w-4" />
+                        {t.configurator.payAltMercadoPago}
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               )}
+
+              {/* Enviar la cotización por correo: pide el correo y confirma. */}
+              <div className="relative flex flex-col gap-2">
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setEmailOpen((v) => !v);
+                    if (emailState !== "sent") setEmailState("idle");
+                  }}
+                  aria-expanded={emailOpen}
+                  aria-controls="quote-email-form"
+                  disabled={projectTotal <= 0}
+                  className="w-full text-white/80 hover:bg-white/[0.06] hover:text-white"
+                >
+                  <Mail className="h-4 w-4" />
+                  {t.configurator.emailQuote}
+                </Button>
+                {emailOpen && (
+                  <form
+                    id="quote-email-form"
+                    noValidate
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      sendQuoteEmail();
+                    }}
+                    className="flex flex-col gap-2 rounded-inner bg-white/[0.06] p-3 ring-1 ring-inset ring-white/10"
+                  >
+                    {emailState === "sent" ? (
+                      <p role="status" className="flex items-start gap-2.5 px-1 py-1 text-sm leading-snug text-white">
+                        <Check aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-lime" />
+                        {t.configurator.emailSent(emailSentTo)}
+                      </p>
+                    ) : (
+                      <>
+                        <label htmlFor="quote-email" className="px-1 text-xs font-semibold text-white/65">
+                          {t.configurator.emailLabel}
+                        </label>
+                        <div className="flex items-center gap-1 rounded-full bg-white p-1 pl-4">
+                          <input
+                            id="quote-email"
+                            type="email"
+                            inputMode="email"
+                            autoComplete="email"
+                            value={emailValue}
+                            onChange={(e) => {
+                              setEmailValue(e.target.value);
+                              if (emailState === "invalid") setEmailState("idle");
+                            }}
+                            placeholder={t.configurator.emailPlaceholder}
+                            aria-invalid={emailState === "invalid"}
+                            aria-describedby={emailState === "invalid" || emailState === "failed" ? "quote-email-status" : undefined}
+                            className="h-11 min-w-0 flex-1 bg-transparent text-base text-ink outline-none placeholder:text-ink/50 sm:text-[0.9375rem]"
+                          />
+                          <Button type="submit" size="sm" variant="ink" disabled={emailState === "sending"} className="h-11 shrink-0 px-4">
+                            {emailState === "sending" ? (
+                              <>
+                                <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
+                                {t.configurator.emailSending}
+                              </>
+                            ) : (
+                              t.configurator.emailSend
+                            )}
+                          </Button>
+                        </div>
+                        {emailState === "invalid" && (
+                          <p id="quote-email-status" role="alert" className="px-1 text-sm text-white/85">
+                            {t.configurator.emailInvalid}
+                          </p>
+                        )}
+                        {emailState === "failed" && (
+                          <div id="quote-email-status" role="alert" className="flex flex-col gap-2 px-1 text-sm text-white/85">
+                            <p>{t.configurator.emailFailed}</p>
+                            <Button asChild size="sm" className="self-start bg-lime text-ink">
+                              <a href={quoteWhatsapp} target="_blank" rel="noopener noreferrer">
+                                <FaWhatsapp aria-hidden className="h-4 w-4" />
+                                {t.configurator.emailWhatsapp}
+                              </a>
+                            </Button>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </form>
+                )}
+              </div>
 
               <p className="relative px-2 text-center text-xs leading-relaxed text-white/60">
                 <ShieldCheck aria-hidden className="-mt-0.5 mr-1.5 inline h-4 w-4 text-lime" />

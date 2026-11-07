@@ -121,6 +121,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       preferenceId: result.id,
+      // externalReference: el configurador lo usa para "Verificar pago".
+      externalReference,
       initPoint: result.init_point || result.sandbox_init_point || "",
       amount: chargedAmount,
       currency: chargedCurrency,
