@@ -91,3 +91,33 @@ export function useDecorative3dEnabled() {
 
   return desktopViewport && !reducedMotion;
 }
+
+let webglSupport: boolean | null = null;
+
+function detectWebgl() {
+  if (typeof document === "undefined") return false;
+  if (webglSupport !== null) return webglSupport;
+  try {
+    const canvas = document.createElement("canvas");
+    const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
+    webglSupport = !!gl;
+    // Libera el contexto de prueba: los navegadores móviles limitan cuántos
+    // contextos WebGL viven a la vez.
+    (gl as WebGLRenderingContext | null)?.getExtension("WEBGL_lose_context")?.loseContext();
+  } catch {
+    webglSupport = false;
+  }
+  return webglSupport;
+}
+
+const noopSubscribe = () => () => undefined;
+
+/**
+ * 3D interactivo (el globo de presencia): se monta en cualquier pantalla,
+ * teléfono incluido, siempre que el navegador tenga WebGL. Con movimiento
+ * reducido la escena no gira sola (useThreeStage pinta cuadros fijos) pero
+ * sigue respondiendo al arrastre, que es un gesto de la persona.
+ */
+export function useInteractive3dEnabled() {
+  return useSyncExternalStore(noopSubscribe, detectWebgl, () => false);
+}

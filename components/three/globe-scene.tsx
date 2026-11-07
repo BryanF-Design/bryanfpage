@@ -245,6 +245,12 @@ export function GlobeScene({ locations, arcs, className }: GlobeSceneProps) {
 
   useEffect(() => setReady(true), []);
 
+  // Con movimiento reducido no hay bucle: el primer cuadro fijo se pinta antes
+  // de que existan las etiquetas, así que se pide otro para colocarlas.
+  useEffect(() => {
+    if (ready) requestStageFrame(containerRef.current);
+  }, [ready, containerRef]);
+
   return (
     <div className={className}>
       <div ref={containerRef} className="absolute inset-0" role="img" aria-label={locations.map((l) => l.label).join(" · ")} />

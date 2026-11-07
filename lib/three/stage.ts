@@ -52,11 +52,19 @@ export function useThreeStage({ build, fov = 40, cameraZ = 5, maxDpr = 1.75 }: S
 
     let reduced = isReducedMotionRequested();
 
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true,
-      powerPreference: "high-performance",
-    });
+    // Sin contexto WebGL (perdido o bloqueado) la escena no se monta, en vez
+    // de tumbar la sección entera.
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+        powerPreference: "high-performance",
+      });
+    } catch (error) {
+      console.warn("WebGL no disponible:", error);
+      return;
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.domElement.style.display = "block";

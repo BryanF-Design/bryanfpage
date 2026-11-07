@@ -7,7 +7,7 @@ import { Globe2, Hand, Moon, Sparkle, Sun } from "lucide-react";
 import { SectionHeading } from "@/components/sections/section-heading";
 import { LazyMount } from "@/components/three/lazy-mount";
 import { useLanguage } from "@/lib/i18n/context";
-import { useDecorative3dEnabled } from "@/lib/motion-preference";
+import { useInteractive3dEnabled } from "@/lib/motion-preference";
 import { cn } from "@/lib/utils";
 
 // El globo (three.js) viaja en su propio chunk y solo se descarga/monta
@@ -132,7 +132,7 @@ interface StaticGlobeProps {
 }
 
 /**
- * Versión sin WebGL del globo (teléfono y movimiento reducido): planeta de
+ * Versión sin WebGL del globo (navegadores sin WebGL y HTML del servidor): planeta de
  * tinta con halo lima, retícula fina, continentes en puntos y arcos desde
  * México. Los países que quedan detrás del planeta no se marcan.
  */
@@ -277,7 +277,9 @@ function useLocalTimes() {
 
 export function WorldPresence({ chapter = 9 }: { chapter?: number } = {}) {
   const { t } = useLanguage();
-  const decorative3dEnabled = useDecorative3dEnabled();
+  // El globo 3D va en escritorio y en teléfono; el SVG fijo queda solo para
+  // navegadores sin WebGL (y para el HTML del servidor, antes de hidratar).
+  const decorative3dEnabled = useInteractive3dEnabled();
   const times = useLocalTimes();
   const globeClassName = "relative mx-auto aspect-square w-full max-w-[34rem]";
   const locations = [
