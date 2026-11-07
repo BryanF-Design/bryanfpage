@@ -249,13 +249,14 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                     </li>
                   ))}
                 </ul>
-                {/* Teléfono: la píldora cruza ambas columnas (200% + gap-x-4)
-                    y queda bajo las dos listas; desde sm vuelve a su ancho. */}
+                {/* Desde sm la píldora vive bajo la navegación. En teléfono se
+                    muestra la de abajo, que cruza ambas columnas debajo de las
+                    dos listas (Servicios es más larga que Navegación). */}
                 <Link
                   href={CLIENT_PORTAL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-2 inline-flex min-h-11 w-[calc(200%+1rem)] items-center justify-center gap-2 rounded-full border border-lime/40 px-4 text-sm font-semibold text-lime transition-colors hover:bg-lime hover:text-ink sm:mt-3 sm:w-auto sm:justify-start"
+                  className="mt-3 hidden min-h-11 w-auto items-center justify-start gap-2 rounded-full border border-lime/40 px-4 text-sm font-semibold text-lime transition-colors hover:bg-lime hover:text-ink sm:inline-flex"
                 >
                   <LogIn aria-hidden className="h-4 w-4" />
                   {t.footer.clientQuestion}
@@ -276,6 +277,18 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                   ))}
                 </ul>
               </nav>
+
+              {/* Teléfono: la píldora de clientes, a lo ancho y bajo las dos
+                  listas (-mt-4 deja 0.5rem sobre el gap-y-6 de la retícula). */}
+              <Link
+                href={CLIENT_PORTAL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="col-span-2 -mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-lime/40 px-4 text-sm font-semibold text-lime transition-colors hover:bg-lime hover:text-ink sm:hidden"
+              >
+                <LogIn aria-hidden className="h-4 w-4" />
+                {t.footer.clientQuestion}
+              </Link>
 
               {/* Legal y contacto */}
               <div className="col-span-2 min-w-0 lg:col-span-1">
