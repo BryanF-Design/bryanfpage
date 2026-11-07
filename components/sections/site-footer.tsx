@@ -174,7 +174,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
         <div aria-hidden className="mesh-glow-a opacity-60" />
         {/* El contenido mantiene el ancho de la página aunque el panel crezca. */}
         <div className="relative mx-auto flex w-full max-w-[1520px] flex-1 flex-col px-[calc(var(--gutter)+1.25rem)] pb-[calc(var(--gutter)+1rem)] pt-6 sm:px-[calc(var(--gutter)+2rem)] sm:pt-10 md:pb-[calc(var(--gutter)+1.25rem)] lg:px-[calc(var(--gutter)+3rem)] lg:pb-[calc(var(--gutter)+2rem)] lg:pt-14">
-          <div className="relative grid gap-7 sm:gap-10 xl:grid-cols-12 xl:gap-8">
+          <div data-fx="stagger" className="relative grid gap-7 sm:gap-10 xl:grid-cols-12 xl:gap-8">
             {/* Marca, frase, redes y reseña. */}
             <div className="flex flex-col items-start gap-5 sm:gap-6 lg:flex-row lg:items-end lg:justify-between xl:col-span-4 xl:flex-col xl:items-start xl:justify-start">
               <div className="flex flex-col items-start gap-4 sm:gap-6">
@@ -240,7 +240,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
               </a>
             </div>
 
-            <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:gap-x-5 sm:gap-y-9 lg:grid-cols-[1fr_1.1fr_1.3fr] lg:gap-8 xl:col-span-8">
+            <div data-fx="stagger" className="grid grid-cols-2 gap-x-4 gap-y-6 sm:gap-x-5 sm:gap-y-9 lg:grid-cols-[1fr_1.1fr_1.3fr] lg:gap-8 xl:col-span-8">
               {/* Navegación */}
               <nav aria-label={t.footer.navLabel} className="min-w-0">
                 <p className={headingClass}>{t.footer.navLabel}</p>

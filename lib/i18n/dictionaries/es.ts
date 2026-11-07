@@ -416,6 +416,7 @@ const es = {
     payAltMercadoPago: "Mercado Pago",
     payAltTransfer: "transferencia",
     payAltOr: "o",
+    payWith: "Pagar con",
     todayAdvance: (now: string, rest: string) => `Hoy pagas ${now}. Los ${rest} restantes los pagas cuando te entregue el proyecto y lo apruebes.`,
     todayFull: (now: string) => `Hoy pagas ${now} y no queda nada pendiente.`,
     transferAlt: "Si prefieres, paga con tarjeta o Mercado Pago y arranca hoy.",

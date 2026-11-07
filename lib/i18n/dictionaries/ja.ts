@@ -398,6 +398,7 @@ const ja: Dictionary = {
     payAltMercadoPago: "Mercado Pago",
     payAltTransfer: "銀行振込",
     payAltOr: "・",
+    payWith: "お支払い方法",
     todayAdvance: (now: string, rest: string) => `本日のお支払いは ${now} です。残りの ${rest} は、プロジェクトを納品して承認いただいた時点でお支払いください。`,
     todayFull: (now: string) => `本日 ${now} をお支払いいただき、残金はありません。`,
     transferAlt: "カードまたはMercado Pagoでお支払いいただければ、今日から始められます。",

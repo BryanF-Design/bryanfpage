@@ -58,7 +58,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.7,
     },
-    { url: `${SITE_URL}/privacidad`, changeFrequency: "yearly", priority: 0.3 },
-    { url: `${SITE_URL}/terminos`, changeFrequency: "yearly", priority: 0.3 },
+    // Legales (HTML estático servido en /privacidad y /terminos).
+    { url: `${SITE_URL}/privacidad`, lastModified: COPY_PASS, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${SITE_URL}/terminos`, lastModified: COPY_PASS, changeFrequency: "yearly", priority: 0.3 },
   ];
 }

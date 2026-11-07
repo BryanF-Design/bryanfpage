@@ -53,7 +53,7 @@ export function ContactoPage({ faqJsonLd }: { faqJsonLd: Record<string, unknown>
         title={t.pages.contacto.title}
         subtitle={t.pages.contacto.subtitle}
         aside={
-          <ul className="flex flex-col gap-2">
+          <ul data-fx="stagger" className="flex flex-col gap-2">
             {channels.map(({ Icon, label, value, href, external }, i) => (
               <li key={href}>
                 <a

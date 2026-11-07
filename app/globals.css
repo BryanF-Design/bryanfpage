@@ -903,6 +903,16 @@ html.fx-on [data-fx="pop"]:not([data-fx-done]) > * {
 html.fx-on [data-fx="panel"]:not([data-fx-in]) > * {
   transform: translate3d(0, 24px, 0) scale(0.985);
 }
+/* Listas que llegan en cascada: cada hijo sube un poco después del anterior. */
+html.fx-on [data-fx="stagger"]:not([data-fx-in]) > * {
+  transform: translate3d(0, 18px, 0);
+}
+html.fx-on [data-fx="stagger"]:not([data-fx-done]) > :nth-child(2) { transition-delay: calc(var(--fx-delay, 0ms) + 70ms); }
+html.fx-on [data-fx="stagger"]:not([data-fx-done]) > :nth-child(3) { transition-delay: calc(var(--fx-delay, 0ms) + 140ms); }
+html.fx-on [data-fx="stagger"]:not([data-fx-done]) > :nth-child(4) { transition-delay: calc(var(--fx-delay, 0ms) + 210ms); }
+html.fx-on [data-fx="stagger"]:not([data-fx-done]) > :nth-child(5) { transition-delay: calc(var(--fx-delay, 0ms) + 280ms); }
+html.fx-on [data-fx="stagger"]:not([data-fx-done]) > :nth-child(6) { transition-delay: calc(var(--fx-delay, 0ms) + 350ms); }
+html.fx-on [data-fx="stagger"]:not([data-fx-done]) > :nth-child(n + 7) { transition-delay: calc(var(--fx-delay, 0ms) + 420ms); }
 @media (max-width: 767px) {
   html.fx-on [data-fx="left"]:not([data-fx-in]) > *,
   html.fx-on [data-fx="right"]:not([data-fx-in]) > * {
@@ -1331,3 +1341,133 @@ html.lumina-fab-hidden .fab-slot-dock {
   }
 }
 
+
+/* ════════════════════════════════════════════════════════════════════════
+   PRELOADER Y TRANSICIÓN ENTRE PÁGINAS
+   El telón de entrada llega en el HTML y se retira solo con CSS (~1.2 s):
+   el logotipo oficial se revela de izquierda a derecha, una línea lima corre
+   debajo y el telón sube. No bloquea la carga: el contenido se pinta debajo
+   desde el primer momento y el telón nunca recibe clics.
+   ════════════════════════════════════════════════════════════════════════ */
+.site-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  background: hsl(var(--ink));
+  pointer-events: none;
+  animation: pl-out 0.6s cubic-bezier(0.7, 0, 0.2, 1) 0.8s forwards;
+}
+.site-preloader__inner {
+  display: flex;
+  width: min(15rem, 62vw);
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1.1rem;
+  animation: pl-lift 0.5s var(--ease-out) 0.8s forwards;
+}
+.site-preloader__logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  clip-path: inset(0 100% 0 0);
+  animation: pl-reveal 0.6s var(--ease-out) 0.05s forwards;
+}
+.site-preloader__bar {
+  display: block;
+  height: 3px;
+  border-radius: 999px;
+  background: hsl(var(--lime));
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: pl-bar 0.7s cubic-bezier(0.65, 0, 0.35, 1) 0.08s forwards;
+}
+@keyframes pl-reveal {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes pl-bar {
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes pl-lift {
+  to {
+    transform: translateY(-18px);
+    opacity: 0;
+  }
+}
+@keyframes pl-out {
+  to {
+    clip-path: inset(0 0 100% 0 round 0 0 2.5rem 2.5rem);
+    visibility: hidden;
+  }
+}
+html.pl-skip .site-preloader {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-preloader {
+    display: none;
+  }
+}
+.a11y-reduce-motion .site-preloader {
+  display: none;
+}
+@media print {
+  .site-preloader,
+  .page-curtain {
+    display: none !important;
+  }
+}
+
+/* Transición al cambiar de página (app/template.tsx): un telón de tinta con
+   la marca B sube y descubre la página nueva. Fijo y sin clics: no mueve el
+   contenido ni el header. */
+.page-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 290;
+  display: grid;
+  place-items: center;
+  background: hsl(var(--ink));
+  border-bottom: 4px solid hsl(var(--lime));
+  pointer-events: none;
+  animation: curtain-up 0.62s cubic-bezier(0.76, 0, 0.24, 1) 0.06s forwards;
+}
+.page-curtain__mark {
+  width: 46px;
+  height: auto;
+  animation: curtain-mark 0.4s var(--ease-out) forwards;
+}
+@keyframes curtain-up {
+  from {
+    transform: translate3d(0, 0, 0);
+    border-radius: 0;
+  }
+  to {
+    transform: translate3d(0, -104%, 0);
+    border-radius: 0 0 3rem 3rem;
+    visibility: hidden;
+  }
+}
+@keyframes curtain-mark {
+  from {
+    transform: scale(0.85);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1) translateY(-10px);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-curtain {
+    display: none;
+  }
+}
+.a11y-reduce-motion .page-curtain {
+  display: none;
+}

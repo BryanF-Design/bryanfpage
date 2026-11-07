@@ -286,6 +286,22 @@ const fxBootstrap = `
   })();
 `;
 
+// Preloader de entrada: solo la primera vista de la sesión. Corre en el
+// <head>, antes de pintar: si ya se vio (o hay movimiento reducido, o es el
+// CV, que trae su propia intro), el telón ni aparece. El telón vive en el HTML
+// y se retira solo con CSS, así que nunca bloquea aunque el JS tarde.
+const preloaderBootstrap = `
+  try {
+    var d = document.documentElement;
+    var seen = false;
+    try { seen = sessionStorage.getItem("bfd-preloaded") === "1"; sessionStorage.setItem("bfd-preloaded", "1"); } catch (_) {}
+    if (seen || location.pathname.indexOf("/cv") === 0 || d.classList.contains("a11y-reduce-motion") ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      d.classList.add("pl-skip");
+    }
+  } catch (_) {}
+`;
+
 export default function RootLayout({
   children,
 }: {
@@ -300,6 +316,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: a11yBootstrap }} />
         <script dangerouslySetInnerHTML={{ __html: fxBootstrap }} />
+        <script dangerouslySetInnerHTML={{ __html: preloaderBootstrap }} />
         {/* Google tag (gtag.js) */}
         <GoogleAnalytics />
         <MicrosoftClarity />
@@ -309,6 +326,21 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans">
+        {/* Telón de entrada con el logotipo oficial (blanco sobre tinta). */}
+        <div aria-hidden className="site-preloader">
+          <div className="site-preloader__inner">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/img/brand/logo-light.png"
+              alt=""
+              width={720}
+              height={253}
+              decoding="async"
+              className="site-preloader__logo"
+            />
+            <span className="site-preloader__bar" />
+          </div>
+        </div>
         <ClickTracking />
         <MotionPreferenceProvider>
           <LanguageProvider>

@@ -350,6 +350,7 @@ const zh: Dictionary = {
     payAltMercadoPago: "Mercado Pago",
     payAltTransfer: "银行转账",
     payAltOr: "或",
+    payWith: "支付方式",
     todayAdvance: (now: string, rest: string) => `今天支付 ${now}。剩余的 ${rest} 在我交付项目、你确认通过后再支付。`,
     todayFull: (now: string) => `今天支付 ${now}，之后没有待付款项。`,
     transferAlt: "如果你愿意，可以用银行卡或 Mercado Pago 支付，今天就能开始。",

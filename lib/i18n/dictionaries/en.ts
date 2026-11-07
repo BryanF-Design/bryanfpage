@@ -399,6 +399,7 @@ const en: Dictionary = {
     payAltMercadoPago: "Mercado Pago",
     payAltTransfer: "bank transfer",
     payAltOr: "or",
+    payWith: "Pay with",
     todayAdvance: (now: string, rest: string) => `You pay ${now} today. The remaining ${rest} is due when I deliver the project and you approve it.`,
     todayFull: (now: string) => `You pay ${now} today and nothing is left pending.`,
     transferAlt: "If you prefer, pay by card or Mercado Pago and we start today.",

@@ -24,7 +24,7 @@ export function HomeTeasers() {
     >
       {/* Bryan */}
       <div data-fx="up" className="min-w-0">
-        <article className="panel panel-forest relative flex h-full flex-col overflow-hidden sm:flex-row">
+        <article className="panel panel-forest relative flex h-full flex-col overflow-hidden sm:flex-row transition-[transform,box-shadow] duration-300 [transition-timing-function:var(--ease-out)] hover:-translate-y-1 hover:shadow-float motion-reduce:transition-none motion-reduce:hover:translate-y-0">
           <div className="relative z-[1] flex flex-1 flex-col items-start gap-4 p-5 sm:p-7 lg:p-8">
             <span className="eyebrow pl-3">
               <span aria-hidden className="size-2 rounded-full bg-lime" />
@@ -72,7 +72,7 @@ export function HomeTeasers() {
 
       {/* Lumina */}
       <div data-fx="up" className="min-w-0" style={{ "--fx-delay": "90ms" } as CSSProperties}>
-        <article className="panel panel-lime relative flex h-full flex-col overflow-hidden sm:flex-row">
+        <article className="panel panel-lime relative flex h-full flex-col overflow-hidden sm:flex-row transition-[transform,box-shadow] duration-300 [transition-timing-function:var(--ease-out)] hover:-translate-y-1 hover:shadow-float motion-reduce:transition-none motion-reduce:hover:translate-y-0">
           <div className="relative z-[1] flex flex-1 flex-col items-start gap-4 p-5 sm:p-7 lg:p-8">
             <span className="eyebrow bg-white/60 pl-3">
               <Sparkle aria-hidden className="h-3.5 w-3.5 fill-ink" />

@@ -29,7 +29,7 @@ import { SiStripe, SiMercadopago } from "react-icons/si";
 const STRIPE_BRAND = "#635BFF";
 const MERCADOPAGO_BRAND = "#00B1EA";
 
-import { Button, ButtonArrow } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/sections/section-heading";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
@@ -89,7 +89,7 @@ function StepHeader({ n, id, label }: { n: number; id?: string; label: string })
 /** Un paso del cobro: la insignia y un riel punteado que baja al siguiente. */
 function Step({ children, last = false }: { children: ReactNode; last?: boolean }) {
   return (
-    <div className="relative">
+    <div data-fx="up" className="relative">
       {!last && (
         <span
           aria-hidden
@@ -105,53 +105,110 @@ function Step({ children, last = false }: { children: ReactNode; last?: boolean 
 /**
  * Logos oficiales de cada forma de pago: el logotipo de Stripe (morado sobre
  * blanco), el de Mercado Pago (versión blanca sobre su azul) y el de BBVA
- * (azul sobre blanco). Cada uno va en su ficha para que se lea en el panel
- * oscuro sin alterar el archivo de la marca.
+ * (azul sobre blanco). Cada uno va en una ficha del MISMO tamaño para que las
+ * tres opciones se lean al mismo nivel sobre el panel oscuro, sin alterar el
+ * archivo de la marca.
  */
-function StripeLogo({ className }: { className?: string }) {
-  return (
-    <Image
-      src="/img/pagos/stripe.svg"
-      alt="Stripe"
-      width={512}
-      height={214}
-      unoptimized
-      className={cn("block h-[18px] w-auto", className)}
-    />
-  );
-}
+type PayProvider = "stripe" | "mercadopago" | "transfer";
 
-function MercadoPagoLogo({ className }: { className?: string }) {
+const PAY_LOGOS: Record<
+  PayProvider,
+  { src: string; alt: string; width: number; height: number; img: string; chip: string; chipStyle?: CSSProperties }
+> = {
+  stripe: {
+    src: "/img/pagos/stripe.svg",
+    alt: "Stripe",
+    width: 512,
+    height: 214,
+    img: "h-[22px]",
+    chip: "bg-white",
+  },
+  mercadopago: {
+    src: "/img/pagos/mercadopago-blanco.png",
+    alt: "Mercado Pago",
+    width: 789,
+    height: 200,
+    img: "h-[19px]",
+    chip: "",
+    chipStyle: { backgroundColor: MERCADOPAGO_BRAND },
+  },
+  transfer: {
+    src: "/img/BBVA_logo_2025.svg.png",
+    alt: "BBVA",
+    width: 960,
+    height: 288,
+    img: "h-[13px]",
+    chip: "bg-white",
+  },
+};
+
+function PayLogoChip({ provider, size = "md" }: { provider: PayProvider; size?: "sm" | "md" }) {
+  const logo = PAY_LOGOS[provider];
   return (
     <span
-      aria-hidden
-      className={cn("inline-flex h-6 shrink-0 items-center rounded-full px-2", className)}
-      style={{ backgroundColor: MERCADOPAGO_BRAND }}
+      className={cn(
+        "grid shrink-0 place-items-center rounded-full",
+        size === "md" ? "h-10 w-[6.5rem]" : "h-7 w-[4.75rem] [&>img]:scale-[0.72]",
+        logo.chip
+      )}
+      style={logo.chipStyle}
     >
       <Image
-        src="/img/pagos/mercadopago-blanco.png"
-        alt=""
-        width={789}
-        height={200}
+        src={logo.src}
+        alt={logo.alt}
+        width={logo.width}
+        height={logo.height}
         unoptimized
-        className="block h-3.5 w-auto"
+        className={cn("block w-auto", logo.img)}
       />
     </span>
   );
 }
 
-function BbvaLogo({ className }: { className?: string }) {
+interface PayOptionButtonProps {
+  provider: PayProvider;
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  loading?: boolean;
+  /** Texto solo para lector de pantalla (p. ej. "transferencia" junto a BBVA). */
+  srHint?: string;
+  size?: "sm" | "md";
+  "aria-expanded"?: boolean;
+  "aria-controls"?: string;
+}
+
+/** Las tres formas de pago comparten este botón: mismo tamaño, mismo estilo. */
+function PayOptionButton({
+  provider,
+  label,
+  onClick,
+  disabled,
+  loading,
+  srHint,
+  size = "md",
+  ...aria
+}: PayOptionButtonProps) {
   return (
-    <span className={cn("inline-flex h-6 shrink-0 items-center rounded-full bg-white px-2.5", className)}>
-      <Image
-        src="/img/BBVA_logo_2025.svg.png"
-        alt="BBVA"
-        width={960}
-        height={288}
-        unoptimized
-        className="block h-2.5 w-auto"
-      />
-    </span>
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      {...aria}
+      // El nombre se lee en orden: "Pagar con Stripe (con tarjeta…)".
+      aria-label={`${label} ${PAY_LOGOS[provider].alt}${srHint ? ` (${srHint})` : ""}`}
+      data-pay-option={provider}
+      className={cn(
+        "group/pay flex w-full items-center justify-between gap-3 rounded-full bg-white/[0.07] text-left font-semibold text-white ring-1 ring-inset ring-white/15 transition-[background-color,box-shadow,transform] duration-200 hover:bg-white/[0.12] hover:ring-lime/70 active:scale-[0.985] disabled:pointer-events-none disabled:opacity-50 aria-expanded:bg-white/[0.12] aria-expanded:ring-lime motion-reduce:transition-none motion-reduce:active:scale-100",
+        size === "md" ? "min-h-14 py-2 pl-5 pr-2 text-[0.9375rem]" : "min-h-11 py-1.5 pl-4 pr-1.5 text-sm"
+      )}
+    >
+      <span className="flex items-center gap-2">
+        {loading && <Loader2 aria-hidden className="h-4 w-4 animate-spin text-lime" />}
+        {label}
+      </span>
+      <PayLogoChip provider={provider} size={size} />
+    </button>
   );
 }
 
@@ -1036,62 +1093,33 @@ export function Configurator({
             </div>
 
             <div className="relative flex min-w-0 flex-col gap-5">
-              {/* Un solo botón principal (tarjeta, por Stripe) con el monto de
-                  hoy; las otras formas de pago, como alternativas en texto. */}
-              <div className="relative flex flex-col gap-2">
-                <Button
-                  size="lg"
+              {/* Las tres formas de pago, al mismo nivel: tres botones iguales
+                  ("Pagar con" + logo oficial), sin jerarquía entre ellas. El monto
+                  de hoy ya se lee arriba, en la tarjeta del total. */}
+              <div className="relative flex flex-col gap-2.5" role="group" aria-label={t.configurator.payNow}>
+                <PayOptionButton
+                  provider="stripe"
+                  label={t.configurator.payWith}
                   onClick={() => pay("stripe")}
                   disabled={!!loading || projectTotal <= 0}
-                  className="h-auto min-h-16 w-full justify-between whitespace-normal py-2 pl-2 pr-2.5 text-left leading-tight"
-                >
-                  <span className="flex items-center gap-3">
-                    <span className="grid h-11 min-w-[4.25rem] shrink-0 place-items-center rounded-full bg-white px-3">
-                      {loading === "Stripe" ? (
-                        <Loader2 className="h-4 w-4 animate-spin text-ink" />
-                      ) : (
-                        <StripeLogo />
-                      )}
-                    </span>
-                    <span className="flex flex-col">
-                      <span className="text-[1.0625rem] font-bold tabular-nums">
-                        {mode === "anticipo"
-                          ? t.configurator.payPrimaryAdvance(formatMoney(payableNow, currency))
-                          : t.configurator.payPrimaryFull(formatMoney(payableNow, currency))}
-                      </span>
-                      <span className="mt-0.5 text-xs font-medium opacity-75">{t.configurator.payPrimaryNote}</span>
-                    </span>
-                  </span>
-                  <ButtonArrow tone="ink" className="mr-0 ml-2" />
-                </Button>
-
-                <p className="flex flex-wrap items-center justify-center gap-x-1 text-sm text-white/70">
-                  <span>{t.configurator.payAltPrefix}</span>
-                  <button
-                    type="button"
-                    onClick={() => pay("mercadopago")}
-                    disabled={!!loading || projectTotal <= 0}
-                    className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-1.5 font-semibold text-white underline decoration-white/40 underline-offset-4 transition-colors hover:text-lime hover:decoration-lime disabled:opacity-50"
-                  >
-                    {loading === "Mercado Pago" ? (
-                      <Loader2 aria-hidden className="h-3.5 w-3.5 animate-spin" />
-                    ) : (
-                      <MercadoPagoLogo />
-                    )}
-                    {t.configurator.payAltMercadoPago}
-                  </button>
-                  <span>{t.configurator.payAltOr}</span>
-                  <button
-                    type="button"
-                    onClick={() => setTransfer((prev) => !prev)}
-                    aria-expanded={transfer}
-                    aria-controls="bank-transfer-details"
-                    className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-1.5 font-semibold text-white underline decoration-white/40 underline-offset-4 transition-colors hover:text-lime hover:decoration-lime"
-                  >
-                    <BbvaLogo />
-                    {t.configurator.payAltTransfer}
-                  </button>
-                </p>
+                  loading={loading === "Stripe"}
+                  srHint={t.configurator.payPrimaryNote}
+                />
+                <PayOptionButton
+                  provider="mercadopago"
+                  label={t.configurator.payWith}
+                  onClick={() => pay("mercadopago")}
+                  disabled={!!loading || projectTotal <= 0}
+                  loading={loading === "Mercado Pago"}
+                />
+                <PayOptionButton
+                  provider="transfer"
+                  label={t.configurator.payWith}
+                  onClick={() => setTransfer((prev) => !prev)}
+                  srHint={t.configurator.payAltTransfer}
+                  aria-expanded={transfer}
+                  aria-controls="bank-transfer-details"
+                />
               </div>
 
               {status && (
@@ -1240,23 +1268,24 @@ export function Configurator({
                   {/* Quien ve una CLABE puede preferir arrancar hoy con tarjeta. */}
                   <div className="mt-4 flex flex-col gap-2.5 border-t border-dashed border-white/15 pt-4">
                     <p className="text-pretty text-sm leading-snug text-white/80">{t.configurator.transferAlt}</p>
-                    <div className="flex flex-wrap gap-2">
-                      <Button size="sm" onClick={() => pay("stripe")} disabled={!!loading} className="bg-lime text-ink">
-                        <span className="inline-flex h-6 items-center rounded-full bg-white px-2">
-                          <StripeLogo className="h-3.5" />
-                        </span>
-                        {t.configurator.transferAltCard}
-                      </Button>
-                      <Button
+                    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
+                      <PayOptionButton
+                        provider="stripe"
                         size="sm"
-                        variant="outline"
+                        label={t.configurator.payWith}
+                        onClick={() => pay("stripe")}
+                        disabled={!!loading}
+                        loading={loading === "Stripe"}
+                        srHint={t.configurator.payPrimaryNote}
+                      />
+                      <PayOptionButton
+                        provider="mercadopago"
+                        size="sm"
+                        label={t.configurator.payWith}
                         onClick={() => pay("mercadopago")}
                         disabled={!!loading}
-                        className="border-white/25 text-white hover:border-white/60"
-                      >
-                        <MercadoPagoLogo />
-                        {t.configurator.payAltMercadoPago}
-                      </Button>
+                        loading={loading === "Mercado Pago"}
+                      />
                     </div>
                   </div>
                 </div>

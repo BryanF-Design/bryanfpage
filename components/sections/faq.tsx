@@ -99,6 +99,7 @@ export function Faq({
 
               <div className="panel surface-white relative z-10 p-2 shadow-float sm:p-3">
                 <Accordion
+                  data-fx="stagger"
                   type="single"
                   defaultValue="1"
                   collapsible
