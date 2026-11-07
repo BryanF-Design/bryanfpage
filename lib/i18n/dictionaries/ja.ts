@@ -305,7 +305,7 @@ const ja: Dictionary = {
       {
         id: "landingEsencial",
         name: "エッセンシャルランディングページ",
-        price: "$2,400 MXNから",
+        price: "$2,000 MXNから",
         desc: "フルサイトほどの規模はなくても、自己紹介や新しい取り組みの発表に使えるシンプルな1ページです。",
         features: [
           "個人事業主、イベント、地域ビジネスに最適",

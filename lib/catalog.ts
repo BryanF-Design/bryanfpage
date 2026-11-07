@@ -79,7 +79,7 @@ export const ENTRY_SERVICE_PRICES: readonly EntryServicePrice[] = [
   { id: "tarjetaImprimible", price: 650 },
   { id: "firmaCorreo", price: 350 },
   { id: "kitPresencia", price: 1500 },
-  { id: "landingEsencial", price: 2400, from: true },
+  { id: "landingEsencial", price: 2000, from: true },
 ] as const;
 
 // ---------------------------------------------------------------------------

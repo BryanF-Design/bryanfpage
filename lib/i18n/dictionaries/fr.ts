@@ -306,7 +306,7 @@ const fr: Dictionary = {
       {
         id: "landingEsencial",
         name: "Landing page essentielle",
-        price: "À partir de $2 400 MXN",
+        price: "À partir de $2 000 MXN",
         desc: "Une page simple pour vous présenter ou lancer quelque chose, sans l'ampleur d'un site complet.",
         features: [
           "Idéal pour les indépendants, événements et commerces locaux",

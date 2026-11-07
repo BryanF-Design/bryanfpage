@@ -271,7 +271,7 @@ const zh: Dictionary = {
       {
         id: "landingEsencial",
         name: "基础落地页",
-        price: "$2,400 MXN 起",
+        price: "$2,000 MXN 起",
         desc: "一个用来介绍自己或发布新事物的简洁页面，规模小于完整网站。",
         features: ["适合自由职业者、活动和本地商户", "包含基础技术 SEO", "最快3个工作日交付", "结构围绕单一目标设计"],
         question: "我想了解基础落地页的信息",

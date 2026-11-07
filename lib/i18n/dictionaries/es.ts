@@ -314,7 +314,7 @@ const es = {
       {
         id: "landingEsencial",
         name: "Landing page esencial",
-        price: "Desde $2,400 MXN",
+        price: "Desde $2,000 MXN",
         desc: "Una página sencilla para presentarte o lanzar algo, sin el alcance de un sitio completo.",
         features: [
           "Ideal para profesionistas, eventos y negocios locales",

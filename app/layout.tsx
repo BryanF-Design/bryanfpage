@@ -198,7 +198,7 @@ const jsonLd = {
           { name: "Desarrollo web a medida", price: 3500, url: `${SITE_URL}/desarrollo-web-mexico` },
           { name: "Actualización de sitio web", price: 1800, url: `${SITE_URL}/crear-web` },
           { name: "Mantenimiento web", price: 1000, url: `${SITE_URL}/mantenimiento-web-mexico` },
-          { name: "Landing page esencial", price: 2400, url: `${SITE_URL}/paginas-web-para-negocios` },
+          { name: "Landing page esencial", price: 2000, url: `${SITE_URL}/paginas-web-para-negocios` },
           { name: "Kit de presencia digital", price: 1500, url: SITE_URL },
           { name: "Tarjeta de presentación digital", price: 900, url: SITE_URL },
           { name: "Tarjeta de presentación imprimible", price: 650, url: SITE_URL },
