@@ -32,6 +32,7 @@ export function FloatingDock() {
   const configuratorInView = useConfiguratorInView();
   const [pastHero, setPastHero] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+  const [teaserOpen, setTeaserOpen] = useState(false);
 
   // ¿Ya quedó atrás el hero? En el home se observa #home; en las demás
   // páginas basta con haber bajado más de media pantalla.
@@ -112,10 +113,21 @@ export function FloatingDock() {
     return () => window.removeEventListener("lumina:visibility", onChatVisibility);
   }, []);
 
+  // La burbuja de saludo de Lumina va justo encima de su botón, donde vive
+  // este dock: mientras se ve (7 s como máximo), el dock se aparta.
+  useEffect(() => {
+    function onTeaser(e: Event) {
+      setTeaserOpen(!!(e as CustomEvent<{ open?: boolean }>).detail?.open);
+    }
+    window.addEventListener("lumina:teaser", onTeaser);
+    return () => window.removeEventListener("lumina:teaser", onTeaser);
+  }, []);
+
   // La tarjeta digital trae su propia barra de contacto fija y el CV tiene a
   // Lumina abajo con sus propios botones.
   const onCard = (pathname?.startsWith("/tarjeta") || pathname?.startsWith("/cv")) ?? false;
-  const hidden = onCard || !pastHero || footerInView || configuratorInView || chatOpen;
+  const hidden =
+    onCard || !pastHero || footerInView || configuratorInView || chatOpen || teaserOpen;
 
   return (
     <div

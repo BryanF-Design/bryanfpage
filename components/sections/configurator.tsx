@@ -200,6 +200,14 @@ export function Configurator({
   }, []);
   const showTotalDock = configuratorInView && !summaryInView;
 
+  // Avisa a los flotantes (Lumina) que la barra del total ocupa la fila de
+  // abajo en teléfono: Lumina se acomoda a su lado en vez de apartarse.
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle("cfg-total-dock", showTotalDock);
+    return () => root.classList.remove("cfg-total-dock");
+  }, [showTotalDock]);
+
   function goToSummary() {
     summaryRef.current?.scrollIntoView({
       behavior: isReducedMotionRequested() ? "auto" : "smooth",
@@ -1050,11 +1058,13 @@ export function Configurator({
       </div>
 
       {/* Teléfono: el total en vivo, flotando en la fila de los botones
-          flotantes (a la derecha del de accesibilidad; Lumina y WhatsApp se
-          apartan dentro del cotizador). Se va cuando el resumen ya se ve. */}
+          flotantes: entre la pestaña de accesibilidad (izquierda) y el botón
+          de Lumina (derecha), que se queda para resolver dudas de compra.
+          WhatsApp se aparta dentro del cotizador. Se va cuando el resumen
+          ya se ve. */}
       <div
         className={cn(
-          "fixed bottom-[var(--fab-edge)] left-[calc(0.75rem+var(--fab-size)+var(--fab-gap))] right-3 z-[118] transition-[transform,opacity,visibility] duration-300 [transition-timing-function:var(--ease-out)] motion-reduce:transition-none sm:hidden [html.menu-open_&]:invisible [html.menu-open_&]:opacity-0",
+          "fixed bottom-[var(--fab-edge)] left-[calc(1.75rem+var(--fab-gap))] right-[calc(0.75rem+var(--fab-size)+var(--fab-gap))] z-[118] transition-[transform,opacity,visibility] duration-300 [transition-timing-function:var(--ease-out)] motion-reduce:transition-none sm:hidden [html.menu-open_&]:invisible [html.menu-open_&]:opacity-0",
           showTotalDock
             ? "visible translate-y-0 opacity-100"
             : "pointer-events-none invisible translate-y-4 opacity-0"

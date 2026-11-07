@@ -701,15 +701,26 @@
       box-shadow 220ms var(--ease-out),
       background-color 160ms linear,
       color 160ms linear;
+    /* Toque inmediato y limpio: sin espera de doble toque, sin el destello
+       gris de iOS/Android y sin seleccionar el texto al mantener presionado. */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
   }
-  .fab:hover {
-    transform: translateY(-2px);
-    box-shadow:
-      0 0 0 1px hsl(var(--ink) / 0.06),
-      0 22px 40px -14px hsl(var(--ink) / 0.55);
+  /* El "levantar" solo con mouse: en pantallas táctiles el :hover se queda
+     pegado después del toque y el botón se veía movido. */
+  @media (hover: hover) and (pointer: fine) {
+    .fab:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 0 0 1px hsl(var(--ink) / 0.06),
+        0 22px 40px -14px hsl(var(--ink) / 0.55);
+    }
   }
   .fab:active {
     transform: scale(0.96);
+    transition-duration: 90ms;
   }
   .fab-ink {
     background: hsl(var(--ink));
@@ -786,11 +797,28 @@
       opacity 180ms linear,
       visibility 0s linear 240ms;
   }
-  /* Teléfono: los flotantes se guardan al bajar (`fab-tucked`), y dentro del
-     cotizador (`fab-config`) se aparta Lumina, que tapaba precios y botones
-     del borde derecho; las clases las pone FloatingDock en <html>. */
+  /* Teléfono/táctil: al bajar se guardan WhatsApp y Accesibilidad
+     (`fab-tucked`, lo pone FloatingDock en <html>). Lumina se queda: es la
+     entrada al chat y antes desaparecía casi todo el tiempo en teléfono. */
   @media (max-width: 1279px), (pointer: coarse) {
-    html.fab-tucked .fab-slot {
+    html.fab-tucked .fab-slot:not(.fab-slot-lumina) {
+      transform: translateY(16px) scale(0.92);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition:
+        transform 240ms var(--ease-out),
+        opacity 180ms linear,
+        visibility 0s linear 240ms;
+    }
+  }
+  /* Teléfono, dentro del cotizador: Lumina comparte la fila de abajo con la
+     barra del total (`cfg-total-dock`, la pone el configurador) y se aparta
+     solo mientras se ven el resumen y los botones de pago. En tableta (una
+     columna con controles hasta el borde y sin barra del total) se aparta en
+     todo el cotizador; en escritorio se queda, compacto, sin tapar nada. */
+  @media (min-width: 640px) and (max-width: 1023px) {
+    html.fab-config .fab-slot-lumina:not(:has([aria-expanded="true"])) {
       transform: translateY(16px) scale(0.92);
       opacity: 0;
       visibility: hidden;
@@ -802,7 +830,7 @@
     }
   }
   @media (max-width: 639px) {
-    html.fab-config .fab-slot:has(> [aria-controls="lumina-chat-panel"]) {
+    html.fab-config:not(.cfg-total-dock) .fab-slot-lumina {
       transform: translateY(16px) scale(0.92);
       opacity: 0;
       visibility: hidden;

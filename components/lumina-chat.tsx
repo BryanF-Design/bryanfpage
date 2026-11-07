@@ -28,12 +28,16 @@ import {
 
 type Mood = "Normal" | "Enfocada" | "Duda" | "Sorprendida" | "Offline";
 
+// Avatares de 192 px (≈8 KB, WebP) recortados de los retratos de
+// public/img/lumina/*.png (1.4 MB cada uno). Se sirven tal cual
+// (`unoptimized`) para poder precargarlos: así el cambio de ánimo al abrir
+// el chat es instantáneo y el avatar nunca aparece en blanco.
 const MOOD_IMG: Record<Mood, string> = {
-  Normal: "/img/lumina/Normal.png",
-  Enfocada: "/img/lumina/Enfocada.png",
-  Duda: "/img/lumina/Duda.png",
-  Sorprendida: "/img/lumina/Sorprendida.png",
-  Offline: "/img/lumina/Offline.png",
+  Normal: "/img/lumina/avatar/normal.webp",
+  Enfocada: "/img/lumina/avatar/enfocada.webp",
+  Duda: "/img/lumina/avatar/duda.webp",
+  Sorprendida: "/img/lumina/avatar/sorprendida.webp",
+  Offline: "/img/lumina/avatar/offline.webp",
 };
 
 const WHATSAPP_NUMBER = "525663012505";
@@ -151,6 +155,39 @@ function useIsPhone() {
   return isPhone;
 }
 
+/**
+ * Teléfono con el teclado abierto: `100dvh` no se encoge (iOS lo pone encima)
+ * y la caja de texto quedaba tapada o la hoja se desplazaba. Mientras la hoja
+ * está abierta se mide el viewport visible y la hoja ocupa exactamente eso.
+ */
+function useVisualViewportBox(enabled: boolean) {
+  const [box, setBox] = useState<{ height: number; top: number } | null>(null);
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!enabled || !vv) {
+      setBox(null);
+      return;
+    }
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      setBox({ height: Math.round(vv.height), top: Math.round(vv.offsetTop) });
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    vv.addEventListener("resize", schedule);
+    vv.addEventListener("scroll", schedule);
+    return () => {
+      vv.removeEventListener("resize", schedule);
+      vv.removeEventListener("scroll", schedule);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [enabled]);
+  return box;
+}
+
 /** true cuando el héroe (#home) ya quedó arriba; sin héroe, siempre true. */
 function usePastHero() {
   const [past, setPast] = useState(false);
@@ -181,6 +218,7 @@ export function LuminaChat() {
   const [teaserDue, setTeaserDue] = useState(false);
   const isPhone = useIsPhone();
   const pastHero = usePastHero();
+  const viewportBox = useVisualViewportBox(open && isPhone);
   const [messages, setMessages] = useState<Msg[]>([
     { role: "assistant", content: t.lumina.greeting },
   ]);
@@ -230,6 +268,20 @@ export function LuminaChat() {
     };
   }, []);
 
+  // Precarga de los cinco ánimos en cuanto el navegador está libre: abrir el
+  // chat cambia a "Sorprendida" y no debe esperar a la red.
+  useEffect(() => {
+    const preload = () =>
+      Object.values(MOOD_IMG).forEach((src) => {
+        const img = new window.Image();
+        img.decoding = "async";
+        img.src = src;
+      });
+    const idle = (window as Window & { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
+    if (idle) idle(preload);
+    else window.setTimeout(preload, 1200);
+  }, []);
+
   // Restore only after hydration so the server and first client render match.
   useEffect(() => {
     const stored = readStoredMessages();
@@ -269,9 +321,11 @@ export function LuminaChat() {
     );
   }, [t.lumina.greeting]);
 
+  // Al final de la conversación al abrir, con cada mensaje y cuando el
+  // teclado del teléfono encoge la hoja (el último mensaje no se esconde).
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-  }, [messages, open, loading]);
+  }, [messages, open, loading, viewportBox?.height]);
 
   useEffect(() => {
     if (footerInView) {
@@ -279,15 +333,12 @@ export function LuminaChat() {
     }
   }, [footerInView]);
 
-  // El configurador concentra las acciones de compra. Si ocupa el viewport,
-  // cierra el panel grande, descarta el teaser y deja solo el acceso compacto.
+  // El cotizador concentra las acciones de compra: ahí no saluda la burbuja.
+  // El chat NO se cierra solo al llegar (antes se cerraba a media
+  // conversación y el botón desaparecía); el botón queda en versión compacta.
   useEffect(() => {
-    if (configuratorInView) {
-      if (openRef.current) restoreChatFocus();
-      setOpen(false);
-      setTeaser(false);
-    }
-  }, [configuratorInView, restoreChatFocus]);
+    if (configuratorInView) setTeaser(false);
+  }, [configuratorInView]);
 
   // En teléfono la hoja tapa toda la pantalla: es modal (fondo inert y foco
   // atrapado). Desde `sm` es una tarjeta de esquina NO modal: la página sigue
@@ -378,10 +429,17 @@ export function LuminaChat() {
     setTeaser(true);
   }, [teaserDue, open, configuratorInView, isPhone, pastHero]);
 
-  // El botón se aparta con el footer, dentro del cotizador y, en teléfono,
-  // mientras el hero ocupa la pantalla (taparía el CTA principal).
-  const hideFab =
-    !open && (footerInView || configuratorInView || (isPhone && !pastHero));
+  // El botón solo se aparta con el footer (que repite los contactos). Sobre
+  // el hero no tapa nada (queda en el canto del panel) y en el cotizador se
+  // queda compacto; en teléfono, dentro del cotizador, comparte fila con la
+  // barra del total y se aparta mientras se ven los botones de pago (CSS:
+  // `html.fab-config:not(.cfg-total-dock)` en globals.css).
+  const hideFab = !open && footerInView;
+
+  const teaserShown = teaser && !open && !footerInView && !configuratorInView;
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("lumina:teaser", { detail: { open: teaserShown } }));
+  }, [teaserShown]);
 
   // Se retira sola a los 7 s.
   useEffect(() => {
@@ -490,7 +548,10 @@ export function LuminaChat() {
       window.location.href = `/#${id}`;
       return;
     }
-    if (isPhone) setOpen(false);
+    // En teléfono la hoja tapa todo: se cierra para que se vea a dónde llevó.
+    // En escritorio solo se recoge al ir al cotizador (su panel tapaba el
+    // resumen y los botones de pago); la conversación queda guardada.
+    if (isPhone || id === "precios") setOpen(false);
     window.setTimeout(
       () => {
         target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
@@ -644,6 +705,11 @@ export function LuminaChat() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.98 }}
             transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+            style={
+              viewportBox
+                ? { top: viewportBox.top, height: viewportBox.height, bottom: "auto" }
+                : undefined
+            }
             className="fixed inset-0 z-[130] flex h-[100dvh] w-full flex-col overflow-hidden bg-white text-ink outline-none sm:inset-auto sm:bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] sm:right-6 sm:h-auto sm:max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] sm:w-[min(92vw,24.5rem)] sm:origin-bottom-right sm:rounded-[2rem] sm:shadow-[0_40px_80px_-30px_hsl(var(--ink)/0.55)] sm:ring-1 sm:ring-ink/[0.06]"
             role="dialog"
             aria-modal={isPhone ? true : undefined}
@@ -663,7 +729,7 @@ export function LuminaChat() {
                       transition={{ duration: 0.22 }}
                       className="absolute inset-0"
                     >
-                      <Image src={MOOD_IMG[mood]} alt="" fill sizes="48px" className="object-cover" />
+                      <Image src={MOOD_IMG[mood]} alt="" fill sizes="48px" unoptimized className="object-cover" />
                     </motion.span>
                   </AnimatePresence>
                 </span>
@@ -812,19 +878,19 @@ export function LuminaChat() {
 
       {/* Burbuja proactiva: saluda una vez; tocarla abre el chat. */}
       <AnimatePresence>
-        {teaser && !open && !footerInView && !configuratorInView && (
+        {teaserShown && (
           <motion.div
             initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             style={{ transformOrigin: "100% 100%" }}
-            className="fixed bottom-[calc(var(--fab-edge)+(var(--fab-size)+var(--fab-gap))*2)] right-3 z-[120] max-w-[15rem] sm:right-6 sm:w-[min(17.5rem,calc(100vw-1.5rem))] sm:max-w-none"
+            className="fixed bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] right-3 z-[120] max-w-[15rem] sm:right-6 sm:w-[min(17.5rem,calc(100vw-1.5rem))] sm:max-w-none"
           >
             {/* En teléfono es una píldora compacta de una frase; desde sm, la tarjeta completa. */}
             <div className="relative flex items-center gap-2.5 rounded-[1.4rem] rounded-br-md bg-white py-2 pl-2 pr-11 text-ink shadow-float ring-1 ring-ink/[0.06] sm:items-start sm:gap-3 sm:rounded-[1.5rem] sm:rounded-br-md sm:p-3 sm:pr-11">
               <span aria-hidden className="relative size-9 shrink-0 overflow-hidden rounded-full bg-ink ring-2 ring-lime sm:size-10">
-                <Image src={MOOD_IMG.Normal} alt="" fill sizes="40px" className="object-cover" />
+                <Image src={MOOD_IMG.Normal} alt="" fill sizes="40px" unoptimized className="object-cover" />
               </span>
               <button
                 type="button"
@@ -852,7 +918,7 @@ export function LuminaChat() {
           footer y dentro del cotizador (ahí mandan los botones de pago), salvo
           que el chat esté abierto. La etiqueta solo aparece desde escritorio. */}
       <div
-        className="fab-slot fixed bottom-[var(--fab-edge)] right-3 z-[120] sm:right-6"
+        className="fab-slot fab-slot-lumina fixed bottom-[var(--fab-edge)] right-3 z-[120] sm:right-6"
         data-hidden={hideFab}
       >
         <button
@@ -868,7 +934,7 @@ export function LuminaChat() {
         >
           <span className="relative size-10 shrink-0 sm:size-11">
             <span className="absolute inset-0 overflow-hidden rounded-full bg-ink ring-2 ring-lime">
-              <Image src={MOOD_IMG.Normal} alt="" fill sizes="44px" className="object-cover" />
+              <Image src={MOOD_IMG.Normal} alt="" fill sizes="44px" priority unoptimized className="object-cover" />
             </span>
             <span
               className={cn(
