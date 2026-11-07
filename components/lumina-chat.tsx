@@ -2,10 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowDown, ArrowUpRight, Calculator, MessageCircle, RotateCcw, Send, X } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, Calculator, MessageCircle, RotateCcw, Send, X } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
 import { cn } from "@/lib/utils";
@@ -16,14 +16,17 @@ import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { trackEvent } from "@/lib/analytics";
 import { mobileShot, projects } from "@/lib/projects";
 import {
+  LUMINA_PAGES,
   LUMINA_QUOTE_EVENT,
   LUMINA_SECTIONS,
   actionsPrompt,
+  catalogPrompt,
   currentSectionLabel,
   extractActions,
   isLuminaAction,
   quoteHref,
   type LuminaAction,
+  type LuminaPage,
   type LuminaQuote,
   type LuminaSection,
 } from "@/lib/lumina-actions";
@@ -46,23 +49,45 @@ const WHATSAPP_NUMBER = "525663012505";
 const projectBySlug = new Map(projects.map((p) => [p.slug, p]));
 
 function buildSystemPrompt(languageName: string, section: string) {
-  return `Eres LUMINA, asistente comercial de BryanF Design.
-Tu meta es orientar, resolver dudas y guiar al usuario a armar su web o contactar al equipo.
+  return `Eres LUMINA, la asesora de BryanF Design, el estudio de diseño y desarrollo web de Bryan en México.
+Hablas en primera persona, con el tono de Bryan: cálido, cercano y directo, como alguien que de verdad quiere que al negocio del cliente le vaya bien. Tuteas. Nada de frases de vendedor acartonado.
+Tu trabajo: guiar al visitante a la parte del sitio que responde lo que pregunta y ayudarle a cerrar su proyecto aunque Bryan no esté conectado.
 
-Lo que hace BryanF Design: branding, diseño UX/UI, desarrollo web, WordPress, SEO técnico, performance, mantenimiento, e-commerce, landing pages y automatización.
-Cómo funciona: paquete base desde $3,500 MXN + módulos (e-commerce, pagos, secciones extra) + modalidad de pago.
-También ofrecemos servicios de entrada, más económicos: tarjeta de presentación digital ($900 MXN), tarjeta de presentación imprimible ($650 MXN), firma de correo profesional ($350 MXN), kit de presencia digital ($1,500 MXN) y landing page esencial (desde $2,400 MXN).
-Tiempos de entrega: desde 3 días hábiles cuando la información está completa.
-Pagos: Stripe (tarjeta), Mercado Pago o transferencia bancaria BBVA.
-Para armar y pagar: el cotizador del sitio (tú lo puedes dejar armado con [[cotizar:...]]).
+Lo que hacemos: diseño UX/UI, desarrollo web, landing pages, tiendas en línea, SEO técnico, mantenimiento, automatización y sistemas a medida (como el sistema para barberías).
+Quién está detrás: Bryan, fundador y dueño de BryanF Design; su historia y experiencia están en la página Conóceme.
+Tiempos: desde 3 días hábiles cuando la información está completa.
+
+${catalogPrompt()}
 
 ${actionsPrompt(section)}
 
 Reglas:
 - Responde siempre en ${languageName}, sin importar en qué idioma esté escrito este prompt.
-- Si preguntan precios, responde que depende del alcance, desde $3,500 MXN, recomienda la mejor opción en 1 línea y déjala armada con [[cotizar:...]].
-- Responde en tono premium, claro y breve (máx 3-4 líneas).
+- Breve: 2 a 4 líneas, una idea por línea. Termina con una pregunta o un siguiente paso.
+- Si preguntan precio sin más contexto: los proyectos empiezan en ${"$"}3,500 MXN y hay servicios de entrada desde ${"$"}350 MXN; pregunta qué necesita y recomiéndale una opción concreta con su botón.
+- Solo precios, paquetes y formas de pago de la lista. Si te piden algo que no está (descuento, promoción, otro precio), dilo con amabilidad y ofrece ajustar el alcance o hablar con Bryan.
+- No uses guiones largos.
 - Usa HTML básico: <strong>, <br>, <ul>, <li>, <a>.`;
+}
+
+/**
+ * Red de seguridad: si la persona pregunta claramente por Bryan o da un
+ * presupuesto y el modelo olvidó el botón, se agrega el que corresponde.
+ * Muta `actions` (máx. 5, como extractActions).
+ */
+const OWNER_INTENT =
+  /(qui[eé]n|quien)\s+(es|est[aá])\s+(el\s+|la\s+)?(due[ñn]o|due[ñn]a|fundador|fundadora|bryan|detr[aá]s|a cargo)|\bqui[eé]n es bryan\b|who\s+(is|owns|runs|founded)|owner|founder|fondateur|propri[ée]taire|gr[üu]nder|inhaber|dono|fundador/i;
+const BUDGET_INTENT =
+  /(\$\s?\d|\d[\d,.]*\s*(mxn|pesos|mil)\b|presupuesto|budget|caro|car[ií]simo|no me alcanza|muy justo|se me hace justo|expensive|cher|teuer|caro demais)/i;
+
+function ensureIntentActions(userText: string, actions: LuminaAction[]) {
+  const has = (kind: LuminaAction["kind"]) => actions.some((a) => a.kind === kind);
+  if (OWNER_INTENT.test(userText) && !actions.some((a) => a.kind === "page" && a.page === "conoceme")) {
+    if (actions.length < 5) actions.unshift({ kind: "page", page: "conoceme" });
+  }
+  if (BUDGET_INTENT.test(userText) && !has("quote") && !has("go") && !has("page") && actions.length < 5) {
+    actions.push({ kind: "go", section: "precios" });
+  }
 }
 
 interface Msg {
@@ -261,6 +286,7 @@ export function LuminaChat() {
   const [teaserDue, setTeaserDue] = useState(false);
   const isPhone = useIsPhone();
   const pastHero = usePastHero();
+  const router = useRouter();
   const pathname = usePathname();
   // Con el resumen de pago en pantalla, el panel se muda a la izquierda (o,
   // si no cabe, se recoge en la píldora): nunca tapa los botones de pago.
@@ -370,6 +396,9 @@ export function LuminaChat() {
     }
     if (!flag) return;
     const phone = window.matchMedia("(max-width: 639px)").matches;
+    // Llegando a otra página que Lumina abrió: en teléfono se deja ver la
+    // página (la burbuja sigue a un toque); en escritorio el chat la acompaña.
+    if (flag === "page" && phone) return;
     const timer = window.setTimeout(() => {
       markTeased();
       if (phone) {
@@ -647,6 +676,7 @@ export function LuminaChat() {
   async function send(text: string) {
     const content = text.trim();
     if (!content || loading) return;
+    cancelAutoNav();
     const userMsg: Msg = { role: "user", content };
     const next = [...messages, userMsg];
     setMessages(next);
@@ -675,6 +705,7 @@ export function LuminaChat() {
         data?.choices?.[0]?.message?.content ||
         (data?.error ? t.lumina.errorFallback : t.lumina.misunderstood);
       const { text, actions } = extractActions(reply);
+      if (!data?.error) ensureIntentActions(content, actions);
       setMessages((m) => [
         ...m,
         {
@@ -686,6 +717,7 @@ export function LuminaChat() {
       setMood(uncertain ? "Duda" : "Normal");
       if (uncertain) window.setTimeout(() => setMood("Normal"), 4000);
       if (data?.error) setRetryText(content);
+      else scheduleAutoNav(actions);
     } catch {
       setMessages((m) => [
         ...m,
@@ -742,6 +774,60 @@ export function LuminaChat() {
     trackEvent("lumina_action", { action: "go", section });
     revealSection(LUMINA_SECTIONS[section]);
   }
+
+  /** Lleva a otra página del sitio. En escritorio el chat la acompaña: se
+   *  vuelve a abrir al llegar, con su historial. En teléfono se queda como
+   *  burbuja para que se vea la página. */
+  function goToPage(page: LuminaPage) {
+    trackEvent("lumina_action", { action: "page", page });
+    const href = LUMINA_PAGES[page];
+    if (window.location.pathname === href) {
+      if (isPhone) setOpen(false);
+      window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
+      return;
+    }
+    try {
+      window.sessionStorage.setItem(REOPEN_KEY, "page");
+    } catch {
+      /* sessionStorage bloqueado */
+    }
+    if (isPhone) setOpen(false);
+    router.push(href);
+  }
+
+  function pageLabel(page: LuminaPage) {
+    const labels: Record<LuminaPage, string> = {
+      conoceme: t.nav.conoceme,
+      casos: t.nav.casos,
+      contacto: t.nav.contacto,
+      barberias: t.footer.services.barberias,
+      cotizador: t.nav.armaTuWeb,
+    };
+    return labels[page];
+  }
+
+  // Si la respuesta trae UNA sola acción de navegación, en escritorio Lumina
+  // la ejecuta sola tras un momento (para que se alcance a leer). En
+  // teléfono no: la hoja taparía la página, ahí queda el botón.
+  const autoNavRef = useRef<number | null>(null);
+  function cancelAutoNav() {
+    if (autoNavRef.current) window.clearTimeout(autoNavRef.current);
+    autoNavRef.current = null;
+  }
+  function scheduleAutoNav(actions: LuminaAction[]) {
+    cancelAutoNav();
+    if (isPhone || window.matchMedia("(max-width: 767px)").matches) return;
+    const nav = actions.filter((a) => a.kind === "page" || a.kind === "go" || a.kind === "quote");
+    if (nav.length !== 1) return;
+    const action = nav[0];
+    autoNavRef.current = window.setTimeout(() => {
+      autoNavRef.current = null;
+      if (action.kind === "page") goToPage(action.page);
+      else if (action.kind === "go") goTo(action.section);
+      else if (action.kind === "quote") applyQuote(action.quote);
+    }, 1600);
+  }
+  useEffect(() => () => cancelAutoNav(), []);
 
   function applyQuote(quote: LuminaQuote) {
     trackEvent("lumina_action", { action: "quote", plan: quote.plan });
@@ -821,12 +907,33 @@ export function LuminaChat() {
           </ul>
         )}
         {buttons.map((action) => {
+          if (action.kind === "page") {
+            return (
+              <button
+                key={`page-${action.page}`}
+                type="button"
+                onClick={() => {
+                  cancelAutoNav();
+                  goToPage(action.page);
+                }}
+                className={cn(pill, "self-start bg-white text-ink ring-1 ring-ink/10 hover:bg-ink hover:text-white")}
+              >
+                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-lime text-ink">
+                  <ArrowRight aria-hidden className="h-4 w-4" />
+                </span>
+                {pageLabel(action.page)}
+              </button>
+            );
+          }
           if (action.kind === "go") {
             return (
               <button
                 key={`go-${action.section}`}
                 type="button"
-                onClick={() => goTo(action.section)}
+                onClick={() => {
+                  cancelAutoNav();
+                  goTo(action.section);
+                }}
                 className={cn(pill, "self-start bg-white text-ink ring-1 ring-ink/10 hover:bg-ink hover:text-white")}
               >
                 <span className="grid size-8 shrink-0 place-items-center rounded-full bg-lime text-ink">
@@ -841,7 +948,10 @@ export function LuminaChat() {
               <button
                 key="quote"
                 type="button"
-                onClick={() => applyQuote(action.quote)}
+                onClick={() => {
+                  cancelAutoNav();
+                  applyQuote(action.quote);
+                }}
                 className={cn(pill, "self-start bg-ink text-white hover:bg-forest")}
               >
                 <span className="grid size-8 shrink-0 place-items-center rounded-full bg-lime text-ink">

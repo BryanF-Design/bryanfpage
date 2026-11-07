@@ -430,6 +430,8 @@ export function Configurator({
         )
       );
       setSections(Math.max(0, Math.min(MAX_SECTIONS, Math.floor(quote.sections || 0))));
+      // Negociación: Lumina puede dejarlo en 50 % de anticipo para arrancar hoy.
+      if (quote.mode === "anticipo" || quote.mode === "liquidacion") setMode(quote.mode);
       trackEvent("lumina_quote", { plan: quote.plan, modules: quote.modules.join(",") });
     }
     window.addEventListener(LUMINA_QUOTE_EVENT, onLuminaQuote);
