@@ -22,6 +22,7 @@ import {
   Wrench,
   type LucideIcon,
 } from "lucide-react";
+import Image from "next/image";
 import { FaWhatsapp } from "react-icons/fa";
 import { SiStripe, SiMercadopago } from "react-icons/si";
 
@@ -97,6 +98,60 @@ function Step({ children, last = false }: { children: ReactNode; last?: boolean 
       )}
       {children}
     </div>
+  );
+}
+
+
+/**
+ * Logos oficiales de cada forma de pago: el logotipo de Stripe (morado sobre
+ * blanco), el de Mercado Pago (versión blanca sobre su azul) y el de BBVA
+ * (azul sobre blanco). Cada uno va en su ficha para que se lea en el panel
+ * oscuro sin alterar el archivo de la marca.
+ */
+function StripeLogo({ className }: { className?: string }) {
+  return (
+    <Image
+      src="/img/pagos/stripe.svg"
+      alt="Stripe"
+      width={512}
+      height={214}
+      unoptimized
+      className={cn("block h-[18px] w-auto", className)}
+    />
+  );
+}
+
+function MercadoPagoLogo({ className }: { className?: string }) {
+  return (
+    <span
+      aria-hidden
+      className={cn("inline-flex h-6 shrink-0 items-center rounded-full px-2", className)}
+      style={{ backgroundColor: MERCADOPAGO_BRAND }}
+    >
+      <Image
+        src="/img/pagos/mercadopago-blanco.png"
+        alt=""
+        width={789}
+        height={200}
+        unoptimized
+        className="block h-3.5 w-auto"
+      />
+    </span>
+  );
+}
+
+function BbvaLogo({ className }: { className?: string }) {
+  return (
+    <span className={cn("inline-flex h-6 shrink-0 items-center rounded-full bg-white px-2.5", className)}>
+      <Image
+        src="/img/BBVA_logo_2025.svg.png"
+        alt="BBVA"
+        width={960}
+        height={288}
+        unoptimized
+        className="block h-2.5 w-auto"
+      />
+    </span>
   );
 }
 
@@ -991,11 +1046,11 @@ export function Configurator({
                   className="h-auto min-h-16 w-full justify-between whitespace-normal py-2 pl-2 pr-2.5 text-left leading-tight"
                 >
                   <span className="flex items-center gap-3">
-                    <span className="grid size-11 shrink-0 place-items-center rounded-full bg-white">
+                    <span className="grid h-11 min-w-[4.25rem] shrink-0 place-items-center rounded-full bg-white px-3">
                       {loading === "Stripe" ? (
                         <Loader2 className="h-4 w-4 animate-spin text-ink" />
                       ) : (
-                        <SiStripe className="h-4 w-4" style={{ color: STRIPE_BRAND }} aria-hidden />
+                        <StripeLogo />
                       )}
                     </span>
                     <span className="flex flex-col">
@@ -1018,7 +1073,11 @@ export function Configurator({
                     disabled={!!loading || projectTotal <= 0}
                     className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-1.5 font-semibold text-white underline decoration-white/40 underline-offset-4 transition-colors hover:text-lime hover:decoration-lime disabled:opacity-50"
                   >
-                    {loading === "Mercado Pago" && <Loader2 aria-hidden className="h-3.5 w-3.5 animate-spin" />}
+                    {loading === "Mercado Pago" ? (
+                      <Loader2 aria-hidden className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <MercadoPagoLogo />
+                    )}
                     {t.configurator.payAltMercadoPago}
                   </button>
                   <span>{t.configurator.payAltOr}</span>
@@ -1027,8 +1086,9 @@ export function Configurator({
                     onClick={() => setTransfer((prev) => !prev)}
                     aria-expanded={transfer}
                     aria-controls="bank-transfer-details"
-                    className="inline-flex min-h-11 items-center rounded-full px-1.5 font-semibold text-white underline decoration-white/40 underline-offset-4 transition-colors hover:text-lime hover:decoration-lime"
+                    className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-1.5 font-semibold text-white underline decoration-white/40 underline-offset-4 transition-colors hover:text-lime hover:decoration-lime"
                   >
+                    <BbvaLogo />
                     {t.configurator.payAltTransfer}
                   </button>
                 </p>
@@ -1182,7 +1242,9 @@ export function Configurator({
                     <p className="text-pretty text-sm leading-snug text-white/80">{t.configurator.transferAlt}</p>
                     <div className="flex flex-wrap gap-2">
                       <Button size="sm" onClick={() => pay("stripe")} disabled={!!loading} className="bg-lime text-ink">
-                        <SiStripe aria-hidden className="h-3.5 w-3.5" />
+                        <span className="inline-flex h-6 items-center rounded-full bg-white px-2">
+                          <StripeLogo className="h-3.5" />
+                        </span>
                         {t.configurator.transferAltCard}
                       </Button>
                       <Button
@@ -1192,7 +1254,7 @@ export function Configurator({
                         disabled={!!loading}
                         className="border-white/25 text-white hover:border-white/60"
                       >
-                        <SiMercadopago aria-hidden className="h-4 w-4" />
+                        <MercadoPagoLogo />
                         {t.configurator.payAltMercadoPago}
                       </Button>
                     </div>
