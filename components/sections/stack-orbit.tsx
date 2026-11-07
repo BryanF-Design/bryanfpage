@@ -31,7 +31,7 @@ import { useLanguage } from "@/lib/i18n/context";
 
 type Category = "front" | "back" | "tools";
 
-const stack: { Icon: IconType; label: string; category: Category }[] = [
+const stack: { Icon: IconType; label: string; category: Category; note?: "payment" }[] = [
   { Icon: SiNextdotjs, label: "Next.js", category: "front" },
   { Icon: SiReact, label: "React", category: "front" },
   { Icon: SiTypescript, label: "TypeScript", category: "front" },
@@ -43,7 +43,9 @@ const stack: { Icon: IconType; label: string; category: Category }[] = [
   { Icon: SiNodedotjs, label: "Node.js", category: "back" },
   { Icon: SiPhp, label: "PHP", category: "back" },
   { Icon: SiWordpress, label: "WordPress", category: "back" },
-  { Icon: SiStripe, label: "Stripe", category: "back" },
+  // Stripe no es un lenguaje de backend: es la pasarela de pago (se filtra
+  // con Herramientas y su etiqueta lo dice).
+  { Icon: SiStripe, label: "Stripe", category: "tools", note: "payment" },
   { Icon: SiFigma, label: "Figma", category: "tools" },
   { Icon: SiVercel, label: "Vercel", category: "tools" },
   { Icon: SiGit, label: "Git", category: "tools" },
@@ -184,7 +186,7 @@ export function StackOrbit({ chapter = 5 }: { chapter?: number } = {}) {
           </div>
 
           <ul className="grid flex-1 grid-cols-4 gap-x-2 gap-y-5 sm:gap-3">
-            {stack.map(({ Icon, label, category }) => {
+            {stack.map(({ Icon, label, category, note }) => {
               const on = filter === "all" || filter === category;
               const picked = on && filter !== "all";
               return (
@@ -214,7 +216,7 @@ export function StackOrbit({ chapter = 5 }: { chapter?: number } = {}) {
                         {label}
                       </span>
                       <span className="mt-0.5 hidden text-xs font-medium text-muted-foreground sm:block">
-                        {t.stack.filters[category]}
+                        {note === "payment" ? t.stack.paymentGateway : t.stack.filters[category]}
                       </span>
                     </span>
                   </div>

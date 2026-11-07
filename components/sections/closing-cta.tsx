@@ -111,7 +111,9 @@ export function ClosingCta() {
             <h2
               id="closing-title"
               className={cn(
-                "display-xl text-balance break-words text-ink",
+                // normal-case: el cierre habla en primera persona y en
+                // minúsculas ("¿Empezamos tu web?"), no en rótulo gritado.
+                "display-xl text-balance break-words text-ink normal-case",
                 titleSize,
               )}
             >

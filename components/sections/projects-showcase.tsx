@@ -640,7 +640,7 @@ function FeaturedProject({ project, compact = false }: { project: Project; compa
  * detalle en filas tipo app. En teléfono el escenario queda entre las
  * pestañas y el detalle.
  */
-export function ProjectCases() {
+export function ProjectCases({ hideHeading = false }: { hideHeading?: boolean } = {}) {
   const { t } = useLanguage();
   const [active, setActive] = useState(0);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -691,11 +691,20 @@ export function ProjectCases() {
       {/* Cabecera + pestañas. */}
       <div data-fx="panel" className="min-w-0 lg:col-span-7">
         <div className="panel flex h-full flex-col gap-6 p-5 shadow-soft sm:gap-7 sm:p-7 lg:p-10">
-          <SectionHeading
-            eyebrow={t.projects.casesEyebrow}
-            title={t.projects.casesTitle}
-            subtitle={t.projects.casesSubtitle}
-          />
+          {/* En /casos la cabecera de la página ya dice todo esto: aquí solo
+              queda la etiqueta, para no repetir "Casos de estudio" dos veces. */}
+          {hideHeading ? (
+            <span className="eyebrow pl-3">
+              <span aria-hidden className="size-2 rounded-full bg-lime" />
+              {t.projects.casesEyebrow}
+            </span>
+          ) : (
+            <SectionHeading
+              eyebrow={t.projects.casesEyebrow}
+              title={t.projects.casesTitle}
+              subtitle={t.projects.casesSubtitle}
+            />
+          )}
           <div
             role="tablist"
             aria-label={t.projects.casesTitle}
@@ -815,6 +824,15 @@ export function ProjectCases() {
                 </div>
               ))}
             </dl>
+            {/* El dato medible del caso: lo que cambió, en números. */}
+            <p className="flex items-start gap-3 rounded-card bg-lime p-4 text-ink sm:p-5">
+              <span className="shrink-0 rounded-full bg-ink px-3 py-1 text-xs font-bold uppercase tracking-[0.08em] text-lime">
+                {t.projects.caseLabels.metric}
+              </span>
+              <span className="text-pretty text-[0.95rem] font-semibold leading-snug sm:text-base">
+                {projectCase.metric}
+              </span>
+            </p>
           </div>
           <Button asChild variant="ink" size="lg" className="w-full pr-2.5 sm:w-fit">
             <a href={project.url} target="_blank" rel="noopener noreferrer">

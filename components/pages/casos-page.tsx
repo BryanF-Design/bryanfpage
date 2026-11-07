@@ -21,7 +21,7 @@ export function CasosPage() {
         title={t.pages.casos.title}
         subtitle={t.pages.casos.subtitle}
       />
-      <ProjectCases />
+      <ProjectCases hideHeading />
       <ClosingCta />
     </SubPageShell>
   );

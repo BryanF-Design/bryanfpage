@@ -112,7 +112,7 @@ export default function HomePage() {
                 </div>
                 <div>
                   <p className="display-xl text-[clamp(3.5rem,16vw,4.5rem)] leading-[0.82] sm:text-[clamp(3.5rem,7.5vw,7.5rem)] lg:text-[clamp(4.5rem,9vw,7.5rem)]">
-                    <StatCounter value={5} prefix="+" />
+                    <StatCounter value={6} prefix="+" />
                   </p>
                   <p className="mt-2 text-sm font-semibold text-muted-foreground">
                     {t.trust.years} {t.trust.yearsCaption}
