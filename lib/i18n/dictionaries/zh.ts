@@ -518,6 +518,7 @@ const zh: Dictionary = {
       paginasNegocios: "企业网站",
       softwareMedida: "定制软件",
       mantenimientoWeb: "网站维护",
+      barberias: "理发店系统",
     },
   },
   lumina: {

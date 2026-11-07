@@ -111,6 +111,10 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
       label: t.footer.services.mantenimientoWeb,
       href: "/mantenimiento-web-mexico",
     },
+    {
+      label: t.footer.services.barberias,
+      href: "/sistema-para-barberias",
+    },
   ];
 
   const contact = [

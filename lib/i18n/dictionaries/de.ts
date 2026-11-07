@@ -573,6 +573,7 @@ const de: Dictionary = {
       paginasNegocios: "Websites für Unternehmen",
       softwareMedida: "Individuelle Software",
       mantenimientoWeb: "Website-Wartung",
+      barberias: "System für Barbershops",
     },
   },
   lumina: {

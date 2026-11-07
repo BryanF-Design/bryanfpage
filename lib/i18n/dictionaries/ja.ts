@@ -566,6 +566,7 @@ const ja: Dictionary = {
       paginasNegocios: "ビジネス向けサイト",
       softwareMedida: "オーダーメイドソフトウェア",
       mantenimientoWeb: "ウェブサイト保守",
+      barberias: "理容室向けシステム",
     },
   },
   lumina: {

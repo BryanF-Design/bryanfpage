@@ -45,7 +45,8 @@ export function StatCounter({ value, prefix = "", suffix = "", className }: Stat
   return (
     <span ref={ref} className={className}>
       {prefix}
-      {display}
+      {/* Separador de miles fijo (12,070): igual en servidor y navegador. */}
+      {display.toLocaleString("en-US")}
       {suffix}
     </span>
   );

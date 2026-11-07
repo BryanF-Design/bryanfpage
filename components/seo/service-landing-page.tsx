@@ -165,7 +165,7 @@ function hd(ms: number) {
  * (`suppressHydrationWarning` en los `data-fx`: el observer del layout marca
  * `data-fx-in` antes de hidratar lo que ya está en pantalla.)
  */
-function LandingHeading({
+export function LandingHeading({
   index,
   eyebrow,
   title,
@@ -204,7 +204,7 @@ function LandingHeading({
 }
 
 /** Órbita fina (como la del hero) alrededor de un personaje. */
-function Orbit({ className }: { className?: string }) {
+export function Orbit({ className }: { className?: string }) {
   return (
     <svg aria-hidden viewBox="0 0 400 140" className={cn("pointer-events-none", className)}>
       <ellipse

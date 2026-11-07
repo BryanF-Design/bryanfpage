@@ -596,6 +596,7 @@ const es = {
       paginasNegocios: "Páginas para negocios",
       softwareMedida: "Software a medida",
       mantenimientoWeb: "Mantenimiento web",
+      barberias: "Sistema para barberías",
     },
   },
   lumina: {

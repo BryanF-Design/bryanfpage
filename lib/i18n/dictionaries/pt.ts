@@ -573,6 +573,7 @@ const pt: Dictionary = {
       paginasNegocios: "Sites para negócios",
       softwareMedida: "Software sob medida",
       mantenimientoWeb: "Manutenção de sites",
+      barberias: "Sistema para barbearias",
     },
   },
   lumina: {

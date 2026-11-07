@@ -573,6 +573,7 @@ const en: Dictionary = {
       paginasNegocios: "Sites for businesses",
       softwareMedida: "Custom software",
       mantenimientoWeb: "Website maintenance",
+      barberias: "Barbershop system",
     },
   },
   lumina: {

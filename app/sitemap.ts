@@ -22,6 +22,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.8,
     },
+    // Barber OS: sistema de reservas y lealtad para barberías (prueba de 14 días).
+    {
+      url: `${SITE_URL}/sistema-para-barberias`,
+      lastModified: new Date("2026-11-07T00:00:00.000Z"),
+      changeFrequency: "monthly",
+      priority: 0.85,
+    },
     // Tarjeta digital: fuera de la navegación, se comparte por QR o enlace.
     {
       url: `${SITE_URL}/tarjeta`,
