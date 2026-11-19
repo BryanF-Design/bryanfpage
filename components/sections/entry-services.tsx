@@ -145,7 +145,7 @@ function CardMock({ fromLabel }: { fromLabel: string }) {
                 alt=""
                 fill
                 sizes="128px"
-                className="origin-top scale-[1.35] object-cover object-top"
+                className="origin-top scale-[1.1] object-cover object-top"
               />
             </span>
             <span className="mt-3 block text-lg font-bold leading-tight tracking-[-0.01em]">Bryan F.</span>
@@ -192,7 +192,7 @@ function MiniCardMock({ fromLabel }: { fromLabel: string }) {
               alt=""
               fill
               sizes="128px"
-              className="origin-top scale-[1.35] object-cover object-top"
+              className="origin-top scale-[1.1] object-cover object-top"
             />
           </span>
           <span className="min-w-0 flex-1">
