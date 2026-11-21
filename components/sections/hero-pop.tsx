@@ -210,11 +210,14 @@ export function HeroPop() {
                 <span className="relative size-2 rounded-full bg-forest" />
               </span>
               {t.hero.available}
-              {cdmxTime && (
-                <span className="whitespace-nowrap tabular-nums text-ink/60">
-                  · CDMX {cdmxTime}
-                </span>
-              )}
+              {/* El espacio de la hora se reserva desde el servidor (invisible
+                  hasta hidratar) para que la pastilla no salte de línea (CLS). */}
+              <span
+                aria-hidden={!cdmxTime}
+                className={`whitespace-nowrap tabular-nums text-ink/60 ${cdmxTime ? "" : "invisible"}`}
+              >
+                · CDMX {cdmxTime ?? "00:00"}
+              </span>
             </span>
             <h2
               className="hero-in hero-in-up display-title max-w-[22ch] text-balance text-[clamp(1.75rem,3vw,2.75rem)] text-ink"

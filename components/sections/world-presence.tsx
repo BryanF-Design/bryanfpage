@@ -251,8 +251,9 @@ function Orbit() {
 
 const TIME_ZONES = ["America/Mexico_City", "Europe/Madrid", "Europe/Paris"];
 
-/** Hora local de cada sede. En el servidor (y antes de montar) va un guion:
- *  la hora real solo existe en el navegador. Se refresca cada 30 s. */
+/** Hora local de cada sede. La hora real solo existe en el navegador: en el
+ *  servidor (y antes de montar) se reserva el espacio vacío, nunca "--:--"
+ *  ni una hora inventada. Se refresca cada 30 s. */
 function useLocalTimes() {
   const [now, setNow] = useState<Date | null>(null);
 
@@ -263,7 +264,7 @@ function useLocalTimes() {
   }, []);
 
   return TIME_ZONES.map((timeZone) => {
-    if (!now) return { text: "--:--", day: true };
+    if (!now) return { text: "", day: true };
     const text = new Intl.DateTimeFormat("en-GB", {
       hour: "2-digit",
       minute: "2-digit",
@@ -363,7 +364,11 @@ export function WorldPresence({ chapter = 9 }: { chapter?: number } = {}) {
                       <span className="shrink-0 text-right">
                         <span className="flex items-center justify-end gap-1.5 text-base font-bold tabular-nums leading-tight text-foreground">
                           <TimeIcon aria-hidden className="size-3.5 text-muted-foreground" />
-                          {time?.text}
+                          {time?.text ? (
+                            time.text
+                          ) : (
+                            <span aria-hidden className="inline-block w-[2.6em]" />
+                          )}
                         </span>
                         <span className="mt-0.5 block text-xs font-semibold text-forest">
                           {t.world.kinds.work}
