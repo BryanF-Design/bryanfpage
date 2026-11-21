@@ -21,7 +21,8 @@ export const TRIAL_DAYS = BARBER_OS_PLAN.trialDays;
 export const MONTHLY_PRICE = BARBER_OS_PLAN.monthly;
 export const MONTHLY_PRICE_LABEL = `$${MONTHLY_PRICE.toLocaleString("en-US")} MXN/mes`;
 
-/** Garantía contra defectos (la misma del estudio). */
+/** Garantía contra defectos (la misma del estudio).
+ *  PENDIENTE DE CONFIRMAR (Bryan): si la garantía de 60 días aplica a Barber OS. */
 export const GUARANTEE_DAYS = STUDIO_FACTS.guaranteeDays;
 
 /** Texto del botón principal. */

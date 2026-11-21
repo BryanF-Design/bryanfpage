@@ -352,11 +352,13 @@ const es = {
       update: {
         name: "Actualización",
         desc: "Una renovación de verdad para tu web actual: diseño y velocidad.",
+        // PENDIENTE DE CONFIRMAR (Bryan): estos 3 puntos los redactó el rearmado.
         includes: ["Diseño renovado para tu web actual", "Más velocidad en celular", "WhatsApp y SEO técnico revisados"],
       },
       maintenance: {
         name: "Mantenimiento",
         desc: "Tu sitio siempre al día, seguro y respaldado. Por mes.",
+        // PENDIENTE DE CONFIRMAR (Bryan): estos 3 puntos los redactó el rearmado.
         includes: ["Tu sitio al día y respaldado", "Seguridad y revisión cada mes", "Soporte directo conmigo"],
       },
     },
