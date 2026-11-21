@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { mobileShot } from "@/lib/projects";
+import { SPRING } from "@/lib/motion-presets";
 
 type MoodKey = "normal" | "enfocada" | "duda" | "aburrida" | "dormida";
 
@@ -184,7 +185,7 @@ export function LuminaFeature() {
                 className="relative block aspect-[864/1121] origin-bottom lg:h-full"
                 whileHover={reduced ? undefined : { y: -6 }}
                 whileTap={reduced ? undefined : { scale: 0.97 }}
-                transition={{ type: "spring", stiffness: 380, damping: 26 }}
+                transition={SPRING}
               >
                 {MOODS.map((m, i) =>
                   primed.includes(i) ? (

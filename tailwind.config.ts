@@ -93,9 +93,9 @@ const config: Config = {
         sm: "calc(var(--radius) - 8px)",
       },
       boxShadow: {
-        soft: "0 1px 0 hsl(var(--ink) / 0.04), 0 18px 40px -24px hsl(var(--ink) / 0.35)",
-        float: "0 2px 0 hsl(var(--ink) / 0.03), 0 30px 60px -28px hsl(var(--ink) / 0.45)",
-        pop: "0 14px 30px -12px hsl(var(--ink) / 0.45)",
+        soft: "0 0 0 1px hsl(var(--ink) / 0.06)",
+        float: "0 1px 2px hsl(var(--ink) / 0.06), 0 12px 32px -18px hsl(var(--ink) / 0.3)",
+        pop: "0 8px 20px -12px hsl(var(--ink) / 0.35)",
       },
       spacing: {
         gutter: "var(--gutter)",

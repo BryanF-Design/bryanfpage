@@ -704,7 +704,7 @@ export function Configurator({
 
   return (
     <section
-      id="precios"
+      id="configurador"
       // En /crear-web el titular de la portada ya se llama igual: sin
       // encabezado propio, la sección toma el nombre corto ("Configurador").
       aria-label={hideHeading ? t.configurator.eyebrow : t.configurator.title}
@@ -723,7 +723,7 @@ export function Configurator({
                 eyebrow={t.configurator.eyebrow}
                 title={t.configurator.title}
                 subtitle={t.configurator.subtitle}
-                chapter={{ index: chapter }}
+                chapter={chapter ? { index: chapter } : undefined}
                 className="relative px-1 sm:px-0 [&_p]:text-[0.975rem] md:[&_p]:text-base"
               />
             </>
@@ -992,8 +992,9 @@ export function Configurator({
           xl es la columna fija; antes, una tarjeta ancha en dos columnas
           (partidas y total | botones de pago). */}
       <div
+        id="pago"
         data-fx="up"
-        className="min-w-0 xl:col-span-4"
+        className="min-w-0 scroll-mt-[calc(var(--header-h)+var(--gutter))] xl:col-span-4"
         style={{ "--fx-delay": "120ms" } as CSSProperties}
       >
         <div

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Instrument_Serif, Plus_Jakarta_Sans } from "next/font/google";
+import { Fraunces, Inter } from "next/font/google";
 import dynamic from "next/dynamic";
 import "./globals.css";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
@@ -24,31 +24,20 @@ const FloatingDock = dynamic(
   { ssr: false }
 );
 
-// Cuerpo e interfaz: Plus Jakarta Sans — redonda, clara y muy legible en
-// tamaños chicos (etiquetas, precios, chips).
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin", "latin-ext"],
+// Identidad tipográfica: Inter para texto e interfaz, Fraunces para los
+// titulares (y sus acentos en itálica). Solo el subconjunto latino (cubre
+// español, acentos y ñ) y fuentes variables: un archivo por estilo.
+const inter = Inter({
+  subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
 });
 
-// Rótulos: Archivo variable con eje de ancho. Pesado y apretado para los
-// titulares grandes; en itálica para la primera línea ("Haz que…").
-const archivo = Archivo({
-  subsets: ["latin", "latin-ext"],
+const fraunces = Fraunces({
+  subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
   style: ["normal", "italic"],
-  axes: ["wdth"],
-});
-
-// Acento editorial: palabras sueltas en serif itálica.
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin", "latin-ext"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-serif",
-  display: "swap",
 });
 
 const SITE_DESCRIPTION =
@@ -130,7 +119,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   colorScheme: "light",
   // El lienzo claro del sitio: la barra del navegador continúa el fondo.
-  themeColor: "#eef2e6",
+  themeColor: "#f5f5f4",
 };
 
 const ORG_ID = `${SITE_URL}/#organization`;
@@ -228,6 +217,24 @@ const jsonLd = {
 // iniciales en visitas posteriores.
 const a11yBootstrap = `
   try {
+    // Visitas en otro idioma: el HTML llega en español y el idioma se aplica
+    // al hidratar. Para que el cambio de texto no mueva la página (CLS), el
+    // contenido espera oculto a que se aplique (1.5 s como máximo).
+    var m = document.cookie.match(/(?:^|; )bryanf_lang=([^;]+)/);
+    var lang = m ? decodeURIComponent(m[1]) : null;
+    if (!lang) { try { lang = localStorage.getItem("bryanf_lang"); } catch (_) {} }
+    if (lang && lang !== "es" && /^(en|pt|de|fr|ja|zh)$/.test(lang)) {
+      document.documentElement.classList.add("lang-pending");
+      document.documentElement.dataset.langPending = lang;
+      setTimeout(function () { document.documentElement.classList.remove("lang-pending"); }, 1500);
+    }
+    // El titular grande espera a Fraunces (1 s como máximo): ver .hero-title.
+    if (document.fonts) {
+      document.documentElement.classList.add("fonts-pending");
+      setTimeout(function () { document.documentElement.classList.remove("fonts-pending"); }, 1000);
+    }
+  } catch (_) {}
+  try {
     var saved = JSON.parse(localStorage.getItem("bfd-a11y") || "{}");
     if (saved.reduceMotion === true) {
       document.documentElement.classList.add("a11y-reduce-motion");
@@ -262,11 +269,26 @@ const fxBootstrap = `
           }
         }
       }, { rootMargin: "0px 0px -4% 0px", threshold: 0.01 });
+      // Entradas .reveal (CSS con animation-timeline: view()): al completar
+      // su recorrido quedan fijas (una sola vez por sección). Sin soporte de
+      // scroll-timeline, el mismo observador dispara la transición de 350 ms.
+      var sup = !!(window.CSS && CSS.supports && CSS.supports("animation-timeline: view()"));
+      var ro = new IntersectionObserver(function (entries) {
+        for (var i = 0; i < entries.length; i++) {
+          if (entries[i].isIntersecting) {
+            entries[i].target.classList.add("reveal-done");
+            ro.unobserve(entries[i].target);
+          }
+        }
+      }, { rootMargin: sup ? "0px 0px -280px 0px" : "0px 0px -8% 0px", threshold: 0 });
       var watch = function (root) {
         if (root.nodeType !== 1) return;
         if (root.hasAttribute("data-fx") && !root.hasAttribute("data-fx-in")) io.observe(root);
         var list = root.querySelectorAll("[data-fx]:not([data-fx-in])");
         for (var j = 0; j < list.length; j++) io.observe(list[j]);
+        if (root.classList.contains("reveal") && !root.classList.contains("reveal-done")) ro.observe(root);
+        var rl = root.querySelectorAll(".reveal:not(.reveal-done)");
+        for (var k = 0; k < rl.length; k++) ro.observe(rl[k]);
       };
       var boot = function () {
         watch(document.body);
@@ -317,7 +339,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${jakarta.variable} ${archivo.variable} ${instrumentSerif.variable}`}
+      className={`${inter.variable} ${fraunces.variable}`}
       suppressHydrationWarning
     >
       <head>

@@ -303,7 +303,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                   </TrackedWhatsAppLink>
                 </Button>
                 <Button asChild size="lg" variant="outline">
-                  <Link href="/#projects">
+                  <Link href="/casos">
                     Ver proyectos
                     <ArrowRight aria-hidden className="h-4 w-4" />
                   </Link>
@@ -920,7 +920,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                       </TrackedWhatsAppLink>
                     </Button>
                     <Button asChild size="lg" variant="outline" className="w-full border-white/25 text-white">
-                      <Link href="/#precios">Armar cotización</Link>
+                      <Link href="/crear-web">Armar cotización</Link>
                     </Button>
                   </div>
                 </div>

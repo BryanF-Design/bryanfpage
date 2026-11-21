@@ -1,339 +1,97 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Heart, ShieldCheck, Sparkle, Timer, Wallet } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
-import { Button, ButtonArrow } from "@/components/ui/button";
-import { useLanguage } from "@/lib/i18n/context";
-import { SitePreview } from "@/components/site-preview";
-import { desktopShot, mobileShot, projects } from "@/lib/projects";
+import { Button } from "@/components/ui/button";
 import { TrackedWhatsAppLink } from "@/components/analytics/tracked-whatsapp-link";
+import { useLanguage } from "@/lib/i18n/context";
 import { STUDIO_FACTS } from "@/lib/catalog";
-
-/** Garantía 60 días · Solo 50% para empezar · Lista en 3 días. */
-const FEATURE_ICONS = [ShieldCheck, Wallet, Timer];
-
-/** El proyecto que presume el hero: el mismo destacado del portafolio. */
-const FEATURED = projects.find((p) => p.slug === "mixteca-web-vercel-app") ?? projects[0];
-
-/** Miniaturas de la prueba social: tres sitios reales del portafolio. */
-const PROOF_SHOTS = ["koi-arquitectura-vercel-app", "ceahestructural-com-mx", "element-experiences-com"];
-
-/** Hora de CDMX en vivo (solo en el navegador; se refresca cada 20 s). */
-function useCdmxTime() {
-  const [time, setTime] = useState<string | null>(null);
-  useEffect(() => {
-    const format = new Intl.DateTimeFormat("en-GB", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hourCycle: "h23",
-      timeZone: "America/Mexico_City",
-    });
-    const update = () => setTime(format.format(new Date()));
-    update();
-    const id = window.setInterval(update, 20_000);
-    return () => window.clearInterval(id);
-  }, []);
-  return time;
-}
-
-function delay(ms: number) {
-  return { "--hd": `${ms}ms` } as CSSProperties;
-}
+import { heroLoader } from "@/lib/image-loaders";
 
 /**
- * Ancho aproximado de una palabra en `em` con `.display-xl` (Archivo 800,
- * condensada, mayúsculas). Medido: ~0.58 em por letra latina, ~1 em por
- * ideograma o kana. Sirve para que la palabra gigante quepa en su columna
- * en cualquier idioma (ver `.fit-word` en globals.css).
- */
-function wordEm(word: string) {
-  let em = 0;
-  for (const ch of word.toUpperCase()) {
-    if (/[\u3000-\u9fff\uff00-\uffef]/.test(ch)) em += 1;
-    else if (/[.,;:!'’I]/.test(ch)) em += 0.3;
-    else if (/[MW]/.test(ch)) em += 0.8;
-    else em += 0.58;
-  }
-  return Math.max(em, 1);
-}
-
-/**
- * Hero — la pieza de las referencias: titular partido en dos alrededor de
- * Bryan, que sale del panel lima dentro de un arco bosque. Tres arreglos:
- *  - Teléfono: titular apilado, foto encabezando la tarjeta lima y, debajo,
- *    propuesta → acciones → texto (el CTA queda en la primera pantalla).
- *  - md–lg: titular en dos columnas; tarjeta con la propuesta a la izquierda
- *    y la foto a la derecha; ventajas y proyecto destacado en una fila abajo.
- *  - xl: la composición completa en tres columnas con la foto al centro.
- * Las palabras gigantes se ajustan a su columna (`.fit-word`), así que
- * ningún idioma se sale del marco. Todo entra con CSS (`.hero-in`), sin
- * esperar a la hidratación; el titular y la foto (candidatos a LCP) solo
- * suben, sin fundido, para no retrasar su pintado.
+ * Hero de la home: qué vendo, cuánto cuesta y cómo escribirme, en una
+ * pantalla que respira.
+ *  - Titular enorme en Fraunces; la palabra clave en lima con un subrayado
+ *    que crece (400 ms, única animación del texto).
+ *  - Subtítulo de una línea, WhatsApp "Quiero mi página" + "Ver precios" y
+ *    una sola línea de microcopy.
+ *  - Foto de Bryan a la derecha (máx. 1600 px) con zoom lentísimo al entrar
+ *    y un parallax de 8 px como máximo, solo con transform.
+ * El titular espera a que Fraunces cargue (o 1 s como mucho) para no
+ * aparecer con la fuente cambiando a la mitad (`html.fonts-pending`).
  */
 export function HeroPop() {
   const { t } = useLanguage();
-  const cdmxTime = useCdmxTime();
-  const heroWhatsapp = `https://wa.me/${STUDIO_FACTS.whatsapp}?text=${encodeURIComponent(t.hero.whatsappMsg)}`;
-
-  // Ancho de cada palabra gigante; desde md comparten el tamaño de la mayor.
-  const fitTitle = wordEm(t.hero.titleHighlight);
-  const fitSide = wordEm(t.hero.sideHighlight);
-  const fitShared = Math.max(fitTitle, fitSide);
-  const fit = (own: number) =>
-    ({ "--fit-own": own.toFixed(2), "--fit-shared": fitShared.toFixed(2) }) as CSSProperties;
+  const h = t.homeV2.hero;
+  const whatsapp = `https://wa.me/${STUDIO_FACTS.whatsapp}?text=${encodeURIComponent(h.whatsappMsg)}`;
 
   return (
     <section
       id="home"
       aria-labelledby="hero-title"
-      className="panel relative overflow-visible px-4 pb-4 pt-7 shadow-soft sm:px-6 sm:pt-9 md:pb-6 lg:px-10 lg:pb-10 lg:pt-12"
+      className="relative grid items-center gap-10 pt-6 md:pt-10 lg:min-h-[calc(100svh-var(--header-h)-2rem)] lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)] lg:gap-12"
     >
-      {/* Titular partido: izquierda (h1) y derecha (eco). En teléfono se apilan. */}
-      <div className="relative grid gap-1 md:grid-cols-2 md:items-end md:gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(16rem,26%)_minmax(0,1fr)] xl:gap-0">
-        <h1
-          id="hero-title"
-          className="hero-in hero-in-rise relative z-[1] min-w-0 text-ink [container-type:inline-size]"
-          style={delay(60)}
-        >
-          <span className="display-italic block text-[clamp(1.9rem,4.2vw,4.25rem)] leading-none">
-            {t.hero.titlePrefix}
+      <div className="relative z-[1] flex min-w-0 flex-col items-start">
+        <p className="inline-flex items-center gap-2 text-sm font-medium text-ink/70">
+          <span aria-hidden className="relative flex size-2">
+            <span className="absolute inset-0 animate-ping rounded-full bg-lime motion-reduce:animate-none" />
+            <span className="relative size-2 rounded-full bg-lime-deep" />
           </span>
-          <span
-            className="display-xl fit-word block [--fit-max:clamp(4.25rem,18vw,6rem)] md:[--fit-max:clamp(4.75rem,10.5vw,11rem)]"
-            style={fit(fitTitle)}
-          >
-            {t.hero.titleHighlight}
-          </span>
-          {/* El precio de entrada se ve a la derecha (eco visual); el h1 lo
-              incluye completo para buscadores y lectores de pantalla. */}
-          <span className="sr-only">
-            {" "}
-            {t.hero.sideTop} {t.hero.sideHighlight} MXN. {t.hero.eyebrow}.
-          </span>
-        </h1>
-        <div aria-hidden className="hidden xl:block" />
-        <p
-          aria-hidden
-          className="hero-in hero-in-rise relative z-[1] flex min-w-0 flex-wrap items-baseline gap-x-3 text-ink [container-type:inline-size] md:block md:text-right"
-          style={delay(140)}
-        >
-          <span className="display-italic block text-[clamp(1.5rem,4.2vw,4.25rem)] leading-none">
-            {t.hero.sideTop}
-          </span>
-          <span
-            className="display-xl fit-word relative inline-block text-forest [--fit-max:clamp(3.1rem,13vw,4.5rem)] md:[--fit-max:clamp(4.75rem,10.5vw,11rem)]"
-            style={fit(fitSide)}
-          >
-            {t.hero.sideHighlight}
-            <Sparkle
-              aria-hidden
-              className="float-y absolute -right-7 -top-3 h-7 w-7 fill-lime text-lime-deep max-md:hidden sm:h-10 sm:w-10 md:-left-12 md:right-auto md:top-1 xl:-left-14"
-            />
-          </span>
-          <span className="block w-full text-sm font-semibold text-ink/65 md:mt-2">{t.hero.priceNote}</span>
+          {h.badge}
         </p>
-      </div>
 
-      {/* Teléfono: precio + WhatsApp en la primera pantalla, sin scrollear.
-          Desde md las mismas acciones viven dentro del panel lima. */}
-      <div className="hero-in hero-in-up relative z-[2] mt-5 flex flex-col gap-2.5 md:hidden" style={delay(200)}>
-        <Button asChild size="lg" variant="ink" className="pr-2.5">
-          <TrackedWhatsAppLink href={heroWhatsapp} service="hero_quiero_mi_pagina">
-            <FaWhatsapp aria-hidden className="h-5 w-5 text-lime" />
-            {t.hero.ctaWhatsapp}
-            <ButtonArrow tone="lime" className="ml-auto -mr-0.5" />
-          </TrackedWhatsAppLink>
-        </Button>
-        <Button asChild size="lg" variant="white" className="ring-1 ring-inset ring-ink/10">
-          <Link href="#precios" data-track-cta="hero_ver_precios">
-            {t.hero.ctaPrices}
-          </Link>
-        </Button>
-      </div>
-
-      {/* Panel lima: propuesta, acciones y ventajas. Bryan sale de él. */}
-      <div className="panel-lime relative mt-24 rounded-[calc(var(--r-panel)-0.5rem)] md:mt-16 xl:mt-2">
-        <div className="relative grid grid-cols-[minmax(0,1fr)] gap-6 p-5 pt-0 sm:p-7 sm:pt-0 md:grid-cols-[minmax(0,1fr)_minmax(15rem,38%)] md:gap-x-8 md:gap-y-7 md:p-8 lg:p-10 xl:grid-cols-[minmax(0,1fr)_minmax(16rem,26%)_minmax(0,1fr)]">
-          {/* Foto dentro de un arco bosque: los cantos rectos del saco
-              coinciden con los del arco, y la cabeza sale por arriba. En
-              teléfono encabeza la tarjeta; en md–lg ocupa la columna derecha;
-              en xl la central y sube hasta el titular. Su ancho nunca pasa
-              de su columna (`cqi`), así que no tapa el texto de al lado. */}
-          <div className="hero-in hero-in-rise pointer-events-none relative -mt-24 [container-type:inline-size] md:order-2 md:mt-0 md:self-stretch">
-            <div className="relative mx-auto aspect-[704/1184] h-[18rem] sm:h-[20rem] md:absolute md:left-1/2 md:top-[-6rem] md:h-[min(calc(100%+6rem),calc(100cqi*1.68))] md:-translate-x-1/2 xl:bottom-[-2.5rem] xl:top-auto xl:h-[min(calc(100%+13rem),calc((100cqi+3rem)*1.68))]">
-              <svg
-                aria-hidden
-                viewBox="0 0 400 140"
-                className="float-y absolute left-1/2 top-[3%] w-[160%] max-w-none -translate-x-1/2 text-ink/30"
-              >
-                <ellipse
-                  cx="200"
-                  cy="70"
-                  rx="190"
-                  ry="40"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.25"
-                  transform="rotate(-9 200 70)"
-                />
-              </svg>
-              {/* Hasta lg la foto termina en un arco con base redondeada (un
-                  marco limpio, sin difuminar el saco); en xl baja hasta el
-                  canto de la tarjeta lima. */}
-              <div className="absolute inset-0 overflow-hidden rounded-b-[1.75rem] xl:overflow-visible xl:rounded-none">
-                <span aria-hidden className="absolute inset-x-0 bottom-0 top-[19%] rounded-t-full bg-forest" />
-                <Image
-                  src="/img/brand/bryan-hero.webp"
-                  alt="Bryan F., diseñador y desarrollador web"
-                  fill
-                  priority
-                  sizes="(min-width: 1280px) 26rem, (min-width: 768px) 20rem, 10rem"
-                  className="object-cover object-top"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Izquierda: propuesta + acciones + prueba social. En teléfono el
-              texto va después de las acciones para que el CTA se vea al cargar. */}
-          <div className="relative flex min-w-0 flex-col items-start gap-5 md:order-1 md:justify-center xl:justify-end">
-            <span
-              className="hero-in hero-in-fade eyebrow max-w-full whitespace-normal bg-white/55 py-1.5 pl-3 text-left leading-snug"
-              style={delay(260)}
-            >
-              <span aria-hidden className="relative flex size-2 shrink-0">
-                <span className="absolute inset-0 animate-ping rounded-full bg-forest/60 motion-reduce:animate-none" />
-                <span className="relative size-2 rounded-full bg-forest" />
-              </span>
-              {t.hero.available}
-              {/* El espacio de la hora se reserva desde el servidor (invisible
-                  hasta hidratar) para que la pastilla no salte de línea (CLS). */}
-              <span
-                aria-hidden={!cdmxTime}
-                className={`whitespace-nowrap tabular-nums text-ink/60 ${cdmxTime ? "" : "invisible"}`}
-              >
-                · CDMX {cdmxTime ?? "00:00"}
-              </span>
+        <h1 id="hero-title" className="hero-title mt-6 text-ink">
+          <span className="block">
+            {h.titleA}{" "}
+            <span className="hero-keyword">
+              {h.titleWord}
+              <span aria-hidden className="hero-underline" />
             </span>
-            <h2
-              className="hero-in hero-in-up display-title max-w-[22ch] text-balance text-[clamp(1.75rem,3vw,2.75rem)] text-ink"
-              style={delay(300)}
-            >
-              {t.hero.panelTitle}
-            </h2>
-            <p
-              className="hero-in hero-in-fade max-w-md text-pretty text-[0.975rem] leading-relaxed text-ink/75 max-sm:order-1 md:text-base"
-              style={delay(360)}
-            >
-              {t.hero.subtitle}
-            </p>
-            <div
-              className="hero-in hero-in-up flex w-full flex-col gap-2.5 max-md:hidden sm:w-auto sm:flex-row sm:flex-wrap"
-              style={delay(420)}
-            >
-              <Button asChild size="lg" variant="ink" className="pr-2.5">
-                <TrackedWhatsAppLink
-                  href={heroWhatsapp}
-                  service="hero_quiero_mi_pagina"
-                >
-                  <FaWhatsapp aria-hidden className="h-5 w-5 text-lime" />
-                  {t.hero.ctaWhatsapp}
-                  <ButtonArrow tone="lime" className="ml-auto -mr-0.5 sm:ml-2" />
-                </TrackedWhatsAppLink>
-              </Button>
-              <Button asChild size="lg" variant="white">
-                <Link href="#precios" data-track-cta="hero_ver_precios">
-                  {t.hero.ctaPrices}
-                </Link>
-              </Button>
-            </div>
+            .
+          </span>
+          <span className="block whitespace-nowrap">{h.price}</span>
+        </h1>
+        {/* Quita html.fonts-pending en cuanto Fraunces está lista (lo pone el
+            arranque del layout, con 1 s de tope). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var d=document.documentElement;var done=function(){d.classList.remove("fonts-pending")};var f=getComputedStyle(d).getPropertyValue("--font-display").split(",")[0].trim();if(!f||!document.fonts){done();return}document.fonts.load("600 1em "+f).then(done,done)}catch(e){document.documentElement.classList.remove("fonts-pending")}})();`,
+          }}
+        />
 
-            <div
-              className="hero-in hero-in-fade mt-1 flex max-w-full items-center gap-3 rounded-full bg-white/50 py-1.5 pl-1.5 pr-4 max-sm:order-2"
-              style={delay(480)}
-            >
-              <span className="flex shrink-0 -space-x-3">
-                {PROOF_SHOTS.map((slug) => (
-                  <span
-                    key={slug}
-                    className="relative size-10 overflow-hidden rounded-full bg-white ring-[3px] ring-lime"
-                  >
-                    <Image
-                      src={mobileShot(slug)}
-                      alt=""
-                      fill
-                      sizes="40px"
-                      className="object-cover object-top"
-                    />
-                  </span>
-                ))}
-              </span>
-              <span className="text-balance text-sm font-semibold leading-tight text-ink">{t.hero.proof}</span>
-              <Heart aria-hidden className="h-4 w-4 shrink-0 fill-ink text-ink" />
-            </div>
-          </div>
+        <p className="mt-6 max-w-[34rem] text-lg text-ink/70 md:text-xl">{h.subtitle}</p>
 
-          {/* Ventajas + proyecto destacado: fila inferior en md–lg, columna
-              derecha en xl. */}
-          <div className="relative flex min-w-0 flex-col gap-5 md:order-3 md:col-span-2 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] md:items-center md:gap-8 xl:col-span-1 xl:flex xl:flex-col xl:items-end xl:justify-between xl:gap-5">
-            <ul
-              className="hero-in hero-in-fade grid grid-cols-3 gap-2 xl:w-full xl:max-w-[22rem]"
-              style={delay(380)}
-            >
-              {t.hero.features.map((feature, index) => {
-                const Icon = FEATURE_ICONS[index] ?? Timer;
-                return (
-                  <li key={feature} className="flex min-w-0 flex-col items-center gap-2 text-center">
-                    <span className="grid size-11 place-items-center rounded-full bg-ink text-lime">
-                      <Icon aria-hidden className="h-5 w-5" />
-                    </span>
-                    <span className="text-balance text-sm font-semibold leading-snug text-ink">
-                      {feature}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
+        <div className="mt-9 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+          <Button asChild size="lg" variant="lime" className="lift h-14 gap-2.5 px-7 text-base">
+            <TrackedWhatsAppLink href={whatsapp} service="hero_quiero_mi_pagina">
+              <FaWhatsapp aria-hidden className="h-5 w-5" />
+              {h.ctaWhatsapp}
+            </TrackedWhatsAppLink>
+          </Button>
+          <Button asChild size="lg" variant="outline" className="h-14 px-7 text-base">
+            <Link href="#precios" data-track-cta="hero_ver_precios">
+              {h.ctaPrices}
+            </Link>
+          </Button>
+        </div>
 
-            <a
-              href={FEATURED.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hero-in hero-in-up group card-pop flex w-full min-w-0 gap-3 p-2.5 transition-transform duration-300 hover:-translate-y-1 xl:max-w-[22rem] xl:flex-col xl:p-3"
-              style={delay(460)}
-            >
-              <span className="relative aspect-[4/3] w-32 shrink-0 overflow-hidden rounded-inner bg-mint sm:w-40 xl:w-full">
-                {FEATURED.shots === false ? (
-                  <SitePreview
-                    name={FEATURED.name}
-                    host={new URL(FEATURED.url).hostname.replace(/^www\./, "")}
-                  />
-                ) : (
-                  <Image
-                    src={desktopShot(FEATURED.slug)}
-                    alt={`Captura del sitio de ${FEATURED.name}`}
-                    fill
-                    sizes="(min-width: 1280px) 22rem, 10rem"
-                    className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
-                  />
-                )}
-              </span>
-              <span className="flex min-w-0 flex-1 flex-col justify-between gap-2 py-1 xl:flex-row xl:items-center xl:px-1">
-                <span className="min-w-0">
-                  <span className="block text-xs font-semibold text-ink/65">{t.hero.featured}</span>
-                  <span className="block truncate text-lg font-bold text-ink">{FEATURED.name}</span>
-                </span>
-                <span className="inline-flex min-h-10 w-fit max-w-full items-center gap-1.5 rounded-full bg-lime px-4 py-1.5 text-sm font-semibold leading-tight text-ink sm:shrink-0 sm:whitespace-nowrap">
-                  {t.projects.visitSite}
-                  <ArrowUpRight aria-hidden className="h-4 w-4 transition-transform group-hover:rotate-45" />
-                </span>
-              </span>
-            </a>
-          </div>
+        <p className="mt-7 text-sm text-ink/60">{h.micro.join(" · ")}</p>
+      </div>
+
+      <div className="hero-photo relative mx-auto aspect-[704/1184] w-[min(72vw,22rem)] lg:w-full lg:max-w-[26rem]">
+        <span aria-hidden className="absolute inset-x-0 bottom-0 top-[18%] rounded-t-full bg-forest" />
+        <div className="hero-photo-img absolute inset-0 overflow-hidden rounded-b-[28px]">
+          <Image
+            src="/img/brand/bryan-hero.webp"
+            alt={h.photoAlt}
+            fill
+            priority
+            loader={heroLoader}
+            sizes="(min-width: 1024px) 30rem, 72vw"
+            className="object-cover object-top"
+          />
         </div>
       </div>
     </section>

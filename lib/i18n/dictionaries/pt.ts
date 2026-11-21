@@ -707,6 +707,115 @@ const pt: Dictionary = {
     label: "Idioma",
   },
   /** Inicio compacto: bloques que enlazan a las páginas movidas. */
+  homeV2: {
+    navCasos: "Casos",
+    navBarberias: "Barbearias",
+    navConoceme: "Sobre mim",
+    navServicios: "Serviços",
+    hero: {
+      badge: "Agenda aberta para novos projetos",
+      titleA: "Sites que",
+      titleWord: "vendem",
+      price: "A partir de $2,000 MXN.",
+      subtitle: "Design e desenvolvimento web no México, pronto em 3 dias.",
+      ctaWhatsapp: "Quero meu site",
+      ctaPrices: "Ver preços",
+      whatsappMsg: "Olá, quero meu site a partir de $2,000.",
+      micro: ["150+ projetos", "Desde 2018", "Garantia de 60 dias", "Só 50% para começar"],
+      photoAlt: "Bryan F., designer e desenvolvedor web",
+    },
+    cases: {
+      title: "Trabalho real que já está vendendo.",
+      subtitle: "Três projetos, o que foi feito e o seu número.",
+      seeCase: "Ver caso",
+      allCases: "Ver todos os casos",
+      cortmart: {
+        sector: "Barbearia · Barber OS",
+        done: "Agendamentos, fidelidade e caixa em um só lugar.",
+        stats: ["Visitas atendidas", "Comparecimento", "Clientes atendidos"],
+        note: "Números reais do painel da CortMart. Sem projeções nem dados de exemplo.",
+      },
+      efficient: {
+        number: "3",
+        label: "ferramentas em um fluxo: buscador Pantone®, catálogo e orçamento por WhatsApp",
+      },
+      koi: {
+        number: "4",
+        label: "etapas do serviço em um só percurso, com contato direto no final",
+      },
+      marqueeLabel: "Negócios com o site no ar",
+    },
+    pricing: {
+      title: "Preços claros, sem surpresas.",
+      subtitle: "Escolha um ponto de partida; tudo inclui garantia e contato direto.",
+      recommended: "Recomendado",
+      from: "A partir de",
+      plans: {
+        landing: {
+          name: "Landing page",
+          bullets: ["Design sob medida, textos e botão de WhatsApp", "SEO básico, domínio e hospedagem no primeiro ano", "Pronto a partir de 3 dias úteis"],
+          cta: "Quero minha landing",
+          msg: "Olá, quero minha landing de $2,000.",
+        },
+        site: {
+          name: "Site completo",
+          bullets: ["Tudo da Landing + até 5 seções", "E-mails e Google Business Profile", "Treinamento de 30 minutos"],
+          cta: "Quero meu site",
+          msg: "Olá, quero meu site completo de $3,500.",
+        },
+        software: {
+          name: "Software sob medida",
+          bullets: ["Processos, agendamentos, sistemas e automação", "De 4 a 6 semanas", "Orçamento conforme o escopo"],
+          cta: "Orçar meu sistema",
+          msg: "Olá, quero orçar um software sob medida (a partir de $10,000).",
+        },
+      },
+      extras: "Renovação $1,800 · Manutenção $1,000/mês · Kit de presença digital $1,500",
+      extrasLink: "Monte seu site",
+      micro: ["Garantia de 60 dias + 15 dias de ajustes", "Pague 50% para começar, 50% ao aprovar", "Cartão, Mercado Pago ou transferência SPEI"],
+    },
+    lumina: {
+      title: "Esta é a Lumina.",
+      line: "Sua assessora no site: explica, mostra exemplos e leva você direto ao que procura.",
+      cta: "Pergunte à Lumina",
+      chips: ["Quem é o Bryan?", "Quanto custa uma landing?", "Posso pagar com Mercado Pago?"],
+    },
+    about: {
+      title: "Sou o Bryan. Eu desenho e eu programo.",
+      line: "Você trabalha direto comigo, da ideia ao lançamento. Desde 2018, 150+ projetos.",
+      cta: "Conheça o Bryan",
+      photoAlt: "Bryan F. no seu estúdio",
+    },
+    faq: {
+      title: "Perguntas frequentes",
+      more: "Ver todas as perguntas",
+      items: [
+        {
+          q: "Quanto tempo leva meu site?",
+          a: "A partir de 3 dias úteis, contando desde que tenho todas as informações do seu negócio.",
+        },
+        {
+          q: "Quanto custa?",
+          a: "Landing $2,000, site completo $3,500 e software a partir de $10,000 MXN. Há serviços a partir de $350.",
+        },
+        {
+          q: "O que preciso para começar?",
+          a: "As informações do seu negócio, uma ligação curta e 50% de entrada. Os outros 50% ao aprovar.",
+        },
+        {
+          q: "O que você entrega?",
+          a: "Seu site funcionando, seus acessos e um treinamento de 30 minutos. Domínio, hospedagem e arquivos no seu nome.",
+        },
+      ],
+    },
+    closing: {
+      title: "Vamos começar seu site?",
+      price: "A partir de $2,000 MXN, pronto em 3 dias.",
+      cta: "Quero meu site",
+    },
+    footerPrice: "Sites a partir de $2,000 MXN",
+    clientAccess: "Acesso de clientes",
+  },
   home: {
     presence: "Projetos no México, Espanha e França",
     presenceLink: "Ver onde",

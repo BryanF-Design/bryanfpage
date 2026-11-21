@@ -51,6 +51,18 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   // to the real locale right after mount (see effect below).
   const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
 
+  // Quita el velo de `lang-pending` (lo pone el arranque del layout) en
+  // cuanto el idioma guardado ya está aplicado y pintado.
+  useEffect(() => {
+    const root = document.documentElement;
+    if (!root.classList.contains("lang-pending")) return;
+    const want = root.dataset.langPending;
+    if (!want || want === locale) {
+      const id = window.requestAnimationFrame(() => root.classList.remove("lang-pending"));
+      return () => window.cancelAnimationFrame(id);
+    }
+  }, [locale]);
+
   useEffect(() => {
     const stored = readStoredLocale();
     if (stored && stored !== DEFAULT_LOCALE) {

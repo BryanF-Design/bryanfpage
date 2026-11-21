@@ -17,7 +17,7 @@ function labelOf(el: HTMLElement) {
 }
 
 /** Enlaces internos que cuentan como CTA: cotizador, contacto y pago. */
-const CTA_HREF = /#precios|\/crear-web|\/contacto(?:$|[#?])/;
+const CTA_HREF = /#precios|#configurador|\/crear-web|\/contacto(?:$|[#?])/;
 
 /**
  * Un solo listener delegado mide las conversiones de todo el sitio, sin

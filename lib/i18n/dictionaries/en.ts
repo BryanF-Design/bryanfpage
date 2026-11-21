@@ -707,6 +707,115 @@ const en: Dictionary = {
     label: "Language",
   },
   /** Inicio compacto: bloques que enlazan a las páginas movidas. */
+  homeV2: {
+    navCasos: "Cases",
+    navBarberias: "Barbershops",
+    navConoceme: "About me",
+    navServicios: "Services",
+    hero: {
+      badge: "Now booking new projects",
+      titleA: "Websites that",
+      titleWord: "sell",
+      price: "From $2,000 MXN.",
+      subtitle: "Web design and development in Mexico, ready in 3 days.",
+      ctaWhatsapp: "I want my website",
+      ctaPrices: "See prices",
+      whatsappMsg: "Hi, I want my website from $2,000.",
+      micro: ["150+ projects", "Since 2018", "60-day guarantee", "Only 50% to start"],
+      photoAlt: "Bryan F., web designer and developer",
+    },
+    cases: {
+      title: "Real work that is already selling.",
+      subtitle: "Three projects, what was done and their number.",
+      seeCase: "See case",
+      allCases: "See all cases",
+      cortmart: {
+        sector: "Barbershop · Barber OS",
+        done: "Bookings, loyalty and cash register in one place.",
+        stats: ["Visits served", "Attendance", "Clients served"],
+        note: "Real figures from CortMart's dashboard. No projections or sample data.",
+      },
+      efficient: {
+        number: "3",
+        label: "tools in one flow: Pantone® finder, catalog and WhatsApp quotes",
+      },
+      koi: {
+        number: "4",
+        label: "service stages in a single journey, with direct contact at the end",
+      },
+      marqueeLabel: "Businesses with their site live",
+    },
+    pricing: {
+      title: "Clear prices, no surprises.",
+      subtitle: "Pick a starting point; everything includes a guarantee and direct contact.",
+      recommended: "Recommended",
+      from: "From",
+      plans: {
+        landing: {
+          name: "Landing page",
+          bullets: ["Custom design, copy and WhatsApp button", "Basic SEO, domain and hosting for the first year", "Ready from 3 business days"],
+          cta: "I want my landing page",
+          msg: "Hi, I want my $2,000 landing page.",
+        },
+        site: {
+          name: "Full website",
+          bullets: ["Everything in Landing + up to 5 sections", "Email accounts and Google Business Profile", "30-minute training"],
+          cta: "I want my website",
+          msg: "Hi, I want my $3,500 full website.",
+        },
+        software: {
+          name: "Custom software",
+          bullets: ["Processes, bookings, systems and automation", "4 to 6 weeks", "Quote based on scope"],
+          cta: "Quote my system",
+          msg: "Hi, I want a quote for custom software (from $10,000).",
+        },
+      },
+      extras: "Refresh $1,800 · Maintenance $1,000/month · Digital presence kit $1,500",
+      extrasLink: "Build your site",
+      micro: ["60-day guarantee + 15 days of adjustments", "Pay 50% to start, 50% on approval", "Card, Mercado Pago or SPEI transfer"],
+    },
+    lumina: {
+      title: "Meet Lumina.",
+      line: "Your on-site advisor: she explains, shows examples and takes you right to what you need.",
+      cta: "Ask Lumina",
+      chips: ["Who is Bryan?", "How much is a landing page?", "Can I pay with Mercado Pago?"],
+    },
+    about: {
+      title: "I'm Bryan. I design and I code.",
+      line: "You work directly with me, from idea to launch. Since 2018, 150+ projects.",
+      cta: "Meet Bryan",
+      photoAlt: "Bryan F. in his studio",
+    },
+    faq: {
+      title: "Frequently asked questions",
+      more: "See all questions",
+      items: [
+        {
+          q: "How long does my site take?",
+          a: "From 3 business days, counting from when I have all your business information.",
+        },
+        {
+          q: "How much does it cost?",
+          a: "Landing page $2,000, full website $3,500 and software from $10,000 MXN. Services start at $350.",
+        },
+        {
+          q: "What do I need to start?",
+          a: "Your business information, a short call and a 50% deposit. The other 50% on approval.",
+        },
+        {
+          q: "What do you deliver?",
+          a: "Your working site, your logins and a 30-minute training. Domain, hosting and files in your name.",
+        },
+      ],
+    },
+    closing: {
+      title: "Shall we start your website?",
+      price: "From $2,000 MXN, ready in 3 days.",
+      cta: "I want my website",
+    },
+    footerPrice: "Websites from $2,000 MXN",
+    clientAccess: "Client access",
+  },
   home: {
     presence: "Projects in Mexico, Spain and France",
     presenceLink: "See where",

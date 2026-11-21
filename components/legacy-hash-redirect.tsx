@@ -10,9 +10,13 @@ import { useEffect } from "react";
 const MOVED: Record<string, string> = {
   bryan: "/conoceme",
   stack: "/conoceme",
-  lumina: "/lumina",
   "lumina-journey": "/lumina",
   presencia: "/contacto#presencia",
+  // Rearmado 2026: la home quedó en bloques cortos.
+  projects: "/casos",
+  "casos-de-estudio": "/casos",
+  proceso: "/crear-web#proceso",
+  "servicios-entrada": "/crear-web#servicios-entrada",
 };
 
 export function LegacyHashRedirect() {

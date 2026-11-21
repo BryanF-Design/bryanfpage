@@ -88,12 +88,12 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
 
   const nav = [
     { label: t.nav.inicio, href: "/" },
-    { label: t.nav.proceso, href: "/#proceso" },
-    { label: t.nav.proyectos, href: "/#projects" },
-    { label: t.nav.casos, href: "/casos" },
-    { label: t.nav.serviciosEntrada, href: "/#servicios-entrada" },
     { label: t.nav.precios, href: "/#precios" },
-    { label: t.nav.faq, href: "/#faq" },
+    { label: t.nav.casos, href: "/casos" },
+    { label: t.nav.armaTuWeb, href: "/crear-web" },
+    { label: t.nav.proceso, href: "/crear-web#proceso" },
+    { label: t.nav.serviciosEntrada, href: "/crear-web#servicios-entrada" },
+    { label: t.nav.faq, href: "/contacto#faq" },
     // Secciones que se mudaron del inicio a su propia página.
     { label: t.nav.conoceme, href: "/conoceme" },
     { label: t.nav.lumina, href: "/lumina" },
@@ -173,7 +173,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
       >
         <div aria-hidden className="mesh-glow-a opacity-60" />
         {/* El contenido mantiene el ancho de la página aunque el panel crezca. */}
-        <div className="relative mx-auto flex w-full max-w-[1520px] flex-1 flex-col px-[calc(var(--gutter)+1.25rem)] pb-[calc(var(--gutter)+1rem)] pt-6 sm:px-[calc(var(--gutter)+2rem)] sm:pt-10 md:pb-[calc(var(--gutter)+1.25rem)] lg:px-[calc(var(--gutter)+3rem)] lg:pb-[calc(var(--gutter)+2rem)] lg:pt-14">
+        <div className="relative mx-auto flex w-full max-w-[1320px] flex-1 flex-col px-[calc(var(--gutter)+1.25rem)] pb-[calc(var(--gutter)+1rem)] pt-6 sm:px-[calc(var(--gutter)+2rem)] sm:pt-10 md:pb-[calc(var(--gutter)+1.25rem)] lg:px-[calc(var(--gutter)+3rem)] lg:pb-[calc(var(--gutter)+2rem)] lg:pt-14">
           <div data-fx="stagger" className="relative grid gap-7 sm:gap-10 xl:grid-cols-12 xl:gap-8">
             {/* Marca, frase, redes y reseña. */}
             <div className="flex flex-col items-start gap-5 sm:gap-6 lg:flex-row lg:items-end lg:justify-between xl:col-span-4 xl:flex-col xl:items-start xl:justify-start">
@@ -197,6 +197,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                     {t.footer.tagline}
                   </span>
                   {t.footer.taglineRest}
+                  <span className="mt-3 block font-semibold text-white">{t.homeV2.footerPrice}</span>
                 </p>
                 <ul className="flex flex-wrap gap-2">
                   {social.map(({ Icon, href, label }) => (
@@ -264,7 +265,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                   className="mt-3 hidden min-h-11 w-auto items-center justify-start gap-2 rounded-full border border-lime/40 px-4 text-sm font-semibold text-lime transition-colors hover:bg-lime hover:text-ink sm:inline-flex"
                 >
                   <LogIn aria-hidden className="h-4 w-4" />
-                  {t.footer.clientQuestion}
+                  {t.homeV2.clientAccess}
                 </Link>
               </nav>
 
@@ -292,7 +293,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                 className="col-span-2 -mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-lime/40 px-4 text-sm font-semibold text-lime transition-colors hover:bg-lime hover:text-ink sm:hidden"
               >
                 <LogIn aria-hidden className="h-4 w-4" />
-                {t.footer.clientQuestion}
+                {t.homeV2.clientAccess}
               </Link>
 
               {/* Legal y contacto */}

@@ -10,6 +10,8 @@ import { SiMercadopago, SiStripe } from "react-icons/si";
 import { SiteHeader } from "@/components/sections/site-header";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { Configurator } from "@/components/sections/configurator";
+import { EntryServices } from "@/components/sections/entry-services";
+import { ProcessOrbital } from "@/components/sections/process-orbital";
 import { Button } from "@/components/ui/button";
 import { CONFIGURATOR_PLANS } from "@/lib/catalog";
 import { formatMoney } from "@/lib/currency";
@@ -120,7 +122,7 @@ export function CrearWebExperience() {
 
               <div className="hero-in hero-in-up" style={delay(360)}>
                 <Button asChild size="lg" variant="ink" className="w-full justify-between pl-6 pr-2.5 sm:w-auto">
-                  <Link href="#precios">
+                  <Link href="#configurador">
                     {t.nav.armaTuWeb}
                     <span aria-hidden className="ml-3 grid size-9 place-items-center rounded-full bg-lime text-ink transition-transform duration-300 group-hover:translate-y-0.5">
                       <ArrowDown className="h-4 w-4" />
@@ -212,6 +214,13 @@ export function CrearWebExperience() {
         </section>
 
         <Configurator hideHeading />
+
+        {/* Servicios de entrada (tarjeta, firma, kit, landing): antes vivían
+            en la home; aquí siguen completos con su WhatsApp. */}
+        <EntryServices chapter={2} />
+
+        {/* El proceso completo (5 pasos) vive aquí; en la home no va. */}
+        <ProcessOrbital chapter={3} />
       </main>
 
       <SiteFooter />

@@ -11,6 +11,7 @@ import { Button, ButtonArrow } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n/context";
 import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { cn } from "@/lib/utils";
+import { SPRING } from "@/lib/motion-presets";
 
 const REDIRECT_SECONDS = 10;
 /** Interacciones que pausan la redirección (WCAG 2.2.1: tiempo ajustable). */
@@ -61,8 +62,8 @@ export function NotFoundContent() {
 
   /** Atajos por si el visitante prefiere elegir antes de que corra la cuenta. */
   const shortcuts = [
-    { label: t.nav.proyectos, href: "/#projects" },
-    { label: t.nav.servicios, href: "/#servicios-entrada" },
+    { label: t.nav.casos, href: "/casos" },
+    { label: t.nav.servicios, href: "/crear-web#servicios-entrada" },
     { label: t.nav.precios, href: "/#precios" },
     { label: t.nav.faq, href: "/#faq" },
   ];
@@ -99,7 +100,7 @@ export function NotFoundContent() {
           <motion.div
             initial={prefersReducedMotion ? false : { opacity: 0, y: 40, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ type: "spring", stiffness: 180, damping: 22 }}
+            transition={SPRING}
             className="relative flex flex-col items-center lg:order-2 lg:col-span-6"
             aria-hidden
           >

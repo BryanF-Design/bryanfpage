@@ -737,6 +737,115 @@ const es = {
     label: "Idioma",
   },
   /** Inicio compacto: bloques que enlazan a las páginas movidas. */
+  homeV2: {
+    navCasos: "Casos",
+    navBarberias: "Barberías",
+    navConoceme: "Conóceme",
+    navServicios: "Servicios",
+    hero: {
+      badge: "Agenda abierta para nuevos proyectos",
+      titleA: "Páginas web que",
+      titleWord: "venden",
+      price: "Desde $2,000.",
+      subtitle: "Diseño y desarrollo web en México, lista en 3 días.",
+      ctaWhatsapp: "Quiero mi página",
+      ctaPrices: "Ver precios",
+      whatsappMsg: "Hola, quiero mi página desde $2,000.",
+      micro: ["150+ proyectos", "Desde 2018", "Garantía 60 días", "Solo 50% para empezar"],
+      photoAlt: "Bryan F., diseñador y desarrollador web",
+    },
+    cases: {
+      title: "Trabajo real que ya está vendiendo.",
+      subtitle: "Tres proyectos, lo que se hizo y su número.",
+      seeCase: "Ver caso",
+      allCases: "Ver todos los casos",
+      cortmart: {
+        sector: "Barbería · Barber OS",
+        done: "Reservas, lealtad y caja en un solo lugar.",
+        stats: ["Visitas atendidas", "Asistencia", "Clientes atendidos"],
+        note: "Cifras reales del panel de CortMart. Sin proyecciones ni datos de ejemplo.",
+      },
+      efficient: {
+        number: "3",
+        label: "herramientas en un flujo: buscador Pantone®, catálogo y cotización por WhatsApp",
+      },
+      koi: {
+        number: "4",
+        label: "etapas del servicio en un solo recorrido, con contacto directo al final",
+      },
+      marqueeLabel: "Negocios con su web en línea",
+    },
+    pricing: {
+      title: "Precios claros, sin sorpresas.",
+      subtitle: "Elige un punto de partida; todo incluye garantía y trato directo.",
+      recommended: "Recomendado",
+      from: "Desde",
+      plans: {
+        landing: {
+          name: "Landing",
+          bullets: ["Diseño a medida, textos y botón de WhatsApp", "SEO básico, dominio y hosting el primer año", "Lista desde 3 días hábiles"],
+          cta: "Quiero mi landing",
+          msg: "Hola, quiero mi landing de $2,000.",
+        },
+        site: {
+          name: "Sitio completo",
+          bullets: ["Todo lo de Landing + hasta 5 secciones", "Correos y Google Business Profile", "Capacitación de 30 minutos"],
+          cta: "Quiero mi sitio",
+          msg: "Hola, quiero mi sitio completo de $3,500.",
+        },
+        software: {
+          name: "Software a medida",
+          bullets: ["Procesos, reservas, sistemas y automatización", "De 4 a 6 semanas", "Cotización según el alcance"],
+          cta: "Cotizar mi sistema",
+          msg: "Hola, quiero cotizar un software a medida (desde $10,000).",
+        },
+      },
+      extras: "Renovación $1,800 · Mantenimiento $1,000/mes · Kit presencia digital $1,500",
+      extrasLink: "Arma tu web",
+      micro: ["Garantía 60 días + 15 días de ajustes", "Pagas 50% para empezar, 50% al aprobar", "Tarjeta, Mercado Pago o transferencia SPEI"],
+    },
+    lumina: {
+      title: "Ella es Lumina.",
+      line: "Tu asesora en la página: te explica, te enseña ejemplos y te lleva justo a lo que buscas.",
+      cta: "Pregúntale a Lumina",
+      chips: ["¿Quién es Bryan?", "¿Cuánto cuesta una landing?", "¿Puedo pagar con Mercado Pago?"],
+    },
+    about: {
+      title: "Soy Bryan. Yo diseño y yo programo.",
+      line: "Trabajas directo conmigo, de la idea al lanzamiento. Desde 2018, 150+ proyectos.",
+      cta: "Conoce a Bryan",
+      photoAlt: "Bryan F. en su estudio",
+    },
+    faq: {
+      title: "Preguntas frecuentes",
+      more: "Ver todas las preguntas",
+      items: [
+        {
+          q: "¿Cuánto tarda mi página?",
+          a: "Desde 3 días hábiles, contando desde que tengo toda la información de tu negocio.",
+        },
+        {
+          q: "¿Cuánto cuesta?",
+          a: "Landing $2,000, sitio completo $3,500 y software desde $10,000. Hay servicios desde $350.",
+        },
+        {
+          q: "¿Qué necesito para empezar?",
+          a: "La información de tu negocio, una llamada corta y el 50% de anticipo. El otro 50% al aprobar.",
+        },
+        {
+          q: "¿Qué me entregas?",
+          a: "Tu sitio funcionando, tus accesos y una capacitación de 30 minutos. Dominio, hosting y archivos a tu nombre.",
+        },
+      ],
+    },
+    closing: {
+      title: "¿Empezamos tu web?",
+      price: "Desde $2,000, lista en 3 días.",
+      cta: "Quiero mi página",
+    },
+    footerPrice: "Páginas web desde $2,000",
+    clientAccess: "Acceso clientes",
+  },
   home: {
     presence: "Proyectos en México, España y Francia",
     presenceLink: "Ver dónde",

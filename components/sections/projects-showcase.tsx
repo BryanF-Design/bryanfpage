@@ -1136,7 +1136,7 @@ export function ProjectsShowcase({
           <li data-fx="pop" className={cn("min-w-0", closerSpan, closerLgSpan)}>
             {/* Cierre del catálogo: toda la ficha lleva al configurador. */}
             <Link
-              href="#precios"
+              href="/#precios"
               className={cn(
                 "panel-lime group relative flex h-full flex-col justify-between gap-5 overflow-hidden rounded-card p-4 transition-transform duration-300 [transition-timing-function:var(--ease-out)] hover:-translate-y-1 sm:p-7",
                 closerWide && "lg:flex-row lg:items-center lg:p-8"

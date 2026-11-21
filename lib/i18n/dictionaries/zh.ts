@@ -663,6 +663,115 @@ const zh: Dictionary = {
     label: "语言",
   },
   /** Inicio compacto: bloques que enlazan a las páginas movidas. */
+  homeV2: {
+    navCasos: "案例",
+    navBarberias: "理发店",
+    navConoceme: "关于我",
+    navServicios: "服务",
+    hero: {
+      badge: "现正接受新项目",
+      titleA: "",
+      titleWord: "会带来订单的",
+      price: "网站，起价 $2,000 MXN。",
+      subtitle: "墨西哥网页设计与开发，最快 3 天上线。",
+      ctaWhatsapp: "我想要网站",
+      ctaPrices: "查看价格",
+      whatsappMsg: "你好，我想要起价 $2,000 的网站。",
+      micro: ["150+ 个项目", "始于 2018 年", "60 天保障", "只需 50% 即可开始"],
+      photoAlt: "网页设计师兼开发者 Bryan F.",
+    },
+    cases: {
+      title: "已经在带来订单的真实作品。",
+      subtitle: "三个项目，做了什么，以及它们的数字。",
+      seeCase: "查看案例",
+      allCases: "查看全部案例",
+      cortmart: {
+        sector: "理发店 · Barber OS",
+        done: "预约、会员积分和收银集中在一处。",
+        stats: ["接待到店", "到店率", "服务客户"],
+        note: "CortMart 后台的真实数据，没有预测或示例数据。",
+      },
+      efficient: {
+        number: "3",
+        label: "个工具串成一个流程：Pantone® 搜索、目录和 WhatsApp 报价",
+      },
+      koi: {
+        number: "4",
+        label: "个服务阶段串成一条路径，最后直接联系",
+      },
+      marqueeLabel: "网站已上线的客户",
+    },
+    pricing: {
+      title: "价格清楚，没有意外。",
+      subtitle: "选一个起点；全部包含保障，并由我直接对接。",
+      recommended: "推荐",
+      from: "起价",
+      plans: {
+        landing: {
+          name: "落地页",
+          bullets: ["定制设计、文案和 WhatsApp 按钮", "基础 SEO、首年域名和主机", "最快 3 个工作日"],
+          cta: "我要落地页",
+          msg: "你好，我想要 $2,000 的落地页。",
+        },
+        site: {
+          name: "完整网站",
+          bullets: ["落地页全部内容 + 最多 5 个板块", "企业邮箱和 Google 商家资料", "30 分钟培训"],
+          cta: "我要网站",
+          msg: "你好，我想要 $3,500 的完整网站。",
+        },
+        software: {
+          name: "定制软件",
+          bullets: ["流程、预约、系统和自动化", "4 到 6 周", "按范围报价"],
+          cta: "获取系统报价",
+          msg: "你好，我想咨询定制软件（起价 $10,000）。",
+        },
+      },
+      extras: "网站翻新 $1,800 · 维护 $1,000/月 · 数字形象套装 $1,500",
+      extrasLink: "定制你的网站",
+      micro: ["60 天保障 + 15 天调整", "开始付 50%，验收付 50%", "信用卡、Mercado Pago 或 SPEI 转账"],
+    },
+    lumina: {
+      title: "她是 Lumina。",
+      line: "网站里的顾问：为你讲解、展示案例，并直接带你到想看的地方。",
+      cta: "问问 Lumina",
+      chips: ["Bryan 是谁？", "落地页多少钱？", "可以用 Mercado Pago 付款吗？"],
+    },
+    about: {
+      title: "我是 Bryan。设计和开发都由我来做。",
+      line: "从想法到上线，你都直接和我合作。始于 2018 年，150+ 个项目。",
+      cta: "认识 Bryan",
+      photoAlt: "工作室里的 Bryan F.",
+    },
+    faq: {
+      title: "常见问题",
+      more: "查看全部问题",
+      items: [
+        {
+          q: "我的网站要多久？",
+          a: "最快 3 个工作日，从我拿到你的全部业务资料开始计算。",
+        },
+        {
+          q: "多少钱？",
+          a: "落地页 $2,000，完整网站 $3,500，软件 $10,000 起（墨西哥比索）。另有 $350 起的服务。",
+        },
+        {
+          q: "开始需要准备什么？",
+          a: "你的业务资料、一次简短通话和 50% 定金。另外 50% 在验收时支付。",
+        },
+        {
+          q: "最后交付什么？",
+          a: "可运行的网站、所有账号权限和 30 分钟培训。域名、主机和文件都归你所有。",
+        },
+      ],
+    },
+    closing: {
+      title: "开始做你的网站吧？",
+      price: "起价 $2,000 MXN，最快 3 天上线。",
+      cta: "我想要网站",
+    },
+    footerPrice: "网站起价 $2,000 MXN",
+    clientAccess: "客户登录",
+  },
   home: {
     presence: "项目遍及墨西哥、西班牙和法国",
     presenceLink: "查看地点",

@@ -63,6 +63,9 @@ export const CONFIGURATOR_MODULES: readonly ConfiguratorModule[] = [
 /** Precio por sección adicional en el configurador. */
 export const SECTION_PRICE: Mxn = 350;
 
+/** Software a medida: precio de partida (se cotiza por alcance, no se cobra en línea). */
+export const SOFTWARE_FROM: Mxn = 10000;
+
 /** Plan que se usa cuando una selección no trae uno válido (el recomendado). */
 export const DEFAULT_PLAN_ID = "full";
 

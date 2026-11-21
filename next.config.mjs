@@ -2,6 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
+    // Nunca variantes de 3840 px: el ancho máximo que se genera es 1600 (hero).
+    // Las tarjetas se topan a 800 y las miniaturas a 400 (lib/image-loaders).
+    deviceSizes: [400, 640, 800, 1080, 1280, 1600],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 320],
+    formats: ["image/webp"],
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "lottie.host" },

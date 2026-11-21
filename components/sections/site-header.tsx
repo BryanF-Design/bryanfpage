@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, LogIn, Menu, X } from "lucide-react";
+import { ArrowUpRight, ChevronDown, Menu, X } from "lucide-react";
 import {
   FaWhatsapp,
   FaInstagram,
@@ -13,15 +13,16 @@ import {
   FaGithub,
 } from "react-icons/fa";
 
-import { Button, ButtonArrow } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { TrackedWhatsAppLink } from "@/components/analytics/tracked-whatsapp-link";
+import { STUDIO_FACTS } from "@/lib/catalog";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useLanguage } from "@/lib/i18n/context";
 import { DICTIONARIES } from "@/lib/i18n/dictionaries";
 import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { useFooterInView } from "@/lib/use-footer-in-view";
 import { cn } from "@/lib/utils";
-
-const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
+import { SPRING } from "@/lib/motion-presets";
 
 const social = [
   { Icon: FaInstagram, href: "https://www.instagram.com/bryanf_design/", label: "Instagram" },
@@ -32,10 +33,11 @@ const social = [
 ];
 
 /**
- * Barra flotante: una píldora blanca con la marca, la navegación y las
- * acciones, como la cabecera de las referencias. Gana sombra al hacer
- * scroll. Por debajo de 1024 px la navegación vive en una hoja que baja
- * desde la barra, con los enlaces en rótulo grande.
+ * Barra superior fija sobre el lienzo crema: logotipo real a la izquierda,
+ * menú (Servicios, Casos, Barberías, Conóceme, Precios) y el botón de
+ * WhatsApp siempre visible a la derecha. El acceso de clientes vive en el
+ * pie. Por debajo de 1024 px la navegación va en una hoja que baja desde la
+ * barra.
  */
 export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
   const { t: localizedT } = useLanguage();
@@ -53,13 +55,22 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const firstMenuLinkRef = useRef<HTMLAnchorElement>(null);
 
-  const links = [
-    { label: t.nav.proyectos, href: "/#projects" },
-    { label: t.nav.servicios, href: "/#servicios-entrada" },
-    { label: t.nav.lumina, href: "/lumina" },
-    { label: t.nav.precios, href: "/#precios" },
-    { label: t.nav.faq, href: "/#faq" },
+  const services = [
+    { label: t.footer.services.paginasNegocios, href: "/paginas-web-para-negocios" },
+    { label: t.footer.services.disenoWeb, href: "/diseno-web-mexico" },
+    { label: t.footer.services.desarrolloWeb, href: "/desarrollo-web-mexico" },
+    { label: t.footer.services.uxUi, href: "/diseno-ux-ui-mexico" },
+    { label: t.footer.services.softwareMedida, href: "/software-a-medida-mexico" },
+    { label: t.footer.services.mantenimientoWeb, href: "/mantenimiento-web-mexico" },
   ];
+  const links = [
+    { label: t.homeV2.navCasos, href: "/casos" },
+    { label: t.homeV2.navBarberias, href: "/sistema-para-barberias" },
+    { label: t.homeV2.navConoceme, href: "/conoceme" },
+    { label: t.nav.precios, href: "/#precios" },
+  ];
+  const whatsappHref = `https://wa.me/${STUDIO_FACTS.whatsapp}?text=${encodeURIComponent(t.homeV2.hero.whatsappMsg)}`;
+  const [servicesOpen, setServicesOpen] = useState(false);
 
   useEffect(() => {
     let frame = 0;
@@ -137,34 +148,69 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
       >
         <div
           className={cn(
-            "pointer-events-auto mx-auto flex h-[3.75rem] max-w-[1488px] items-center justify-between gap-3 rounded-full bg-white pl-3 pr-2 ring-1 ring-ink/[0.06] transition-shadow duration-300 md:h-16 md:pl-4",
+            "pointer-events-auto mx-auto flex h-16 max-w-[1320px] items-center justify-between gap-3 rounded-[18px] px-3 transition-[background-color,box-shadow] duration-300 md:h-[4.5rem] md:px-5",
             scrolled || open
-              ? "shadow-[0_18px_40px_-22px_hsl(var(--ink)/0.45)]"
-              : "shadow-[0_8px_24px_-20px_hsl(var(--ink)/0.3)]"
+              ? "bg-[hsl(var(--canvas)/0.92)] shadow-[0_0_0_1px_hsl(var(--ink)/0.07)] backdrop-blur-md"
+              : "bg-transparent"
           )}
         >
           <Link
             href="/"
             onClick={() => setOpen(false)}
-            className="flex h-11 shrink-0 items-center rounded-full px-1"
+            className="flex h-12 shrink-0 items-center px-1"
             aria-label="Inicio de BryanF Design"
           >
+            {/* Logotipo real (texto con slash lima), en su proporción 720:253. */}
             <Image
               src="/img/brand/logo-dark.png"
               alt="BryanF Design"
               width={720}
               height={253}
               priority
-              sizes="120px"
-              className="h-7 w-auto md:h-8"
+              sizes="(min-width: 768px) 128px, 108px"
+              className="h-[38px] w-auto md:h-[45px]"
             />
           </Link>
 
           <nav
             aria-label={t.nav.menu}
             className="hidden items-center gap-1 lg:flex"
-            onMouseLeave={() => setHovered(null)}
+            onMouseLeave={() => {
+              setHovered(null);
+              setServicesOpen(false);
+            }}
           >
+            <div className="relative" onMouseEnter={() => setServicesOpen(true)}>
+              <button
+                type="button"
+                aria-expanded={servicesOpen}
+                aria-controls="nav-services"
+                onClick={() => setServicesOpen((v) => !v)}
+                onKeyDown={(e) => e.key === "Escape" && setServicesOpen(false)}
+                className="inline-flex h-10 items-center gap-1 rounded-full px-4 text-[0.9375rem] font-medium text-ink/75 transition-colors hover:text-ink"
+              >
+                {t.homeV2.navServicios}
+                <ChevronDown aria-hidden className={cn("h-4 w-4 transition-transform", servicesOpen && "rotate-180")} />
+              </button>
+              {servicesOpen && (
+                <ul
+                  id="nav-services"
+                  className="absolute left-0 top-full mt-2 w-64 rounded-2xl bg-white p-2 shadow-float ring-1 ring-ink/[0.06]"
+                >
+                  {services.map((sv) => (
+                    <li key={sv.href}>
+                      <Link
+                        href={sv.href}
+                        onClick={() => setServicesOpen(false)}
+                        className="block rounded-xl px-3 py-2.5 text-[0.9375rem] text-ink/80 transition-colors hover:bg-ink/[0.05] hover:text-ink"
+                      >
+                        {sv.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
             {links.map((l, i) => (
               <Link
                 key={l.href}
@@ -172,14 +218,14 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
                 onMouseEnter={() => setHovered(i)}
                 onFocus={() => setHovered(i)}
                 onBlur={() => setHovered(null)}
-                className="relative inline-flex h-10 items-center rounded-full px-4 text-[0.9375rem] font-semibold text-ink/75 transition-colors hover:text-ink xl:px-5"
+                className="relative inline-flex h-10 items-center rounded-full px-4 text-[0.9375rem] font-medium text-ink/75 transition-colors hover:text-ink"
               >
                 {hovered === i && (
                   <motion.span
                     layoutId={reducedMotion ? undefined : "nav-hover-pill"}
                     aria-hidden
                     className="absolute inset-0 rounded-full bg-ink/[0.06]"
-                    transition={{ type: "spring", stiffness: 500, damping: 40 }}
+                    transition={SPRING}
                   />
                 )}
                 <span className="relative">{l.label}</span>
@@ -189,20 +235,12 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
 
           <div className="flex items-center gap-1.5">
             {!spanishOnly && <LanguageSwitcher />}
-            <Link
-              href={CLIENT_PORTAL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden h-10 items-center gap-2 rounded-full px-4 text-sm font-semibold text-ink/75 transition-colors hover:bg-ink/[0.05] hover:text-ink xl:inline-flex"
-            >
-              <LogIn className="h-4 w-4" />
-              {t.nav.cliente}
-            </Link>
-            <Button asChild variant="ink" className="hidden h-11 pl-5 pr-2 sm:inline-flex">
-              <Link href="/#precios">
-                {t.nav.armaTuWeb}
-                <ButtonArrow tone="lime" className="-mr-0.5" />
-              </Link>
+            {/* WhatsApp siempre visible (también en teléfono, solo el ícono). */}
+            <Button asChild variant="ink" className="h-11 gap-2 px-3.5 sm:px-5">
+              <TrackedWhatsAppLink href={whatsappHref} service="header_whatsapp">
+                <FaWhatsapp aria-hidden className="h-5 w-5 text-lime" />
+                <span className="sr-only sm:not-sr-only">{t.homeV2.hero.ctaWhatsapp}</span>
+              </TrackedWhatsAppLink>
             </Button>
             <button
               ref={menuButtonRef}
@@ -236,6 +274,25 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
           >
             <nav aria-label={t.nav.menu} className="flex flex-1 flex-col px-5 pb-6 pt-4 sm:px-8">
               <ul className="flex flex-col">
+                <li className="border-b border-ink/[0.07] py-3">
+                  <span className="display-title block text-[clamp(1.75rem,8vw,2.75rem)] text-ink">
+                    {t.homeV2.navServicios}
+                  </span>
+                  <ul className="mt-2 grid gap-1 sm:grid-cols-2">
+                    {services.map((sv, i) => (
+                      <li key={sv.href}>
+                        <Link
+                          ref={i === 0 ? firstMenuLinkRef : undefined}
+                          href={sv.href}
+                          onClick={() => setOpen(false)}
+                          className="flex min-h-11 items-center text-base text-ink/75 hover:text-ink"
+                        >
+                          {sv.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
                 {links.map((l, i) => (
                   <motion.li
                     key={l.href}
@@ -249,12 +306,11 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
                     className="border-b border-ink/[0.07]"
                   >
                     <Link
-                      ref={i === 0 ? firstMenuLinkRef : undefined}
                       href={l.href}
                       onClick={() => setOpen(false)}
-                      className="group flex min-h-[4.25rem] items-center justify-between gap-4 py-2"
+                      className="group flex min-h-[4rem] items-center justify-between gap-4 py-2"
                     >
-                      <span className="display-title text-[clamp(2rem,9vw,3.25rem)] text-ink">
+                      <span className="display-title text-[clamp(1.75rem,8vw,2.75rem)] text-ink">
                         {l.label}
                       </span>
                       <span className="grid size-11 shrink-0 place-items-center rounded-full bg-ink/[0.05] text-ink transition-colors group-hover:bg-lime">
@@ -266,21 +322,15 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
               </ul>
 
               <div className="mt-auto flex flex-col gap-3 pt-8 sm:flex-row">
-                <Button asChild size="lg" variant="ink" className="w-full pr-2 sm:flex-1">
-                  <Link href="/#precios" onClick={() => setOpen(false)}>
-                    {t.nav.armaTuWeb}
-                    <ButtonArrow tone="lime" className="ml-auto -mr-0.5" />
-                  </Link>
+                <Button asChild size="lg" variant="ink" className="w-full gap-2 sm:flex-1">
+                  <TrackedWhatsAppLink href={whatsappHref} service="menu_whatsapp">
+                    <FaWhatsapp aria-hidden className="h-5 w-5 text-lime" />
+                    {t.homeV2.hero.ctaWhatsapp}
+                  </TrackedWhatsAppLink>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="w-full sm:flex-1">
-                  <Link
-                    href={CLIENT_PORTAL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setOpen(false)}
-                  >
-                    <LogIn className="h-4 w-4" />
-                    {t.nav.cliente}
+                  <Link href="/#precios" onClick={() => setOpen(false)}>
+                    {t.homeV2.hero.ctaPrices}
                   </Link>
                 </Button>
               </div>

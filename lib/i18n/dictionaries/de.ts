@@ -707,6 +707,115 @@ const de: Dictionary = {
     label: "Sprache",
   },
   /** Inicio compacto: bloques que enlazan a las páginas movidas. */
+  homeV2: {
+    navCasos: "Fälle",
+    navBarberias: "Barbershops",
+    navConoceme: "Über mich",
+    navServicios: "Leistungen",
+    hero: {
+      badge: "Offen für neue Projekte",
+      titleA: "Websites, die",
+      titleWord: "verkaufen",
+      price: "Ab $2,000 MXN.",
+      subtitle: "Webdesign und -entwicklung in Mexiko, fertig in 3 Tagen.",
+      ctaWhatsapp: "Ich will meine Website",
+      ctaPrices: "Preise ansehen",
+      whatsappMsg: "Hallo, ich möchte meine Website ab $2,000.",
+      micro: ["150+ Projekte", "Seit 2018", "60 Tage Garantie", "Nur 50% zum Start"],
+      photoAlt: "Bryan F., Webdesigner und Entwickler",
+    },
+    cases: {
+      title: "Echte Arbeit, die schon verkauft.",
+      subtitle: "Drei Projekte, was gemacht wurde und ihre Zahl.",
+      seeCase: "Fall ansehen",
+      allCases: "Alle Fälle ansehen",
+      cortmart: {
+        sector: "Barbershop · Barber OS",
+        done: "Buchungen, Treueprogramm und Kasse an einem Ort.",
+        stats: ["Betreute Besuche", "Erscheinungsquote", "Betreute Kunden"],
+        note: "Echte Zahlen aus dem Dashboard von CortMart. Keine Prognosen, keine Beispieldaten.",
+      },
+      efficient: {
+        number: "3",
+        label: "Werkzeuge in einem Ablauf: Pantone®-Suche, Katalog und Angebot per WhatsApp",
+      },
+      koi: {
+        number: "4",
+        label: "Leistungsphasen in einem Weg, mit direktem Kontakt am Ende",
+      },
+      marqueeLabel: "Unternehmen mit ihrer Website online",
+    },
+    pricing: {
+      title: "Klare Preise, keine Überraschungen.",
+      subtitle: "Wähle einen Startpunkt; alles mit Garantie und direktem Kontakt.",
+      recommended: "Empfohlen",
+      from: "Ab",
+      plans: {
+        landing: {
+          name: "Landingpage",
+          bullets: ["Individuelles Design, Texte und WhatsApp-Button", "Basis-SEO, Domain und Hosting im ersten Jahr", "Fertig ab 3 Werktagen"],
+          cta: "Ich will meine Landingpage",
+          msg: "Hallo, ich möchte meine Landingpage für $2,000.",
+        },
+        site: {
+          name: "Komplette Website",
+          bullets: ["Alles aus Landing + bis zu 5 Bereiche", "E-Mail-Konten und Google Business Profile", "30 Minuten Einweisung"],
+          cta: "Ich will meine Website",
+          msg: "Hallo, ich möchte meine komplette Website für $3,500.",
+        },
+        software: {
+          name: "Individuelle Software",
+          bullets: ["Prozesse, Buchungen, Systeme und Automatisierung", "4 bis 6 Wochen", "Angebot je nach Umfang"],
+          cta: "System anfragen",
+          msg: "Hallo, ich möchte ein Angebot für individuelle Software (ab $10,000).",
+        },
+      },
+      extras: "Relaunch $1,800 · Wartung $1,000/Monat · Digitales Präsenz-Kit $1,500",
+      extrasLink: "Website zusammenstellen",
+      micro: ["60 Tage Garantie + 15 Tage Anpassungen", "50% zum Start, 50% bei Freigabe", "Karte, Mercado Pago oder SPEI-Überweisung"],
+    },
+    lumina: {
+      title: "Das ist Lumina.",
+      line: "Deine Beraterin auf der Seite: Sie erklärt, zeigt Beispiele und bringt dich direkt zum Gesuchten.",
+      cta: "Frag Lumina",
+      chips: ["Wer ist Bryan?", "Was kostet eine Landingpage?", "Kann ich mit Mercado Pago zahlen?"],
+    },
+    about: {
+      title: "Ich bin Bryan. Ich gestalte und programmiere.",
+      line: "Du arbeitest direkt mit mir, von der Idee bis zum Launch. Seit 2018, 150+ Projekte.",
+      cta: "Lerne Bryan kennen",
+      photoAlt: "Bryan F. in seinem Studio",
+    },
+    faq: {
+      title: "Häufige Fragen",
+      more: "Alle Fragen ansehen",
+      items: [
+        {
+          q: "Wie lange dauert meine Website?",
+          a: "Ab 3 Werktagen, gerechnet ab dem Zeitpunkt, an dem ich alle Infos zu deinem Geschäft habe.",
+        },
+        {
+          q: "Was kostet das?",
+          a: "Landingpage $2,000, komplette Website $3,500 und Software ab $10,000 MXN. Leistungen ab $350.",
+        },
+        {
+          q: "Was brauche ich zum Start?",
+          a: "Infos zu deinem Geschäft, ein kurzes Gespräch und 50% Anzahlung. Die anderen 50% bei Freigabe.",
+        },
+        {
+          q: "Was bekomme ich am Ende?",
+          a: "Deine fertige Website, deine Zugänge und 30 Minuten Einweisung. Domain, Hosting und Dateien auf deinen Namen.",
+        },
+      ],
+    },
+    closing: {
+      title: "Starten wir deine Website?",
+      price: "Ab $2,000 MXN, fertig in 3 Tagen.",
+      cta: "Ich will meine Website",
+    },
+    footerPrice: "Websites ab $2,000 MXN",
+    clientAccess: "Kundenzugang",
+  },
   home: {
     presence: "Projekte in Mexiko, Spanien und Frankreich",
     presenceLink: "Wo genau",

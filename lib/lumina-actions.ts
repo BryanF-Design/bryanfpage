@@ -20,14 +20,26 @@ import { projects } from "@/lib/projects";
 
 /** Secciones a las que Lumina puede llevar (marca → id en la página). */
 export const LUMINA_SECTIONS = {
-  proyectos: "projects",
-  casos: "casos-de-estudio",
+  proyectos: "casos",
+  casos: "casos",
+  precios: "precios",
+  configurador: "configurador",
+  pago: "pago",
+  lumina: "lumina",
+  nosotros: "nosotros",
+  faq: "faq",
   proceso: "proceso",
   servicios: "servicios-entrada",
-  precios: "precios",
-  faq: "faq",
 } as const;
 export type LuminaSection = keyof typeof LUMINA_SECTIONS;
+
+/** Secciones que no están en la home, sino en /crear-web. */
+export const CREAR_WEB_SECTIONS: readonly string[] = ["proceso", "servicios-entrada"];
+
+/** Página donde vive una sección cuando no está en la página actual. */
+export function sectionFallbackHref(id: string) {
+  return CREAR_WEB_SECTIONS.includes(id) ? `/crear-web#${id}` : `/#${id}`;
+}
 
 /** Páginas del sitio a las que Lumina puede llevar (marca → ruta). */
 export const LUMINA_PAGES = {
@@ -110,8 +122,15 @@ export function extractActions(reply: string): { text: string; actions: LuminaAc
     return "";
   });
 
-  // Quita los <br> y espacios que quedaron colgando donde estaban las marcas.
-  const clean = text.replace(/(\s*<br\s*\/?>\s*)+$/i, "").trim();
+  // Quita lo que quedó colgando donde estaban las marcas: <br> sueltos,
+  // enlaces vacíos y frases como "puedes verlo aquí: ." (nunca un enlace roto).
+  const clean = text
+    .replace(/<a\b[^>]*>\s*<\/a>/gi, "")
+    .replace(/\s*(?:aqu[ií]|ac[aá]|here|ici|hier|aqui)\s*:?\s*(?=[.!?…]|<br|$)/gi, "")
+    .replace(/:\s*(?=[.!?…])/g, "")
+    .replace(/\s+([.!?,])/g, "$1")
+    .replace(/(\s*<br\s*\/?>\s*)+$/i, "")
+    .trim();
   return { text: clean, actions };
 }
 
@@ -143,8 +162,8 @@ export function quoteHref(quote: LuminaQuote) {
   if (quote.modules.length) params.set("modules", quote.modules.join(","));
   if (quote.sections) params.set("sections", String(quote.sections));
   if (quote.mode) params.set("mode", quote.mode);
-  // #precios: se llega directo al cotizador ya armado, no a la portada.
-  return `/crear-web?${params.toString()}#precios`;
+  // #configurador: se llega directo al cotizador ya armado, no a la portada.
+  return `/crear-web?${params.toString()}#configurador`;
 }
 
 /** Evento que escucha el cotizador de la página para armarse en vivo. */
@@ -191,7 +210,8 @@ Cotizador (sección "precios", se arma con [[cotizar:...]]):
 - Actualización de un sitio que ya tienes (plan update): ${mxn(planPrice("update"))}
 - Mantenimiento mensual (plan maintenance): ${mxn(planPrice("maintenance"))} al mes
 - Módulos extra: tienda en línea (ecommerce) ${mxn(modulePrice("ecommerce"))}, pagos en línea (payments) ${mxn(modulePrice("payments"))}, mantenimiento (maintenance) ${mxn(modulePrice("maintenance"))}; sección adicional ${mxn(SECTION_PRICE)} cada una.
-Sistema para barberías (Barber OS, página "barberias"): ${mxn(BARBER_OS_PLAN.monthly)} al mes con el setup incluido y ${BARBER_OS_PLAN.trialDays} días de prueba gratis. Caso real: Barbería CortMart.
+Software a medida: desde ${mxn(10000)}, de 4 a 6 semanas, cotización según alcance (no se cobra en el cotizador; se habla con Bryan por WhatsApp).
+Sistema para barberías (Barber OS, página "barberias"): ${mxn(BARBER_OS_PLAN.monthly)} al mes con el setup incluido y ${BARBER_OS_PLAN.trialDays} días de prueba gratis. Caso real: Barbería CortMart (51 visitas atendidas, 98% de asistencia, 50 clientes, cifras reales del panel).
 Garantía: ${STUDIO_FACTS.guaranteeDays} días contra defectos + ${STUDIO_FACTS.adjustmentDays} días de ajustes menores después de la entrega. Dominio, hosting y archivos quedan a nombre del cliente.
 Trayectoria: Bryan diseña y programa desde ${STUDIO_FACTS.since}; estudio BryanF Design desde ${STUDIO_FACTS.studioSince}; ${STUDIO_FACTS.projects} proyectos.
 Formas de pago: el total de una vez, o 50 % de anticipo para arrancar y 50 % contra entrega, cuando el proyecto está listo y aprobado (en el cotizador: modo "anticipo"). Ejemplo real: el sitio de ${mxn(site)} arranca con ${mxn(Math.ceil(site * 0.5))} hoy. Se paga con tarjeta (Stripe), Mercado Pago o transferencia SPEI.
@@ -207,12 +227,19 @@ PRESUPUESTO Y NEGOCIACIÓN (eres vendedora: ayudas a cerrar, pero con honestidad
 export function actionsPrompt(section: string) {
   const list = SHOWCASE.map((p) => `${p.slug} — ${p.name} — ${p.desc || "sitio web"}`).join("\n");
   return `ACCIONES EN EL SITIO: al final de tu respuesta puedes añadir marcas; el sitio las convierte en botones (no las expliques ni las pongas a mitad del texto):
-- [[ver:SECCION]] lleva al usuario a una sección. SECCION: proyectos, casos, proceso, servicios (servicios de entrada con sus precios), precios (el cotizador) o faq.
+- [[ver:SECCION]] lleva al usuario a la sección que responde y la resalta. SECCION: casos (3 casos con resultado), precios (Landing, Sitio y Software con lo que incluyen), configurador (arma su web y paga), pago (formas de pago: tarjeta, Mercado Pago, SPEI), nosotros (quién es Bryan, en corto), lumina, faq, proceso (los pasos de trabajo) o servicios (tarjeta, firma, kit).
 - [[pagina:PAGINA]] lleva a otra página del sitio. PAGINA: conoceme (quién es Bryan, el fundador y dueño), casos (casos de estudio completos), contacto (canales y todas las preguntas frecuentes), barberias (sistema para barberías) o cotizador (/crear-web).
 - [[proyecto:SLUG]] muestra la ficha de un proyecto real con su captura (máx. 3, solo slugs de la lista).
 - [[cotizar:PLAN|MODULOS|SECCIONES|MODO]] arma el cotizador en vivo frente al usuario. PLAN: landing (landing de una página), full (sitio a medida), update (actualización) o maintenance (mantenimiento). MODULOS: ecommerce, payments, maintenance separados por coma, o vacío. SECCIONES extra: 0 a 10. MODO (opcional): anticipo (paga 50 % hoy) o liquidacion (paga todo). Ej.: [[cotizar:full|ecommerce,payments|0]] o [[cotizar:full||0|anticipo]].
 - [[whatsapp]] botón para mandarle a Bryan por WhatsApp el resumen de esta conversación.
-Cuándo usarlas: si pregunta quién es Bryan, quién es el dueño o quién está detrás, contesta en una línea y usa [[pagina:conoceme]]; si dice su giro o pide ejemplos, 1 a 3 [[proyecto:...]] parecidos (si no sabes su giro, pregúntalo); si da un presupuesto, quiere precio o armar su web, [[cotizar:...]] o [[ver:servicios]] con lo que cabe; si quiere hablar con alguien o ya está decidido, [[whatsapp]]; si busca algo del sitio, [[ver:...]] o [[pagina:...]].
+Cuándo usarlas (SIEMPRE deja un siguiente paso):
+- ¿Quién es Bryan? → 2 líneas y [[ver:nosotros]] [[pagina:conoceme]].
+- ¿Cuánto cuesta una landing? → "$2,000 MXN, lista desde 3 días" y [[ver:precios]].
+- ¿Se puede pagar con Mercado Pago / tarjeta / transferencia? → "Sí, con tarjeta, Mercado Pago o transferencia SPEI" y [[ver:pago]].
+- ¿Ejemplos de barberías? / sistema para barbería → CortMart, ${mxn(BARBER_OS_PLAN.monthly)} al mes con ${BARBER_OS_PLAN.trialDays} días de prueba, y [[pagina:barberias]].
+- "Quiero mi página" → arma el resumen (paquete + precio) con [[cotizar:landing||0]] o el plan que pidió, y [[whatsapp]].
+- Las marcas van SOLO al final, nunca dentro de una frase; no escribas "aquí:" ni "en este enlace", los botones ya lo dicen.
+Además: si pregunta quién es el dueño o quién está detrás, contesta en una línea y usa [[ver:nosotros]] [[pagina:conoceme]]; si dice su giro o pide ejemplos, 1 a 3 [[proyecto:...]] parecidos (si no sabes su giro, pregúntalo); si da un presupuesto, quiere precio o armar su web, [[cotizar:...]] o [[ver:servicios]] con lo que cabe; si quiere hablar con alguien o ya está decidido, [[whatsapp]]; si busca algo del sitio, [[ver:...]] o [[pagina:...]].
 Portafolio (slug — nombre — giro):
 ${list}
 El usuario está viendo ahora la sección: ${section}.`;
