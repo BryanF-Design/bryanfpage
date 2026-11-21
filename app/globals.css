@@ -1595,29 +1595,11 @@ html[data-intro="pending"] .hero-zoom {
   }
 }
 
-/* Lumina lleva a una sección: borde y fondo lima suaves por 2 s. */
-.lumina-highlight {
-  animation: lumina-highlight 2s ease-out both;
-}
-@keyframes lumina-highlight {
-  0%,
-  60% {
-    box-shadow: 0 0 0 4px hsl(var(--lime)), 0 0 0 14px hsl(var(--lime) / 0.25);
-  }
-  100% {
-    box-shadow: 0 0 0 4px hsl(var(--lime) / 0), 0 0 0 14px hsl(var(--lime) / 0);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .hero-underline::after,
   .hero-zoom,
   .wa-pulse::before {
     animation: none;
-  }
-  .lumina-highlight {
-    animation: none;
-    box-shadow: 0 0 0 4px hsl(var(--lime));
   }
 }
 html.a11y-reduce-motion .hero-underline::after,

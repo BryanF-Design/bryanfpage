@@ -20,13 +20,29 @@ import { projects } from "@/lib/projects";
 
 /** Secciones a las que Lumina puede llevar (marca → id en la página). */
 export const LUMINA_SECTIONS = {
-  proyectos: "projects",
-  casos: "casos-de-estudio",
-  proceso: "proceso",
-  servicios: "servicios-entrada",
+  /** "proyectos" se conserva por compatibilidad: hoy son los casos del inicio. */
+  proyectos: "casos",
+  casos: "casos",
   precios: "precios",
+  configurador: "configurador",
+  pago: "pago",
+  lumina: "lumina",
+  proceso: "proceso",
+  nosotros: "nosotros",
+  servicios: "servicios-entrada",
   faq: "faq",
 } as const;
+
+/**
+ * Si la sección no está en la página actual, a dónde ir. El configurador y
+ * el pago también viven en /crear-web (ahí el configurador es #precios) y los
+ * servicios de entrada solo ahí.
+ */
+export const LUMINA_SECTION_FALLBACK: Record<string, string> = {
+  configurador: "/crear-web#precios",
+  pago: "/crear-web#pago",
+  "servicios-entrada": "/crear-web#servicios-entrada",
+};
 export type LuminaSection = keyof typeof LUMINA_SECTIONS;
 
 /** Páginas del sitio a las que Lumina puede llevar (marca → ruta). */
@@ -179,13 +195,14 @@ export function catalogPrompt() {
   const landing = entryPrice("landingEsencial");
   const site = planPrice("full");
   return `PRECIOS REALES (los únicos que existen; nunca inventes otros, ni descuentos, ni promociones, ni meses sin intereses):
-Servicios de entrada (sección "servicios" del inicio):
+Servicios de entrada (sección "servicios", en /crear-web):
 - Tarjeta de presentación digital: ${mxn(entryPrice("tarjetaDigital")?.price ?? 0)}
 - Tarjeta de presentación imprimible: ${mxn(entryPrice("tarjetaImprimible")?.price ?? 0)}
 - Firma de correo profesional: ${mxn(entryPrice("firmaCorreo")?.price ?? 0)}
 - Kit de presencia digital: ${mxn(entryPrice("kitPresencia")?.price ?? 0)}
 - Landing page esencial: ${landing?.from ? "desde " : ""}${mxn(landing?.price ?? 0)}
-Cotizador (sección "precios", se arma con [[cotizar:...]]):
+Precios del inicio (sección "precios"): Landing ${mxn(planPrice("landing"))}, Sitio completo ${mxn(site)} (la opción recomendada) y Software a medida desde ${mxn(10000)} (procesos, reservas y sistemas, 4 a 6 semanas, cotización por alcance).
+Cotizador (sección "configurador"; el pago es la sección "pago"; se arma con [[cotizar:...]]):
 - Landing, una página que vende (plan landing): ${mxn(planPrice("landing"))}, lista desde ${STUDIO_FACTS.deliveryDays} días hábiles. Incluye diseño a medida, textos, botón de WhatsApp, SEO básico, dominio y hosting el primer año.
 - Sitio web a medida (plan full): ${mxn(site)}
 - Actualización de un sitio que ya tienes (plan update): ${mxn(planPrice("update"))}
@@ -207,12 +224,18 @@ PRESUPUESTO Y NEGOCIACIÓN (eres vendedora: ayudas a cerrar, pero con honestidad
 export function actionsPrompt(section: string) {
   const list = SHOWCASE.map((p) => `${p.slug} — ${p.name} — ${p.desc || "sitio web"}`).join("\n");
   return `ACCIONES EN EL SITIO: al final de tu respuesta puedes añadir marcas; el sitio las convierte en botones (no las expliques ni las pongas a mitad del texto):
-- [[ver:SECCION]] lleva al usuario a una sección. SECCION: proyectos, casos, proceso, servicios (servicios de entrada con sus precios), precios (el cotizador) o faq.
+- [[ver:SECCION]] lleva al usuario a una sección y la resalta. SECCION: casos (casos reales con resultados), precios (las 3 tarjetas de precio), configurador (el cotizador), pago (cómo pagar: tarjeta, Mercado Pago o SPEI), nosotros (quién es Bryan, en corto), proceso, lumina, servicios (servicios de entrada con sus precios) o faq.
 - [[pagina:PAGINA]] lleva a otra página del sitio. PAGINA: conoceme (quién es Bryan, el fundador y dueño), casos (casos de estudio completos), contacto (canales y todas las preguntas frecuentes), barberias (sistema para barberías) o cotizador (/crear-web).
 - [[proyecto:SLUG]] muestra la ficha de un proyecto real con su captura (máx. 3, solo slugs de la lista).
 - [[cotizar:PLAN|MODULOS|SECCIONES|MODO]] arma el cotizador en vivo frente al usuario. PLAN: landing (landing de una página), full (sitio a medida), update (actualización) o maintenance (mantenimiento). MODULOS: ecommerce, payments, maintenance separados por coma, o vacío. SECCIONES extra: 0 a 10. MODO (opcional): anticipo (paga 50 % hoy) o liquidacion (paga todo). Ej.: [[cotizar:full|ecommerce,payments|0]] o [[cotizar:full||0|anticipo]].
 - [[whatsapp]] botón para mandarle a Bryan por WhatsApp el resumen de esta conversación.
-Cuándo usarlas: si pregunta quién es Bryan, quién es el dueño o quién está detrás, contesta en una línea y usa [[pagina:conoceme]]; si dice su giro o pide ejemplos, 1 a 3 [[proyecto:...]] parecidos (si no sabes su giro, pregúntalo); si da un presupuesto, quiere precio o armar su web, [[cotizar:...]] o [[ver:servicios]] con lo que cabe; si quiere hablar con alguien o ya está decidido, [[whatsapp]]; si busca algo del sitio, [[ver:...]] o [[pagina:...]].
+Cuándo usarlas (siempre explica en 1 o 2 líneas Y lleva a la sección que responde):
+- "¿Quién es Bryan?" o quién está detrás: dos líneas sobre él, [[ver:nosotros]] y [[pagina:conoceme]].
+- "¿Se puede pagar con Mercado Pago?" o cómo pagar: "Sí, con tarjeta, Mercado Pago o transferencia SPEI" y [[ver:pago]].
+- "¿Cuánto cuesta una landing?": "$2,000, lista en 3 días" y [[ver:precios]].
+- Barberías: cuenta el caso CortMart y usa [[pagina:barberias]].
+- "Quiero mi página": arma el resumen con [[cotizar:landing||0]] (o el plan que pidió) y ofrece [[whatsapp]].
+Además: si pregunta quién es el dueño, contesta en una línea y usa [[pagina:conoceme]]; si dice su giro o pide ejemplos, 1 a 3 [[proyecto:...]] parecidos (si no sabes su giro, pregúntalo); si da un presupuesto, quiere precio o armar su web, [[cotizar:...]] o [[ver:servicios]] con lo que cabe; si quiere hablar con alguien o ya está decidido, [[whatsapp]]; si busca algo del sitio, [[ver:...]] o [[pagina:...]].
 Portafolio (slug — nombre — giro):
 ${list}
 El usuario está viendo ahora la sección: ${section}.`;

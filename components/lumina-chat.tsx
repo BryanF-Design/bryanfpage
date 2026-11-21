@@ -29,6 +29,7 @@ import {
   type LuminaPage,
   type LuminaQuote,
   type LuminaSection,
+  LUMINA_SECTION_FALLBACK,
 } from "@/lib/lumina-actions";
 
 type Mood = "Normal" | "Enfocada" | "Duda" | "Offline";
@@ -104,10 +105,24 @@ const OWNER_INTENT =
 const BUDGET_INTENT =
   /(\$\s?\d|\d[\d,.]*\s*(mxn|pesos|mil)\b|presupuesto|budget|caro|car[ií]simo|no me alcanza|muy justo|se me hace justo|expensive|cher|teuer|caro demais)/i;
 
+const PAY_INTENT = /mercado\s*pago|\bspei\b|transferencia|tarjeta de cr[eé]dito|c[oó]mo (se )?pag|formas? de pago|puedo pagar|pay with|payment/i;
+const BARBER_INTENT = /barber[ií]a|barbero|barbershop|barber os/i;
+
 function ensureIntentActions(userText: string, actions: LuminaAction[]) {
   const has = (kind: LuminaAction["kind"]) => actions.some((a) => a.kind === kind);
+  const hasGo = (section: string) => actions.some((a) => a.kind === "go" && a.section === section);
   if (OWNER_INTENT.test(userText) && !actions.some((a) => a.kind === "page" && a.page === "conoceme")) {
     if (actions.length < 5) actions.unshift({ kind: "page", page: "conoceme" });
+  }
+  // En el inicio, "¿quién es Bryan?" también lleva a la diagonal "Soy Bryan".
+  if (OWNER_INTENT.test(userText) && !hasGo("nosotros") && document.getElementById("nosotros") && actions.length < 5) {
+    actions.unshift({ kind: "go", section: "nosotros" });
+  }
+  if (PAY_INTENT.test(userText) && !hasGo("pago") && !has("quote") && actions.length < 5) {
+    actions.unshift({ kind: "go", section: "pago" });
+  }
+  if (BARBER_INTENT.test(userText) && !actions.some((a) => a.kind === "page" && a.page === "barberias") && actions.length < 5) {
+    actions.push({ kind: "page", page: "barberias" });
   }
   if (BUDGET_INTENT.test(userText) && !has("quote") && !has("go") && !has("page") && actions.length < 5) {
     actions.push({ kind: "go", section: "precios" });
@@ -728,7 +743,29 @@ export function LuminaChat() {
         data?.choices?.[0]?.message?.content ||
         (data?.error ? t.lumina.errorFallback : t.lumina.misunderstood);
       const { text, actions } = extractActions(reply);
-      if (!data?.error) ensureIntentActions(content, actions);
+      if (!data?.error) {
+        ensureIntentActions(content, actions);
+        // Medición: qué tipo de pregunta lleva a qué destino (sin el texto).
+        const first = actions.find((a) => a.kind !== "project");
+        trackEvent("lumina_route", {
+          intent: OWNER_INTENT.test(content)
+            ? "bryan"
+            : PAY_INTENT.test(content)
+              ? "pago"
+              : BARBER_INTENT.test(content)
+                ? "barberias"
+                : BUDGET_INTENT.test(content)
+                  ? "precio"
+                  : "otra",
+          destination: !first
+            ? "ninguno"
+            : first.kind === "go"
+              ? first.section
+              : first.kind === "page"
+                ? first.page
+                : first.kind,
+        });
+      }
       setMessages((m) => [
         ...m,
         {
@@ -768,16 +805,20 @@ export function LuminaChat() {
   // En teléfono el chat tapa la pantalla: se cierra para que se vea a dónde
   // llevó. En escritorio sigue abierto en su esquina.
   function revealSection(id: string) {
-    const target = document.getElementById(id);
+    // El configurador es #configurador en el inicio y #precios en /crear-web.
+    const target =
+      id === "configurador"
+        ? document.querySelector<HTMLElement>("[data-configurator]")
+        : document.getElementById(id);
     if (!target) {
-      window.location.href = `/#${id}`;
+      window.location.href = LUMINA_SECTION_FALLBACK[id] ?? `/#${id}`;
       return;
     }
     // En teléfono la hoja tapa todo: se cierra para que se vea a dónde llevó.
     // En escritorio, al ir al cotizador, el panel se muda a la izquierda para
     // no tapar el resumen ni los botones de pago (si no cabe, se recoge).
     if (isPhone) setOpen(false);
-    else if (id === "precios") {
+    else if (id === "configurador" || id === "pago") {
       if (window.innerWidth >= 768) setDockLeft(true);
       else setOpen(false);
     }
@@ -839,23 +880,27 @@ export function LuminaChat() {
   }
   function scheduleAutoNav(actions: LuminaAction[]) {
     cancelAutoNav();
-    if (isPhone || window.matchMedia("(max-width: 767px)").matches) return;
+    // En teléfono también lleva a la sección: el chat se minimiza al llegar
+    // (revealSection lo cierra) y espera un poco más para que se lea.
+    const phone = isPhone || window.matchMedia("(max-width: 767px)").matches;
     const nav = actions.filter((a) => a.kind === "page" || a.kind === "go" || a.kind === "quote");
-    if (nav.length !== 1) return;
-    const action = nav[0];
+    // Una sola acción, o la sección de esta página cuando además ofrece otra
+    // página (p. ej. "¿quién es Bryan?" → #nosotros + /conoceme).
+    const action = nav.length === 1 ? nav[0] : nav.find((a) => a.kind === "go");
+    if (!action) return;
     autoNavRef.current = window.setTimeout(() => {
       autoNavRef.current = null;
       if (action.kind === "page") goToPage(action.page);
       else if (action.kind === "go") goTo(action.section);
       else if (action.kind === "quote") applyQuote(action.quote);
-    }, 1600);
+    }, phone ? 2600 : 1600);
   }
   useEffect(() => () => cancelAutoNav(), []);
 
   function applyQuote(quote: LuminaQuote) {
     trackEvent("lumina_action", { action: "quote", plan: quote.plan });
     // Con el cotizador en la página, se arma en vivo; si no, se abre ya armado.
-    if (!document.getElementById("precios")) {
+    if (!document.querySelector("[data-configurator]")) {
       // El chat reaparece al llegar (con su historial) para que la cotización
       // que armó Lumina no se pierda de vista.
       try {
@@ -867,7 +912,7 @@ export function LuminaChat() {
       return;
     }
     window.dispatchEvent(new CustomEvent(LUMINA_QUOTE_EVENT, { detail: quote }));
-    revealSection("precios");
+    revealSection("configurador");
   }
 
   function whatsappHref() {
@@ -881,11 +926,15 @@ export function LuminaChat() {
 
   function sectionLabel(section: LuminaSection) {
     const labels: Record<LuminaSection, string> = {
-      proyectos: t.nav.proyectos,
-      casos: t.lumina.actions.cases,
-      proceso: t.nav.proceso,
-      servicios: t.nav.serviciosEntrada,
+      proyectos: t.homeV3.header.casos,
+      casos: t.homeV3.header.casos,
       precios: t.nav.precios,
+      configurador: t.nav.armaTuWeb,
+      pago: t.configurator.step3.replace(/^\d+\.\s*/, ""),
+      lumina: t.nav.lumina,
+      proceso: t.nav.proceso,
+      nosotros: t.homeV3.header.conoceme,
+      servicios: t.nav.serviciosEntrada,
       faq: t.nav.faq,
     };
     return labels[section];
