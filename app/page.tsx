@@ -34,8 +34,17 @@ const ProcessOrbital = dynamic(() =>
 const ClientsMarquee = dynamic(() =>
   import("@/components/sections/clients-marquee").then((m) => m.ClientsMarquee)
 );
-const Configurator = dynamic(() =>
-  import("@/components/sections/configurator").then((m) => m.Configurator)
+// El configurador pesa ~47 KB de HTML: en el inicio se arma en el navegador
+// (los precios ya van en las tarjetas del HTML para los buscadores) y ocupa
+// su lugar desde el principio para que nada salte. /crear-web lo trae completo.
+const Configurator = dynamic(
+  () => import("@/components/sections/configurator").then((m) => m.Configurator),
+  {
+    ssr: false,
+    loading: () => (
+      <div id="configurador" aria-hidden className="panel min-h-[175rem] shadow-soft sm:min-h-[162rem] lg:min-h-[130rem] xl:min-h-[101rem]" />
+    ),
+  }
 );
 const Faq = dynamic(() => import("@/components/sections/faq").then((m) => m.Faq));
 const SiteFooter = dynamic(() =>

@@ -959,9 +959,8 @@ html[data-intro="pending"] .intro-veil {
   pointer-events: auto;
   transition: none;
 }
-html[data-intro="pending"] body {
-  overflow: hidden;
-}
+/* Sin bloquear el scroll: quitar y devolver la barra movía toda la página
+   (CLS). El telón es fijo y tapa igual. */
 /* Seguro: aunque el hilo principal esté ocupado (equipo lento), el telón se
    retira solo a los 1.6 s y la escena a los 2.2 s de montarse. Con la intro
    normal ya se fueron antes; esto nunca la corta a la mitad. */

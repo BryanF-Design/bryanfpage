@@ -2,6 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
+    // Tope de 1600 px: nunca se piden variantes de 3840 (el hero no pasa de
+    // 1600 y las tarjetas de 800). WebP siempre.
+    deviceSizes: [640, 828, 1080, 1280, 1600],
+    imageSizes: [32, 64, 128, 256, 400, 800],
+    formats: ["image/webp"],
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "lottie.host" },
