@@ -716,6 +716,113 @@ const ja: Dictionary = {
     faqMore: "すべての質問を見る",
   },
   /** Páginas a las que se movieron secciones del inicio. */
+  homeV3: {
+    cases: {
+      eyebrow: "実績",
+      title: "すでに売上につながっている実例。",
+      subtitle: "公開中の3つのプロジェクトと、その成果。",
+      seeCase: "事例を見る",
+      allCases: "すべての事例を見る",
+      problemLabel: "課題",
+      doneLabel: "やったこと",
+      cortmart: {
+        name: "CortMart · Barber OS",
+        sector: "バーバーショップ",
+        problem: "メッセージでの予約、無断キャンセル、データなし。",
+        done: "QR予約、ポイントカード、リアルタイム管理画面。",
+        stats: ["来店対応", "来店率", "対応した顧客", "登録者"],
+        note: "CortMartの管理画面の実数値です。予測やサンプルデータではありません。",
+      },
+      efficient: {
+        problem: "説明しにくい技術的なカラーカタログ。",
+        done: "Pantone検索、ファミリー別カタログ、直接見積もり。",
+        number: "3",
+        label: "つのツールをひとつの流れに、WhatsAppまで",
+      },
+      koi: {
+        problem: "ギャラリーにせず建築のプロセスを伝えること。",
+        done: "ヒアリングから施工まで、最後に問い合わせへ。",
+        number: "4",
+        label: "つのサービス段階をひとつの流れに",
+      },
+    },
+    pricing: {
+      eyebrow: "料金",
+      title: "明確な料金、追加費用なし。",
+      subtitle: "選んで半額を支払えばスタート。料金はMXN。",
+      recommended: "おすすめ",
+      from: "から",
+      perProject: "MXN",
+      cta: "これにする",
+      tiers: {
+        landing: {
+          name: "ランディング",
+          line: "売れる1ページ。",
+          includes: ["オーダーメイドのデザインと文章", "WhatsAppボタンと基本SEO", "初年度のドメインとホスティング", "最短3日で納品"],
+        },
+        full: {
+          name: "フルサイト",
+          line: "ランディングの内容にプラス。",
+          includes: ["最大5セクション", "独自ドメインのメール", "Googleビジネスプロフィール", "30分のレクチャー"],
+        },
+        software: {
+          name: "オーダーメイドソフトウェア",
+          line: "業務、予約、システム。",
+          includes: ["業務の自動化", "予約、管理画面、ユーザー", "4〜6週間", "範囲に応じて見積もり"],
+        },
+      },
+      extras: "リニューアル $1,800 · 保守 $1,000/月 · キット $1,500",
+      extrasLink: "サイトを組み立てる",
+      micro: "60日保証 + 15日の微調整 · 開始時50%、承認時50% · カード、Mercado Pago、SPEI振込。",
+      whatsappMsg: (name: string, price: string) => `こんにちは、${name}パッケージ（${price}）をお願いしたいです。`,
+    },
+    lumina: {
+      eyebrow: "AIアドバイザー",
+      title: "Luminaです。",
+      line: "サイトの案内役。説明し、事例を見せ、探しているところへ直接連れて行きます。",
+      cta: "Luminaに聞く",
+      chips: ["Bryanってどんな人？", "ランディングはいくら？", "Mercado Pagoで払える？"],
+    },
+    about: {
+      eyebrow: "わたしについて",
+      title: "Bryanです。デザインもプログラミングも自分でします。",
+      line: "アイデアから公開まで、わたしと直接やりとりします。2018年から、150件以上。",
+      cta: "Bryanについて",
+    },
+    process: {
+      title: "アイデアから公開まで、明確なプロセス。",
+      subtitle: "4つのステップ。次に何があるか、いつもわかります。",
+      steps: [
+        { title: "ビジネスについて教えてください", content: "短い通話で必要なことを把握します。" },
+        { title: "デザイン", content: "残金を払う前に確認できます。" },
+        { title: "開発", content: "速く、問い合わせにつながる設計。" },
+        { title: "公開", content: "公開して30分のレクチャーをします。" },
+      ],
+      cta: "プロセスをすべて見る",
+    },
+    closing: {
+      title: "サイトづくりを始めましょうか？",
+      cta: "ページがほしい",
+      line: "$2,000から · 3日で完成",
+    },
+    header: {
+      servicios: "サービス",
+      casos: "事例",
+      barberias: "バーバー",
+      conoceme: "わたしについて",
+      precios: "料金",
+      whatsapp: "WhatsApp",
+    },
+    footer: {
+      access: "クライアントアクセス",
+      from: "$2,000から",
+      arco: "ARCO権利",
+    },
+    fab: {
+      whatsappMsg: "こんにちは、$2,000からのページをお願いしたいです",
+      aria: "WhatsAppでメッセージ",
+    },
+  },
   pages: {
     breadcrumb: "パンくずリスト",
     conoceme: {

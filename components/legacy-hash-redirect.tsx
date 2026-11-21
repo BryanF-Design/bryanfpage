@@ -10,15 +10,35 @@ import { useEffect } from "react";
 const MOVED: Record<string, string> = {
   bryan: "/conoceme",
   stack: "/conoceme",
-  lumina: "/lumina",
   "lumina-journey": "/lumina",
   presencia: "/contacto#presencia",
+  "servicios-entrada": "/crear-web#servicios-entrada",
+};
+
+/**
+ * Secciones que siguen en el inicio con otro nombre (rearmado de nov 2026):
+ * el enlace viejo salta a la sección nueva sin recargar.
+ */
+const RENAMED: Record<string, string> = {
+  projects: "casos",
+  "casos-de-estudio": "casos",
+  conoce: "nosotros",
 };
 
 export function LegacyHashRedirect() {
   useEffect(() => {
-    const target = MOVED[window.location.hash.slice(1)];
-    if (target) window.location.replace(target);
+    const hash = window.location.hash.slice(1);
+    const target = MOVED[hash];
+    if (target) {
+      window.location.replace(target);
+      return;
+    }
+    const renamed = RENAMED[hash];
+    if (renamed) {
+      const el = document.getElementById(renamed);
+      history.replaceState(null, "", `#${renamed}`);
+      el?.scrollIntoView();
+    }
   }, []);
   return null;
 }

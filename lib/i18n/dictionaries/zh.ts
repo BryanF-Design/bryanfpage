@@ -678,6 +678,113 @@ const zh: Dictionary = {
     faqMore: "查看全部问题",
   },
   /** Páginas a las que se movieron secciones del inicio. */
+  homeV3: {
+    cases: {
+      eyebrow: "真实案例",
+      title: "已经在带来销售的真实作品。",
+      subtitle: "三个上线中的项目：做了什么，取得了什么。",
+      seeCase: "查看案例",
+      allCases: "查看所有案例",
+      problemLabel: "挑战",
+      doneLabel: "我做了什么",
+      cortmart: {
+        name: "CortMart · Barber OS",
+        sector: "理发店",
+        problem: "靠消息预约、客户爽约、没有任何数据。",
+        done: "二维码预约、会员卡和实时面板。",
+        stats: ["次接待", "到店率", "位已服务客户", "位注册用户"],
+        note: "CortMart 面板的真实数据。没有预测，也没有示例数据。",
+      },
+      efficient: {
+        problem: "一份难以解释的技术色彩目录。",
+        done: "Pantone 搜索、按系列分类的目录和直接询价。",
+        number: "3",
+        label: "个工具，一条流程直达 WhatsApp",
+      },
+      koi: {
+        problem: "讲清建筑流程，而不是做成作品集。",
+        done: "从倾听到施工的完整路径，最后直接联系。",
+        number: "4",
+        label: "个服务阶段，一条路径讲完",
+      },
+    },
+    pricing: {
+      eyebrow: "价格",
+      title: "价格透明，没有意外。",
+      subtitle: "选好，付一半，我们就开始。价格单位为 MXN。",
+      recommended: "推荐方案",
+      from: "起",
+      perProject: "MXN",
+      cta: "我要这个",
+      tiers: {
+        landing: {
+          name: "落地页",
+          line: "一个能卖货的页面。",
+          includes: ["定制设计和文案", "WhatsApp 按钮和基础 SEO", "首年域名和主机", "最快 3 天交付"],
+        },
+        full: {
+          name: "完整网站",
+          line: "包含落地页的全部内容，还有更多。",
+          includes: ["最多 5 个板块", "专属域名邮箱", "Google 商家资料", "30 分钟培训"],
+        },
+        software: {
+          name: "定制软件",
+          line: "流程、预约和系统。",
+          includes: ["业务自动化", "预约、面板和用户", "4 到 6 周", "按范围报价"],
+        },
+      },
+      extras: "改版 $1,800 · 维护 $1,000/月 · 套装 $1,500",
+      extrasLink: "搭建你的网站",
+      micro: "60 天保修 + 15 天调整 · 先付 50%，验收再付 50% · 银行卡、Mercado Pago 或 SPEI 转账。",
+      whatsappMsg: (name: string, price: string) => `你好，我想要 ${name} 套餐（${price}）。`,
+    },
+    lumina: {
+      eyebrow: "AI 顾问",
+      title: "这是 Lumina。",
+      line: "网站上的顾问：为你讲解、展示案例，直接带你到想看的地方。",
+      cta: "问问 Lumina",
+      chips: ["Bryan 是谁？", "落地页多少钱？", "可以用 Mercado Pago 付款吗？"],
+    },
+    about: {
+      eyebrow: "关于我",
+      title: "我是 Bryan，设计和开发都由我来做。",
+      line: "从想法到上线，你都直接和我沟通。自 2018 年起，150+ 个项目。",
+      cta: "认识 Bryan",
+    },
+    process: {
+      title: "从想法到上线，流程清晰。",
+      subtitle: "四个步骤，没有弯路。你总是知道下一步是什么。",
+      steps: [
+        { title: "介绍你的业务", content: "一次简短通话，了解你的需求。" },
+        { title: "设计", content: "付尾款之前先看到成品。" },
+        { title: "开发", content: "速度快，专为带来咨询而设计。" },
+        { title: "上线", content: "发布上线，并为你培训 30 分钟。" },
+      ],
+      cta: "查看完整流程",
+    },
+    closing: {
+      title: "开始做你的网站吧？",
+      cta: "我要我的网页",
+      line: "$2,000 起 · 3 天完成",
+    },
+    header: {
+      servicios: "服务",
+      casos: "案例",
+      barberias: "理发店",
+      conoceme: "关于我",
+      precios: "价格",
+      whatsapp: "WhatsApp",
+    },
+    footer: {
+      access: "客户入口",
+      from: "$2,000 起",
+      arco: "ARCO 权利",
+    },
+    fab: {
+      whatsappMsg: "你好，我想要 $2,000 起的网页",
+      aria: "通过 WhatsApp 联系我",
+    },
+  },
   pages: {
     breadcrumb: "面包屑导航",
     conoceme: {

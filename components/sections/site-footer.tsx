@@ -89,10 +89,9 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
   const nav = [
     { label: t.nav.inicio, href: "/" },
     { label: t.nav.proceso, href: "/#proceso" },
-    { label: t.nav.proyectos, href: "/#projects" },
     { label: t.nav.casos, href: "/casos" },
-    { label: t.nav.serviciosEntrada, href: "/#servicios-entrada" },
     { label: t.nav.precios, href: "/#precios" },
+    { label: t.nav.armaTuWeb, href: "/crear-web" },
     { label: t.nav.faq, href: "/#faq" },
     // Secciones que se mudaron del inicio a su propia página.
     { label: t.nav.conoceme, href: "/conoceme" },
@@ -198,6 +197,16 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                   </span>
                   {t.footer.taglineRest}
                 </p>
+                <a
+                  href={`${WHATSAPP}?text=${encodeURIComponent(t.homeV3.fab.whatsappMsg)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-track-cta="footer_desde"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full bg-lime px-4 text-sm font-bold text-ink transition-transform duration-200 hover:-translate-y-0.5"
+                >
+                  <FaWhatsapp aria-hidden className="h-4 w-4" />
+                  {t.homeV3.closing.line}
+                </a>
                 <ul className="flex flex-wrap gap-2">
                   {social.map(({ Icon, href, label }) => (
                     <li key={label}>
@@ -264,7 +273,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                   className="mt-3 hidden min-h-11 w-auto items-center justify-start gap-2 rounded-full border border-lime/40 px-4 text-sm font-semibold text-lime transition-colors hover:bg-lime hover:text-ink sm:inline-flex"
                 >
                   <LogIn aria-hidden className="h-4 w-4" />
-                  {t.footer.clientQuestion}
+                  {t.homeV3.footer.access}
                 </Link>
               </nav>
 
@@ -292,7 +301,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                 className="col-span-2 -mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-lime/40 px-4 text-sm font-semibold text-lime transition-colors hover:bg-lime hover:text-ink sm:hidden"
               >
                 <LogIn aria-hidden className="h-4 w-4" />
-                {t.footer.clientQuestion}
+                {t.homeV3.footer.access}
               </Link>
 
               {/* Legal y contacto */}
@@ -369,7 +378,13 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
               >
                 {t.footer.terms}
               </Link>
-              .
+              .{" "}
+              <a
+                href="mailto:bryanf@bryanfdesign.com?subject=Derechos%20ARCO"
+                className="underline underline-offset-2 transition-colors hover:text-lime"
+              >
+                {t.homeV3.footer.arco}: bryanf@bryanfdesign.com
+              </a>
             </span>
             <button
               type="button"

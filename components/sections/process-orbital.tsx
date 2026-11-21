@@ -11,7 +11,9 @@ import {
   Sparkle,
 } from "lucide-react";
 
+import Link from "next/link";
 import { SectionHeading } from "@/components/sections/section-heading";
+import { Button, ButtonArrow } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 
@@ -61,16 +63,25 @@ function useBelowMd() {
  * en fila, como carrusel con imán que deja asomar la siguiente ficha. El
  * último paso (el seguimiento, lo que sigue después del lanzamiento) va en lima.
  */
-export function ProcessOrbital({ chapter = 4 }: { chapter?: number } = {}) {
+export function ProcessOrbital({
+  chapter = 4,
+  compact = false,
+}: {
+  chapter?: number;
+  /** Inicio: 4 pasos de una línea y enlace al proceso completo (/crear-web#proceso). */
+  compact?: boolean;
+} = {}) {
   const { t } = useLanguage();
-  const steps = t.process.steps;
+  const steps = compact ? t.homeV3.process.steps : t.process.steps;
+  const title = compact ? t.homeV3.process.title : t.process.title;
+  const subtitle = compact ? t.homeV3.process.subtitle : t.process.subtitle;
   const total = steps.length;
   const highlight = total - 1;
   // En teléfono el carrusel recibe foco para poder recorrerlo con flechas.
   const isCarousel = useBelowMd();
 
   return (
-    <section id="proceso" aria-label={t.process.title} className="relative">
+    <section id="proceso" aria-label={title} className="relative">
       <div data-fx="panel">
         <div className="panel relative overflow-hidden p-5 shadow-soft sm:p-7 lg:p-10">
           {/* Recorte con el rango del recorrido. */}
@@ -86,13 +97,13 @@ export function ProcessOrbital({ chapter = 4 }: { chapter?: number } = {}) {
           <div className="relative grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-10">
             <SectionHeading
               eyebrow={t.process.eyebrow}
-              title={accentLastWord(t.process.title)}
+              title={accentLastWord(title)}
               chapter={{ index: chapter }}
               className="lg:col-span-7"
             />
             <div className="flex flex-col gap-5 lg:col-span-5 lg:pb-2 lg:pt-14">
               <p className="max-w-md text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
-                {t.process.subtitle}
+                {subtitle}
               </p>
               {/* Barra de avance: cinco tramos, como las metas de las apps. */}
               <span aria-hidden className="flex max-w-md items-center gap-1.5">
@@ -118,7 +129,7 @@ export function ProcessOrbital({ chapter = 4 }: { chapter?: number } = {}) {
             role="list"
             aria-label={t.process.stepsLabel}
             tabIndex={isCarousel ? 0 : undefined}
-            className="relative mt-9 grid gap-3 md:mt-12 md:gap-4 xl:mt-14 xl:grid-cols-5 xl:gap-gutter max-md:mt-7 max-md:flex max-md:snap-x max-md:snap-mandatory max-md:overflow-x-auto max-md:overscroll-x-contain max-md:-mb-5 max-md:pb-7 max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden max-sm:-mx-5 max-sm:scroll-px-5 max-sm:px-5 sm:max-md:-mx-7 sm:max-md:scroll-px-7 sm:max-md:px-7 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ink"
+            className={cn("relative mt-9 grid gap-3 md:mt-12 md:gap-4 xl:mt-14 xl:gap-gutter", compact ? "xl:grid-cols-4" : "xl:grid-cols-5", " max-md:mt-7 max-md:flex max-md:snap-x max-md:snap-mandatory max-md:overflow-x-auto max-md:overscroll-x-contain max-md:-mb-5 max-md:pb-7 max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden max-sm:-mx-5 max-sm:scroll-px-5 max-sm:px-5 sm:max-md:-mx-7 sm:max-md:scroll-px-7 sm:max-md:px-7 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ink")}
           >
             {steps.map((step, index) => {
               const Icon = ICONS[index] ?? Sparkle;
@@ -165,7 +176,8 @@ export function ProcessOrbital({ chapter = 4 }: { chapter?: number } = {}) {
                     {/* Ficha del paso: en tableta, título a la izquierda y texto a la derecha. */}
                     <div
                       className={cn(
-                        "group relative flex min-w-0 flex-1 flex-col rounded-card p-5 transition-transform duration-500 [transition-timing-function:var(--ease-out)] hover:-translate-y-1 md:grid md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] md:gap-x-8 md:p-6 xl:flex xl:min-h-[18rem] xl:p-5 2xl:p-6",
+                        "group relative flex min-w-0 flex-1 flex-col rounded-card p-5 transition-transform duration-500 [transition-timing-function:var(--ease-out)] hover:-translate-y-1 md:grid md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] md:gap-x-8 md:p-6 xl:flex xl:p-5 2xl:p-6",
+                        compact ? "xl:min-h-[12rem]" : "xl:min-h-[18rem]",
                         isHighlight
                           ? "panel-lime shadow-[0_22px_40px_-24px_hsl(var(--lime-deep)/0.9)]"
                           : "bg-[hsl(var(--canvas))]"
@@ -223,6 +235,14 @@ export function ProcessOrbital({ chapter = 4 }: { chapter?: number } = {}) {
               );
             })}
           </ol>
+          {compact && (
+            <Button asChild size="lg" variant="ink" className="relative mt-8 pr-2.5">
+              <Link href="/crear-web#proceso">
+                {t.homeV3.process.cta}
+                <ButtonArrow tone="lime" className="-mr-0.5 ml-2" />
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
     </section>

@@ -722,6 +722,113 @@ const fr: Dictionary = {
     faqMore: "Voir toutes les questions",
   },
   /** Páginas a las que se movieron secciones del inicio. */
+  homeV3: {
+    cases: {
+      eyebrow: "Cas réels",
+      title: "Du vrai travail qui vend déjà.",
+      subtitle: "Trois projets en ligne : ce qui a été fait et ce qu'ils ont obtenu.",
+      seeCase: "Voir le cas",
+      allCases: "Voir tous les cas",
+      problemLabel: "Défi",
+      doneLabel: "Ce que j'ai fait",
+      cortmart: {
+        name: "CortMart · Barber OS",
+        sector: "Barbier",
+        problem: "Rendez-vous par message, absences et aucune donnée.",
+        done: "Réservations par QR, carte de fidélité et tableau de bord en direct.",
+        stats: ["visites assurées", "de présence", "clients servis", "inscrits"],
+        note: "Chiffres réels du tableau de bord de CortMart. Sans projections ni données d'exemple.",
+      },
+      efficient: {
+        problem: "Un catalogue technique de couleurs difficile à expliquer.",
+        done: "Recherche Pantone, catalogue par familles et devis direct.",
+        number: "3",
+        label: "outils dans un seul parcours, jusqu'à WhatsApp",
+      },
+      koi: {
+        problem: "Raconter un processus d'architecture sans en faire une galerie.",
+        done: "Un parcours de l'écoute à la construction, avec contact à la fin.",
+        number: "4",
+        label: "étapes du service dans un seul parcours",
+      },
+    },
+    pricing: {
+      eyebrow: "Tarifs",
+      title: "Des prix clairs, sans surprise.",
+      subtitle: "Vous choisissez, payez la moitié et on démarre. Prix en MXN.",
+      recommended: "L'option recommandée",
+      from: "À partir de",
+      perProject: "MXN",
+      cta: "Je veux celle-ci",
+      tiers: {
+        landing: {
+          name: "Landing",
+          line: "Une page qui vend.",
+          includes: ["Design sur mesure et textes", "Bouton WhatsApp et SEO de base", "Domaine et hébergement la première année", "Livraison dès 3 jours"],
+        },
+        full: {
+          name: "Site complet",
+          line: "Tout ce qu'offre Landing, et plus.",
+          includes: ["Jusqu'à 5 sections", "E-mails à votre domaine", "Google Business Profile", "Formation de 30 minutes"],
+        },
+        software: {
+          name: "Logiciel sur mesure",
+          line: "Processus, réservations et systèmes.",
+          includes: ["Automatisation de votre activité", "Réservations, tableaux de bord et utilisateurs", "De 4 à 6 semaines", "Devis selon le périmètre"],
+        },
+      },
+      extras: "Refonte $1,800 · Maintenance $1,000/mois · Kit $1,500",
+      extrasLink: "Composez votre site",
+      micro: "Garantie 60 jours + 15 jours d'ajustements · 50 % pour démarrer, 50 % à la validation · Carte, Mercado Pago ou virement SPEI.",
+      whatsappMsg: (name: string, price: string) => `Bonjour, je veux le forfait ${name} (${price}).`,
+    },
+    lumina: {
+      eyebrow: "Conseillère IA",
+      title: "Voici Lumina.",
+      line: "Votre conseillère sur le site : elle explique, montre des exemples et vous emmène droit à ce que vous cherchez.",
+      cta: "Demandez à Lumina",
+      chips: ["Qui est Bryan ?", "Combien coûte une landing ?", "Puis-je payer avec Mercado Pago ?"],
+    },
+    about: {
+      eyebrow: "Qui je suis",
+      title: "Je suis Bryan. Je conçois et je code.",
+      line: "Vous travaillez directement avec moi, de l'idée au lancement. Depuis 2018, 150+ projets.",
+      cta: "Découvrir Bryan",
+    },
+    process: {
+      title: "Un processus clair, de l'idée au lancement.",
+      subtitle: "Quatre étapes, sans détour. Vous savez toujours ce qui suit.",
+      steps: [
+        { title: "Parlez-moi de votre activité", content: "Un court appel pour comprendre votre besoin." },
+        { title: "Design", content: "Vous le voyez avant de payer le reste." },
+        { title: "Développement", content: "Rapide et pensé pour qu'on vous écrive." },
+        { title: "Lancement", content: "On publie et je vous forme 30 minutes." },
+      ],
+      cta: "Voir le processus complet",
+    },
+    closing: {
+      title: "On commence votre site ?",
+      cta: "Je veux ma page",
+      line: "À partir de $2,000 · Prête en 3 jours",
+    },
+    header: {
+      servicios: "Services",
+      casos: "Cas",
+      barberias: "Barbiers",
+      conoceme: "À propos",
+      precios: "Tarifs",
+      whatsapp: "WhatsApp",
+    },
+    footer: {
+      access: "Accès clients",
+      from: "À partir de $2,000",
+      arco: "Droits ARCO",
+    },
+    fab: {
+      whatsappMsg: "Bonjour, je veux ma page à partir de $2,000",
+      aria: "Écrivez-moi sur WhatsApp",
+    },
+  },
   pages: {
     breadcrumb: "Fil d'Ariane",
     conoceme: {

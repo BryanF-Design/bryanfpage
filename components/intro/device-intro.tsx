@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type MutableRefObject,
-} from "react";
+import { useEffect, useRef, useState, type MutableRefObject } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
@@ -26,12 +20,18 @@ import {
 type Variant = "laptop" | "phone";
 type Phase = "loading" | "booting" | "ready";
 
-/** Teléfono en pantallas angostas o verticales; laptop en el resto. */
-const PHONE_QUERY = "(max-width: 767px), (max-aspect-ratio: 3/4)";
 /** Desde aquí el hero arranca su entrada (la pantalla ya casi llena la vista). */
 const ENTER_AT = 0.7;
 /** Desde aquí la escena ya es transparente y deja pasar los clics al hero. */
 const DONE_AT = 0.95;
+/**
+ * Tiempos de la intro en escritorio (ms desde que el modelo está listo):
+ * encendido + preloader en pantalla y luego la cámara entra. En total 0.8 s.
+ */
+const BOOT_MS = 350;
+const TRAVEL_MS = 450;
+/** El encendido nativo dura ~3.85 s; se acelera para caber en BOOT_MS. */
+const TIME_SCALE = 3.85 / (BOOT_MS / 1000);
 
 /** El mismo logotipo del telón del sitio (blanco sobre tinta). */
 const LOGO_URL = "/img/brand/logo-light.png";
@@ -41,25 +41,27 @@ const MODELS: Record<Variant, string> = {
   phone: "/models/intro/phone.glb",
 };
 
-const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
-
 /**
- * 起動 — la entrada de la home.
+ * 起動 — la entrada de la home, solo en escritorio.
  *
- * Una laptop (o un teléfono, en móvil) se enciende y en su pantalla corre el
- * preloader. Al deslizar, la cámara entra a la pantalla; cuando la llena, la
- * escena se desvanece y debajo queda el hero, que en ese momento arma sus
- * paneles. La sección mide 230svh y se monta 100svh sobre el hero (margen
- * negativo), así que al terminar el recorrido el hero ya está en su lugar.
+ * Una laptop se enciende con el preloader del sitio en su pantalla y la
+ * cámara entra sola hasta llenarla; la escena se funde y debajo queda el
+ * hero, que en ese momento arma sus paneles. Todo dura 0.8 s, con "Saltar"
+ * visible desde el primer instante (el telón `.intro-veil`, que ya viene en el
+ * HTML, lo trae antes de que este componente cargue).
  *
- * Sin JS, con movimiento reducido o sin WebGL, la sección no existe y la
- * página empieza en el hero como siempre.
+ * Quién decide si corre: el script de arranque de la home (`INTRO_BOOTSTRAP`)
+ * pone `html[data-intro="pending"]` solo en escritorio con puntero fino, sin
+ * movimiento reducido y una vez por sesión. En móvil este archivo (ni three.js
+ * ni los modelos) nunca se descarga. Si el modelo no llega a tiempo, el
+ * arranque corta solo y la página sigue en el hero.
  */
 export function DeviceIntro() {
   const { t } = useLanguage();
   const sectionRef = useRef<HTMLElement>(null);
   const progressRef = useRef(0);
   const pointerRef = useRef({ x: 0, y: 0 });
+  const selfEnteredRef = useRef(false);
   const stringsRef = useRef<ScreenStrings>({
     sequence: "",
     aligning: "",
@@ -73,89 +75,107 @@ export function DeviceIntro() {
     enter: t.experience.enterHint,
   };
 
-  const [variant, setVariant] = useState<Variant | null>(null);
   const [enabled, setEnabled] = useState(false);
   const [failed, setFailed] = useState(false);
   const [phase, setPhase] = useState<Phase>("loading");
   const [loadPct, setLoadPct] = useState(0);
+  const [gone, setGone] = useState(false);
 
-  // Preferencias: movimiento reducido apaga la intro; el viewport elige dispositivo.
-  useIsoLayoutEffect(() => {
+  // WebGL y movimiento reducido (por si cambió desde el arranque).
+  useEffect(() => {
     const root = document.documentElement;
-    const syncMotion = () => {
-      const reduced = isReducedMotionRequested();
-      setEnabled(!reduced && hasWebGL());
-      if (reduced) root.dataset.intro = "off";
-    };
-    syncMotion();
-
-    const mq = window.matchMedia(PHONE_QUERY);
-    const pick = () => setVariant(mq.matches ? "phone" : "laptop");
-    pick();
-    mq.addEventListener("change", pick);
-    const unsubscribe = subscribeReducedMotionPreference(syncMotion);
-
-    return () => {
-      mq.removeEventListener("change", pick);
-      unsubscribe();
-      delete root.dataset.intro;
-    };
+    // Ya la saltaron (o cortó el tiempo) antes de que esta escena cargara.
+    if (root.dataset.intro !== "pending") {
+      setGone(true);
+      return;
+    }
+    const reduced = isReducedMotionRequested();
+    if (reduced || !hasWebGL()) {
+      root.dataset.intro = reduced ? "off" : "entered";
+      setGone(true);
+      return;
+    }
+    setEnabled(true);
+    const unsubscribe = subscribeReducedMotionPreference(() => {
+      if (isReducedMotionRequested()) {
+        root.dataset.intro = "off";
+        setGone(true);
+      }
+    });
+    return unsubscribe;
   }, []);
 
-  // Progreso de scroll → CSS (fundido, pista) y atributos del documento.
-  useIsoLayoutEffect(() => {
-    const section = sectionRef.current;
-    if (!section || !enabled || failed) return;
+  // "Saltar" (o el corte por tiempo del arranque) cambia `data-intro`: la
+  // escena se retira en ese momento.
+  useEffect(() => {
     const root = document.documentElement;
-    let raf = 0;
+    const observer = new MutationObserver(() => {
+      if (root.dataset.intro !== "pending" && !selfEnteredRef.current) setGone(true);
+    });
+    observer.observe(root, { attributes: true, attributeFilter: ["data-intro"] });
+    return () => observer.disconnect();
+  }, []);
 
-    const measure = () => {
-      raf = 0;
-      const rect = section.getBoundingClientRect();
-      const total = rect.height - window.innerHeight;
-      // Sin altura (estilos aún sin aplicar) no hay recorrido: se queda al inicio.
-      const p = total > 0 ? Math.min(1, Math.max(0, -rect.top / total)) : 0;
-      progressRef.current = p;
-      section.style.setProperty("--intro-p", p.toFixed(4));
-      section.dataset.state = p >= DONE_AT ? "done" : "active";
-      if (p >= ENTER_AT) root.dataset.intro = "entered";
-      else if (root.dataset.intro !== "entered") root.dataset.intro = "pending";
-    };
-    const schedule = () => {
-      if (!raf) raf = requestAnimationFrame(measure);
-    };
+  // Paralaje suave con el mouse mientras la laptop está a 3/4.
+  useEffect(() => {
     const onPointer = (event: PointerEvent) => {
       if (event.pointerType !== "mouse") return;
       pointerRef.current.x = (event.clientX / window.innerWidth) * 2 - 1;
       pointerRef.current.y = (event.clientY / window.innerHeight) * 2 - 1;
     };
-
-    measure();
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
     window.addEventListener("pointermove", onPointer, { passive: true });
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-      window.removeEventListener("pointermove", onPointer);
+    return () => window.removeEventListener("pointermove", onPointer);
+  }, []);
+
+  // Con el modelo listo, la línea de tiempo corre sola (no depende del scroll).
+  useEffect(() => {
+    if (phase === "loading" || gone) return;
+    const section = sectionRef.current;
+    if (!section) return;
+    const root = document.documentElement;
+    // El modelo llegó tarde: la página ya está en el hero y no se tapa de nuevo.
+    if (root.dataset.intro !== "pending") {
+      setGone(true);
+      return;
+    }
+    root.dataset.introLoaded = "1";
+    try {
+      sessionStorage.setItem("bf-intro", "1");
+    } catch {
+      /* sin almacenamiento: la intro puede repetirse, no pasa nada */
+    }
+    const start = performance.now();
+    let raf = 0;
+    const frame = (now: number) => {
+      const p = Math.min(1, Math.max(0, (now - start - BOOT_MS) / TRAVEL_MS));
+      progressRef.current = p;
+      section.style.setProperty("--intro-p", p.toFixed(4));
+      section.dataset.state = p >= DONE_AT ? "done" : "active";
+      if (p >= ENTER_AT && root.dataset.intro === "pending") {
+        selfEnteredRef.current = true;
+        root.dataset.intro = "entered";
+      }
+      if (p >= 1) {
+        window.setTimeout(() => setGone(true), 120);
+        return;
+      }
+      raf = requestAnimationFrame(frame);
     };
-  }, [enabled, failed]);
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }, [phase === "loading", gone]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!failed) return;
     document.documentElement.dataset.intro = "entered";
+    setGone(true);
   }, [failed]);
 
   function skip() {
-    const section = sectionRef.current;
-    if (!section) return;
-    const rect = section.getBoundingClientRect();
-    window.scrollTo({
-      top: window.scrollY + rect.bottom - window.innerHeight,
-      behavior: isReducedMotionRequested() ? "auto" : "smooth",
-    });
+    document.documentElement.dataset.intro = "entered";
   }
+
+  if (gone) return null;
 
   const statusText =
     phase === "loading"
@@ -168,15 +188,15 @@ export function DeviceIntro() {
     <section
       ref={sectionRef}
       aria-label={t.experience.introAria}
-      className={failed ? "device-intro hidden" : "device-intro"}
-      data-variant={variant ?? undefined}
+      className="device-intro"
+      data-variant="laptop"
+      data-state="active"
     >
       <div className="device-intro__stage">
         <div aria-hidden className="device-intro__glow" />
-        {enabled && variant && !failed && (
+        {enabled && !failed && (
           <IntroCanvas
-            key={variant}
-            variant={variant}
+            variant="laptop"
             progressRef={progressRef}
             pointerRef={pointerRef}
             stringsRef={stringsRef}
@@ -189,25 +209,10 @@ export function DeviceIntro() {
         <p role="status" aria-live="polite" className="sr-only">
           {statusText}
         </p>
-        <p
-          aria-hidden
-          data-show={phase === "loading" && loadPct < 100}
-          className="device-intro__loading text-[11px] font-semibold uppercase tracking-[0.24em] text-white/60"
-        >
-          {t.experience.modelLoading} · {String(loadPct).padStart(2, "0")}%
-        </p>
-
-        <p
-          data-show={phase === "ready"}
-          className="device-intro__hint text-[11px] font-semibold uppercase tracking-[0.24em] text-white/75"
-        >
-          {t.experience.enterHint}
-          <span aria-hidden className="device-intro__chev" />
-        </p>
         <button
           type="button"
           onClick={skip}
-          className="device-intro__skip min-h-11 rounded-full border border-white/15 bg-white/5 px-5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/75 backdrop-blur transition-colors hover:border-lime hover:bg-lime hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime"
+          className="device-intro__skip intro-skip min-h-11 rounded-full border border-white/15 bg-white/5 px-5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/75 backdrop-blur transition-colors hover:border-lime hover:bg-lime hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime"
         >
           {t.experience.skip}
         </button>
@@ -422,11 +427,11 @@ function buildScene(
     if (!loaded) return false;
     const { progressRef, pointerRef, stringsRef } = propsRef.current;
     const raw = progressRef.current;
-    smooth += (raw - smooth) * (1 - Math.exp(-dt * 9));
+    smooth += (raw - smooth) * (1 - Math.exp(-dt * 30));
     if (Math.abs(raw - smooth) < 1e-4) smooth = raw;
     if (raw >= DONE_AT && smooth >= DONE_AT) return false;
 
-    const t = elapsed - loadedAt;
+    const t = (elapsed - loadedAt) * TIME_SCALE;
     const scrollTurn = easeInOut(clamp01(smooth / 0.5));
     const travel = easeInOut(clamp01(smooth / 0.76));
 

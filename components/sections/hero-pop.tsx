@@ -81,6 +81,10 @@ export function HeroPop() {
 
   // Ancho de cada palabra gigante; desde md comparten el tamaño de la mayor.
   const fitTitle = wordEm(t.hero.titleHighlight);
+  // "venden." → la palabra subrayada y su punto final aparte.
+  const highlightMatch = /^(.*?)([.!。！]*)$/.exec(t.hero.titleHighlight);
+  const highlightWord = highlightMatch?.[1] || t.hero.titleHighlight;
+  const highlightTail = highlightMatch?.[2] ?? "";
   const fitSide = wordEm(t.hero.sideHighlight);
   const fitShared = Math.max(fitTitle, fitSide);
   const fit = (own: number) =>
@@ -103,10 +107,12 @@ export function HeroPop() {
             {t.hero.titlePrefix}
           </span>
           <span
-            className="display-xl fit-word block [--fit-max:clamp(4.25rem,18vw,6rem)] md:[--fit-max:clamp(4.75rem,10.5vw,11rem)]"
+            className="display-xl fit-word hero-kinetic block [--fit-max:clamp(4.25rem,18vw,6rem)] md:[--fit-max:clamp(4.75rem,10.5vw,11rem)]"
             style={fit(fitTitle)}
           >
-            {t.hero.titleHighlight}
+            {/* La palabra clave lleva el subrayado lima que crece al entrar. */}
+            <span className="hero-underline">{highlightWord}</span>
+            {highlightTail}
           </span>
           {/* El precio de entrada se ve a la derecha (eco visual); el h1 lo
               incluye completo para buscadores y lectores de pantalla. */}
@@ -184,7 +190,7 @@ export function HeroPop() {
               {/* Hasta lg la foto termina en un arco con base redondeada (un
                   marco limpio, sin difuminar el saco); en xl baja hasta el
                   canto de la tarjeta lima. */}
-              <div className="absolute inset-0 overflow-hidden rounded-b-[1.75rem] xl:overflow-visible xl:rounded-none">
+              <div className="hero-parallax absolute inset-0 overflow-hidden rounded-b-[1.75rem] xl:overflow-visible xl:rounded-none">
                 <span aria-hidden className="absolute inset-x-0 bottom-0 top-[19%] rounded-t-full bg-forest" />
                 <Image
                   src="/img/brand/bryan-hero.webp"
@@ -192,7 +198,7 @@ export function HeroPop() {
                   fill
                   priority
                   sizes="(min-width: 1280px) 26rem, (min-width: 768px) 20rem, 10rem"
-                  className="object-cover object-top"
+                  className="hero-zoom object-cover object-top"
                 />
               </div>
             </div>

@@ -15,6 +15,13 @@ import { CONFIGURATOR_PLANS } from "@/lib/catalog";
 import { formatMoney } from "@/lib/currency";
 import { useLanguage } from "@/lib/i18n/context";
 
+// El proceso completo (5 pasos) vive aquí; el inicio enseña la versión corta.
+const ProcessOrbital = dynamic(() =>
+  import("@/components/sections/process-orbital").then((m) => m.ProcessOrbital)
+);
+const EntryServices = dynamic(() =>
+  import("@/components/sections/entry-services").then((m) => m.EntryServices)
+);
 const SiteFooter = dynamic(() =>
   import("@/components/sections/site-footer").then((m) => m.SiteFooter)
 );
@@ -212,6 +219,8 @@ export function CrearWebExperience() {
         </section>
 
         <Configurator hideHeading />
+        <ProcessOrbital chapter={2} />
+        <EntryServices chapter={3} />
       </main>
 
       <SiteFooter />

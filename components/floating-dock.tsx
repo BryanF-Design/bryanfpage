@@ -5,11 +5,12 @@ import { usePathname } from "next/navigation";
 import { ArrowUp } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
+import { TrackedWhatsAppLink } from "@/components/analytics/tracked-whatsapp-link";
 import { useLanguage } from "@/lib/i18n/context";
+import { STUDIO_FACTS } from "@/lib/catalog";
 import { useConfiguratorInView } from "@/lib/use-configurator-in-view";
 import { useFooterInView } from "@/lib/use-footer-in-view";
 
-const WHATSAPP_URL = "https://wa.me/525663012505";
 
 /**
  * Dock de contacto: una sola píldora tinta, arriba del botón de Lumina, con
@@ -33,6 +34,18 @@ export function FloatingDock() {
   const [pastHero, setPastHero] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [teaserOpen, setTeaserOpen] = useState(false);
+  const [touched, setTouched] = useState(false);
+  const [phone, setPhone] = useState(false);
+  const whatsapp = `https://wa.me/${STUDIO_FACTS.whatsapp}?text=${encodeURIComponent(t.homeV3.fab.whatsappMsg)}`;
+
+  // En teléfono el WhatsApp está siempre a la vista (también sobre el hero).
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const sync = () => setPhone(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   // ¿Ya quedó atrás el hero? En el home se observa #home; en las demás
   // páginas basta con haber bajado más de media pantalla.
@@ -127,25 +140,29 @@ export function FloatingDock() {
   // Lumina abajo con sus propios botones.
   const onCard = (pathname?.startsWith("/tarjeta") || pathname?.startsWith("/cv")) ?? false;
   const hidden =
-    onCard || !pastHero || footerInView || configuratorInView || chatOpen || teaserOpen;
+    onCard || (!pastHero && !phone) || footerInView || configuratorInView || chatOpen || teaserOpen;
 
   return (
     <div
       className="fab-slot fab-slot-dock fixed bottom-[calc(var(--fab-edge)+var(--lumina-fab,0px))] right-3 z-[119] sm:right-6"
       data-hidden={hidden}
     >
-      <div className="fab-dock">
-        <a
-          href={WHATSAPP_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="WhatsApp"
-          tabIndex={hidden ? -1 : 0}
-          className="fab-dock-btn fab-wa inline-flex"
+      <div className="fab-dock" data-touched={touched || undefined}>
+        <span
+          className="contents"
+          onPointerDown={() => setTouched(true)}
+          onFocus={() => setTouched(true)}
         >
-          <FaWhatsapp aria-hidden className="h-[1.375rem] w-[1.375rem]" />
-          <span className="fab-label hidden pr-1.5 xl:inline">WhatsApp</span>
-        </a>
+          <TrackedWhatsAppLink
+            href={whatsapp}
+            service="fab_whatsapp"
+            className="fab-dock-btn fab-wa wa-pulse relative inline-flex"
+          >
+            <span className="sr-only">{t.homeV3.fab.aria}</span>
+            <FaWhatsapp aria-hidden className="h-[1.375rem] w-[1.375rem]" />
+            <span aria-hidden className="fab-label hidden pr-1.5 xl:inline">WhatsApp</span>
+          </TrackedWhatsAppLink>
+        </span>
         {/* En teléfono basta con tocar la barra de estado para subir. */}
         <span aria-hidden className="hidden h-6 w-px bg-white/15 sm:block" />
         <button

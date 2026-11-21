@@ -11,8 +11,9 @@ import { useLanguage } from "@/lib/i18n/context";
 import { useHomeHref } from "@/lib/use-home-href";
 import { mobileShot } from "@/lib/projects";
 import { cn } from "@/lib/utils";
+import { TrackedWhatsAppLink } from "@/components/analytics/tracked-whatsapp-link";
+import { STUDIO_FACTS } from "@/lib/catalog";
 
-const WHATSAPP = "https://wa.me/525663012505";
 
 /** Miniaturas de la prueba social: tres sitios reales del portafolio. */
 const PROOF_SHOTS = [
@@ -81,7 +82,8 @@ function Phone({ slug, sizes }: { slug: string; sizes: string }) {
  */
 export function ClosingCta() {
   const { t, locale } = useLanguage();
-  const pricesHref = useHomeHref("precios");
+  const pricesHref = useHomeHref("configurador");
+  const whatsapp = `https://wa.me/${STUDIO_FACTS.whatsapp}?text=${encodeURIComponent(t.hero.whatsappMsg)}`;
   // El rótulo gigante se ajusta a la longitud real: los títulos largos
   // (francés, alemán) bajan un punto y el japonés/chino gana interlineado.
   const cjk = locale === "ja" || locale === "zh";
@@ -190,39 +192,29 @@ export function ClosingCta() {
             </div>
 
             <div className="panel-ink relative z-[2] rounded-card p-5 shadow-pop sm:p-6 xl:p-7">
-              <p className="text-pretty text-[0.9375rem] leading-relaxed text-white/80 md:text-base">
-                {t.closingCta.subtitle}
+              <p className="display-title text-[clamp(1.35rem,2.4vw,1.85rem)] leading-tight text-white">
+                {t.homeV3.closing.line}
               </p>
               <div className="mt-5 flex flex-col gap-2.5 sm:flex-row">
                 <Button
                   asChild
                   size="lg"
-                  className="w-full bg-lime pr-2.5 text-ink sm:w-auto sm:flex-1 sm:pl-6"
+                  className="h-14 w-full bg-lime pr-2.5 text-base text-ink sm:w-auto sm:flex-[1.4] sm:pl-6"
                 >
-                  <Link href={pricesHref}>
-                    {t.closingCta.ctaPrimary}
-                    <ButtonArrow
-                      tone="ink"
-                      className="ml-auto -mr-0.5 sm:ml-2"
-                    />
-                  </Link>
+                  <TrackedWhatsAppLink href={whatsapp} service="cierre_quiero_mi_pagina">
+                    <FaWhatsapp aria-hidden className="h-5 w-5" />
+                    {t.homeV3.closing.cta}
+                    <ButtonArrow tone="ink" className="ml-auto -mr-0.5 sm:ml-2" />
+                  </TrackedWhatsAppLink>
                 </Button>
                 <Button
                   asChild
                   size="lg"
                   variant="outline"
-                  className="w-full sm:w-auto sm:flex-1"
+                  className="h-14 w-full sm:w-auto sm:flex-1"
                 >
-                  <Link
-                    href={WHATSAPP}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <FaWhatsapp
-                      aria-hidden
-                      className="h-[1.1rem] w-[1.1rem] text-lime"
-                    />
-                    {t.closingCta.ctaSecondary}
+                  <Link href={pricesHref} data-track-cta="cierre_arma_tu_web">
+                    {t.closingCta.ctaPrimary}
                   </Link>
                 </Button>
               </div>

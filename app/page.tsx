@@ -1,11 +1,8 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import dynamic from "next/dynamic";
-import Link from "next/link";
-import { ArrowUpRight, Globe2, Sparkle } from "lucide-react";
 import { HeroPop } from "@/components/sections/hero-pop";
-import { StatCounter } from "@/components/ui/stat-counter";
+import { INTRO_BOOTSTRAP, IntroGate } from "@/components/intro/intro-gate";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { SiteHeader } from "@/components/sections/site-header";
 import { MarqueeBand } from "@/components/sections/marquee-band";
@@ -18,26 +15,24 @@ import { STUDIO_FACTS } from "@/lib/catalog";
 // small (main lever on mobile TBT). SSR stays on (default) for all of these
 // so their text/links are still present in the server HTML for SEO/crawlers
 // — only the client JS is deferred into separate chunks.
+const HomeCases = dynamic(() => import("@/components/home/home-cases").then((m) => m.HomeCases));
+const HomePricing = dynamic(() =>
+  import("@/components/home/home-pricing").then((m) => m.HomePricing)
+);
+const HomeLuminaDiagonal = dynamic(() =>
+  import("@/components/home/home-diagonals").then((m) => m.HomeLuminaDiagonal)
+);
+const HomeAboutDiagonal = dynamic(() =>
+  import("@/components/home/home-diagonals").then((m) => m.HomeAboutDiagonal)
+);
 const ClosingCta = dynamic(() =>
   import("@/components/sections/closing-cta").then((m) => m.ClosingCta)
 );
 const ProcessOrbital = dynamic(() =>
   import("@/components/sections/process-orbital").then((m) => m.ProcessOrbital)
 );
-const ProjectsShowcase = dynamic(() =>
-  import("@/components/sections/projects-showcase").then((m) => m.ProjectsShowcase)
-);
-const ProjectCasesCompact = dynamic(() =>
-  import("@/components/sections/projects-showcase").then((m) => m.ProjectCasesCompact)
-);
-const HomeTeasers = dynamic(() =>
-  import("@/components/sections/home-teasers").then((m) => m.HomeTeasers)
-);
 const ClientsMarquee = dynamic(() =>
   import("@/components/sections/clients-marquee").then((m) => m.ClientsMarquee)
-);
-const EntryServices = dynamic(() =>
-  import("@/components/sections/entry-services").then((m) => m.EntryServices)
 );
 const Configurator = dynamic(() =>
   import("@/components/sections/configurator").then((m) => m.Configurator)
@@ -55,6 +50,9 @@ const LuminaChat = dynamic(
   () => import("@/components/lumina-chat").then((m) => m.LuminaChat),
   { ssr: false }
 );
+
+/** Clientes con sitio en línea, en la cinta lenta bajo los casos (nombres propios, sin traducir). */
+const CLIENT_NAMES = ["CortMart", "MC Spine", "Golden Muuse", "Koi Arquitectura", "Mixteca"];
 
 /**
  * Preguntas clave que se quedan en el inicio (índices del diccionario):
@@ -79,8 +77,15 @@ const faqJsonLd = {
   })),
 };
 
-// Sin intro 3D ni preloader en la home: el hero (precio + WhatsApp) es lo
-// primero que se pinta, en móvil y en escritorio. Nada de WebGL aquí.
+/**
+ * Inicio: vende en la primera pantalla y luego enamora. Orden: hero con
+ * precio y WhatsApp → casos con resultado → precios → configurador → Lumina
+ * → proceso → Bryan → marcas → FAQ → cierre. Cada bloque es titular + una
+ * línea + un botón; el detalle vive en su página.
+ *
+ * En escritorio, la primera visita de la sesión abre con la intro 3D (0.8 s,
+ * con "Saltar"); en móvil nunca hay intro ni preloader.
+ */
 export default function HomePage() {
   const { t } = useLanguage();
 
@@ -90,136 +95,33 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
+      {/* Antes de pintar el hero: decide si la intro corre (escritorio) y deja
+          el telón con "Saltar" listo desde el primer instante. */}
+      <script dangerouslySetInnerHTML={{ __html: INTRO_BOOTSTRAP }} />
+      <IntroGate />
       <ScrollProgress />
       <SiteHeader />
 
       <main id="main-content" tabIndex={-1} className="sheet-main">
-        {/* Hero + cifras: un solo grupo (las tarjetas cuelgan del hero a
-            distancia de canal; entre secciones la separación es mayor). */}
-        <div className="flex flex-col gap-gutter">
-          <HeroPop />
+        <HeroPop />
 
-          {/* Cifras reales del estudio, en tarjetas tipo app. En teléfono la
-              lima va a todo lo ancho y las otras dos, lado a lado. */}
-          <section
-            aria-label={t.experience.statsAria}
-            className="grid grid-cols-2 gap-gutter sm:grid-cols-3"
-          >
-            <div data-fx="up" className="col-span-2 min-w-0 sm:col-span-1">
-              <div className="panel flex h-full min-h-[10rem] flex-col justify-between gap-5 p-5 shadow-soft sm:min-h-[13.5rem] sm:p-6 md:p-8">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-sm font-semibold">{t.experience.statsRecord}</span>
-                  <span className="rounded-full bg-ink px-3 py-1 text-xs font-semibold text-lime">
-                    {t.experience.studioBadge}
-                  </span>
-                </div>
-                <div>
-                  {/* Trayectoria: desde 2018 (estudio BryanF Design desde 2020). */}
-                  <span className="mb-3 inline-flex rounded-full bg-ink px-3 py-1 text-xs font-semibold text-lime">
-                    {t.trust.years}
-                  </span>
-                  <p className="display-xl text-[clamp(3.5rem,16vw,4.5rem)] leading-[0.82] sm:text-[clamp(3.5rem,7.5vw,7.5rem)] lg:text-[clamp(4.5rem,9vw,7.5rem)]">
-                    {STUDIO_FACTS.since}
-                  </p>
-                  <p className="mt-2 text-sm font-semibold text-muted-foreground">
-                    {t.trust.yearsCaption}
-                  </p>
-                  <span aria-hidden className="mt-4 flex gap-1.5">
-                    {Array.from({ length: 10 }, (_, i) => (
-                      <span
-                        key={i}
-                        className={i < 7 ? "size-2.5 rounded-full bg-lime" : "size-2.5 rounded-full bg-ink/10"}
-                      />
-                    ))}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div data-fx="up" className="min-w-0" style={{ "--fx-delay": "90ms" } as CSSProperties}>
-              <div className="panel panel-ink flex h-full min-h-[10rem] flex-col justify-between gap-5 overflow-hidden p-5 sm:min-h-[13.5rem] sm:p-6 md:p-8">
-                <div aria-hidden className="mesh-glow-a opacity-70" />
-                <Sparkle aria-hidden className="relative h-6 w-6 self-end fill-lime text-lime sm:h-7 sm:w-7" />
-                <div className="relative">
-                  <p className="display-xl text-[clamp(2.75rem,12vw,4.5rem)] leading-[0.82] text-lime sm:text-[clamp(3.5rem,7.5vw,7.5rem)] lg:text-[clamp(4.5rem,9vw,7.5rem)]">
-                    <StatCounter value={150} suffix="+" />
-                  </p>
-                  <p className="mt-2 text-sm font-semibold text-white/80">
-                    {t.trust.projectsCaption}
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div data-fx="up" className="min-w-0" style={{ "--fx-delay": "180ms" } as CSSProperties}>
-              <div className="panel flex h-full min-h-[10rem] flex-col justify-between gap-5 p-5 shadow-soft sm:min-h-[13.5rem] sm:p-6 md:p-8">
-                <span aria-hidden className="flex h-10 items-end gap-1.5 self-end sm:h-16 sm:gap-2">
-                  {[38, 62, 46, 84, 70, 100].map((h, i) => (
-                    <span
-                      key={i}
-                      style={{ height: `${h}%`, animationDelay: `${i * 220}ms` }}
-                      className={
-                        i === 5
-                          ? "meter-bar w-2.5 rounded-full bg-lime sm:w-3.5"
-                          : "meter-bar w-2.5 rounded-full bg-ink/10 sm:w-3.5"
-                      }
-                    />
-                  ))}
-                </span>
-                <div>
-                  {/* "Desde" va como etiqueta sobre la cifra; el pie ya trae la unidad. */}
-                  <span className="mb-3 inline-flex rounded-full bg-ink px-3 py-1 text-xs font-semibold text-lime">
-                    {t.trust.deliveryPrefix}
-                  </span>
-                  <p className="display-xl text-[clamp(2.75rem,12vw,4.5rem)] leading-[0.82] sm:text-[clamp(3.5rem,7.5vw,7.5rem)] lg:text-[clamp(4.5rem,9vw,7.5rem)]">
-                    <StatCounter value={3} />
-                  </p>
-                  <p className="mt-2 text-sm font-semibold text-muted-foreground">
-                    {t.trust.deliveryCaption}
-                  </p>
-                </div>
-              </div>
-            </div>
-            {/* Presencia: una sola línea (el mapa completo está en /contacto). */}
-            <Link
-              href="/contacto#presencia"
-              data-fx="up"
-              style={{ "--fx-delay": "240ms" } as CSSProperties}
-              className="group col-span-2 flex min-h-14 items-center gap-3 rounded-full bg-white py-1.5 pl-1.5 pr-2 shadow-soft transition-transform duration-200 hover:-translate-y-0.5 sm:col-span-3"
-            >
-              <span className="grid size-11 shrink-0 place-items-center rounded-full bg-ink text-lime">
-                <Globe2 aria-hidden className="h-5 w-5" />
-              </span>
-              <span className="min-w-0 flex-1 text-pretty text-sm font-semibold leading-snug text-ink sm:text-base">
-                {t.home.presence}
-              </span>
-              <span className="hidden text-sm font-semibold text-ink/60 sm:inline">{t.home.presenceLink}</span>
-              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-lime text-ink">
-                <ArrowUpRight aria-hidden className="h-4 w-4 transition-transform duration-300 group-hover:rotate-45" />
-              </span>
-            </Link>
-          </section>
-        </div>
+        <HomeCases />
 
-        <ProjectsShowcase withCases={false} compactFeatured />
+        <MarqueeBand words={CLIENT_NAMES} outline />
 
-        <MarqueeBand words={t.marquee.words} outline />
+        <HomePricing />
 
-        {/* Casos de estudio en tarjetas compactas: el resultado en una línea y
-            el caso completo en /casos. */}
-        <ProjectCasesCompact />
+        <Configurator chapter={4} sectionId="configurador" />
 
-        {/* Bryan y Lumina, en corto: su historia completa vive en /conoceme y
-            /lumina. */}
-        <HomeTeasers />
+        <HomeLuminaDiagonal />
 
-        <ProcessOrbital chapter={3} />
+        <ProcessOrbital chapter={6} compact />
 
-        <EntryServices chapter={4} />
-
-        <Configurator chapter={5} />
+        <HomeAboutDiagonal />
 
         <ClientsMarquee />
 
-        <Faq chapter={6} only={KEY_FAQ} moreHref="/contacto#faq" />
+        <Faq chapter={9} only={KEY_FAQ} moreHref="/contacto#faq" />
 
         <ClosingCta />
       </main>

@@ -295,7 +295,13 @@ interface Checkout {
 export function Configurator({
   hideHeading = false,
   chapter = 7,
-}: { hideHeading?: boolean; chapter?: number } = {}) {
+  sectionId = "precios",
+}: {
+  hideHeading?: boolean;
+  chapter?: number;
+  /** En el inicio es #configurador (#precios son las tarjetas); en /crear-web sigue siendo #precios. */
+  sectionId?: string;
+} = {}) {
   const { t } = useLanguage();
   const PLANS = getPlans(t);
   const MODULES = getModules(t);
@@ -704,7 +710,8 @@ export function Configurator({
 
   return (
     <section
-      id="precios"
+      id={sectionId}
+      data-configurator=""
       // En /crear-web el titular de la portada ya se llama igual: sin
       // encabezado propio, la sección toma el nombre corto ("Configurador").
       aria-label={hideHeading ? t.configurator.eyebrow : t.configurator.title}
@@ -920,9 +927,9 @@ export function Configurator({
             </div>
           </Step>
 
-          {/* Paso 3: modalidad, moneda y cupón. */}
+          {/* Paso 3: modalidad, moneda y cupón (#pago: Lumina lleva aquí). */}
           <Step last>
-            <fieldset>
+            <fieldset id="pago" className="scroll-mt-28">
               <legend className="px-1 sm:px-0">
                 <StepHeader n={3} label={t.configurator.step3} />
               </legend>

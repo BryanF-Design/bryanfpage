@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, LogIn, Menu, X } from "lucide-react";
+import { ArrowUpRight, ChevronDown, Menu, X } from "lucide-react";
 import {
   FaWhatsapp,
   FaInstagram,
@@ -21,7 +21,8 @@ import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { useFooterInView } from "@/lib/use-footer-in-view";
 import { cn } from "@/lib/utils";
 
-const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
+import { TrackedWhatsAppLink } from "@/components/analytics/tracked-whatsapp-link";
+import { STUDIO_FACTS } from "@/lib/catalog";
 
 const social = [
   { Icon: FaInstagram, href: "https://www.instagram.com/bryanf_design/", label: "Instagram" },
@@ -53,13 +54,25 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const firstMenuLinkRef = useRef<HTMLAnchorElement>(null);
 
-  const links = [
-    { label: t.nav.proyectos, href: "/#projects" },
-    { label: t.nav.servicios, href: "/#servicios-entrada" },
-    { label: t.nav.lumina, href: "/lumina" },
-    { label: t.nav.precios, href: "/#precios" },
-    { label: t.nav.faq, href: "/#faq" },
+  const h = t.homeV3.header;
+  // Servicios abre las 6 páginas de servicio; el resto son páginas propias y
+  // la ancla de precios del inicio. El acceso de clientes vive en el pie.
+  const services = [
+    { label: t.footer.services.paginasNegocios, href: "/paginas-web-para-negocios" },
+    { label: t.footer.services.disenoWeb, href: "/diseno-web-mexico" },
+    { label: t.footer.services.desarrolloWeb, href: "/desarrollo-web-mexico" },
+    { label: t.footer.services.uxUi, href: "/diseno-ux-ui-mexico" },
+    { label: t.footer.services.softwareMedida, href: "/software-a-medida-mexico" },
+    { label: t.footer.services.mantenimientoWeb, href: "/mantenimiento-web-mexico" },
   ];
+  const links = [
+    { label: h.servicios, href: "/paginas-web-para-negocios", children: services },
+    { label: h.casos, href: "/casos" },
+    { label: h.barberias, href: "/sistema-para-barberias" },
+    { label: h.conoceme, href: "/conoceme" },
+    { label: h.precios, href: "/#precios" },
+  ];
+  const whatsapp = `https://wa.me/${STUDIO_FACTS.whatsapp}?text=${encodeURIComponent(t.homeV3.fab.whatsappMsg)}`;
 
   useEffect(() => {
     let frame = 0;
@@ -166,43 +179,59 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
             onMouseLeave={() => setHovered(null)}
           >
             {links.map((l, i) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                onMouseEnter={() => setHovered(i)}
-                onFocus={() => setHovered(i)}
-                onBlur={() => setHovered(null)}
-                className="relative inline-flex h-10 items-center rounded-full px-4 text-[0.9375rem] font-semibold text-ink/75 transition-colors hover:text-ink xl:px-5"
-              >
-                {hovered === i && (
-                  <motion.span
-                    layoutId={reducedMotion ? undefined : "nav-hover-pill"}
-                    aria-hidden
-                    className="absolute inset-0 rounded-full bg-ink/[0.06]"
-                    transition={{ type: "spring", stiffness: 500, damping: 40 }}
-                  />
+              <div key={l.href} className="group/nav relative">
+                <Link
+                  href={l.href}
+                  onMouseEnter={() => setHovered(i)}
+                  onFocus={() => setHovered(i)}
+                  onBlur={() => setHovered(null)}
+                  aria-haspopup={l.children ? "true" : undefined}
+                  className="relative inline-flex h-10 items-center gap-1 rounded-full px-4 text-[0.9375rem] font-semibold text-ink/75 transition-colors hover:text-ink xl:px-5"
+                >
+                  {hovered === i && (
+                    <motion.span
+                      layoutId={reducedMotion ? undefined : "nav-hover-pill"}
+                      aria-hidden
+                      className="absolute inset-0 rounded-full bg-ink/[0.06]"
+                      transition={{ type: "spring", stiffness: 500, damping: 40 }}
+                    />
+                  )}
+                  <span className="relative">{l.label}</span>
+                  {l.children && <ChevronDown aria-hidden className="relative h-4 w-4 opacity-60" />}
+                </Link>
+                {l.children && (
+                  <ul
+                    role="list"
+                    className="invisible absolute left-0 top-full z-10 mt-2 w-72 translate-y-1 rounded-card bg-white p-2 opacity-0 shadow-[0_24px_50px_-24px_hsl(var(--ink)/0.45)] ring-1 ring-ink/[0.06] transition-[opacity,transform,visibility] duration-200 group-focus-within/nav:visible group-focus-within/nav:translate-y-0 group-focus-within/nav:opacity-100 group-hover/nav:visible group-hover/nav:translate-y-0 group-hover/nav:opacity-100 before:absolute before:inset-x-0 before:-top-2 before:h-2"
+                  >
+                    {l.children.map((sv) => (
+                      <li key={sv.href}>
+                        <Link
+                          href={sv.href}
+                          className="flex min-h-11 items-center justify-between gap-3 rounded-inner px-3 text-sm font-semibold text-ink/80 transition-colors hover:bg-mint hover:text-ink"
+                        >
+                          {sv.label}
+                          <ArrowUpRight aria-hidden className="h-4 w-4 text-ink/40" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
                 )}
-                <span className="relative">{l.label}</span>
-              </Link>
+              </div>
             ))}
           </nav>
 
           <div className="flex items-center gap-1.5">
             {!spanishOnly && <LanguageSwitcher />}
-            <Link
-              href={CLIENT_PORTAL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden h-10 items-center gap-2 rounded-full px-4 text-sm font-semibold text-ink/75 transition-colors hover:bg-ink/[0.05] hover:text-ink xl:inline-flex"
+            {/* WhatsApp siempre visible: en teléfono, ícono + "WhatsApp". */}
+            <Button
+              asChild
+              className="h-11 gap-2 bg-[#25D366] pl-3.5 pr-4 text-ink shadow-[0_10px_24px_-14px_hsl(142_70%_30%/0.7)] hover:-translate-y-0.5 sm:pl-4 sm:pr-5"
             >
-              <LogIn className="h-4 w-4" />
-              {t.nav.cliente}
-            </Link>
-            <Button asChild variant="ink" className="hidden h-11 pl-5 pr-2 sm:inline-flex">
-              <Link href="/#precios">
-                {t.nav.armaTuWeb}
-                <ButtonArrow tone="lime" className="-mr-0.5" />
-              </Link>
+              <TrackedWhatsAppLink href={whatsapp} service="header_whatsapp">
+                <FaWhatsapp aria-hidden className="h-5 w-5" />
+                {h.whatsapp}
+              </TrackedWhatsAppLink>
             </Button>
             <button
               ref={menuButtonRef}
@@ -265,23 +294,32 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
                 ))}
               </ul>
 
+              <ul role="list" aria-label={h.servicios} className="mt-5 flex flex-wrap gap-2">
+                {services.map((sv) => (
+                  <li key={sv.href}>
+                    <Link
+                      href={sv.href}
+                      onClick={() => setOpen(false)}
+                      className="inline-flex min-h-11 items-center rounded-full bg-mint px-4 text-sm font-semibold text-ink ring-1 ring-ink/[0.06] hover:bg-lime"
+                    >
+                      {sv.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+
               <div className="mt-auto flex flex-col gap-3 pt-8 sm:flex-row">
                 <Button asChild size="lg" variant="ink" className="w-full pr-2 sm:flex-1">
-                  <Link href="/#precios" onClick={() => setOpen(false)}>
+                  <Link href="/crear-web" onClick={() => setOpen(false)}>
                     {t.nav.armaTuWeb}
                     <ButtonArrow tone="lime" className="ml-auto -mr-0.5" />
                   </Link>
                 </Button>
-                <Button asChild size="lg" variant="outline" className="w-full sm:flex-1">
-                  <Link
-                    href={CLIENT_PORTAL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setOpen(false)}
-                  >
-                    <LogIn className="h-4 w-4" />
-                    {t.nav.cliente}
-                  </Link>
+                <Button asChild size="lg" className="w-full bg-[#25D366] text-ink sm:flex-1">
+                  <TrackedWhatsAppLink href={whatsapp} service="menu_whatsapp">
+                    <FaWhatsapp aria-hidden className="h-5 w-5" />
+                    {h.whatsapp}
+                  </TrackedWhatsAppLink>
                 </Button>
               </div>
 

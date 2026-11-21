@@ -31,7 +31,7 @@ let teardown: (() => void) | null = null;
 
 function measure() {
   frame = 0;
-  const el = document.getElementById("precios");
+  const el = document.querySelector<HTMLElement>("[data-configurator]");
   let next = false;
   if (el) {
     const rect = el.getBoundingClientRect();

@@ -61,8 +61,8 @@ export function NotFoundContent() {
 
   /** Atajos por si el visitante prefiere elegir antes de que corra la cuenta. */
   const shortcuts = [
-    { label: t.nav.proyectos, href: "/#projects" },
-    { label: t.nav.servicios, href: "/#servicios-entrada" },
+    { label: t.nav.casos, href: "/casos" },
+    { label: t.nav.servicios, href: "/paginas-web-para-negocios" },
     { label: t.nav.precios, href: "/#precios" },
     { label: t.nav.faq, href: "/#faq" },
   ];

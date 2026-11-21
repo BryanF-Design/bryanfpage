@@ -722,6 +722,113 @@ const en: Dictionary = {
     faqMore: "See all questions",
   },
   /** Páginas a las que se movieron secciones del inicio. */
+  homeV3: {
+    cases: {
+      eyebrow: "Real cases",
+      title: "Real work that's already selling.",
+      subtitle: "Three live projects, what was built and what they achieved.",
+      seeCase: "See case",
+      allCases: "See all cases",
+      problemLabel: "Challenge",
+      doneLabel: "What I did",
+      cortmart: {
+        name: "CortMart · Barber OS",
+        sector: "Barbershop",
+        problem: "Bookings by text, no-shows and zero data.",
+        done: "QR bookings, a loyalty card and a live dashboard.",
+        stats: ["visits served", "attendance", "clients served", "registered"],
+        note: "Real figures from the CortMart dashboard. No projections or sample data.",
+      },
+      efficient: {
+        problem: "A technical color catalog that was hard to explain.",
+        done: "Pantone finder, catalog by family and direct quotes.",
+        number: "3",
+        label: "tools in a single flow, all the way to WhatsApp",
+      },
+      koi: {
+        problem: "Telling an architecture process without turning it into a gallery.",
+        done: "A journey from listening to building, with contact at the end.",
+        number: "4",
+        label: "service stages in a single journey",
+      },
+    },
+    pricing: {
+      eyebrow: "Pricing",
+      title: "Clear prices, no surprises.",
+      subtitle: "Pick one, pay half and we start. Prices in MXN.",
+      recommended: "Recommended",
+      from: "From",
+      perProject: "MXN",
+      cta: "I want this one",
+      tiers: {
+        landing: {
+          name: "Landing",
+          line: "One page that sells.",
+          includes: ["Custom design and copy", "WhatsApp button and basic SEO", "Domain and hosting for the first year", "Delivered from 3 days"],
+        },
+        full: {
+          name: "Full website",
+          line: "Everything in Landing and more.",
+          includes: ["Up to 5 sections", "Email on your domain", "Google Business Profile", "30-minute training"],
+        },
+        software: {
+          name: "Custom software",
+          line: "Processes, bookings and systems.",
+          includes: ["Automate your operations", "Bookings, dashboards and users", "4 to 6 weeks", "Quoted by scope"],
+        },
+      },
+      extras: "Redesign $1,800 · Maintenance $1,000/mo · Kit $1,500",
+      extrasLink: "Build your site",
+      micro: "60-day warranty + 15 days of tweaks · Pay 50% to start, 50% on approval · Card, Mercado Pago or SPEI transfer.",
+      whatsappMsg: (name: string, price: string) => `Hi, I want the ${name} package (${price}).`,
+    },
+    lumina: {
+      eyebrow: "AI advisor",
+      title: "Meet Lumina.",
+      line: "Your guide on the site: she explains, shows examples and takes you right to what you need, no need to read everything.",
+      cta: "Ask Lumina",
+      chips: ["Who is Bryan?", "How much is a landing page?", "Can I pay with Mercado Pago?"],
+    },
+    about: {
+      eyebrow: "Who I am",
+      title: "I'm Bryan. I design and I code.",
+      line: "You work directly with me, from idea to launch. Since 2018, 150+ projects.",
+      cta: "Meet Bryan",
+    },
+    process: {
+      title: "A clear process, from idea to launch.",
+      subtitle: "Four steps, no detours. You always know what's next.",
+      steps: [
+        { title: "Tell me about your business", content: "A short call to understand what you need." },
+        { title: "Design", content: "You see it before paying the rest." },
+        { title: "Development", content: "Fast and built to get you messages." },
+        { title: "Launch", content: "We go live and I train you for 30 minutes." },
+      ],
+      cta: "See the full process",
+    },
+    closing: {
+      title: "Shall we start your site?",
+      cta: "I want my website",
+      line: "From $2,000 · Ready in 3 days",
+    },
+    header: {
+      servicios: "Services",
+      casos: "Cases",
+      barberias: "Barbershops",
+      conoceme: "About me",
+      precios: "Pricing",
+      whatsapp: "WhatsApp",
+    },
+    footer: {
+      access: "Client access",
+      from: "From $2,000",
+      arco: "ARCO rights",
+    },
+    fab: {
+      whatsappMsg: "Hi, I want my website from $2,000",
+      aria: "Message me on WhatsApp",
+    },
+  },
   pages: {
     breadcrumb: "Breadcrumb",
     conoceme: {

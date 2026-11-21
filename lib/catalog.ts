@@ -82,6 +82,24 @@ export const STUDIO_FACTS = {
   whatsapp: "525663012505",
 } as const;
 
+/**
+ * Las 3 tarjetas de precios del inicio (#precios). Landing y Sitio completo
+ * son los mismos planes del configurador; Software a medida es "desde" y se
+ * cotiza por alcance (4 a 6 semanas).
+ */
+export const HOME_PRICING = [
+  { id: "landing", price: 2000 as Mxn, from: false, featured: false, planId: "landing" },
+  { id: "full", price: 3500 as Mxn, from: false, featured: true, planId: "full" },
+  { id: "software", price: 10000 as Mxn, from: true, featured: false, planId: null },
+] as const;
+
+/** Línea de extras bajo las tarjetas de precios. */
+export const HOME_PRICING_EXTRAS = {
+  update: 1800 as Mxn,
+  maintenance: 1000 as Mxn,
+  kit: 1500 as Mxn,
+} as const;
+
 /** Barber OS: renta mensual con setup incluido y prueba gratis. */
 export const BARBER_OS_PLAN = {
   monthly: 599 as Mxn,
