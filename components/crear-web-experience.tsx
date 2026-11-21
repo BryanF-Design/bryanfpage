@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react";
 import Image from "next/image";
+import { cardLoader } from "@/lib/image-loaders";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { ArrowDown, ArrowLeft, Building2, CreditCard, Rocket, Search, Sparkle, Timer } from "lucide-react";
@@ -168,7 +169,7 @@ export function CrearWebExperience() {
                     transform="rotate(-8 200 70)"
                   />
                 </svg>
-                <Image
+                <Image loader={cardLoader}
                   src="/img/lumina/v2/cutout/normal.webp"
                   alt=""
                   width={1058}

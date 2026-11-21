@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 
 import { thumbLoader } from "@/lib/image-loaders";

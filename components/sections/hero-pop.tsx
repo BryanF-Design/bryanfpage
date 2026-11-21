@@ -49,7 +49,7 @@ export function HeroPop() {
               {h.titleWord}
               <span aria-hidden className="hero-underline" />
             </span>
-            .
+            {h.titleA ? "." : ""}
           </span>
           <span className="block whitespace-nowrap">{h.price}</span>
         </h1>

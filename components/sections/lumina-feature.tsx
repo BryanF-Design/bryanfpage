@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
+import { cardLoader } from "@/lib/image-loaders";
 import { AnimatePresence, motion, useInView } from "framer-motion";
 import {
   ArrowUpRight,
@@ -189,7 +190,7 @@ export function LuminaFeature() {
               >
                 {MOODS.map((m, i) =>
                   primed.includes(i) ? (
-                    <Image
+                    <Image loader={cardLoader}
                       key={m.key}
                       src={m.src}
                       alt={i === shown ? `${t.lumina.name} · ${moodLabel}` : ""}
@@ -319,7 +320,7 @@ export function LuminaFeature() {
             {/* Mientras carga el chat (se hidrata en el navegador). */}
             <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center text-sm font-medium text-muted-foreground [#lumina-chat-inline:has(>#lumina-chat-panel)_&]:hidden">
               <span className="relative size-14 overflow-hidden rounded-full bg-ink ring-[3px] ring-lime">
-                <Image src="/img/lumina/v2/avatar/normal.webp" alt="" fill sizes="56px" unoptimized className="object-cover" />
+                <Image loader={cardLoader} src="/img/lumina/v2/avatar/normal.webp" alt="" fill sizes="56px" unoptimized className="object-cover" />
               </span>
               {t.lumina.online}
             </div>
@@ -418,7 +419,7 @@ function BadgeVisual({ index }: { index: number }) {
             style={{ left: `${i * 2}rem`, rotate: `${(i - 1) * 7}deg` }}
             className="absolute -top-7 h-16 w-10 overflow-hidden rounded-[0.55rem] bg-ink shadow-[0_12px_20px_-10px_hsl(var(--ink)/0.6)] ring-2 ring-white"
           >
-            <Image src={mobileShot(slug)} alt="" fill sizes="40px" className="object-cover object-top" />
+            <Image loader={cardLoader} src={mobileShot(slug)} alt="" fill sizes="40px" className="object-cover object-top" />
           </span>
         ))}
       </span>

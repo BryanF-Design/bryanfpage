@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react";
 import Image from "next/image";
+import { cardLoader } from "@/lib/image-loaders";
 import Link from "next/link";
 import { Heart, Sparkle } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
@@ -56,7 +57,7 @@ function Phone({ slug, sizes }: { slug: string; sizes: string }) {
           <span className="absolute left-1/2 top-[30%] h-[52%] w-[34%] -translate-x-1/2 rounded-full bg-ink" />
         </span>
         <span className="relative block flex-1">
-          <Image
+          <Image loader={cardLoader}
             src={mobileShot(slug)}
             alt=""
             fill
@@ -127,7 +128,7 @@ export function ClosingCta() {
                     key={slug}
                     className="relative size-10 overflow-hidden rounded-full bg-white ring-[3px] ring-lime"
                   >
-                    <Image
+                    <Image loader={cardLoader}
                       src={mobileShot(slug)}
                       alt=""
                       fill

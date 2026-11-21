@@ -1,5 +1,5 @@
-import type { CSSProperties, ReactNode } from "react";
-import Image from "next/image";
+import { Fragment, type CSSProperties, type ReactNode } from "react";
+import { CardImage } from "@/components/ui/card-image";
 import Link from "next/link";
 import {
   ArrowDown,
@@ -71,9 +71,31 @@ function buildServiceSchema(page: ServicePage) {
       url: SITE_URL,
       image: `${SITE_URL}/img/logotipo-blanco.png`,
     },
+    offers: {
+      "@type": "Offer",
+      price: page.price.amount,
+      priceCurrency: "MXN",
+      url,
+      ...(page.price.perMonth
+        ? { priceSpecification: { "@type": "UnitPriceSpecification", price: page.price.amount, priceCurrency: "MXN", unitCode: "MON" } }
+        : {}),
+    },
     url,
   };
 }
+
+/** Orden (y largo) de las secciones de cada página: ninguna repite plantilla. */
+const SECTION_ORDER: Record<string, string[]> = {
+  "diseno-web-mexico": ["hero", "price", "casos", "problemas", "solucion", "diferenciadores", "preguntas", "cierre"],
+  "desarrollo-web-mexico": ["hero", "price", "solucion", "proceso", "casos", "diferenciadores", "preguntas", "cierre"],
+  "paginas-web-para-negocios": ["hero", "price", "solucion", "casos", "preguntas", "cierre"],
+  "diseno-ux-ui-mexico": ["hero", "price", "problemas", "proceso", "solucion", "casos", "preguntas", "cierre"],
+  "software-a-medida-mexico": ["hero", "price", "problemas", "proceso", "solucion", "casos", "preguntas", "cierre"],
+  "mantenimiento-web-mexico": ["hero", "price", "solucion", "preguntas", "casos", "cierre"],
+};
+const DEFAULT_ORDER = ["hero", "price", "problemas", "solucion", "proceso", "diferenciadores", "preguntas", "casos", "cierre"];
+
+const mxn = (n: number) => `$${n.toLocaleString("en-US")}`;
 
 function buildBreadcrumbSchema(page: ServicePage) {
   return {
@@ -182,8 +204,7 @@ export function LandingHeading({
 }) {
   return (
     <div className={cn("flex flex-col items-start gap-4 md:gap-5", className)}>
-      <span className="eyebrow">
-        <b>{pad(index)}</b>
+      <span className="eyebrow pl-3">
         {eyebrow}
       </span>
       <div suppressHydrationWarning data-fx="up" className="max-w-full">
@@ -228,17 +249,9 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
   const shownCases = cases.filter((c) => c.project);
   const featured = shownCases[0]?.project;
 
-  return (
-    <>
-      <JsonLd data={buildServiceSchema(page)} />
-      <JsonLd data={buildBreadcrumbSchema(page)} />
-      <JsonLd data={buildFaqSchema(page)} />
-      <SpanishPageLanguage />
-
-      <ScrollProgress />
-      <SiteHeader spanishOnly />
-
-      <main id="main-content" tabIndex={-1} className="sheet-main" data-language="es-only">
+  const blocks: Record<string, ReactNode> = {
+    hero: (
+      <>
         {/* ——— Hero: marco blanco con el titular partido y un panel lima del
             que sale Bryan, con el caso de referencia como tarjeta. ——— */}
         <section
@@ -321,7 +334,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                         key={project!.slug}
                         className="relative size-10 overflow-hidden rounded-full bg-white ring-[3px] ring-white"
                       >
-                        <Image
+                        <CardImage
                           src={mobileShot(project!.slug)}
                           alt=""
                           fill
@@ -361,7 +374,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                   aria-hidden
                   className="absolute inset-0 [clip-path:inset(-60%_0_0_0_round_0_0_calc(var(--r-panel)-0.5rem)_calc(var(--r-panel)-0.5rem))]"
                 >
-                  <Image
+                  <CardImage
                     src="/img/brand/bryan-cutout.webp"
                     alt=""
                     width={1122}
@@ -384,7 +397,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                     className="group card-pop absolute inset-x-3 bottom-3 z-10 flex items-center gap-3 p-2.5 transition-transform duration-300 hover:-translate-y-1 sm:inset-x-auto sm:bottom-4 sm:left-4 sm:w-[15rem] sm:flex-col sm:items-stretch lg:right-4 lg:w-auto lg:flex-row lg:items-center xl:bottom-5 xl:left-5 xl:right-auto xl:w-[15rem] xl:flex-col xl:items-stretch"
                   >
                     <span className="relative aspect-[4/3] w-20 shrink-0 overflow-hidden rounded-inner bg-mint sm:w-full lg:w-28 xl:w-full">
-                      <Image
+                      <CardImage
                         src={caseShot(featured).src}
                         alt={`Captura del sitio de ${featured.name}`}
                         fill
@@ -417,7 +430,44 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
             </div>
           </div>
         </section>
-
+      </>
+    ),
+    price: (
+      <>
+        {/* ——— Precio único de la página, con garantía, pago y WhatsApp. ——— */}
+        <section id="precio" aria-label={`Precio de ${page.serviceType}`} className="border-y border-ink/15 py-8 md:py-10">
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-sm font-medium text-ink/60">{page.serviceType}</p>
+              <p className="mt-2 font-display text-5xl font-semibold tracking-[-0.03em] md:text-6xl">
+                {page.price.from && <span className="mr-2 align-middle font-sans text-base font-medium text-ink/60">Desde</span>}
+                {mxn(page.price.amount)}
+                <span className="ml-2 align-middle font-sans text-base font-medium text-ink/60">
+                  MXN{page.price.perMonth ? "/mes" : ""}
+                </span>
+              </p>
+              <p className="mt-3 text-sm text-ink/65">
+                {page.price.note ? `${page.price.note} · ` : ""}Garantía 60 días · Pagas 50% para empezar · Tarjeta, Mercado Pago o transferencia SPEI
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Button asChild size="lg" variant="lime" className="h-14 px-7">
+                <TrackedWhatsAppLink
+                  href={`${WHATSAPP_URL}?text=${encodeURIComponent(`Hola, me interesa ${page.serviceType.toLowerCase()} (${page.price.from ? "desde " : ""}${mxn(page.price.amount)} MXN${page.price.perMonth ? "/mes" : ""}).`)}`}
+                  service={`${page.slug}_precio`}
+                >
+                  Cotizar por WhatsApp
+                </TrackedWhatsAppLink>
+              </Button>
+              <Link href="/crear-web" className="text-link">Arma tu web</Link>
+              <Link href="/casos" className="text-link">Ver casos</Link>
+            </div>
+          </div>
+        </section>
+      </>
+    ),
+    problemas: (
+      <>
         {/* ——— Problemas: cabecera con Lumina dudando y la lista estilo app. ——— */}
         <section
           id="problemas"
@@ -448,7 +498,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                       <Sparkle aria-hidden className="h-3.5 w-3.5 fill-lime text-lime" />
                       ¿Te suena?
                     </span>
-                    <Image
+                    <CardImage
                       src="/img/lumina/v2/cutout/duda.webp"
                       alt=""
                       aria-hidden
@@ -503,7 +553,10 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
             </div>
           </div>
         </section>
-
+      </>
+    ),
+    solucion: (
+      <>
         {/* ——— Solución en bosque + entregables en mosaicos claros. ——— */}
         <section id="solucion" aria-labelledby="solucion-title" className="grid gap-gutter lg:grid-cols-12">
           <div suppressHydrationWarning data-fx="left" className="min-w-0 lg:col-span-7">
@@ -576,7 +629,10 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
 
         {/* Cinta de la hoja: la misma que en el home. */}
         <MarqueeBand words={MARQUEE_WORDS} angle={-2} />
-
+      </>
+    ),
+    proceso: (
+      <>
         {/* ——— Proceso: pasos como tarjetas de app; el primero, activo. ——— */}
         <section
           id="proceso"
@@ -642,7 +698,10 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
             ))}
           </ol>
         </section>
-
+      </>
+    ),
+    diferenciadores: (
+      <>
         {/* ——— Diferenciadores: el único panel oscuro de la página. ——— */}
         <section
           id="diferenciadores"
@@ -664,7 +723,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
               />
               <div className="flex items-center gap-3 self-start rounded-full bg-white/[0.07] py-1.5 pl-1.5 pr-5 ring-1 ring-white/10">
                 <span className="relative size-12 shrink-0 overflow-hidden rounded-full bg-lime">
-                  <Image
+                  <CardImage
                     src="/img/brand/bryan-cutout.webp"
                     alt=""
                     width={1122}
@@ -709,7 +768,10 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
             </ul>
           </div>
         </section>
-
+      </>
+    ),
+    preguntas: (
+      <>
         {/* ——— Preguntas frecuentes: visibles siempre (coinciden con el schema). ——— */}
         <section id="preguntas" aria-labelledby="preguntas-title" className="grid gap-gutter lg:grid-cols-12">
           <div suppressHydrationWarning data-fx="left" className="min-w-0 lg:col-span-5">
@@ -767,7 +829,10 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
             </div>
           </div>
         </section>
-
+      </>
+    ),
+    casos: (
+      <>
         {/* ——— Casos reales con captura (a lo ancho) y, debajo, la franja
             de servicios relacionados en bosque. ——— */}
         <section id="casos" aria-labelledby="casos-title" suppressHydrationWarning data-fx="up">
@@ -796,7 +861,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                       className="group flex h-full flex-col gap-3 rounded-card bg-mint p-2 ring-1 ring-ink/[0.05] transition-transform duration-300 hover:-translate-y-1 lg:p-2.5"
                     >
                       <span className="relative aspect-[16/11] overflow-hidden rounded-inner bg-white">
-                        <Image
+                        <CardImage
                           src={caseShot(project).src}
                           alt={`Captura del sitio de ${project.name}`}
                           fill
@@ -873,7 +938,10 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
             </div>
           </div>
         </nav>
-
+      </>
+    ),
+    cierre: (
+      <>
         {/* ——— Cierre en lima, como el del home. ——— */}
         <section id="contacto" aria-labelledby="contacto-title" suppressHydrationWarning data-fx="panel">
           <div className="panel panel-lime relative overflow-hidden p-5 sm:p-8 lg:p-12">
@@ -881,7 +949,6 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
             <div className="relative grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-10">
               <div className="flex flex-col items-start gap-5 lg:col-span-7">
                 <span className="eyebrow bg-white/60">
-                  <b>{pad(8)}</b>
                   Siguiente paso
                 </span>
                 <h2
@@ -896,7 +963,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                     funde con la tinta y la órbita le rodea la cabeza. */}
                 <div aria-hidden className="relative z-0 -mb-8 mr-4 w-[8.5rem] self-end sm:mr-8 sm:w-[10rem] lg:w-[11.5rem]">
                   <Orbit className="float-y absolute left-[-45%] top-[6%] w-[190%] text-ink/25" />
-                  <Image
+                  <CardImage
                     src="/img/lumina/v2/cutout/normal.webp"
                     alt=""
                     width={1058}
@@ -928,6 +995,25 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
             </div>
           </div>
         </section>
+      </>
+    ),
+  };
+  const order = SECTION_ORDER[page.slug] ?? DEFAULT_ORDER;
+
+  return (
+    <>
+      <JsonLd data={buildServiceSchema(page)} />
+      <JsonLd data={buildBreadcrumbSchema(page)} />
+      <JsonLd data={buildFaqSchema(page)} />
+      <SpanishPageLanguage />
+
+      <ScrollProgress />
+      <SiteHeader spanishOnly />
+
+      <main id="main-content" tabIndex={-1} className="sheet-main" data-language="es-only">
+        {order.map((key) => (
+          <Fragment key={key}>{blocks[key]}</Fragment>
+        ))}
       </main>
 
       <SiteFooter spanishOnly />

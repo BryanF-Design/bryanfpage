@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { cardLoader } from "@/lib/image-loaders";
 import type { CSSProperties } from "react";
 import {
   Calculator,
@@ -36,7 +37,7 @@ function LuminaAvatar({ src, className }: { src: string; className?: string }) {
         className
       )}
     >
-      <Image
+      <Image loader={cardLoader}
         src={src}
         alt=""
         fill
@@ -181,7 +182,7 @@ export function LuminaJourney({ chapter = 8 }: { chapter?: number } = {}) {
           >
             <div className="panel-forest relative rounded-[1.75rem] [clip-path:inset(-12rem_0_0_0_round_1.75rem)]">
               <span aria-hidden className="breathe absolute -right-6 bottom-0 size-40 rounded-full bg-lime/90 sm:size-44" />
-              <Image
+              <Image loader={cardLoader}
                 src="/img/lumina/v2/cutout/duda.webp"
                 alt=""
                 width={1087}

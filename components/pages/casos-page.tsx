@@ -1,17 +1,11 @@
 "use client";
 
-import dynamic from "next/dynamic";
-
 import { PageIntro } from "@/components/pages/page-intro";
 import { SubPageShell } from "@/components/pages/sub-page-shell";
-import { ProjectCases } from "@/components/sections/projects-showcase";
+import { CasosList } from "@/components/pages/casos-list";
 import { useLanguage } from "@/lib/i18n/context";
 
-const ClosingCta = dynamic(() =>
-  import("@/components/sections/closing-cta").then((m) => m.ClosingCta)
-);
-
-/** /casos — los casos de estudio completos (Problema / Decisión / Resultado). */
+/** /casos: CortMart con cifras reales y los 4 casos completos, todos visibles. */
 export function CasosPage() {
   const { t } = useLanguage();
   return (
@@ -21,8 +15,7 @@ export function CasosPage() {
         title={t.pages.casos.title}
         subtitle={t.pages.casos.subtitle}
       />
-      <ProjectCases hideHeading />
-      <ClosingCta />
+      <CasosList />
     </SubPageShell>
   );
 }

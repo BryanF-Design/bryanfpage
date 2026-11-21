@@ -41,7 +41,7 @@ const fraunces = Fraunces({
 });
 
 const SITE_DESCRIPTION =
-  "Diseño y desarrollo web en México, desde la CDMX. Hago páginas web rápidas, claras y a tu medida para negocios de todo el país. Entregas desde 3 días hábiles.";
+  "Páginas web para negocios desde $2,000, listas en 3 días. Diseño y desarrollo web en México, con garantía de 60 días. Escríbeme por WhatsApp.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -92,7 +92,7 @@ export const metadata: Metadata = {
         url: "/img/og-bryanf-apex.png",
         width: 1200,
         height: 630,
-        alt: "BryanF Design. Haz que pase: precisión, ritmo y conexión.",
+        alt: "BryanF Design: páginas web que venden, desde $2,000.",
       },
     ],
   },
@@ -160,6 +160,7 @@ const jsonLd = {
       },
       geo: { "@type": "GeoCoordinates", latitude: 19.4326, longitude: -99.1332 },
       areaServed: [
+        { "@type": "City", name: "Ciudad de México" },
         { "@type": "Country", name: "México" },
         { "@type": "Country", name: "España" },
         { "@type": "Country", name: "Francia" },

@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react";
 import Image from "next/image";
+import { cardLoader } from "@/lib/image-loaders";
 import Link from "next/link";
 import { Sparkle } from "lucide-react";
 
@@ -33,7 +34,7 @@ export function HomeTeasers() {
             <div className="flex items-center gap-3.5">
               {/* Teléfono: la foto va en un avatar junto al nombre. */}
               <span aria-hidden className="relative size-16 shrink-0 overflow-hidden rounded-full bg-lime sm:hidden">
-                <Image
+                <Image loader={cardLoader}
                   src="/img/brand/bryan-cutout.webp"
                   alt=""
                   width={1122}
@@ -58,7 +59,7 @@ export function HomeTeasers() {
           {/* Foto: Bryan sobre un disco lima, recortado en la base del panel. */}
           <div aria-hidden className="relative hidden shrink-0 sm:block sm:w-[42%]">
             <span className="absolute bottom-[-18%] left-1/2 aspect-square w-[78%] max-w-[16rem] -translate-x-1/2 rounded-full bg-lime sm:bottom-[-10%] sm:w-[92%]" />
-            <Image
+            <Image loader={cardLoader}
               src="/img/brand/bryan-cutout.webp"
               alt=""
               width={1122}
@@ -80,7 +81,7 @@ export function HomeTeasers() {
             </span>
             <div className="flex items-center gap-3.5">
               <span aria-hidden className="relative size-16 shrink-0 overflow-hidden rounded-full bg-white/60 sm:hidden">
-                <Image
+                <Image loader={cardLoader}
                   src="/img/lumina/v2/face/normal.webp"
                   alt=""
                   fill
@@ -107,7 +108,7 @@ export function HomeTeasers() {
           </div>
           <div aria-hidden className="relative hidden shrink-0 sm:block sm:w-[38%]">
             <span className="absolute bottom-[-18%] left-1/2 aspect-square w-[78%] max-w-[16rem] -translate-x-1/2 rounded-full bg-white/50 sm:bottom-[-10%] sm:w-[92%]" />
-            <Image
+            <Image loader={cardLoader}
               src="/img/lumina/v2/cutout/normal.webp"
               alt=""
               width={1058}

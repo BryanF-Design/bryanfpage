@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { cardLoader } from "@/lib/image-loaders";
 
 import { MarqueeToggle } from "@/components/sections/marquee-band";
 import { SectionHeading } from "@/components/sections/section-heading";
@@ -147,7 +148,7 @@ function LogoTile({
               <use href={`${logo.src}#${logo.crop.id}`} />
             </svg>
           ) : (
-            <Image
+            <Image loader={cardLoader}
               src={logo.src}
               alt={decorative ? "" : logo.alt}
               width={logo.w}
@@ -201,7 +202,7 @@ export function ClientsMarquee() {
                         key={logo.alt}
                         className="grid size-11 place-items-center rounded-full bg-white p-2.5 ring-[3px] ring-lime"
                       >
-                        <Image
+                        <Image loader={cardLoader}
                           src={logo.src}
                           alt=""
                           width={logo.w}

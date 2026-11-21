@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import Image from "next/image";
+import { cardLoader } from "@/lib/image-loaders";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -160,7 +161,7 @@ function ShotStack({
           key={slug}
           className={cn("relative size-10 overflow-hidden rounded-full bg-white ring-[3px]", ring)}
         >
-          <Image src={mobileShot(slug)} alt="" fill sizes="40px" className="object-cover object-top" />
+          <Image loader={cardLoader} src={mobileShot(slug)} alt="" fill sizes="40px" className="object-cover object-top" />
         </span>
       ))}
     </span>
@@ -237,7 +238,7 @@ function CyclingScreens({ slugs, sizes }: { slugs: string[]; sizes: string }) {
                 : "translate-y-6 opacity-0"
           )}
         >
-          <Image src={mobileShot(slug)} alt="" fill sizes={sizes} quality={70} className="object-cover object-top" />
+          <Image loader={cardLoader} src={mobileShot(slug)} alt="" fill sizes={sizes} quality={70} className="object-cover object-top" />
         </span>
       ))}
     </span>
@@ -285,7 +286,7 @@ function PhoneMock({
           ) : cycle && cycle.length > 1 ? (
             <CyclingScreens slugs={cycle} sizes={sizes} />
           ) : (
-            <Image src={mobileShot(slug)} alt={alt} fill sizes={sizes} quality={70} className="object-cover object-top" />
+            <Image loader={cardLoader} src={mobileShot(slug)} alt={alt} fill sizes={sizes} quality={70} className="object-cover object-top" />
           )}
         </span>
       </div>
@@ -346,7 +347,7 @@ function ProjectTile({
         )}
         style={{ "--notch-bg": "var(--card)" } as CSSProperties}
       >
-        <Image
+        <Image loader={cardLoader}
           src={mobileShot(project.slug)}
           alt={`Versión móvil del sitio de ${project.name}`}
           fill
@@ -354,7 +355,7 @@ function ProjectTile({
           quality={70}
           className="object-cover object-top transition-transform duration-700 [transition-timing-function:var(--ease-out)] group-hover:scale-[1.04] md:hidden"
         />
-        <Image
+        <Image loader={cardLoader}
           src={desktopShot(project.slug)}
           alt={`Captura del sitio de ${project.name}`}
           fill
@@ -522,7 +523,7 @@ function FeaturedProject({ project, compact = false }: { project: Project; compa
               {live ? (
                 <SitePreview name={project.name} host={host} />
               ) : (
-                <Image
+                <Image loader={cardLoader}
                   src={desktopShot(project.slug)}
                   alt={`Captura del sitio de ${project.name} en escritorio`}
                   fill
@@ -606,7 +607,7 @@ function FeaturedProject({ project, compact = false }: { project: Project; compa
               {live ? (
                 <SitePreview name={project.name} host={host} />
               ) : (
-                <Image
+                <Image loader={cardLoader}
                   src={desktopShot(project.slug)}
                   alt={`Captura del sitio de ${project.name} en escritorio`}
                   fill
@@ -901,7 +902,7 @@ export function ProjectCasesCompact() {
                 className="group flex h-full flex-col gap-4 rounded-card bg-mint p-2 ring-1 ring-ink/[0.05] transition-transform duration-300 hover:-translate-y-1 sm:p-2.5"
               >
                 <span className="relative aspect-[16/10] overflow-hidden rounded-inner bg-white">
-                  <Image
+                  <Image loader={cardLoader}
                     src={slug === KOI_SLUG ? tabletShot(slug) : desktopShot(slug)}
                     alt={`Captura del sitio de ${project.name}`}
                     fill

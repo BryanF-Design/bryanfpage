@@ -194,7 +194,7 @@ export const FAQS = [
   },
   {
     question: "¿Cuánto cuesta cuando termina la prueba?",
-    answer: `Si decides seguir, la renta es de ${MONTHLY_PRICE_LABEL}, con el setup incluido y tu sistema tal como quedó configurado. Pagas con tarjeta, Mercado Pago o transferencia SPEI. Si no, la prueba termina sin compromiso.`,
+    answer: `Si decides seguir, la renta es de ${MONTHLY_PRICE_LABEL}, con el setup incluido y tu sistema tal como quedó configurado. Pagas con tarjeta, Mercado Pago o transferencia SPEI. Si no, la prueba termina sin compromiso. Siguiente paso: escríbenos por WhatsApp con tu logo, servicios y horarios y arrancamos tu prueba.`,
   },
 ];
 

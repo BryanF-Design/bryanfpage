@@ -26,6 +26,8 @@ export interface ServicePage {
   }>;
   relatedSlugs: string[];
   relatedCases: string[];
+  /** Precio único de la página (lista de precios del rearmado 2026). */
+  price: { amount: number; from?: boolean; perMonth?: boolean; note?: string };
 }
 
 export const servicePages: ServicePage[] = [
@@ -93,7 +95,8 @@ export const servicePages: ServicePage[] = [
       "software-a-medida-mexico",
       "paginas-web-para-negocios",
     ],
-    relatedCases: ["Koi Arquitectura", "Efficient Plasticolors", "NKMOH Café"],
+    relatedCases: ["Efficient Plasticolors", "Gecomex", "Bios Laboratorios"],
+    price: { amount: 3500 },
   },
   {
     slug: "diseno-web-mexico",
@@ -159,7 +162,8 @@ export const servicePages: ServicePage[] = [
       "diseno-ux-ui-mexico",
       "paginas-web-para-negocios",
     ],
-    relatedCases: ["Element Experiences", "Koi Arquitectura", "Golden Republic"],
+    relatedCases: ["Koi Arquitectura", "Golden Republic", "Mixteca"],
+    price: { amount: 3500 },
   },
   {
     slug: "diseno-ux-ui-mexico",
@@ -220,7 +224,8 @@ export const servicePages: ServicePage[] = [
       "software-a-medida-mexico",
       "desarrollo-web-mexico",
     ],
-    relatedCases: ["HomeFlow", "Element Experiences", "Repissa"],
+    relatedCases: ["Element Experiences", "Repissa"],
+    price: { amount: 5000 },
   },
   {
     slug: "paginas-web-para-negocios",
@@ -281,7 +286,8 @@ export const servicePages: ServicePage[] = [
       "desarrollo-web-mexico",
       "mantenimiento-web-mexico",
     ],
-    relatedCases: ["NKMOH Café", "Playera Publimax", "Servicios ECEM"],
+    relatedCases: ["NKMOH Café", "Playera Publimax", "Urban Flip"],
+    price: { amount: 3500, note: "Landing desde $2,000" },
   },
   {
     slug: "software-a-medida-mexico",
@@ -342,7 +348,8 @@ export const servicePages: ServicePage[] = [
       "diseno-ux-ui-mexico",
       "mantenimiento-web-mexico",
     ],
-    relatedCases: ["HomeFlow", "Efficient Plasticolors", "Bravologix"],
+    relatedCases: ["HomeFlow", "Bravologix"],
+    price: { amount: 10000, from: true, note: "De 4 a 6 semanas" },
   },
   {
     slug: "mantenimiento-web-mexico",
@@ -404,6 +411,7 @@ export const servicePages: ServicePage[] = [
       "software-a-medida-mexico",
     ],
     relatedCases: ["Servicios ECEM", "Industrias Tritton", "NDT 360"],
+    price: { amount: 1000, perMonth: true },
   },
 ];
 

@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import Image from "next/image";
+import { CardImage } from "@/components/ui/card-image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -676,7 +676,6 @@ export function BarberOsPage() {
             <div className="relative grid gap-8 lg:grid-cols-12 lg:gap-10">
               <div className="flex flex-col items-start gap-5 lg:col-span-5">
                 <span className="eyebrow bg-white/60">
-                  <b>{pad(5)}</b>
                   Prueba gratis
                 </span>
                 <h2 id="prueba-title" className="text-ink">
@@ -767,7 +766,7 @@ export function BarberOsPage() {
                     </TrackedWhatsAppLink>
                   </Button>
                 </div>
-                <Image
+                <CardImage
                   src="/img/lumina/v2/cutout/duda.webp"
                   alt=""
                   aria-hidden
@@ -847,7 +846,6 @@ export function BarberOsPage() {
             <div className="relative grid gap-8 lg:grid-cols-12 lg:items-center lg:gap-10">
               <div className="flex flex-col items-start gap-5 lg:col-span-8">
                 <span className="eyebrow">
-                  <b>{pad(8)}</b>
                   Siguiente paso
                 </span>
                 <h2
@@ -879,7 +877,7 @@ export function BarberOsPage() {
               <div aria-hidden className="relative mx-auto w-[10rem] sm:w-[12rem] lg:col-span-4 lg:w-[14rem]">
                 <span className="absolute bottom-0 left-1/2 aspect-square w-[92%] -translate-x-1/2 rounded-full bg-lime" />
                 <Orbit className="float-y absolute left-[-45%] top-[10%] w-[190%] text-ink/25" />
-                <Image
+                <CardImage
                   src="/img/lumina/v2/cutout/normal.webp"
                   alt=""
                   width={1058}

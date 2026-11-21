@@ -2,6 +2,7 @@
 
 import type { CSSProperties, FocusEvent } from "react";
 import Image from "next/image";
+import { cardLoader } from "@/lib/image-loaders";
 import {
   AppWindowMac,
   Check,
@@ -124,7 +125,7 @@ function CardMock({ fromLabel }: { fromLabel: string }) {
       {/* Tarjeta frontal. */}
       <div className="relative -rotate-[4deg] rounded-[1.6rem] bg-white p-4 pb-10 text-ink shadow-float transition-transform duration-500 [transition-timing-function:var(--ease-out)] group-hover/intro:-rotate-[2deg] sm:p-5 sm:pb-10">
         <div className="flex items-center justify-between">
-          <Image
+          <Image loader={cardLoader}
             src="/img/brand/logo-dark.png"
             alt=""
             width={720}
@@ -140,7 +141,7 @@ function CardMock({ fromLabel }: { fromLabel: string }) {
         <div className="mt-5 flex items-end justify-between gap-3">
           <div className="min-w-0">
             <span className="relative block size-14 overflow-hidden rounded-full bg-lime-soft ring-[3px] ring-lime">
-              <Image
+              <Image loader={cardLoader}
                 src="/img/brand/bryan-cutout.webp"
                 alt=""
                 fill
@@ -187,7 +188,7 @@ function MiniCardMock({ fromLabel }: { fromLabel: string }) {
         <div className="absolute inset-0 translate-x-2.5 translate-y-1 rotate-[5deg] rounded-[1.35rem] bg-ink shadow-float" />
         <div className="relative flex -rotate-[2.5deg] items-center gap-3 rounded-[1.35rem] bg-white p-3 pr-3.5 text-ink shadow-float">
           <span className="relative block size-12 shrink-0 overflow-hidden rounded-full bg-lime-soft ring-[3px] ring-lime">
-            <Image
+            <Image loader={cardLoader}
               src="/img/brand/bryan-cutout.webp"
               alt=""
               fill

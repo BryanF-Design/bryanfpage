@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react";
 import Image from "next/image";
+import { cardLoader } from "@/lib/image-loaders";
 import Link from "next/link";
 import { ArrowUpRight, Sparkle } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
@@ -80,7 +81,7 @@ export function Faq({
                 aria-hidden
                 className="pointer-events-none absolute right-3 top-0 z-0 w-[8.75rem] sm:right-8 sm:w-[10rem] lg:right-8 lg:w-[12.25rem]"
               >
-                <Image
+                <Image loader={cardLoader}
                   src="/img/lumina/v2/cutout/duda.webp"
                   alt=""
                   width={1031}
@@ -175,7 +176,7 @@ export function Faq({
                 >
                   <span aria-hidden className="relative size-10 shrink-0">
                     <span className="absolute inset-0 overflow-hidden rounded-full bg-lime">
-                      <Image
+                      <Image loader={cardLoader}
                         src="/img/lumina/v2/face/normal.webp"
                         alt=""
                         fill

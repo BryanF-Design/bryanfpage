@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
+import { cardLoader } from "@/lib/image-loaders";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowDown, ArrowRight, ArrowUpRight, Calculator, MessageCircle, RotateCcw, Send, X } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
@@ -66,7 +67,7 @@ function MoodAvatar({ mood, sizes, reducedMotion }: { mood: Mood; sizes: string;
       </video>
     );
   }
-  return <Image src={MOOD_IMG[mood]} alt="" fill sizes={sizes} unoptimized className="object-cover" />;
+  return <Image loader={cardLoader} src={MOOD_IMG[mood]} alt="" fill sizes={sizes} unoptimized className="object-cover" />;
 }
 
 const WHATSAPP_NUMBER = "525663012505";
@@ -960,7 +961,7 @@ export function LuminaChat() {
                   >
                     {/* La miniatura sobresale de la ficha, como las capturas del portafolio. */}
                     <span className="relative -my-3 h-[4.5rem] w-11 shrink-0 overflow-hidden rounded-[0.6rem] bg-ink shadow-[0_10px_18px_-10px_hsl(var(--ink)/0.6)] ring-2 ring-white transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:-rotate-3">
-                      <Image src={mobileShot(slug)} alt="" fill sizes="44px" className="object-cover object-top" />
+                      <Image loader={cardLoader} src={mobileShot(slug)} alt="" fill sizes="44px" className="object-cover object-top" />
                     </span>
                     <span className="min-w-0 flex-1 leading-tight">
                       <span className="block truncate text-[0.875rem] font-bold text-ink">{project.name}</span>
@@ -1283,7 +1284,7 @@ export function LuminaChat() {
             {/* En teléfono es una píldora compacta de una frase; desde sm, la tarjeta completa. */}
             <div className="relative flex items-center gap-2.5 rounded-[1.4rem] rounded-br-md bg-white py-2 pl-2 pr-11 text-ink shadow-float ring-1 ring-ink/[0.06] sm:items-start sm:gap-3 sm:rounded-[1.5rem] sm:rounded-br-md sm:p-3 sm:pr-11">
               <span aria-hidden className="relative size-9 shrink-0 overflow-hidden rounded-full bg-ink ring-2 ring-lime sm:size-10">
-                <Image src={MOOD_IMG.Normal} alt="" fill sizes="40px" unoptimized className="object-cover" />
+                <Image loader={cardLoader} src={MOOD_IMG.Normal} alt="" fill sizes="40px" unoptimized className="object-cover" />
               </span>
               <button
                 type="button"
@@ -1327,7 +1328,7 @@ export function LuminaChat() {
         >
           <span className="relative size-10 shrink-0 sm:size-11">
             <span className="absolute inset-0 overflow-hidden rounded-full bg-ink ring-2 ring-lime">
-              <Image src={MOOD_IMG.Normal} alt="" fill sizes="44px" priority unoptimized className="object-cover" />
+              <Image loader={cardLoader} src={MOOD_IMG.Normal} alt="" fill sizes="44px" priority unoptimized className="object-cover" />
             </span>
             <span
               className={cn(
