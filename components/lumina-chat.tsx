@@ -139,8 +139,16 @@ function ensureIntentActions(userText: string, actions: LuminaAction[]) {
     if (!has("quote") && actions.length < 5) actions.push({ kind: "quote", quote: { plan: "landing", modules: [], sections: 0 } });
     if (!has("whatsapp") && actions.length < 5) actions.push({ kind: "whatsapp" });
   }
-  if (PRICE_INTENT.test(userText) && !has("go") && !has("page") && !has("quote") && actions.length < 5) {
-    actions.push({ kind: "go", section: "precios" });
+  // "¿Cuánto cuesta…?" lleva a la sección de precios (las tarjetas), aunque
+  // el modelo también haya armado una cotización.
+  if (
+    PRICE_INTENT.test(userText) &&
+    !WANT_INTENT.test(userText) &&
+    !BARBER_INTENT.test(userText) &&
+    !has("go") &&
+    actions.length < 5
+  ) {
+    actions.unshift({ kind: "go", section: "precios" });
   }
   // Nunca sin siguiente paso: si no quedó ningún botón, WhatsApp con Bryan.
   if (!actions.length) actions.push({ kind: "whatsapp" });
@@ -931,7 +939,7 @@ export function LuminaChat() {
       configurador: t.nav.armaTuWeb,
       pago: t.configurator.step3.replace(/^\d+\.\s*/, ""),
       lumina: t.nav.lumina,
-      nosotros: t.homeV2.about.cta,
+      nosotros: t.homeV2.about.title.split(/[.。]/)[0],
       faq: t.nav.faq,
     };
     return labels[section];
