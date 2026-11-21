@@ -71,7 +71,6 @@ export const metadata: Metadata = {
   keywords: [
     "diseño y desarrollo web México",
     "diseño web CDMX",
-    "diseño web DF",
     "desarrollo de sitios web",
     "crear una página web",
     "crear pagina web",
@@ -159,9 +158,9 @@ const jsonLd = {
       image: `${SITE_URL}/img/og-bryanf-apex.png`,
       email: "bryanf@bryanfdesign.com",
       telephone: "+525663012505",
-      priceRange: "Desde $3,500 MXN",
+      priceRange: "$350 a $10,000+ MXN",
       currenciesAccepted: "MXN, USD",
-      paymentAccepted: "Tarjeta de crédito, Tarjeta de débito, Mercado Pago, Transferencia bancaria",
+      paymentAccepted: "Tarjeta de crédito, Tarjeta de débito, Mercado Pago, Transferencia SPEI",
       foundingDate: "2020",
       founder: { "@type": "Person", name: "Bryan F." },
       address: {
@@ -286,21 +285,26 @@ const fxBootstrap = `
   })();
 `;
 
-// Preloader de entrada: solo la primera vista de la sesión. Corre en el
-// <head>, antes de pintar: si ya se vio (o hay movimiento reducido, o es el
-// CV, que trae su propia intro, o el inicio, cuya intro 3D lo lleva en
-// pantalla), el telón ni aparece. El telón vive en el HTML
-// y se retira solo con CSS, así que nunca bloquea aunque el JS tarde.
+// Preloader de entrada: solo en escritorio y solo la primera vista de la
+// sesión, con un máximo de 1 segundo y botón "Saltar". Corre en el <head>,
+// antes de pintar: en móvil, en el inicio (el hero con precio y WhatsApp va
+// primero), en el CV (trae su propia intro), con movimiento reducido o si ya
+// se vio, el telón ni aparece. Vive en el HTML y se retira solo con CSS, así
+// que nunca bloquea aunque el JS tarde, y nunca recibe clics (salvo Saltar).
 const preloaderBootstrap = `
   try {
     var d = document.documentElement;
     var seen = false;
     try { seen = sessionStorage.getItem("bfd-preloaded") === "1"; sessionStorage.setItem("bfd-preloaded", "1"); } catch (_) {}
-    // En el inicio el preloader corre dentro de la pantalla de la intro 3D.
-    var introHome = location.pathname === "/";
-    if (seen || introHome || location.pathname.indexOf("/cv") === 0 || d.classList.contains("a11y-reduce-motion") ||
+    var home = location.pathname === "/";
+    var mobile = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
+    if (seen || home || mobile || location.pathname.indexOf("/cv") === 0 || d.classList.contains("a11y-reduce-motion") ||
       window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       d.classList.add("pl-skip");
+    } else {
+      document.addEventListener("click", function (e) {
+        if (e.target && e.target.closest && e.target.closest(".site-preloader__skip")) d.classList.add("pl-skip");
+      });
     }
   } catch (_) {}
 `;
@@ -339,10 +343,14 @@ export default function RootLayout({
               width={720}
               height={253}
               decoding="async"
+              loading="lazy"
               className="site-preloader__logo"
             />
             <span className="site-preloader__bar" />
           </div>
+          <button type="button" tabIndex={-1} className="site-preloader__skip">
+            Saltar
+          </button>
         </div>
         <ClickTracking />
         <MotionPreferenceProvider>

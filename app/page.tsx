@@ -4,7 +4,6 @@ import type { CSSProperties } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowUpRight, Globe2, Sparkle } from "lucide-react";
-import { DeviceIntro } from "@/components/intro/device-intro";
 import { HeroPop } from "@/components/sections/hero-pop";
 import { StatCounter } from "@/components/ui/stat-counter";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
@@ -13,6 +12,7 @@ import { MarqueeBand } from "@/components/sections/marquee-band";
 import { useLanguage } from "@/lib/i18n/context";
 import { DICTIONARIES } from "@/lib/i18n/dictionaries";
 import { SITE_URL } from "@/lib/seo/service-pages";
+import { STUDIO_FACTS } from "@/lib/catalog";
 
 // Below-the-fold sections: code-split so the initial hydration bundle stays
 // small (main lever on mobile TBT). SSR stays on (default) for all of these
@@ -79,8 +79,8 @@ const faqJsonLd = {
   })),
 };
 
-const INTRO_BOOTSTRAP = `(function(){try{var d=document.documentElement;var r=window.matchMedia("(prefers-reduced-motion: reduce)").matches||d.classList.contains("a11y-reduce-motion");d.dataset.intro=r?"off":"pending"}catch(e){}})();`;
-
+// Sin intro 3D ni preloader en la home: el hero (precio + WhatsApp) es lo
+// primero que se pinta, en móvil y en escritorio. Nada de WebGL aquí.
 export default function HomePage() {
   const { t } = useLanguage();
 
@@ -90,18 +90,8 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
-      {/* Antes de pintar el hero: si la intro va a correr, su entrada espera a
-          que la cámara entre a la pantalla (`html[data-intro="pending"]`). */}
-      <script dangerouslySetInnerHTML={{ __html: INTRO_BOOTSTRAP }} />
-      <noscript>
-        <style>{`.device-intro{display:none!important}`}</style>
-      </noscript>
       <ScrollProgress />
       <SiteHeader />
-
-      {/* Intro: laptop (o teléfono) que se enciende con el preloader en
-          pantalla; al deslizar, la cámara entra y aparece la web. */}
-      <DeviceIntro />
 
       <main id="main-content" tabIndex={-1} className="sheet-main">
         {/* Hero + cifras: un solo grupo (las tarjetas cuelgan del hero a
@@ -120,15 +110,19 @@ export default function HomePage() {
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-sm font-semibold">{t.experience.statsRecord}</span>
                   <span className="rounded-full bg-ink px-3 py-1 text-xs font-semibold text-lime">
-                    2020
+                    {t.experience.studioBadge}
                   </span>
                 </div>
                 <div>
+                  {/* Trayectoria: desde 2018 (estudio BryanF Design desde 2020). */}
+                  <span className="mb-3 inline-flex rounded-full bg-ink px-3 py-1 text-xs font-semibold text-lime">
+                    {t.trust.years}
+                  </span>
                   <p className="display-xl text-[clamp(3.5rem,16vw,4.5rem)] leading-[0.82] sm:text-[clamp(3.5rem,7.5vw,7.5rem)] lg:text-[clamp(4.5rem,9vw,7.5rem)]">
-                    <StatCounter value={6} prefix="+" />
+                    {STUDIO_FACTS.since}
                   </p>
                   <p className="mt-2 text-sm font-semibold text-muted-foreground">
-                    {t.trust.years} {t.trust.yearsCaption}
+                    {t.trust.yearsCaption}
                   </p>
                   <span aria-hidden className="mt-4 flex gap-1.5">
                     {Array.from({ length: 10 }, (_, i) => (
@@ -147,10 +141,10 @@ export default function HomePage() {
                 <Sparkle aria-hidden className="relative h-6 w-6 self-end fill-lime text-lime sm:h-7 sm:w-7" />
                 <div className="relative">
                   <p className="display-xl text-[clamp(2.75rem,12vw,4.5rem)] leading-[0.82] text-lime sm:text-[clamp(3.5rem,7.5vw,7.5rem)] lg:text-[clamp(4.5rem,9vw,7.5rem)]">
-                    <StatCounter value={100} prefix="+" />
+                    <StatCounter value={150} suffix="+" />
                   </p>
                   <p className="mt-2 text-sm font-semibold text-white/80">
-                    {t.trust.projects} {t.trust.projectsCaption}
+                    {t.trust.projectsCaption}
                   </p>
                 </div>
               </div>

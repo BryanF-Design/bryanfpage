@@ -28,17 +28,20 @@ const ja: Dictionary = {
   },
   hero: {
     eyebrow: "メキシコのWebデザイン・開発",
-    titlePrefix: "実現",
-    titleHighlight: "しよう。",
-    subtitle:
-      "速く、明快で、成果につながるサイトをデザイン・開発します。最初のアイデアから公開まで、私が直接担当します。",
+    titlePrefix: "売れる",
+    titleHighlight: "ウェブ。",
+    subtitle: "アイデアから公開まで、私と直接やり取りできます。",
     scrollHint: "スクロールしてCivicをめぐる",
-    sideTop: "売れる",
-    sideHighlight: "ウェブ",
-    panelTitle: "見つけてもらい、連絡したくなるデザインとコード",
+    sideTop: "料金",
+    sideHighlight: "$2,000〜",
+    panelTitle: "メキシコのWebデザイン・開発。最短3日で公開。",
     available: "新規プロジェクト受付中",
-    proof: "100件以上の公開実績",
-    features: ["最短3日で納品", "テクニカルSEO込み", "安全なオンライン決済"],
+    proof: "150件以上の実績、2018年から",
+    features: ["60日間保証", "着手金50%", "最短3日"],
+    ctaWhatsapp: "サイトを依頼する",
+    ctaPrices: "料金を見る",
+    whatsappMsg: "こんにちは、$2,000からのサイトをお願いしたいです。",
+    priceNote: "MXN・ランディングページは最短3日",
     featured: "注目のプロジェクト",
   },
   experience: {
@@ -67,13 +70,14 @@ const ja: Dictionary = {
     systemOnline: "システム準備完了",
     civicAria: "2023 Honda Civic Type Rのインタラクティブ3Dモデル",
     statsAria: "スタジオ実績",
-    statsRecord: "実績データ",
+    studioBadge: "スタジオ 2020年〜",
+    statsRecord: "経歴",
   },
   trust: {
-    years: "年",
-    yearsCaption: "の経験",
+    years: "から",
+    yearsCaption: "Webのデザインと開発",
     projects: "件",
-    projectsCaption: "のプロジェクトを納品しました",
+    projectsCaption: "件のデジタルプロジェクトを納品",
     deliveryPrefix: "最短",
     days: "営業日",
     deliveryCaption: "営業日で納品",
@@ -325,19 +329,28 @@ const ja: Dictionary = {
     subtitle: "プランを選び、必要なモジュールを追加し、カード・Mercado Pago・銀行振込でお支払いいただけます。追加費用の心配はありません。",
     step1: "1. プランを選ぶ",
     plans: {
+      landing: {
+        name: "ランディングページ",
+        desc: "問い合わせにつながる、売れる1ページ。",
+        includes: ["オーダーメイドのデザイン、文章、WhatsAppボタン", "基本SEO、初年度のドメインとホスティング", "最短3営業日で納品"],
+      },
       full: {
         name: "ウェブ制作",
         desc: "問い合わせにつながる、速くてオーダーメイドのサイト。",
+        includes: ["ランディングの内容＋最大5セクション", "メールとGoogleビジネスプロフィール", "30分のレクチャー"],
       },
       update: {
         name: "リニューアル",
         desc: "本格的なデザインとパフォーマンスで既存サイトを刷新します。",
+        includes: ["今のサイトのデザインを刷新", "スマホでの表示を高速化", "WhatsAppとテクニカルSEOを見直し"],
       },
       maintenance: {
         name: "保守運用",
         desc: "常に最新・安全でバックアップ済みの状態を維持します（月額）。",
+        includes: ["サイトを最新に保ちバックアップ", "セキュリティと毎月の点検", "私が直接サポート"],
       },
     },
+    includesLabel: "含まれるもの",
     step2: "2. 追加モジュール",
     modules: {
       ecommerce: "ECサイト / オンラインストア",
@@ -382,6 +395,7 @@ const ja: Dictionary = {
     copyLabel: (label) => `${label}をコピー`,
     sendWhatsapp: "WhatsAppで領収書を送る",
     sendEmail: "メールで領収書を送る",
+    sendQuoteWhatsapp: "WhatsAppで送る",
     emailQuote: "見積もりをメールで送る",
     emailQuoteSubject: "私の見積もり · BryanF Design",
     securePaymentPrefix: "安全な決済です。続行すると、以下に同意したことになります：",
@@ -448,7 +462,7 @@ const ja: Dictionary = {
       },
       {
         title: "費用はどれくらいですか？",
-        content: "料金は3,500メキシコペソからで、プロジェクトの具体的な要件によって変動します。",
+        content: "350メキシコペソ（メール署名）からご用意しています。ランディングページは2,000メキシコペソ、フルサイトは3,500メキシコペソです。最終的な金額は内容によって変わり、着手前に明確なお見積もりをお送りします。",
       },
       {
         title: "始めるには何が必要ですか？",
@@ -461,7 +475,7 @@ const ja: Dictionary = {
       {
         title: "ご依頼にはどんな内容が含まれますか？",
         content:
-          "1年間無料のドメインとホスティング、容量1GBずつのメールアカウント無制限、そしてブランドのためにゼロから作るデザインが含まれます。サイトは合意した内容どおりに完成・動作する状態で納品し、承認いただくまで必要な調整を行うことを保証します。第三者によるコード変更、外部サーバーの障害、研修後の管理画面の誤操作による不具合は保証の対象外です。",
+          "1年間無料のドメインとホスティング、容量1GBずつのメールアカウント無制限、そしてブランドのためにゼロから作るデザインが含まれます。サイトは合意した内容どおりに完成・動作する状態で納品し、承認いただくまで必要な調整を行うことを保証します。第三者によるコード変更、外部サーバーの障害、研修後の管理画面の誤操作による不具合は保証の対象外です。また、納品後60日間の不具合保証と15日間の軽微な修正が付きます。ドメイン、ホスティング、ファイルはすべてお客様名義です。",
       },
     ],
     notFound: "求めていた回答が見つかりませんでしたか？ご連絡いただければ、直接お話しします。",
@@ -470,7 +484,7 @@ const ja: Dictionary = {
   },
   closingCta: {
     title: "あなたのウェブ、始めましょうか？",
-    subtitle: "サイトを作り、支払い方法（カード・Mercado Pago・銀行振込）を選んで、すぐに始めましょう。3,500メキシコペソから。",
+    subtitle: "サイトを作り、支払い方法（カード・Mercado Pago・SPEI振込）を選んで、すぐに始めましょう。2,000メキシコペソから、最短3日。",
     ctaPrimary: "サイトを作る",
     ctaSecondary: "WhatsAppで直接連絡",
   },

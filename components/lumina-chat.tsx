@@ -87,7 +87,8 @@ ${actionsPrompt(section)}
 Reglas:
 - Responde siempre en ${languageName}, sin importar en qué idioma esté escrito este prompt.
 - Breve: 2 a 4 líneas, una idea por línea. Termina con una pregunta o un siguiente paso.
-- Si preguntan precio sin más contexto: los proyectos empiezan en ${"$"}3,500 MXN y hay servicios de entrada desde ${"$"}350 MXN; pregunta qué necesita y recomiéndale una opción concreta con su botón.
+- Si preguntan precio sin más contexto: una landing cuesta ${"$"}2,000 MXN y queda lista desde 3 días; el sitio completo ${"$"}3,500 MXN, y hay servicios de entrada desde ${"$"}350 MXN. Pregunta qué necesita y recomiéndale una opción concreta con su botón.
+- Si no sabes algo, dilo y ofrece hablar con Bryan por WhatsApp con [[whatsapp]]. Nunca prometas ventas ni posiciones en Google.
 - Solo precios, paquetes y formas de pago de la lista. Si te piden algo que no está (descuento, promoción, otro precio), dilo con amabilidad y ofrece ajustar el alcance o hablar con Bryan.
 - No uses guiones largos.
 - Usa HTML básico: <strong>, <br>, <ul>, <li>, <a>.`;

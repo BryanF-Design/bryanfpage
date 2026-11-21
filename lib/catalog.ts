@@ -46,6 +46,9 @@ export interface ConfiguratorModule {
 // ---------------------------------------------------------------------------
 
 export const CONFIGURATOR_PLANS: readonly ConfiguratorPlan[] = [
+  // Producto de entrada: la misma Landing de $2,000 de servicios de entrada,
+  // ahora también cobrable desde el configurador.
+  { id: "landing", price: 2000, featured: false },
   { id: "full", price: 3500, featured: true },
   { id: "update", price: 1800, featured: false },
   { id: "maintenance", price: 1000, featured: false },
@@ -59,6 +62,32 @@ export const CONFIGURATOR_MODULES: readonly ConfiguratorModule[] = [
 
 /** Precio por sección adicional en el configurador. */
 export const SECTION_PRICE: Mxn = 350;
+
+/** Plan que se usa cuando una selección no trae uno válido (el recomendado). */
+export const DEFAULT_PLAN_ID = "full";
+
+// ---------------------------------------------------------------------------
+// DATOS ÚNICOS DEL ESTUDIO — una sola verdad para cifras y condiciones.
+// ---------------------------------------------------------------------------
+
+export const STUDIO_FACTS = {
+  projects: "150+",
+  /** Trayectoria de Bryan. */
+  since: 2018,
+  /** Estudio BryanF Design. */
+  studioSince: 2020,
+  guaranteeDays: 60,
+  adjustmentDays: 15,
+  deliveryDays: 3,
+  whatsapp: "525663012505",
+} as const;
+
+/** Barber OS: renta mensual con setup incluido y prueba gratis. */
+export const BARBER_OS_PLAN = {
+  monthly: 599 as Mxn,
+  trialDays: 14,
+  setupIncluded: true,
+} as const;
 
 // ---------------------------------------------------------------------------
 // SERVICIOS DE ENTRADA — precios reales, en producción.
@@ -84,7 +113,7 @@ export const ENTRY_SERVICE_PRICES: readonly EntryServicePrice[] = [
 
 // ---------------------------------------------------------------------------
 // TIERS PROPUESTOS EN LA PLANEACIÓN (infografía) — NO EXPONER SIN CONFIRMAR.
-// El sitio hoy vende "Desarrollo Web" a $3,500 como tier principal. La
+// El sitio vende la Landing ($2,000) como entrada y "Desarrollo Web" ($3,500) como tier principal. La
 // infografía propone desdoblarlo en una escalera (Básico / Profesional /
 // Tienda) y paquetes. Los números de la imagen bajan el ticket 2-3x, así que
 // se dejan aquí como PLACEHOLDER a confirmar (ver PLAN.md §Precios pendientes).

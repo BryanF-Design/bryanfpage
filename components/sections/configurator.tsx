@@ -12,6 +12,7 @@ import {
   Mail,
   Minus,
   Nfc,
+  PanelTop,
   Plus,
   RefreshCw,
   Rocket,
@@ -59,6 +60,7 @@ const MAX_SECTIONS = 50;
 
 /** Íconos redondos de cada paquete y módulo, por id del catálogo. */
 const PLAN_ICONS: Record<string, LucideIcon> = {
+  landing: PanelTop,
   full: Rocket,
   update: RefreshCw,
   maintenance: ShieldCheck,
@@ -733,11 +735,11 @@ export function Configurator({
               <StepHeader n={1} id="configurator-plan-label" label={t.configurator.step1} />
             </p>
             {/* Elección única: radios nativos (flechas del teclado incluidas).
-                Filas horizontales hasta lg; desde lg, tres fichas. */}
+                Filas horizontales hasta lg; desde lg, fichas en 2 columnas. */}
             <div
               role="radiogroup"
               aria-labelledby="configurator-plan-label"
-              className="mt-4 grid gap-2.5 sm:mt-5 sm:pl-14 lg:grid-cols-3 lg:gap-3"
+              className="mt-4 grid gap-2.5 sm:mt-5 sm:pl-14 lg:grid-cols-2 lg:gap-3"
             >
               {PLANS.map((p) => {
                 const active = p.id === planId;
@@ -799,6 +801,18 @@ export function Configurator({
                     >
                       {p.desc}
                     </span>
+                    {/* Qué incluye: 3 puntos por paquete, junto al precio. */}
+                    <ul
+                      aria-label={t.configurator.includesLabel}
+                      className="col-span-3 grid gap-1 text-sm leading-snug text-ink/80 sm:col-span-1 sm:col-start-2 lg:col-span-2 lg:col-start-1 lg:row-start-4 lg:mt-3"
+                    >
+                      {p.includes.map((item) => (
+                        <li key={item} className="flex items-start gap-2">
+                          <Check aria-hidden className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={3} />
+                          <span className="min-w-0">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </label>
                 );
               })}
@@ -1292,6 +1306,23 @@ export function Configurator({
                   </div>
                 </div>
               )}
+
+              {/* Enviar por WhatsApp: el resumen completo va prellenado. */}
+              <Button
+                asChild
+                variant="ghost"
+                className="w-full text-white hover:bg-white/[0.06] hover:text-white"
+              >
+                <a
+                  href={quoteWhatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-track-service={`configurador_${plan.id}`}
+                >
+                  <FaWhatsapp aria-hidden className="h-4 w-4 text-lime" />
+                  {t.configurator.sendQuoteWhatsapp}
+                </a>
+              </Button>
 
               {/* Enviar la cotización por correo: pide el correo y confirma. */}
               <div className="relative flex flex-col gap-2">

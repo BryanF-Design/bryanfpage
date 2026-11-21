@@ -3,14 +3,18 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, CreditCard, Heart, Search, Sparkle, Timer } from "lucide-react";
+import { ArrowUpRight, Heart, ShieldCheck, Sparkle, Timer, Wallet } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n/context";
 import { SitePreview } from "@/components/site-preview";
 import { desktopShot, mobileShot, projects } from "@/lib/projects";
+import { TrackedWhatsAppLink } from "@/components/analytics/tracked-whatsapp-link";
+import { STUDIO_FACTS } from "@/lib/catalog";
 
-const FEATURE_ICONS = [Timer, Search, CreditCard];
+/** Garantía 60 días · Solo 50% para empezar · Lista en 3 días. */
+const FEATURE_ICONS = [ShieldCheck, Wallet, Timer];
 
 /** El proyecto que presume el hero: el mismo destacado del portafolio. */
 const FEATURED = projects.find((p) => p.slug === "mixteca-web-vercel-app") ?? projects[0];
@@ -73,6 +77,7 @@ function wordEm(word: string) {
 export function HeroPop() {
   const { t } = useLanguage();
   const cdmxTime = useCdmxTime();
+  const heroWhatsapp = `https://wa.me/${STUDIO_FACTS.whatsapp}?text=${encodeURIComponent(t.hero.whatsappMsg)}`;
 
   // Ancho de cada palabra gigante; desde md comparten el tamaño de la mayor.
   const fitTitle = wordEm(t.hero.titleHighlight);
@@ -103,12 +108,16 @@ export function HeroPop() {
           >
             {t.hero.titleHighlight}
           </span>
-          {/* El titular visible es la frase de marca; el h1 también dice qué
-              es el sitio (lo leen buscadores y lectores de pantalla). */}
-          <span className="sr-only"> {t.hero.eyebrow}</span>
+          {/* El precio de entrada se ve a la derecha (eco visual); el h1 lo
+              incluye completo para buscadores y lectores de pantalla. */}
+          <span className="sr-only">
+            {" "}
+            {t.hero.sideTop} {t.hero.sideHighlight} MXN. {t.hero.eyebrow}.
+          </span>
         </h1>
         <div aria-hidden className="hidden xl:block" />
         <p
+          aria-hidden
           className="hero-in hero-in-rise relative z-[1] flex min-w-0 flex-wrap items-baseline gap-x-3 text-ink [container-type:inline-size] md:block md:text-right"
           style={delay(140)}
         >
@@ -122,10 +131,28 @@ export function HeroPop() {
             {t.hero.sideHighlight}
             <Sparkle
               aria-hidden
-              className="float-y absolute -right-7 -top-3 h-7 w-7 fill-lime text-lime-deep sm:h-10 sm:w-10 md:-left-12 md:right-auto md:top-1 xl:-left-14"
+              className="float-y absolute -right-7 -top-3 h-7 w-7 fill-lime text-lime-deep max-md:hidden sm:h-10 sm:w-10 md:-left-12 md:right-auto md:top-1 xl:-left-14"
             />
           </span>
+          <span className="block w-full text-sm font-semibold text-ink/65 md:mt-2">{t.hero.priceNote}</span>
         </p>
+      </div>
+
+      {/* Teléfono: precio + WhatsApp en la primera pantalla, sin scrollear.
+          Desde md las mismas acciones viven dentro del panel lima. */}
+      <div className="hero-in hero-in-up relative z-[2] mt-5 flex flex-col gap-2.5 md:hidden" style={delay(200)}>
+        <Button asChild size="lg" variant="ink" className="pr-2.5">
+          <TrackedWhatsAppLink href={heroWhatsapp} service="hero_quiero_mi_pagina">
+            <FaWhatsapp aria-hidden className="h-5 w-5 text-lime" />
+            {t.hero.ctaWhatsapp}
+            <ButtonArrow tone="lime" className="ml-auto -mr-0.5" />
+          </TrackedWhatsAppLink>
+        </Button>
+        <Button asChild size="lg" variant="white" className="ring-1 ring-inset ring-ink/10">
+          <Link href="#precios" data-track-cta="hero_ver_precios">
+            {t.hero.ctaPrices}
+          </Link>
+        </Button>
       </div>
 
       {/* Panel lima: propuesta, acciones y ventajas. Bryan sale de él. */}
@@ -202,17 +229,23 @@ export function HeroPop() {
               {t.hero.subtitle}
             </p>
             <div
-              className="hero-in hero-in-up flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:flex-wrap"
+              className="hero-in hero-in-up flex w-full flex-col gap-2.5 max-md:hidden sm:w-auto sm:flex-row sm:flex-wrap"
               style={delay(420)}
             >
               <Button asChild size="lg" variant="ink" className="pr-2.5">
-                <Link href="#precios">
-                  {t.nav.armaTuWeb}
+                <TrackedWhatsAppLink
+                  href={heroWhatsapp}
+                  service="hero_quiero_mi_pagina"
+                >
+                  <FaWhatsapp aria-hidden className="h-5 w-5 text-lime" />
+                  {t.hero.ctaWhatsapp}
                   <ButtonArrow tone="lime" className="ml-auto -mr-0.5 sm:ml-2" />
-                </Link>
+                </TrackedWhatsAppLink>
               </Button>
               <Button asChild size="lg" variant="white">
-                <Link href="#projects">{t.nav.verProyectos}</Link>
+                <Link href="#precios" data-track-cta="hero_ver_precios">
+                  {t.hero.ctaPrices}
+                </Link>
               </Button>
             </div>
 

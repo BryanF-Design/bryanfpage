@@ -28,17 +28,20 @@ const en: Dictionary = {
   },
   hero: {
     eyebrow: "Web design and development in Mexico",
-    titlePrefix: "Make it",
-    titleHighlight: "happen.",
-    subtitle:
-      "I design and build fast, clear websites made to convert. You work with me from the first idea to launch.",
+    titlePrefix: "Websites that",
+    titleHighlight: "sell.",
+    subtitle: "You talk directly with me, from the idea to launch.",
     scrollHint: "Scroll to orbit the Civic",
-    sideTop: "Websites that",
-    sideHighlight: "sell",
-    panelTitle: "Design and code that help people find you and reach out",
+    sideTop: "From",
+    sideHighlight: "$2,000",
+    panelTitle: "Web design and development in Mexico, ready in 3 days.",
     available: "Now booking new projects",
-    proof: "100+ projects launched",
-    features: ["Delivery from 3 days", "Technical SEO included", "Secure online payment"],
+    proof: "150+ projects, since 2018",
+    features: ["60-day guarantee", "Only 50% to start", "Ready in 3 days"],
+    ctaWhatsapp: "I want my website",
+    ctaPrices: "See prices",
+    whatsappMsg: "Hi, I want my website from $2,000.",
+    priceNote: "MXN · Landing page ready in 3 days",
     featured: "Featured project",
   },
   experience: {
@@ -67,13 +70,14 @@ const en: Dictionary = {
     systemOnline: "System ready",
     civicAria: "Interactive 3D model of a 2023 Honda Civic Type R",
     statsAria: "Studio facts",
-    statsRecord: "Verified studio record",
+    studioBadge: "Studio since 2020",
+    statsRecord: "Track record",
   },
   trust: {
-    years: "years",
-    yearsCaption: "of experience",
+    years: "Since",
+    yearsCaption: "designing and coding websites",
     projects: "projects",
-    projectsCaption: "delivered",
+    projectsCaption: "digital projects delivered",
     deliveryPrefix: "From",
     days: "days",
     deliveryCaption: "business days to launch",
@@ -326,19 +330,28 @@ const en: Dictionary = {
     subtitle: "Pick your package, add the modules you need, and pay by card, Mercado Pago, or transfer. No surprises.",
     step1: "1. Choose your package",
     plans: {
+      landing: {
+        name: "Landing page",
+        desc: "One page that sells, made so people reach out.",
+        includes: ["Custom design, copy and WhatsApp button", "Basic SEO, domain and hosting for the first year", "Delivery from 3 business days"],
+      },
       full: {
         name: "Web Development",
         desc: "Your custom site, fast and made so people get in touch.",
+        includes: ["Everything in Landing + up to 5 sections", "Email accounts and Google Business Profile", "30-minute training"],
       },
       update: {
         name: "Refresh",
         desc: "Renew your current site with real design and performance.",
+        includes: ["Refreshed design for your current site", "Faster on mobile", "WhatsApp and technical SEO reviewed"],
       },
       maintenance: {
         name: "Maintenance",
         desc: "Your site always up to date, secure, and backed up. Per month.",
+        includes: ["Your site updated and backed up", "Security and a monthly check", "Direct support with me"],
       },
     },
+    includesLabel: "Includes",
     step2: "2. Extra modules",
     modules: {
       ecommerce: "E-commerce / online store",
@@ -383,6 +396,7 @@ const en: Dictionary = {
     copyLabel: (label) => `Copy ${label}`,
     sendWhatsapp: "Send receipt via WhatsApp",
     sendEmail: "Send receipt via email",
+    sendQuoteWhatsapp: "Send via WhatsApp",
     emailQuote: "Email me this quote",
     emailQuoteSubject: "My quote · BryanF Design",
     securePaymentPrefix: "Secure payment. By continuing you accept our",
@@ -450,7 +464,7 @@ const en: Dictionary = {
       },
       {
         title: "What does it cost?",
-        content: "Pricing starts at $3,500 MXN and can vary depending on your project's specific needs.",
+        content: "There are options from $350 MXN (email signature). A landing page costs $2,000 MXN and a full website $3,500 MXN. The final price depends on what you need, and I send you a clear proposal before we start.",
       },
       {
         title: "What do I need to get started?",
@@ -465,7 +479,7 @@ const en: Dictionary = {
       {
         title: "What's included when we work together?",
         content:
-          "A free domain and hosting for one year, unlimited email accounts (1 GB each) and a design made from scratch for your brand. I guarantee the site is delivered complete and working as we agreed, with whatever adjustments it takes until you approve it. The guarantee doesn't cover issues caused by someone else changing the code, outages on third-party servers or misuse of the admin panel after training.",
+          "A free domain and hosting for one year, unlimited email accounts (1 GB each) and a design made from scratch for your brand. I guarantee the site is delivered complete and working as we agreed, with whatever adjustments it takes until you approve it. The guarantee doesn't cover issues caused by someone else changing the code, outages on third-party servers or misuse of the admin panel after training. You also get a 60-day guarantee against defects and 15 days of minor adjustments after delivery. Domain, hosting and files are in your name.",
       },
     ],
     notFound: "Didn't find your answer? Message us and let's talk it through.",
@@ -474,7 +488,7 @@ const en: Dictionary = {
   },
   closingCta: {
     title: "Shall we start your website?",
-    subtitle: "Build your site, choose how to pay (card, Mercado Pago, or transfer), and let's get started. Projects from $3,500 MXN.",
+    subtitle: "Build your site, choose how to pay (card, Mercado Pago, or SPEI bank transfer) and let's get started. From $2,000, ready in 3 days.",
     ctaPrimary: "Build your site",
     ctaSecondary: "WhatsApp us directly",
   },

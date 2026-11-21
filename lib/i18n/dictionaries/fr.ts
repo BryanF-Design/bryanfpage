@@ -28,17 +28,20 @@ const fr: Dictionary = {
   },
   hero: {
     eyebrow: "Design et développement web au Mexique",
-    titlePrefix: "Fais-le",
-    titleHighlight: "vraiment.",
-    subtitle:
-      "Je conçois et développe des sites rapides, clairs et faits pour convertir. Vous travaillez avec moi de la première idée au lancement.",
+    titlePrefix: "Des sites qui",
+    titleHighlight: "vendent.",
+    subtitle: "Vous parlez directement avec moi, de l'idée au lancement.",
     scrollHint: "Faites défiler pour contourner la Civic",
-    sideTop: "Des sites qui",
-    sideHighlight: "vendent",
-    panelTitle: "Design et code pour qu'on vous trouve et qu'on vous écrive",
+    sideTop: "Dès",
+    sideHighlight: "$2,000",
+    panelTitle: "Design et développement web au Mexique, prêt en 3 jours.",
     available: "Ouvert aux nouveaux projets",
-    proof: "+100 projets lancés",
-    features: ["Livraison dès 3 jours", "SEO technique inclus", "Paiement en ligne sécurisé"],
+    proof: "150+ projets, depuis 2018",
+    features: ["Garantie 60 jours", "Seulement 50% pour démarrer", "Prêt en 3 jours"],
+    ctaWhatsapp: "Je veux mon site",
+    ctaPrices: "Voir les prix",
+    whatsappMsg: "Bonjour, je veux mon site dès 2 000 $ MXN.",
+    priceNote: "MXN · Landing prête en 3 jours",
     featured: "Projet à la une",
   },
   experience: {
@@ -67,13 +70,14 @@ const fr: Dictionary = {
     systemOnline: "Système prêt",
     civicAria: "Modèle 3D interactif d’une Honda Civic Type R 2023",
     statsAria: "Données du studio",
-    statsRecord: "Données réelles du studio",
+    studioBadge: "Studio depuis 2020",
+    statsRecord: "Parcours",
   },
   trust: {
-    years: "ans",
-    yearsCaption: "d'expérience",
+    years: "Depuis",
+    yearsCaption: "à concevoir et coder des sites",
     projects: "projets",
-    projectsCaption: "livrés",
+    projectsCaption: "projets numériques livrés",
     deliveryPrefix: "Dès",
     days: "jours",
     deliveryCaption: "jours ouvrés de livraison",
@@ -326,19 +330,28 @@ const fr: Dictionary = {
     subtitle: "Choisissez votre formule, ajoutez les modules dont vous avez besoin et payez par carte, Mercado Pago ou virement. Sans surprise.",
     step1: "1. Choisissez votre formule",
     plans: {
+      landing: {
+        name: "Landing page",
+        desc: "Une page qui vend, pensée pour qu'on vous écrive.",
+        includes: ["Design sur mesure, textes et bouton WhatsApp", "SEO de base, domaine et hébergement la première année", "Livraison dès 3 jours ouvrés"],
+      },
       full: {
         name: "Développement web",
         desc: "Votre site sur mesure, rapide et pensé pour qu'on vous contacte.",
+        includes: ["Tout le contenu Landing + jusqu'à 5 sections", "E-mails et Google Business Profile", "Formation de 30 minutes"],
       },
       update: {
         name: "Refonte",
         desc: "Modernisez votre site actuel avec un vrai design et de vraies performances.",
+        includes: ["Design renouvelé pour votre site actuel", "Plus rapide sur mobile", "WhatsApp et SEO technique révisés"],
       },
       maintenance: {
         name: "Maintenance",
         desc: "Votre site toujours à jour, sécurisé et sauvegardé. Par mois.",
+        includes: ["Votre site à jour et sauvegardé", "Sécurité et contrôle mensuel", "Support direct avec moi"],
       },
     },
+    includesLabel: "Inclus",
     step2: "2. Modules supplémentaires",
     modules: {
       ecommerce: "E-commerce / boutique en ligne",
@@ -383,6 +396,7 @@ const fr: Dictionary = {
     copyLabel: (label) => `Copier ${label}`,
     sendWhatsapp: "Envoyer le justificatif par WhatsApp",
     sendEmail: "Envoyer le justificatif par e-mail",
+    sendQuoteWhatsapp: "Envoyer par WhatsApp",
     emailQuote: "Recevoir le devis par e-mail",
     emailQuoteSubject: "Mon devis · BryanF Design",
     securePaymentPrefix: "Paiement sécurisé. En continuant, vous acceptez nos",
@@ -450,7 +464,7 @@ const fr: Dictionary = {
       },
       {
         title: "Quels sont les tarifs ?",
-        content: "Les tarifs démarrent à 3 500 $ MXN et peuvent varier selon les besoins spécifiques de votre projet.",
+        content: "Il existe des options dès 350 $ MXN (signature e-mail). Une landing coûte 2 000 $ MXN et un site complet 3 500 $ MXN. Le prix final dépend de vos besoins, et avant de démarrer je vous envoie une proposition claire.",
       },
       {
         title: "Que faut-il pour démarrer ?",
@@ -465,7 +479,7 @@ const fr: Dictionary = {
       {
         title: "Que comprend une collaboration avec vous ?",
         content:
-          "Nom de domaine et hébergement offerts pendant un an, adresses e-mail illimitées (1 Go chacune) et un design créé de zéro pour votre marque. Je garantis que le site est livré complet et fonctionnel comme convenu, avec les ajustements nécessaires jusqu'à votre validation. La garantie ne couvre pas les pannes dues à des modifications du code par un tiers, aux coupures de serveurs externes ou à une mauvaise utilisation du panneau après la formation.",
+          "Nom de domaine et hébergement offerts pendant un an, adresses e-mail illimitées (1 Go chacune) et un design créé de zéro pour votre marque. Je garantis que le site est livré complet et fonctionnel comme convenu, avec les ajustements nécessaires jusqu'à votre validation. La garantie ne couvre pas les pannes dues à des modifications du code par un tiers, aux coupures de serveurs externes ou à une mauvaise utilisation du panneau après la formation. Vous avez aussi une garantie de 60 jours contre les défauts et 15 jours d'ajustements mineurs après la livraison. Domaine, hébergement et fichiers sont à votre nom.",
       },
     ],
     notFound: "Vous n'avez pas trouvé votre réponse ? Écrivez-nous, on en discute.",
@@ -474,7 +488,7 @@ const fr: Dictionary = {
   },
   closingCta: {
     title: "On commence votre site ?",
-    subtitle: "Créez votre site, choisissez comment payer (carte, Mercado Pago ou virement) et on démarre. Projets dès 3 500 $ MXN.",
+    subtitle: "Créez votre site, choisissez comment payer (carte, Mercado Pago ou virement SPEI) et on démarre. Dès 2 000 $ MXN, prêt en 3 jours.",
     ctaPrimary: "Créer mon site",
     ctaSecondary: "WhatsApp direct",
   },

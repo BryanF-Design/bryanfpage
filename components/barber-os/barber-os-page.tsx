@@ -36,7 +36,11 @@ import {
   BARBER_OS_NAME,
   BARBER_OS_SERVICE,
   BARBER_OS_SLUG,
+  BARBER_OS_CTA,
   BARBER_OS_TRIAL_URL,
+  GUARANTEE_DAYS,
+  MONTHLY_PRICE,
+  MONTHLY_PRICE_LABEL,
   FAQS,
   FEATURES,
   FLOW,
@@ -306,6 +310,18 @@ export function BarberOsPage() {
                 </span>
               </h1>
 
+              {/* Precio de renta, prueba y garantía, a la vista desde el hero. */}
+              <p
+                className="hero-in hero-in-fade flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-card bg-lime px-4 py-3 text-ink"
+                style={hd(270)}
+              >
+                <span className="display-title text-[1.9rem] leading-none tabular-nums">${MONTHLY_PRICE}</span>
+                <span className="text-sm font-semibold">MXN al mes, setup incluido</span>
+                <span className="w-full text-sm font-semibold text-ink/75">
+                  {TRIAL_DAYS} días de prueba gratis · Garantía de {GUARANTEE_DAYS} días contra defectos
+                </span>
+              </p>
+
               <p
                 className="hero-in hero-in-fade max-w-xl text-pretty text-[0.975rem] leading-relaxed text-muted-foreground md:text-lg"
                 style={hd(180)}
@@ -320,10 +336,10 @@ export function BarberOsPage() {
                 className="hero-in hero-in-up flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:flex-wrap"
                 style={hd(240)}
               >
-                <Button asChild size="lg" variant="ink" className="pr-2.5">
+                <Button asChild size="lg" variant="ink" className="h-auto min-h-14 whitespace-normal py-2 pr-2.5 text-left">
                   <TrackedWhatsAppLink href={BARBER_OS_TRIAL_URL} service={BARBER_OS_SLUG}>
                     <MessageCircle aria-hidden className="h-[1.1rem] w-[1.1rem] text-lime" />
-                    Probar {TRIAL_DAYS} días gratis
+                    {BARBER_OS_CTA}
                     <ButtonArrow tone="lime" className="ml-auto -mr-0.5 sm:ml-2" />
                   </TrackedWhatsAppLink>
                 </Button>
@@ -673,11 +689,13 @@ export function BarberOsPage() {
                 </h2>
                 <p className="max-w-md text-pretty text-base leading-relaxed text-ink/75 md:text-lg">
                   Dejamos tu sistema listo con tu información y lo usas en tu
-                  barbería durante {TRIAL_DAYS} días. Al terminar decides si sigues.
+                  barbería durante {TRIAL_DAYS} días. Al terminar decides si sigues:
+                  la renta es de <strong className="text-ink">{MONTHLY_PRICE_LABEL}</strong>, con el
+                  setup incluido y garantía de {GUARANTEE_DAYS} días contra defectos.
                 </p>
-                <Button asChild size="lg" variant="ink" className="w-full justify-between pl-6 pr-2.5 sm:w-auto">
+                <Button asChild size="lg" variant="ink" className="h-auto min-h-14 w-full justify-between whitespace-normal py-2 pl-6 pr-2.5 text-left sm:w-auto">
                   <TrackedWhatsAppLink href={BARBER_OS_TRIAL_URL} service={BARBER_OS_SLUG}>
-                    Empezar mi prueba
+                    {BARBER_OS_CTA}
                     <ButtonArrow tone="lime" className="-mr-0.5 sm:ml-2" />
                   </TrackedWhatsAppLink>
                 </Button>
@@ -841,11 +859,12 @@ export function BarberOsPage() {
                 <p className="max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
                   Mándanos tu logo, servicios, barberos y horarios. Nosotros lo
                   configuramos y empiezas tus {TRIAL_DAYS} días de prueba gratis.
+                  Después, {MONTHLY_PRICE_LABEL} con el setup incluido.
                 </p>
                 <div className="flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row">
-                  <Button asChild size="lg" variant="ink" className="justify-between pl-6 pr-2.5">
+                  <Button asChild size="lg" variant="ink" className="h-auto min-h-14 justify-between whitespace-normal py-2 pl-6 pr-2.5 text-left">
                     <TrackedWhatsAppLink href={BARBER_OS_TRIAL_URL} service={BARBER_OS_SLUG}>
-                      Quiero mi prueba gratis
+                      {BARBER_OS_CTA}
                       <ButtonArrow tone="lime" className="-mr-0.5 sm:ml-2" />
                     </TrackedWhatsAppLink>
                   </Button>

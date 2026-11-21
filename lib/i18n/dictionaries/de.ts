@@ -28,17 +28,20 @@ const de: Dictionary = {
   },
   hero: {
     eyebrow: "Webdesign und -entwicklung in Mexiko",
-    titlePrefix: "Mach es",
-    titleHighlight: "wahr.",
-    subtitle:
-      "Ich gestalte und entwickle schnelle, klare Websites, die konvertieren. Von der ersten Idee bis zum Launch arbeitest du direkt mit mir.",
+    titlePrefix: "Websites, die",
+    titleHighlight: "verkaufen.",
+    subtitle: "Du sprichst direkt mit mir, von der Idee bis zum Launch.",
     scrollHint: "Scrollen, um den Civic zu umrunden",
-    sideTop: "Websites, die",
-    sideHighlight: "verkaufen",
-    panelTitle: "Design und Code, damit man dich findet und dir schreibt",
+    sideTop: "Ab",
+    sideHighlight: "$2,000",
+    panelTitle: "Webdesign und -entwicklung in Mexiko, fertig in 3 Tagen.",
     available: "Offen für neue Projekte",
-    proof: "100+ gelaunchte Projekte",
-    features: ["Lieferung ab 3 Tagen", "Technisches SEO inklusive", "Sichere Online-Zahlung"],
+    proof: "150+ Projekte, seit 2018",
+    features: ["60 Tage Garantie", "Nur 50% zum Start", "Fertig in 3 Tagen"],
+    ctaWhatsapp: "Ich will meine Website",
+    ctaPrices: "Preise ansehen",
+    whatsappMsg: "Hallo, ich möchte meine Website ab $2,000.",
+    priceNote: "MXN · Landingpage in 3 Tagen fertig",
     featured: "Ausgewähltes Projekt",
   },
   experience: {
@@ -67,13 +70,14 @@ const de: Dictionary = {
     systemOnline: "System bereit",
     civicAria: "Interaktives 3D-Modell eines Honda Civic Type R von 2023",
     statsAria: "Studiodaten",
-    statsRecord: "Geprüfte Studiodaten",
+    studioBadge: "Studio seit 2020",
+    statsRecord: "Werdegang",
   },
   trust: {
-    years: "Jahre",
-    yearsCaption: "Erfahrung",
+    years: "Seit",
+    yearsCaption: "Webdesign und Programmierung",
     projects: "Projekte",
-    projectsCaption: "umgesetzt",
+    projectsCaption: "digitale Projekte umgesetzt",
     deliveryPrefix: "Ab",
     days: "Werktagen",
     deliveryCaption: "Werktage bis zur Lieferung",
@@ -326,19 +330,28 @@ const de: Dictionary = {
     subtitle: "Wähle dein Paket, ergänze die benötigten Module und bezahle per Karte, Mercado Pago oder Überweisung. Keine Überraschungen.",
     step1: "1. Wähle dein Paket",
     plans: {
+      landing: {
+        name: "Landingpage",
+        desc: "Eine Seite, die verkauft und zum Schreiben einlädt.",
+        includes: ["Individuelles Design, Texte und WhatsApp-Button", "Basis-SEO, Domain und Hosting im ersten Jahr", "Lieferung ab 3 Werktagen"],
+      },
       full: {
         name: "Webentwicklung",
         desc: "Deine maßgeschneiderte Website, schnell und so gebaut, dass man dich kontaktiert.",
+        includes: ["Alles aus Landing + bis zu 5 Bereiche", "E-Mail-Konten und Google Business Profile", "30 Minuten Einweisung"],
       },
       update: {
         name: "Auffrischung",
         desc: "Erneuere deine bestehende Website mit echtem Design und echter Performance.",
+        includes: ["Neues Design für deine aktuelle Website", "Schneller auf dem Handy", "WhatsApp und technisches SEO geprüft"],
       },
       maintenance: {
         name: "Wartung",
         desc: "Deine Website immer aktuell, sicher und gesichert. Pro Monat.",
+        includes: ["Deine Website aktuell und gesichert", "Sicherheit und monatlicher Check", "Direkter Support von mir"],
       },
     },
+    includesLabel: "Enthält",
     step2: "2. Zusatzmodule",
     modules: {
       ecommerce: "E-Commerce / Onlineshop",
@@ -383,6 +396,7 @@ const de: Dictionary = {
     copyLabel: (label) => `${label} kopieren`,
     sendWhatsapp: "Beleg per WhatsApp senden",
     sendEmail: "Beleg per E-Mail senden",
+    sendQuoteWhatsapp: "Per WhatsApp senden",
     emailQuote: "Angebot per E-Mail senden",
     emailQuoteSubject: "Mein Angebot · BryanF Design",
     securePaymentPrefix: "Sichere Zahlung. Mit dem Fortfahren akzeptierst du unsere",
@@ -450,7 +464,7 @@ const de: Dictionary = {
       },
       {
         title: "Was kostet es?",
-        content: "Die Preise beginnen bei $3.500 MXN und können je nach den konkreten Anforderungen deines Projekts variieren.",
+        content: "Es gibt Optionen ab $350 MXN (E-Mail-Signatur). Eine Landingpage kostet $2.000 MXN, eine komplette Website $3.500 MXN. Der Endpreis hängt davon ab, was du brauchst, und vor dem Start bekommst du ein klares Angebot.",
       },
       {
         title: "Was wird für den Start benötigt?",
@@ -465,7 +479,7 @@ const de: Dictionary = {
       {
         title: "Was ist bei der Zusammenarbeit inklusive?",
         content:
-          "Kostenlose Domain und Hosting für ein Jahr, unbegrenzt viele E-Mail-Konten (je 1 GB) und ein Design, das von Grund auf für deine Marke entsteht. Ich garantiere, dass die Website vollständig und so funktionierend übergeben wird, wie wir es vereinbart haben, mit allen nötigen Anpassungen bis zu deiner Freigabe. Nicht abgedeckt sind Fehler durch Code-Änderungen Dritter, Ausfälle fremder Server oder falsche Bedienung des Panels nach der Einweisung.",
+          "Kostenlose Domain und Hosting für ein Jahr, unbegrenzt viele E-Mail-Konten (je 1 GB) und ein Design, das von Grund auf für deine Marke entsteht. Ich garantiere, dass die Website vollständig und so funktionierend übergeben wird, wie wir es vereinbart haben, mit allen nötigen Anpassungen bis zu deiner Freigabe. Nicht abgedeckt sind Fehler durch Code-Änderungen Dritter, Ausfälle fremder Server oder falsche Bedienung des Panels nach der Einweisung. Dazu kommen 60 Tage Garantie auf Mängel und 15 Tage kleinere Anpassungen nach der Übergabe. Domain, Hosting und Dateien laufen auf deinen Namen.",
       },
     ],
     notFound: "Deine Frage war nicht dabei? Schreib uns, wir klären es gemeinsam.",
@@ -474,7 +488,7 @@ const de: Dictionary = {
   },
   closingCta: {
     title: "Starten wir deine Website?",
-    subtitle: "Gestalte deine Website, wähle deine Zahlungsart (Karte, Mercado Pago oder Überweisung) und wir legen los. Projekte ab $3.500 MXN.",
+    subtitle: "Gestalte deine Website, wähle deine Zahlungsart (Karte, Mercado Pago oder SPEI-Überweisung) und wir legen los. Ab $2.000, fertig in 3 Tagen.",
     ctaPrimary: "Website gestalten",
     ctaSecondary: "Direkt per WhatsApp",
   },

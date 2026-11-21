@@ -1466,7 +1466,8 @@ html.lumina-fab-hidden .fab-slot-dock {
 
 /* ════════════════════════════════════════════════════════════════════════
    PRELOADER Y TRANSICIÓN ENTRE PÁGINAS
-   El telón de entrada llega en el HTML y se retira solo con CSS (~1.2 s):
+   El telón de entrada (solo escritorio, nunca en móvil ni en el inicio)
+   llega en el HTML y se retira solo con CSS en menos de 1 s:
    el logotipo oficial se revela de izquierda a derecha, una línea lima corre
    debajo y el telón sube. No bloquea la carga: el contenido se pinta debajo
    desde el primer momento y el telón nunca recibe clics.
@@ -1479,7 +1480,7 @@ html.lumina-fab-hidden .fab-slot-dock {
   place-items: center;
   background: hsl(var(--ink));
   pointer-events: none;
-  animation: pl-out 0.6s cubic-bezier(0.7, 0, 0.2, 1) 0.8s forwards;
+  animation: pl-out 0.4s cubic-bezier(0.7, 0, 0.2, 1) 0.55s forwards;
 }
 .site-preloader__inner {
   display: flex;
@@ -1487,14 +1488,14 @@ html.lumina-fab-hidden .fab-slot-dock {
   flex-direction: column;
   align-items: stretch;
   gap: 1.1rem;
-  animation: pl-lift 0.5s var(--ease-out) 0.8s forwards;
+  animation: pl-lift 0.35s var(--ease-out) 0.55s forwards;
 }
 .site-preloader__logo {
   display: block;
   width: 100%;
   height: auto;
   clip-path: inset(0 100% 0 0);
-  animation: pl-reveal 0.6s var(--ease-out) 0.05s forwards;
+  animation: pl-reveal 0.4s var(--ease-out) 0.05s forwards;
 }
 .site-preloader__bar {
   display: block;
@@ -1503,7 +1504,26 @@ html.lumina-fab-hidden .fab-slot-dock {
   background: hsl(var(--lime));
   transform: scaleX(0);
   transform-origin: left center;
-  animation: pl-bar 0.7s cubic-bezier(0.65, 0, 0.35, 1) 0.08s forwards;
+  animation: pl-bar 0.45s cubic-bezier(0.65, 0, 0.35, 1) 0.08s forwards;
+}
+.site-preloader__skip {
+  position: absolute;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  min-height: 2.75rem;
+  padding: 0 1.1rem;
+  border-radius: 999px;
+  background: hsl(0 0% 100% / 0.1);
+  color: hsl(0 0% 100%);
+  font-size: 0.875rem;
+  font-weight: 600;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.site-preloader__skip:hover,
+.site-preloader__skip:focus-visible {
+  background: hsl(var(--lime));
+  color: hsl(var(--ink));
 }
 @keyframes pl-reveal {
   to {
@@ -1529,6 +1549,12 @@ html.lumina-fab-hidden .fab-slot-dock {
 }
 html.pl-skip .site-preloader {
   display: none;
+}
+/* Nunca en móvil, aunque el script no haya corrido. */
+@media (max-width: 767px), (pointer: coarse) {
+  .site-preloader {
+    display: none;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .site-preloader {

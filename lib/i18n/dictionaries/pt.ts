@@ -28,17 +28,20 @@ const pt: Dictionary = {
   },
   hero: {
     eyebrow: "Design e desenvolvimento web no México",
-    titlePrefix: "Faça",
-    titleHighlight: "acontecer.",
-    subtitle:
-      "Eu projeto e construo sites rápidos, claros e feitos para converter. Você trabalha comigo da primeira ideia ao lançamento.",
+    titlePrefix: "Sites que",
+    titleHighlight: "vendem.",
+    subtitle: "Você fala direto comigo, da ideia ao lançamento.",
     scrollHint: "Role para contornar o Civic",
-    sideTop: "Sites que",
-    sideHighlight: "vendem",
-    panelTitle: "Design e código para que te encontrem e te escrevam",
+    sideTop: "A partir de",
+    sideHighlight: "$2,000",
+    panelTitle: "Design e desenvolvimento web no México, pronto em 3 dias.",
     available: "Agenda aberta para novos projetos",
-    proof: "+100 projetos lançados",
-    features: ["Entrega a partir de 3 dias", "SEO técnico incluído", "Pagamento online seguro"],
+    proof: "150+ projetos, desde 2018",
+    features: ["Garantia de 60 dias", "Só 50% para começar", "Pronto em 3 dias"],
+    ctaWhatsapp: "Quero meu site",
+    ctaPrices: "Ver preços",
+    whatsappMsg: "Olá, quero meu site a partir de $2,000.",
+    priceNote: "MXN · Landing pronta em 3 dias",
     featured: "Projeto em destaque",
   },
   experience: {
@@ -67,13 +70,14 @@ const pt: Dictionary = {
     systemOnline: "Sistema pronto",
     civicAria: "Modelo 3D interativo de um Honda Civic Type R 2023",
     statsAria: "Dados do estúdio",
-    statsRecord: "Dados reais do estúdio",
+    studioBadge: "Estúdio desde 2020",
+    statsRecord: "Trajetória",
   },
   trust: {
-    years: "anos",
-    yearsCaption: "de experiência",
+    years: "Desde",
+    yearsCaption: "criando e programando sites",
     projects: "projetos",
-    projectsCaption: "digitais entregues",
+    projectsCaption: "projetos digitais entregues",
     deliveryPrefix: "A partir de",
     days: "dias",
     deliveryCaption: "dias úteis de entrega",
@@ -326,19 +330,28 @@ const pt: Dictionary = {
     subtitle: "Escolha seu pacote, some os módulos que precisar e pague com cartão, Mercado Pago ou transferência. Sem surpresas.",
     step1: "1. Escolha seu pacote",
     plans: {
+      landing: {
+        name: "Landing page",
+        desc: "Uma página que vende, feita para que te escrevam.",
+        includes: ["Design sob medida, textos e botão de WhatsApp", "SEO básico, domínio e hospedagem no primeiro ano", "Entrega a partir de 3 dias úteis"],
+      },
       full: {
         name: "Desenvolvimento Web",
         desc: "Seu site sob medida, rápido e pensado para que te procurem.",
+        includes: ["Tudo da Landing + até 5 seções", "E-mails e Google Business Profile", "Treinamento de 30 minutos"],
       },
       update: {
         name: "Atualização",
         desc: "Renove seu site atual com design e performance de verdade.",
+        includes: ["Design renovado para o seu site atual", "Mais velocidade no celular", "WhatsApp e SEO técnico revisados"],
       },
       maintenance: {
         name: "Manutenção",
         desc: "Seu site sempre atualizado, seguro e com backup. Por mês.",
+        includes: ["Seu site em dia e com backup", "Segurança e revisão mensal", "Suporte direto comigo"],
       },
     },
+    includesLabel: "Inclui",
     step2: "2. Módulos extras",
     modules: {
       ecommerce: "E-commerce / loja online",
@@ -383,6 +396,7 @@ const pt: Dictionary = {
     copyLabel: (label) => `Copiar ${label}`,
     sendWhatsapp: "Enviar comprovante pelo WhatsApp",
     sendEmail: "Enviar comprovante por e-mail",
+    sendQuoteWhatsapp: "Enviar pelo WhatsApp",
     emailQuote: "Enviar orçamento por e-mail",
     emailQuoteSubject: "Meu orçamento · BryanF Design",
     securePaymentPrefix: "Pagamento seguro. Ao continuar você aceita nossos",
@@ -450,7 +464,7 @@ const pt: Dictionary = {
       },
       {
         title: "Quais são os custos?",
-        content: "Os valores começam em $3.500 MXN e podem variar de acordo com as necessidades específicas do seu projeto.",
+        content: "Há opções a partir de $350 MXN (assinatura de e-mail). Uma landing custa $2.000 MXN e um site completo $3.500 MXN. O preço final depende do que você precisa, e antes de começar envio uma proposta clara.",
       },
       {
         title: "O que é necessário para começar?",
@@ -465,7 +479,7 @@ const pt: Dictionary = {
       {
         title: "O que está incluído ao trabalharmos juntos?",
         content:
-          "Domínio e hospedagem grátis por um ano, e-mails ilimitados (1 GB cada) e um design feito do zero para a sua marca. Garanto que o site é entregue completo e funcionando como combinamos, com os ajustes necessários até você aprovar. A garantia não cobre falhas causadas por alterações de terceiros no código, quedas de servidores de terceiros ou mau uso do painel depois do treinamento.",
+          "Domínio e hospedagem grátis por um ano, e-mails ilimitados (1 GB cada) e um design feito do zero para a sua marca. Garanto que o site é entregue completo e funcionando como combinamos, com os ajustes necessários até você aprovar. A garantia não cobre falhas causadas por alterações de terceiros no código, quedas de servidores de terceiros ou mau uso do painel depois do treinamento. Você também tem garantia de 60 dias contra defeitos e 15 dias de ajustes menores após a entrega. Domínio, hospedagem e arquivos ficam no seu nome.",
       },
     ],
     notFound: "Não encontrou sua resposta? Fale conosco e vamos conversar.",
@@ -474,7 +488,7 @@ const pt: Dictionary = {
   },
   closingCta: {
     title: "Vamos começar seu site?",
-    subtitle: "Monte seu site, escolha como pagar (cartão, Mercado Pago ou transferência) e vamos começar. Projetos a partir de $3.500 MXN.",
+    subtitle: "Monte seu site, escolha como pagar (cartão, Mercado Pago ou transferência SPEI) e vamos começar. A partir de $2.000, pronto em 3 dias.",
     ctaPrimary: "Monte seu site",
     ctaSecondary: "WhatsApp direto",
   },

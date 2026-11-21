@@ -5,7 +5,7 @@ import { CrearWebExperience } from "@/components/crear-web-experience";
 export const metadata: Metadata = {
   title: "Cotiza y paga tu web en línea | BryanF Design",
   description:
-    "Arma tu página web, suma los módulos que necesites y paga en línea con tarjeta, Mercado Pago o transferencia. Precios claros, desde $3,500 MXN.",
+    "Arma tu página web, suma los módulos que necesites y paga en línea con tarjeta, Mercado Pago o transferencia. Landing desde $2,000 MXN, lista en 3 días.",
   alternates: { canonical: "/crear-web" },
   openGraph: {
     type: "website",
