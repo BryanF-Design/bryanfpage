@@ -321,13 +321,13 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                     repiten aquí. */}
                 <ul className="mt-3 hidden flex-col border-t border-white/10 pt-2 sm:flex">
                   <li>
-                    <Link href="/privacidad" className={linkClass}>
+                    <Link href="/privacidad" prefetch={false} className={linkClass}>
                       {t.footer.privacy}
                       <LinkArrow />
                     </Link>
                   </li>
                   <li>
-                    <Link href="/terminos" className={linkClass}>
+                    <Link href="/terminos" prefetch={false} className={linkClass}>
                       {t.footer.terms}
                       <LinkArrow />
                     </Link>
@@ -359,6 +359,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
               {t.footer.acceptPrefix}{" "}
               <Link
                 href="/privacidad"
+                prefetch={false}
                 className="underline underline-offset-2 transition-colors hover:text-lime"
               >
                 {t.footer.privacy}
@@ -366,6 +367,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
               {t.footer.and}{" "}
               <Link
                 href="/terminos"
+                prefetch={false}
                 className="underline underline-offset-2 transition-colors hover:text-lime"
               >
                 {t.footer.terms}
