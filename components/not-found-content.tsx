@@ -18,7 +18,7 @@ const PAUSE_EVENTS = ["keydown", "pointerdown", "touchstart", "wheel", "focusin"
 
 /**
  * 404 en el lenguaje del sitio: marco blanco, panel lima con un "404"
- * enorme y Lumina sorprendida asomándose por encima del canto. La cuenta
+ * enorme y Lumina (aburrida de buscar) asomándose por encima del canto. La cuenta
  * regresiva devuelve al inicio a los diez segundos, pero se pausa en cuanto
  * el visitante hace algo (bajar, tocar, teclear) o pulsa "Quedarme aquí".
  */
@@ -95,7 +95,7 @@ export function NotFoundContent() {
 
         <div className="grid flex-1 gap-6 lg:grid-cols-12 lg:items-center lg:gap-10">
           {/* El 404 gigante arriba y, debajo, el panel lima del que sale
-              Lumina sorprendida tapando apenas la base del cero. */}
+              Lumina con cara de aburrida tapando apenas la base del cero. */}
           <motion.div
             initial={prefersReducedMotion ? false : { opacity: 0, y: 40, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -130,10 +130,10 @@ export function NotFoundContent() {
               </div>
               {/* Fuera del recorte del panel para que la cabeza cruce el canto. */}
               <Image
-                src="/img/brand/lumina-sorprendida.webp"
+                src="/img/lumina/v2/cutout/aburrida.webp"
                 alt=""
-                width={900}
-                height={1040}
+                width={1039}
+                height={1100}
                 priority
                 sizes="(min-width: 1024px) 22rem, 16rem"
                 className="pointer-events-none absolute bottom-0 left-1/2 z-[1] h-[calc(100%+3.25rem)] w-auto max-w-none -translate-x-1/2 sm:h-[calc(100%+4.5rem)] lg:h-[calc(100%+5rem)]"

@@ -613,7 +613,8 @@ const es = {
       normal: "Modo normal",
       enfocada: "Modo enfocada",
       duda: "Modo curiosa",
-      sorprendida: "Modo sorprendida",
+      aburrida: "Modo aburrida",
+      dormida: "Modo siesta",
     },
     phrases: [
       "¿Te cotizo tu web en 2 minutos?",

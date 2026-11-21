@@ -25,14 +25,15 @@ import { useLanguage } from "@/lib/i18n/context";
 import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { mobileShot } from "@/lib/projects";
 
-type MoodKey = "normal" | "enfocada" | "duda" | "sorprendida";
+type MoodKey = "normal" | "enfocada" | "duda" | "aburrida" | "dormida";
 
 /** Recortes de Lumina, en el orden en que cambian al tocarla (medidas reales). */
 const MOODS: { key: MoodKey; src: string; width: number; height: number }[] = [
-  { key: "normal", src: "/img/brand/lumina-normal.webp", width: 864, height: 1121 },
-  { key: "enfocada", src: "/img/brand/lumina-enfocada.webp", width: 852, height: 1162 },
-  { key: "duda", src: "/img/brand/lumina-duda.webp", width: 807, height: 1139 },
-  { key: "sorprendida", src: "/img/brand/lumina-sorprendida.webp", width: 876, height: 1124 },
+  { key: "normal", src: "/img/lumina/v2/cutout/normal.webp", width: 1058, height: 1100 },
+  { key: "enfocada", src: "/img/lumina/v2/cutout/enfocada.webp", width: 1087, height: 1100 },
+  { key: "duda", src: "/img/lumina/v2/cutout/duda.webp", width: 1031, height: 1100 },
+  { key: "aburrida", src: "/img/lumina/v2/cutout/aburrida.webp", width: 1039, height: 1100 },
+  { key: "dormida", src: "/img/lumina/v2/cutout/dormida.webp", width: 1080, height: 1100 },
 ];
 
 // Enlaces preconfigurados del cotizador, en el mismo orden que
@@ -198,8 +199,12 @@ export function LuminaFeature() {
                       onLoad={() => onMoodLoad(i)}
                       className={cn(
                         // Alineadas arriba: la cabeza no salta entre ánimos; lo
-                        // que sobra abajo queda bajo el canto del panel.
-                        "absolute left-0 top-0 h-auto w-full origin-bottom drop-shadow-[0_24px_30px_hsl(160_40%_6%/0.45)] transition-[opacity,transform] duration-500 [transition-timing-function:var(--ease-pop)]",
+                        // que sobra abajo queda bajo el canto del panel. Los
+                        // retratos son casi cuadrados: llenan el alto del
+                        // escenario y lo que sobra a lo ancho sale hacia el
+                        // canto izquierdo del panel (ahí el recorte lo corta
+                        // como un hombro fuera de cuadro), nunca sobre el texto.
+                        "absolute left-1/2 top-0 h-full w-auto max-w-none -translate-x-1/2 origin-bottom lg:left-auto lg:right-0 lg:translate-x-0 drop-shadow-[0_24px_30px_hsl(160_40%_6%/0.45)] transition-[opacity,transform] duration-500 [transition-timing-function:var(--ease-pop)]",
                         i === shown ? "scale-100 opacity-100" : "translate-y-3 scale-[0.96] opacity-0"
                       )}
                     />
@@ -313,7 +318,7 @@ export function LuminaFeature() {
             {/* Mientras carga el chat (se hidrata en el navegador). */}
             <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center text-sm font-medium text-muted-foreground [#lumina-chat-inline:has(>#lumina-chat-panel)_&]:hidden">
               <span className="relative size-14 overflow-hidden rounded-full bg-ink ring-[3px] ring-lime">
-                <Image src="/img/lumina/avatar/normal.webp" alt="" fill sizes="56px" unoptimized className="object-cover" />
+                <Image src="/img/lumina/v2/avatar/normal.webp" alt="" fill sizes="56px" unoptimized className="object-cover" />
               </span>
               {t.lumina.online}
             </div>

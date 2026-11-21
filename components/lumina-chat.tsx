@@ -31,19 +31,42 @@ import {
   type LuminaSection,
 } from "@/lib/lumina-actions";
 
-type Mood = "Normal" | "Enfocada" | "Duda" | "Sorprendida" | "Offline";
+type Mood = "Normal" | "Enfocada" | "Duda" | "Offline";
 
-// Avatares de 192 px (≈8 KB, WebP) recortados de los retratos de
-// public/img/lumina/*.png (1.4 MB cada uno). Se sirven tal cual
-// (`unoptimized`) para poder precargarlos: así el cambio de ánimo al abrir
-// el chat es instantáneo y el avatar nunca aparece en blanco.
+// Avatares de 128 px (≈8 KB, WebP) recortados de los retratos nuevos de
+// Lumina (public/img/lumina/v2/face, 256 px). Se sirven tal cual
+// (`unoptimized`) para poder precargarlos: así el cambio de ánimo es
+// instantáneo y el avatar nunca aparece en blanco. "Enfocada" es Lumina
+// trabajando en su laptop: mientras piensa la respuesta se reproduce el
+// video en bucle (ver MoodAvatar) y esta imagen es su póster.
 const MOOD_IMG: Record<Mood, string> = {
-  Normal: "/img/lumina/avatar/normal.webp",
-  Enfocada: "/img/lumina/avatar/enfocada.webp",
-  Duda: "/img/lumina/avatar/duda.webp",
-  Sorprendida: "/img/lumina/avatar/sorprendida.webp",
-  Offline: "/img/lumina/avatar/offline.webp",
+  Normal: "/img/lumina/v2/avatar/normal.webp",
+  Enfocada: "/img/lumina/v2/avatar/trabajando.webp",
+  Duda: "/img/lumina/v2/avatar/duda.webp",
+  Offline: "/img/lumina/v2/avatar/dormida.webp",
 };
+
+/** Avatar del ánimo actual; "Enfocada" es el video de Lumina trabajando. */
+function MoodAvatar({ mood, sizes, reducedMotion }: { mood: Mood; sizes: string; reducedMotion: boolean }) {
+  if (mood === "Enfocada" && !reducedMotion) {
+    return (
+      <video
+        className="absolute inset-0 size-full object-cover"
+        poster={MOOD_IMG.Enfocada}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+        aria-hidden
+      >
+        <source src="/video/lumina-trabajando-avatar.webm" type="video/webm" />
+        <source src="/video/lumina-trabajando-avatar.mp4" type="video/mp4" />
+      </video>
+    );
+  }
+  return <Image src={MOOD_IMG[mood]} alt="" fill sizes={sizes} unoptimized className="object-cover" />;
+}
 
 const WHATSAPP_NUMBER = "525663012505";
 const projectBySlug = new Map(projects.map((p) => [p.slug, p]));
@@ -425,8 +448,8 @@ export function LuminaChat() {
     };
   }, []);
 
-  // Precarga de los cinco ánimos en cuanto el navegador está libre: abrir el
-  // chat cambia a "Sorprendida" y no debe esperar a la red.
+  // Precarga de los ánimos en cuanto el navegador está libre: el avatar
+  // cambia al escribir o si algo falla y no debe esperar a la red.
   useEffect(() => {
     const preload = () =>
       Object.values(MOOD_IMG).forEach((src) => {
@@ -646,8 +669,8 @@ export function LuminaChat() {
     if (!openRef.current && !isPhone && payZoneVisible && window.innerWidth >= 768) setDockLeft(true);
     setOpen((o) => !o);
     setTeaser(false);
-    setMood("Sorprendida");
-    window.setTimeout(() => setMood("Normal"), 1400);
+    // Al abrir, de vuelta a su cara sonriente (salvo si sigue trabajando).
+    setMood((m) => (m === "Enfocada" ? m : "Normal"));
   }
 
   // Cualquier parte del sitio puede abrir el chat (la sección de Lumina lo
@@ -665,8 +688,7 @@ export function LuminaChat() {
         return;
       }
       setOpen(true);
-      setMood("Sorprendida");
-      window.setTimeout(() => setMood("Normal"), 1400);
+      setMood((m) => (m === "Enfocada" ? m : "Normal"));
       if (message) window.setTimeout(() => sendRef.current(message), 350);
     }
     window.addEventListener("lumina:open", onOpenEvent);
@@ -1001,7 +1023,7 @@ export function LuminaChat() {
                       transition={{ duration: 0.22 }}
                       className="absolute inset-0"
                     >
-                      <Image src={MOOD_IMG[mood]} alt="" fill sizes="48px" unoptimized className="object-cover" />
+                      <MoodAvatar mood={mood} sizes="48px" reducedMotion={!!reducedMotion} />
                     </motion.span>
                   </AnimatePresence>
                 </span>

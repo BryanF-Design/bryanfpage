@@ -81,11 +81,11 @@ export function HomeTeasers() {
             <div className="flex items-center gap-3.5">
               <span aria-hidden className="relative size-16 shrink-0 overflow-hidden rounded-full bg-white/60 sm:hidden">
                 <Image
-                  src="/img/brand/lumina-normal.webp"
+                  src="/img/lumina/v2/face/normal.webp"
                   alt=""
                   fill
                   sizes="64px"
-                  className="scale-[1.4] object-cover object-[50%_18%]"
+                  className="object-cover"
                 />
               </span>
               <h2 className="leading-tight text-ink">
@@ -108,10 +108,10 @@ export function HomeTeasers() {
           <div aria-hidden className="relative hidden shrink-0 sm:block sm:w-[38%]">
             <span className="absolute bottom-[-18%] left-1/2 aspect-square w-[78%] max-w-[16rem] -translate-x-1/2 rounded-full bg-white/50 sm:bottom-[-10%] sm:w-[92%]" />
             <Image
-              src="/img/brand/lumina-normal.webp"
+              src="/img/lumina/v2/cutout/normal.webp"
               alt=""
-              width={864}
-              height={1121}
+              width={1058}
+              height={1100}
               sizes="(min-width: 1024px) 14rem, (min-width: 640px) 34vw, 13rem"
               className="absolute bottom-0 left-1/2 h-[108%] w-auto max-w-none -translate-x-1/2 object-contain object-bottom sm:h-[88%]"
             />

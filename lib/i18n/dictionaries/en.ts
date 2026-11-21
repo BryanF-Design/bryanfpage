@@ -590,7 +590,8 @@ const en: Dictionary = {
       normal: "Normal mode",
       enfocada: "Focused mode",
       duda: "Curious mode",
-      sorprendida: "Surprised mode",
+      aburrida: "Bored mode",
+      dormida: "Nap mode",
     },
     phrases: [
       "Want a quote in 2 minutes?",

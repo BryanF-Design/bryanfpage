@@ -81,10 +81,10 @@ export function Faq({
                 className="pointer-events-none absolute right-3 top-0 z-0 w-[8.75rem] sm:right-8 sm:w-[10rem] lg:right-8 lg:w-[12.25rem]"
               >
                 <Image
-                  src="/img/brand/lumina-duda.webp"
+                  src="/img/lumina/v2/cutout/duda.webp"
                   alt=""
-                  width={807}
-                  height={1139}
+                  width={1031}
+                  height={1100}
                   sizes="(min-width: 1024px) 196px, (min-width: 640px) 160px, 140px"
                   className="h-auto w-full drop-shadow-[0_18px_24px_hsl(165_40%_8%/0.35)]"
                 />
@@ -176,11 +176,11 @@ export function Faq({
                   <span aria-hidden className="relative size-10 shrink-0">
                     <span className="absolute inset-0 overflow-hidden rounded-full bg-lime">
                       <Image
-                        src="/img/brand/lumina-normal.webp"
+                        src="/img/lumina/v2/face/normal.webp"
                         alt=""
                         fill
                         sizes="40px"
-                        className="scale-[1.4] object-cover object-[50%_18%]"
+                        className="object-cover"
                       />
                     </span>
                     {/* En línea: punto verde sobre el avatar. */}

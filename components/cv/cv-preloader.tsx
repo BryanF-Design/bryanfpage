@@ -47,10 +47,10 @@ export function CvPreloader({ label }: { label: string }) {
     <div aria-hidden className={cn(s.preloader, done && s.preloaderDone, "print:hidden")}>
       <div className="flex w-[min(22rem,80vw)] flex-col items-center">
         <Image
-          src="/img/brand/lumina-normal.webp"
+          src="/img/lumina/v2/cutout/normal.webp"
           alt=""
-          width={864}
-          height={1121}
+          width={1058}
+          height={1100}
           priority
           sizes="110px"
           className={cn(s.preloaderLumina, "h-auto w-[92px] drop-shadow-[0_12px_20px_rgb(0_0_0/0.6)]")}

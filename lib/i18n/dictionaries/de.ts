@@ -590,7 +590,8 @@ const de: Dictionary = {
       normal: "Normal-Modus",
       enfocada: "Fokus-Modus",
       duda: "Neugier-Modus",
-      sorprendida: "Staun-Modus",
+      aburrida: "Langeweile-Modus",
+      dormida: "Nickerchen-Modus",
     },
     phrases: [
       "Soll ich dir in 2 Minuten ein Angebot machen?",

@@ -41,7 +41,7 @@ function LuminaAvatar({ src, className }: { src: string; className?: string }) {
         alt=""
         fill
         sizes="96px"
-        className="origin-[40%_32%] translate-x-[7%] scale-[1.45] object-cover object-top"
+        className="object-cover"
       />
     </span>
   );
@@ -86,7 +86,7 @@ export function LuminaJourney({ chapter = 8 }: { chapter?: number } = {}) {
               <div className="flex items-center gap-3 border-b border-border pb-4 sm:pb-5">
                 <span className="relative">
                   <LuminaAvatar
-                    src="/img/brand/lumina-normal.webp"
+                    src="/img/lumina/v2/face/normal.webp"
                     className="size-12 ring-2 ring-lime"
                   />
                   <span
@@ -182,10 +182,10 @@ export function LuminaJourney({ chapter = 8 }: { chapter?: number } = {}) {
             <div className="panel-forest relative rounded-[1.75rem] [clip-path:inset(-12rem_0_0_0_round_1.75rem)]">
               <span aria-hidden className="breathe absolute -right-6 bottom-0 size-40 rounded-full bg-lime/90 sm:size-44" />
               <Image
-                src="/img/brand/lumina-enfocada.webp"
+                src="/img/lumina/v2/cutout/duda.webp"
                 alt=""
-                width={852}
-                height={1162}
+                width={1087}
+                height={1100}
                 sizes="(min-width: 640px) 11rem, 9rem"
                 className="scroll-rise pointer-events-none absolute -bottom-6 right-1 h-auto w-[9rem] drop-shadow-[0_18px_24px_hsl(160_40%_6%/0.45)] sm:-bottom-7 sm:right-3 sm:w-[11rem]"
               />

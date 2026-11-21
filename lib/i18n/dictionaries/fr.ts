@@ -590,7 +590,8 @@ const fr: Dictionary = {
       normal: "Mode normal",
       enfocada: "Mode concentrée",
       duda: "Mode curieuse",
-      sorprendida: "Mode surprise",
+      aburrida: "Mode ennui",
+      dormida: "Mode sieste",
     },
     phrases: [
       "Un devis en 2 minutes, ça vous dit ?",

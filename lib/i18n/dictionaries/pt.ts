@@ -590,7 +590,8 @@ const pt: Dictionary = {
       normal: "Modo normal",
       enfocada: "Modo focada",
       duda: "Modo curiosa",
-      sorprendida: "Modo surpresa",
+      aburrida: "Modo entediada",
+      dormida: "Modo soneca",
     },
     phrases: [
       "Quer um orçamento em 2 minutos?",

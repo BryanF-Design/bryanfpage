@@ -167,10 +167,10 @@ export function CrearWebExperience() {
                   />
                 </svg>
                 <Image
-                  src="/img/brand/lumina-normal.webp"
+                  src="/img/lumina/v2/cutout/normal.webp"
                   alt=""
-                  width={864}
-                  height={1121}
+                  width={1058}
+                  height={1100}
                   priority
                   sizes="(min-width: 1024px) 36rem, 26rem"
                   className="absolute bottom-[-2.5rem] left-1/2 h-[calc(100%+7rem)] w-auto max-w-[115%] -translate-x-1/2 object-contain object-bottom drop-shadow-[0_28px_36px_hsl(160_40%_8%/0.3)] sm:h-[calc(100%+8rem)] lg:bottom-[-3rem] lg:h-[calc(100%+8.5rem)] xl:h-[calc(100%+11rem)]"

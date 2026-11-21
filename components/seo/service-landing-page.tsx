@@ -449,11 +449,11 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                       ¿Te suena?
                     </span>
                     <Image
-                      src="/img/brand/lumina-duda.webp"
+                      src="/img/lumina/v2/cutout/duda.webp"
                       alt=""
                       aria-hidden
-                      width={900}
-                      height={968}
+                      width={1031}
+                      height={1100}
                       sizes="(min-width: 1024px) 12.5rem, (min-width: 640px) 10rem, 6.5rem"
                       className="relative h-auto w-full"
                     />
@@ -897,10 +897,10 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                 <div aria-hidden className="relative z-0 -mb-8 mr-4 w-[8.5rem] self-end sm:mr-8 sm:w-[10rem] lg:w-[11.5rem]">
                   <Orbit className="float-y absolute left-[-45%] top-[6%] w-[190%] text-ink/25" />
                   <Image
-                    src="/img/brand/lumina-normal.webp"
+                    src="/img/lumina/v2/cutout/normal.webp"
                     alt=""
-                    width={900}
-                    height={1059}
+                    width={1058}
+                    height={1100}
                     sizes="(min-width: 1024px) 12rem, 9rem"
                     className="relative h-auto w-full"
                   />

@@ -750,11 +750,11 @@ export function BarberOsPage() {
                   </Button>
                 </div>
                 <Image
-                  src="/img/brand/lumina-duda.webp"
+                  src="/img/lumina/v2/cutout/duda.webp"
                   alt=""
                   aria-hidden
-                  width={900}
-                  height={968}
+                  width={1031}
+                  height={1100}
                   sizes="7rem"
                   className="hidden h-auto w-[7rem] shrink-0 sm:block"
                 />
@@ -861,10 +861,10 @@ export function BarberOsPage() {
                 <span className="absolute bottom-0 left-1/2 aspect-square w-[92%] -translate-x-1/2 rounded-full bg-lime" />
                 <Orbit className="float-y absolute left-[-45%] top-[10%] w-[190%] text-ink/25" />
                 <Image
-                  src="/img/brand/lumina-normal.webp"
+                  src="/img/lumina/v2/cutout/normal.webp"
                   alt=""
-                  width={900}
-                  height={1059}
+                  width={1058}
+                  height={1100}
                   sizes="(min-width: 1024px) 14rem, 12rem"
                   className="relative h-auto w-full"
                 />

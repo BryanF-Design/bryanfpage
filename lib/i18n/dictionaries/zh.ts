@@ -537,7 +537,8 @@ const zh: Dictionary = {
       normal: "正常模式",
       enfocada: "专注模式",
       duda: "好奇模式",
-      sorprendida: "惊喜模式",
+      aburrida: "无聊模式",
+      dormida: "午睡模式",
     },
     phrases: [
       "2分钟给您报个价？",

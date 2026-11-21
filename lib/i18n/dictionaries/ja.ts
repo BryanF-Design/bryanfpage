@@ -585,7 +585,8 @@ const ja: Dictionary = {
       normal: "ノーマルモード",
       enfocada: "集中モード",
       duda: "興味津々モード",
-      sorprendida: "びっくりモード",
+      aburrida: "退屈モード",
+      dormida: "お昼寝モード",
     },
     phrases: [
       "2分でお見積もりしましょうか？",

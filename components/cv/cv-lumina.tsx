@@ -12,15 +12,15 @@ import { cn } from "@/lib/utils";
 import { cvStyles as s } from "./cv-parts";
 
 
-// Miniaturas: la cara recortada de cada expresión (160 px), sin escalar ni
+// Miniaturas: la cara recortada de cada expresión (256 px), sin escalar ni
 // mover con CSS, para que siempre quede centrada.
 const FACE: Record<LevelId, string> = {
-  perfil: "/img/cv/lumina-face-normal.webp",
-  misiones: "/img/cv/lumina-face-enfocada.webp",
-  inventario: "/img/cv/lumina-face-sorprendida.webp",
-  logros: "/img/cv/lumina-face-sorprendida.webp",
-  academia: "/img/cv/lumina-face-duda.webp",
-  contacto: "/img/cv/lumina-face-normal.webp",
+  perfil: "/img/lumina/v2/face/normal.webp",
+  misiones: "/img/lumina/v2/face/enfocada.webp",
+  inventario: "/img/lumina/v2/face/duda.webp",
+  logros: "/img/lumina/v2/face/normal.webp",
+  academia: "/img/lumina/v2/face/duda.webp",
+  contacto: "/img/lumina/v2/face/normal.webp",
 };
 
 
@@ -120,7 +120,7 @@ export function LuminaGuide({
           aside ? "relative mt-4" : "fixed bottom-[var(--fab-edge)] right-3 z-[118] sm:right-6 lg:hidden"
         )}
       >
-        <Image src={FACE[level]} alt="" width={160} height={160} sizes="56px" className="size-full rounded-full object-cover" />
+        <Image src={FACE[level]} alt="" width={256} height={256} sizes="56px" className="size-full rounded-full object-cover" />
       </button>
     );
   }
@@ -137,7 +137,7 @@ export function LuminaGuide({
           </span>
           <div className="flex items-center gap-2.5">
             <span aria-hidden className="relative size-11 shrink-0 overflow-hidden rounded-full bg-[var(--cv-lime)] ring-2 ring-[var(--cv-lime)]">
-              <Image key={FACE[level]} src={FACE[level]} alt="" width={160} height={160} sizes="48px" className={cn(s.luminaSwap, "size-full object-cover")} />
+              <Image key={FACE[level]} src={FACE[level]} alt="" width={256} height={256} sizes="48px" className={cn(s.luminaSwap, "size-full object-cover")} />
             </span>
             <span className="min-w-0 flex-1">
               <span className={cn(s.pixel, "rounded bg-[var(--cv-lime)] px-1.5 py-px text-[0.6rem] font-bold text-[#0c1512]")}>{t.lumina.name}</span>
