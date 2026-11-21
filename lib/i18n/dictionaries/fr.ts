@@ -51,6 +51,8 @@ const fr: Dictionary = {
     aligning: "Alignement de l’interface",
     routeReady: "Parcours prêt",
     skip: "Passer l’introduction",
+    enterHint: "Faites défiler pour entrer",
+    introAria: "Intro : un ordinateur portable s’allume et, au défilement, la caméra entre dans son écran",
     phaseDesign: "Design",
     phaseDevelopment: "Développement",
     phaseLaunch: "Lancement",

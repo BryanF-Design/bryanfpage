@@ -51,6 +51,8 @@ const ja: Dictionary = {
     aligning: "インターフェースを調整中",
     routeReady: "ルート準備完了",
     skip: "イントロをスキップ",
+    enterHint: "スクロールして入る",
+    introAria: "イントロ：ノートPCが起動し、スクロールするとカメラが画面の中へ入ります",
     phaseDesign: "デザイン",
     phaseDevelopment: "開発",
     phaseLaunch: "公開",

@@ -288,14 +288,17 @@ const fxBootstrap = `
 
 // Preloader de entrada: solo la primera vista de la sesión. Corre en el
 // <head>, antes de pintar: si ya se vio (o hay movimiento reducido, o es el
-// CV, que trae su propia intro), el telón ni aparece. El telón vive en el HTML
+// CV, que trae su propia intro, o el inicio, cuya intro 3D lo lleva en
+// pantalla), el telón ni aparece. El telón vive en el HTML
 // y se retira solo con CSS, así que nunca bloquea aunque el JS tarde.
 const preloaderBootstrap = `
   try {
     var d = document.documentElement;
     var seen = false;
     try { seen = sessionStorage.getItem("bfd-preloaded") === "1"; sessionStorage.setItem("bfd-preloaded", "1"); } catch (_) {}
-    if (seen || location.pathname.indexOf("/cv") === 0 || d.classList.contains("a11y-reduce-motion") ||
+    // En el inicio el preloader corre dentro de la pantalla de la intro 3D.
+    var introHome = location.pathname === "/";
+    if (seen || introHome || location.pathname.indexOf("/cv") === 0 || d.classList.contains("a11y-reduce-motion") ||
       window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       d.classList.add("pl-skip");
     }

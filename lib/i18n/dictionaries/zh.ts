@@ -50,6 +50,8 @@ const zh: Dictionary = {
     aligning: "正在校准界面",
     routeReady: "路线已就绪",
     skip: "跳过片头",
+    enterHint: "滑动进入",
+    introAria: "开场：笔记本电脑开机，滑动时镜头进入它的屏幕",
     phaseDesign: "设计",
     phaseDevelopment: "开发",
     phaseLaunch: "上线",

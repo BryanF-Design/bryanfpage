@@ -39,7 +39,7 @@ export function HomeTeasers() {
                   width={1122}
                   height={1114}
                   sizes="128px"
-                  className="absolute left-[-30%] top-[-2%] w-[170%] max-w-none"
+                  className="absolute left-[-8%] top-[3%] w-[116%] max-w-none"
                 />
               </span>
               <h2 className="leading-tight text-white">

@@ -4,6 +4,7 @@ import type { CSSProperties } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowUpRight, Globe2, Sparkle } from "lucide-react";
+import { DeviceIntro } from "@/components/intro/device-intro";
 import { HeroPop } from "@/components/sections/hero-pop";
 import { StatCounter } from "@/components/ui/stat-counter";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
@@ -78,6 +79,8 @@ const faqJsonLd = {
   })),
 };
 
+const INTRO_BOOTSTRAP = `(function(){try{var d=document.documentElement;var r=window.matchMedia("(prefers-reduced-motion: reduce)").matches||d.classList.contains("a11y-reduce-motion");d.dataset.intro=r?"off":"pending"}catch(e){}})();`;
+
 export default function HomePage() {
   const { t } = useLanguage();
 
@@ -87,8 +90,18 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
+      {/* Antes de pintar el hero: si la intro va a correr, su entrada espera a
+          que la cámara entre a la pantalla (`html[data-intro="pending"]`). */}
+      <script dangerouslySetInnerHTML={{ __html: INTRO_BOOTSTRAP }} />
+      <noscript>
+        <style>{`.device-intro{display:none!important}`}</style>
+      </noscript>
       <ScrollProgress />
       <SiteHeader />
+
+      {/* Intro: laptop (o teléfono) que se enciende con el preloader en
+          pantalla; al deslizar, la cámara entra y aparece la web. */}
+      <DeviceIntro />
 
       <main id="main-content" tabIndex={-1} className="sheet-main">
         {/* Hero + cifras: un solo grupo (las tarjetas cuelgan del hero a

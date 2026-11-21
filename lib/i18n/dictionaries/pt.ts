@@ -51,6 +51,8 @@ const pt: Dictionary = {
     aligning: "Alinhando a interface",
     routeReady: "Rota pronta",
     skip: "Pular entrada",
+    enterHint: "Deslize para entrar",
+    introAria: "Introdução: um notebook liga e, ao deslizar, a câmera entra na tela",
     phaseDesign: "Design",
     phaseDevelopment: "Desenvolvimento",
     phaseLaunch: "Lançamento",
