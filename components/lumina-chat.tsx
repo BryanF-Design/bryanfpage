@@ -132,7 +132,8 @@ function ensureIntentActions(userText: string, actions: LuminaAction[]) {
   if (BARBER_INTENT.test(userText) && !hasPage("barberias") && actions.length < 5) {
     actions.unshift({ kind: "page", page: "barberias" });
   }
-  if (PAY_INTENT.test(userText) && !hasGo("pago") && !has("go") && actions.length < 5) {
+  // Preguntas de pago: siempre a la sección de pago (antes que cualquier otra).
+  if (PAY_INTENT.test(userText) && !hasGo("pago") && actions.length < 5) {
     actions.unshift({ kind: "go", section: "pago" });
   }
   if (WANT_INTENT.test(userText)) {

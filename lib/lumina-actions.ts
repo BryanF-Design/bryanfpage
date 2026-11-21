@@ -128,6 +128,8 @@ export function extractActions(reply: string): { text: string; actions: LuminaAc
     .replace(/<a\b[^>]*>\s*<\/a>/gi, "")
     .replace(/\s*(?:aqu[ií]|ac[aá]|here|ici|hier|aqui)\s*:?\s*(?=[.!?…]|<br|$)/gi, "")
     .replace(/:\s*(?=[.!?…])/g, "")
+    // "puedes ver más en." / "see more at." cuando la marca quedó a media frase
+    .replace(/\s+(?:en|in|at|dans|auf|em|sur)\s*(?=[.!?…](?:\s|<|$))/gi, "")
     .replace(/\s+([.!?,])/g, "$1")
     .replace(/(\s*<br\s*\/?>\s*)+$/i, "")
     .trim();
