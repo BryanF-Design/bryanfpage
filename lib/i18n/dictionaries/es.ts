@@ -53,6 +53,8 @@ const es = {
     aligning: "Alineando la interfaz",
     routeReady: "Ruta lista",
     skip: "Omitir entrada",
+    enterHint: "Desliza para entrar",
+    introAria: "Intro: una laptop se enciende y, al deslizar, la cámara entra a su pantalla",
     phaseDesign: "Diseño",
     phaseDevelopment: "Desarrollo",
     phaseLaunch: "Lanzamiento",

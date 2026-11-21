@@ -51,6 +51,8 @@ const en: Dictionary = {
     aligning: "Aligning the interface",
     routeReady: "Route ready",
     skip: "Skip intro",
+    enterHint: "Scroll to enter",
+    introAria: "Intro: a laptop powers on and, as you scroll, the camera moves into its screen",
     phaseDesign: "Design",
     phaseDevelopment: "Development",
     phaseLaunch: "Launch",

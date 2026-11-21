@@ -51,6 +51,8 @@ const de: Dictionary = {
     aligning: "Oberfläche wird ausgerichtet",
     routeReady: "Route bereit",
     skip: "Intro überspringen",
+    enterHint: "Scrollen zum Eintreten",
+    introAria: "Intro: Ein Laptop startet, und beim Scrollen fährt die Kamera in seinen Bildschirm",
     phaseDesign: "Design",
     phaseDevelopment: "Entwicklung",
     phaseLaunch: "Launch",

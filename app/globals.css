@@ -930,6 +930,128 @@ html.fx-on [data-fx="stagger"]:not([data-fx-done]) > :nth-child(n + 7) { transit
   transform: none !important;
 }
 
+/* ════════════════════════════════════════════════════════════════════════
+   INTRO DE DISPOSITIVO (components/intro/device-intro.tsx)
+   230svh de recorrido montados 100svh sobre el hero: al final del scroll el
+   hero ya está debajo y la escena se funde. `--intro-p` (0→1) lo escribe el
+   componente; fundido, pista y botón salen de ahí, sin JS por cuadro. Sin JS
+   o con movimiento reducido la sección no existe.
+   ════════════════════════════════════════════════════════════════════════ */
+.device-intro {
+  --intro-p: 0;
+  position: relative;
+  z-index: 110;
+  height: 230vh;
+  height: 230svh;
+  margin-bottom: -100vh;
+  margin-bottom: -100svh;
+}
+.device-intro__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  background: radial-gradient(120% 85% at 50% 58%, hsl(165 30% 14%) 0%, hsl(var(--ink)) 62%);
+  opacity: calc((0.95 - var(--intro-p)) / 0.17);
+}
+.device-intro[data-state="done"] .device-intro__stage {
+  visibility: hidden;
+  pointer-events: none;
+}
+.device-intro__glow {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: min(90vw, 64rem);
+  aspect-ratio: 1.6;
+  translate: -50% -50%;
+  background: radial-gradient(closest-side, hsl(var(--lime) / 0.14), transparent 70%);
+  filter: blur(20px);
+  pointer-events: none;
+}
+.device-intro[data-variant="phone"] .device-intro__glow {
+  width: 110vw;
+  aspect-ratio: 0.6;
+}
+.device-intro__loading {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  white-space: nowrap;
+  transition: opacity 0.4s ease-out;
+}
+.device-intro__loading[data-show="false"] {
+  opacity: 0;
+}
+.device-intro__skip {
+  position: absolute;
+  top: calc(var(--gutter) * 2 + 0.25rem);
+  right: calc(var(--gutter) * 2 + 0.25rem);
+  /* Se retira antes de que el header aparezca por debajo del fundido. */
+  opacity: calc((0.6 - var(--intro-p)) * 8);
+}
+.device-intro__hint {
+  position: absolute;
+  left: 50%;
+  bottom: max(calc(var(--gutter) * 2 + 0.5rem), env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  white-space: nowrap;
+  translate: -50% 0;
+  pointer-events: none;
+  opacity: calc(1 - var(--intro-p) * 14);
+  transition:
+    opacity 0.5s ease-out,
+    translate 0.7s var(--ease-out);
+}
+.device-intro__hint[data-show="false"] {
+  opacity: 0;
+  translate: -50% 0.75rem;
+}
+.device-intro__chev {
+  position: relative;
+  width: 1px;
+  height: 2.25rem;
+  overflow: hidden;
+  background: rgb(255 255 255 / 0.18);
+}
+.device-intro__chev::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: -40%;
+  height: 40%;
+  background: hsl(var(--lime));
+  animation: intro-chev 1.6s var(--ease-out) infinite;
+}
+@keyframes intro-chev {
+  to {
+    top: 100%;
+  }
+}
+/* El hero espera a que la cámara entre a la pantalla. */
+html[data-intro="pending"] .hero-in {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .device-intro {
+    display: none;
+  }
+  html[data-intro] .hero-in {
+    animation-play-state: running;
+  }
+}
+html.a11y-reduce-motion .device-intro {
+  display: none;
+}
+html.a11y-reduce-motion .hero-in {
+  animation-play-state: running;
+}
+
 /* ——— Entrada del hero (CSS puro, antes de hidratar) ——————————————— */
 .hero-in {
   animation-duration: 0.8s;
