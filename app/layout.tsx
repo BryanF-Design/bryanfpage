@@ -255,7 +255,6 @@ const fxBootstrap = `
       // Reveals .reveal (CSS con animation-timeline: view()): al completar su
       // entrada quedan fijos, una sola vez. Sin scroll-timeline, este mismo
       // observador dispara la transición de 350 ms.
-      var sup = !!(window.CSS && CSS.supports && CSS.supports("animation-timeline: view()"));
       var ro = new IntersectionObserver(function (entries) {
         for (var i = 0; i < entries.length; i++) {
           if (entries[i].isIntersecting) {
@@ -263,7 +262,7 @@ const fxBootstrap = `
             ro.unobserve(entries[i].target);
           }
         }
-      }, { rootMargin: sup ? "0px 0px -420px 0px" : "0px 0px -8% 0px", threshold: 0 });
+      }, { rootMargin: "0px 0px -8% 0px", threshold: 0 });
       var watch = function (root) {
         if (root.nodeType !== 1) return;
         if (root.hasAttribute("data-fx") && !root.hasAttribute("data-fx-in")) io.observe(root);

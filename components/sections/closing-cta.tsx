@@ -8,6 +8,7 @@ import { FaWhatsapp } from "react-icons/fa";
 
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { GestureIcon } from "@/components/ui/gesture-icon";
+import { Magnetic } from "@/components/ui/magnetic";
 import { TrackedWhatsAppLink } from "@/components/analytics/tracked-whatsapp-link";
 import { useLanguage } from "@/lib/i18n/context";
 import { useHomeHref } from "@/lib/use-home-href";
@@ -83,7 +84,7 @@ function Phone({ slug, sizes }: { slug: string; sizes: string }) {
  */
 export function ClosingCta() {
   const { t, locale } = useLanguage();
-  const pricesHref = useHomeHref("precios");
+  const configureHref = useHomeHref("configurador");
   // El rótulo gigante se ajusta a la longitud real: los títulos largos
   // (francés, alemán) bajan un punto y el japonés/chino gana interlineado.
   const cjk = locale === "ja" || locale === "zh";
@@ -192,35 +193,53 @@ export function ClosingCta() {
             </div>
 
             <div className="panel-ink relative z-[2] rounded-card p-5 shadow-pop sm:p-6 xl:p-7">
+              {/* El slash lima de la marca barre la tarjeta al entrar. */}
+              <span
+                aria-hidden
+                data-fx="sweep"
+                className="slash-sweep slash-sweep--dark"
+              />
               <p className="display-title text-pretty text-[1.6rem] leading-tight text-white md:text-[1.9rem]">
                 {t.v2.closing.price}
               </p>
               <div className="mt-5 flex flex-col gap-2.5 sm:flex-row">
                 {/* WhatsApp grande, con pulso cada 6 s (se apaga al tocarlo). */}
-                <Button
-                  asChild
-                  size="lg"
-                  className="wa-pulse h-14 w-full gap-2.5 bg-lime pr-2.5 text-base text-ink sm:w-auto sm:flex-1 sm:pl-6"
-                >
-                  <TrackedWhatsAppLink
-                    href={`${WHATSAPP}?text=${encodeURIComponent("Hola, quiero mi página desde $2,000.")}`}
-                    service="cierre_quiero_mi_pagina"
+                <Magnetic className="w-full sm:w-auto sm:flex-1">
+                  <Button
+                    asChild
+                    size="lg"
+                    className="wa-pulse h-14 w-full gap-2.5 bg-lime pr-2.5 text-base text-ink sm:pl-6"
                   >
-                    <GestureIcon gesture="heart">
-                      <FaWhatsapp aria-hidden className="h-5 w-5" />
-                    </GestureIcon>
-                    {t.v2.closing.cta}
-                    <ButtonArrow tone="ink" className="ml-auto -mr-0.5 sm:ml-2" />
-                  </TrackedWhatsAppLink>
-                </Button>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="h-14 w-full border-white/25 text-white sm:w-auto"
-                >
-                  <Link href={pricesHref}>{t.v2.hero.ctaPrices}</Link>
-                </Button>
+                    <TrackedWhatsAppLink
+                      href={`${WHATSAPP}?text=${encodeURIComponent("Hola, quiero mi página desde $2,000.")}`}
+                      service="cierre_quiero_mi_pagina"
+                    >
+                      <GestureIcon gesture="heart">
+                        <FaWhatsapp aria-hidden className="h-5 w-5" />
+                      </GestureIcon>
+                      {t.v2.closing.cta}
+                      <ButtonArrow
+                        tone="ink"
+                        className="ml-auto -mr-0.5 sm:ml-2"
+                      />
+                    </TrackedWhatsAppLink>
+                  </Button>
+                </Magnetic>
+                <Magnetic className="w-full sm:w-auto">
+                  <Button
+                    asChild
+                    size="lg"
+                    variant="outline"
+                    className="h-14 w-full border-white/25 text-white"
+                  >
+                    <Link
+                      href={configureHref}
+                      data-track-cta="cierre_configurador"
+                    >
+                      {t.v2.hero.ctaConfigure}
+                    </Link>
+                  </Button>
+                </Magnetic>
               </div>
             </div>
           </div>

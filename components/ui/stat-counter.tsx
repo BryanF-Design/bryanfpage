@@ -26,7 +26,8 @@ export function StatCounter({ value, prefix = "", suffix = "", className }: Stat
       return;
     }
     if (!inView) return;
-    const duration = 1200;
+    // Preset 07 del demo: 1.4 s con salida suave, una vez, solo cifras reales.
+    const duration = 1400;
     const start = performance.now();
     let frame = 0;
 

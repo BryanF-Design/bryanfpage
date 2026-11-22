@@ -1695,19 +1695,29 @@ html.pl-skip .site-preloader {
 .hero-word-swap {
   display: grid;
 }
-/* Primero sale una palabra (200 ms) y después entra la otra (400 ms). */
+/* Morph letra por letra: las letras de una palabra salen hacia arriba en
+   cascada y las de la otra suben desde abajo con resorte. */
 .hero-word {
   grid-area: 1 / 1;
-  transition:
-    opacity 0.4s var(--ease-out) 0.2s,
-    transform 0.4s var(--ease-out) 0.2s;
 }
 .hero-word[data-on="false"] {
-  opacity: 0;
-  transform: translateY(0.12em);
   pointer-events: none;
-  transition-duration: 0.2s;
-  transition-delay: 0s;
+}
+.morph-ch {
+  display: inline-block;
+  transition:
+    opacity 0.32s var(--ease-out) calc(220ms + var(--c, 0) * 34ms),
+    transform 0.75s var(--spring) calc(220ms + var(--c, 0) * 34ms);
+}
+.morph-ch--css::before {
+  content: attr(data-ch);
+}
+.hero-word[data-on="false"] .morph-ch {
+  opacity: 0;
+  transform: translate3d(0, 0.36em, 0) rotate(4deg);
+  transition:
+    opacity 0.18s ease-in calc(var(--c, 0) * 18ms),
+    transform 0.22s ease-in calc(var(--c, 0) * 18ms);
 }
 .hero-keyword {
   position: relative;
@@ -1716,9 +1726,6 @@ html.pl-skip .site-preloader {
   /* Filo de tinta para que la lima se lea sobre el blanco del hero. */
   -webkit-text-stroke: 0.012em hsl(var(--ink));
   paint-order: stroke fill;
-}
-.hero-keyword--alt::before {
-  content: attr(data-word);
 }
 .hero-dot::before {
   content: ".";
@@ -1786,75 +1793,78 @@ html.pl-skip .site-preloader {
   opacity: 0;
 }
 
-/* Reveals: entrada desde fuera del lienzo, una sola vez (`reveal-done`). */
-.reveal {
-  --rx: -28px;
-  --ry: 0px;
-}
+/* Preset 01 · Reveal: sube 26 px y aparece en 700 ms, cascada de 120 ms,
+   una sola vez (`reveal-done` lo pone el observer de layout.tsx). */
+.reveal,
 .reveal-up {
   --rx: 0px;
-  --ry: 14px;
+  --ry: 26px;
+}
+/* Preset 02 · Off-canvas: el bloque llega desde fuera del lienzo (±70 %,
+   850 ms); en teléfono la distancia baja a 40 %. */
+.reveal-left {
+  --rx: -70%;
+  --ry: 0px;
+  --rdur: 0.85s;
+}
+.reveal-right {
+  --rx: 70%;
+  --ry: 0px;
+  --rdur: 0.85s;
 }
 @media (max-width: 767px) {
-  .reveal {
-    --rx: -14px;
+  .reveal-left {
+    --rx: -40%;
   }
-  .reveal-up {
-    --ry: 8px;
+  .reveal-right {
+    --rx: 40%;
   }
+}
+.offcanvas-clip {
+  overflow-x: clip;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   html:not(.a11y-reduce-motion) .wa-pulse:not(.wa-pulse--off)::after {
     animation: wa-pulse 6s var(--ease-out) 2s infinite;
   }
-  /* Titular: fade + subida de 12 px en 400 ms, una vez. */
-  html:not(.a11y-reduce-motion) .hero-title-in {
-    animation: hero-title-in 0.4s var(--ease-out) 0.06s both;
-  }
   html:not(.a11y-reduce-motion) .hero-keyword::after {
     transform: scaleX(0);
-    animation: grow-x 0.4s var(--ease-out) 0.45s forwards;
-  }
-  /* Foto de Bryan: zoom lentísimo 1.05 → 1 en 800 ms, una vez. */
-  html:not(.a11y-reduce-motion) .hero-photo-zoom {
-    animation: photo-zoom 0.8s var(--ease-out) both;
+    animation: grow-x 0.5s var(--ease-demo) 0.75s forwards;
   }
   html:not(.a11y-reduce-motion) .price-glow.is-on {
     animation: price-glow 0.9s var(--ease-out) 1;
   }
   @supports (animation-timeline: view()) {
-    html:not(.a11y-reduce-motion) .hero-photo-parallax {
-      animation: parallax-8 linear both;
-      animation-timeline: scroll(root);
-      animation-range: 0 100vh;
-    }
-    html:not(.a11y-reduce-motion) .reveal:not(.reveal-done) {
-      animation: reveal-in linear both;
-      animation-timeline: view();
-      animation-range: entry calc(var(--stagger, 0) * 40px) entry calc(260px + var(--stagger, 0) * 40px);
-    }
     html:not(.a11y-reduce-motion) .phone-turn {
       animation: phone-turn linear both;
       animation-timeline: view();
       animation-range: entry 0% cover 45%;
     }
   }
-  @supports not (animation-timeline: view()) {
-    html.fx-on .reveal:not(.reveal-done) {
-      opacity: 0;
-      transform: translate3d(var(--rx), var(--ry), 0);
-    }
-    html.fx-on .reveal {
-      transition:
-        opacity 0.35s var(--ease-out) calc(var(--stagger, 0) * 80ms),
-        transform 0.35s var(--ease-out) calc(var(--stagger, 0) * 80ms);
-    }
+  html.fx-on .reveal:not(.reveal-done),
+  html.fx-on .reveal-left:not(.reveal-done),
+  html.fx-on .reveal-right:not(.reveal-done) {
+    opacity: 0;
+    transform: translate3d(var(--rx), var(--ry), 0);
+  }
+  html.fx-on .reveal,
+  html.fx-on .reveal-left,
+  html.fx-on .reveal-right {
+    transition:
+      opacity calc(var(--rdur, 0.7s) * 0.8) var(--ease-demo) calc(var(--stagger, 0) * 120ms),
+      transform var(--rdur, 0.7s) var(--ease-demo) calc(var(--stagger, 0) * 120ms);
+  }
+  /* Preset 04 · Ken Burns: la foto se acerca de 1.14 a 1 en 7 s, una vez. */
+  html:not(.a11y-reduce-motion) .hero-photo-zoom {
+    animation: ken-burns 7s var(--ease-soft) both;
   }
 }
 /* La intro de escritorio pausa la entrada del titular hasta que termina. */
-html[data-intro="pending"] .hero-title-in,
-html[data-intro="pending"] .hero-photo-zoom {
+html[data-intro="pending"] .hero-photo-zoom,
+html[data-intro="pending"] .kin-line,
+html[data-intro="pending"] .hero-keyword::after,
+html[data-intro="pending"] .slash-sweep--hero::before {
   animation-play-state: paused;
 }
 
@@ -1869,42 +1879,17 @@ html[data-intro="pending"] .hero-photo-zoom {
     opacity: 0;
   }
 }
-@keyframes hero-title-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
 @keyframes grow-x {
   to {
     transform: scaleX(1);
   }
 }
-@keyframes photo-zoom {
+@keyframes ken-burns {
   from {
-    transform: scale(1.05);
+    transform: scale(1.14);
   }
   to {
     transform: scale(1);
-  }
-}
-@keyframes parallax-8 {
-  to {
-    transform: translateY(8px);
-  }
-}
-@keyframes reveal-in {
-  from {
-    opacity: 0;
-    transform: translate3d(var(--rx), var(--ry), 0);
-  }
-  to {
-    opacity: 1;
-    transform: none;
   }
 }
 @keyframes phone-turn {
@@ -1927,4 +1912,263 @@ html[data-intro="pending"] .hero-photo-zoom {
     opacity: 0;
     transform: scale(1.25);
   }
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════
+   REVISIÓN 1 · animaciones de alta calidad (presets del demo exportado)
+   Cada gesto tiene un propósito: la marca abre las secciones clave (slash),
+   el titular cuenta la promesa (cinético), el botón invita (magnético, lift,
+   press), la tarjeta responde (tilt, oscurecer, "Ver caso →"). Solo transform
+   y opacity. Con movimiento reducido todo aparece en su sitio.
+   ════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* Resorte stiffness 200 / damping 20 / mass 1 (Motion), en CSS. */
+  --spring: linear(0, 0.079, 0.253, 0.453, 0.638, 0.789, 0.9, 0.973, 1.017, 1.037, 1.043, 1.04, 1.033, 1.024, 1.016, 1.009, 1.005, 1.001, 0.999, 0.998, 0.998, 0.998, 0.999, 0.999, 1);
+  /* Curvas del demo: salida suave (reveal) y Ken Burns. */
+  --ease-demo: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Coreografía del hero: badge → titular → precio → subtítulo → botones →
+   foto, con el resorte y retrasos de 80 a 120 ms (`--hd` en cada bloque). */
+.hero-in {
+  animation-duration: 0.75s;
+  animation-timing-function: var(--spring);
+}
+.hero-in-fade {
+  animation-timing-function: var(--ease-demo);
+}
+
+/* Preset 03 · Titular cinético: cada línea sube detrás de su máscara
+   (110 % → 0, 800 ms, 130 ms entre líneas). */
+.kin-row {
+  overflow: clip;
+  /* Margen para acentos y descendentes sin mover el layout. */
+  padding-block: 0.14em;
+  margin-block: -0.14em;
+}
+.kin-line {
+  display: inline-block;
+}
+.kin-row.block > .kin-line {
+  display: block;
+}
+.kin-row > .kin-line.hero-word-swap {
+  display: grid;
+}
+/* La itálica del precio respira al pasar el cursor (preset 03). */
+.kin-expand {
+  transition: letter-spacing 0.6s var(--ease-demo);
+}
+@media (hover: hover) {
+  .price-breathe:hover .kin-expand {
+    letter-spacing: 0.14em;
+  }
+}
+
+/* Slash lima del logotipo: una banda inclinada barre la sección y la abre,
+   una vez. En el hero corre al cargar; en precios y cierre al entrar. */
+.slash-sweep {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.slash-sweep::before {
+  content: "";
+  position: absolute;
+  top: -12%;
+  bottom: -12%;
+  left: 0;
+  width: 18%;
+  background: hsl(var(--lime));
+  mix-blend-mode: multiply;
+  opacity: 0;
+  transform: translate3d(-160%, 0, 0) skewX(-20deg);
+}
+
+/* Botón magnético (escritorio): sigue al cursor y vuelve con resorte 300 ms. */
+.magnetic {
+  transform: translate3d(var(--mx, 0px), var(--my, 0px), 0);
+  transition: transform 0.3s var(--spring);
+}
+
+/* Preset 06 · Botones y tarjetas: suben 2 px con sombra suave (220 ms). */
+@media (hover: hover) {
+  .lift-2 {
+    transition:
+      transform 0.22s var(--ease-demo),
+      box-shadow 0.22s var(--ease-demo);
+  }
+  .lift-2:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px -18px rgba(14, 59, 42, 0.35);
+  }
+}
+
+/* Casos · tilt 3D sutil (máx. 4°) con perspectiva. */
+.tilt {
+  transform: perspective(900px) rotateX(var(--rx-t, 0deg)) rotateY(var(--ry-t, 0deg));
+  transition: transform 0.45s var(--spring);
+  transform-style: preserve-3d;
+}
+.case-card__img {
+  transition: transform 0.6s var(--ease-demo);
+}
+.case-card:hover .case-card__img,
+.case-card:focus-visible .case-card__img {
+  transform: scale(1.04);
+}
+.case-card__cta {
+  transform: translateY(14px);
+  transition:
+    opacity 0.3s var(--ease-out),
+    transform 0.45s var(--spring);
+}
+
+/* Precios · brillo que barre la tarjeta recomendada al pasar el cursor. */
+.price-shine {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.price-shine::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: 0;
+  width: 35%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+  transform: translate3d(-140%, 0, 0) skewX(-18deg);
+}
+/* El precio se descubre detrás de su máscara al entrar en pantalla. */
+.price-reveal {
+  display: inline-block;
+  overflow: clip;
+  padding-block: 0.14em;
+  margin-block: -0.14em;
+}
+.price-reveal > span {
+  display: inline-block;
+}
+
+/* Preset 05 · Marquee de clientes en Fraunces: 26 s, pausa al hover. */
+.client-marquee {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.client-marquee__track {
+  display: flex;
+  width: max-content;
+}
+.client-marquee:hover .client-marquee__track,
+.client-marquee[data-paused="true"] .client-marquee__track {
+  animation-play-state: paused;
+}
+
+/* Preset 10 · Diagonal: el panel corta en diagonal (7 %; 3 % en teléfono). */
+.diag-cut {
+  clip-path: polygon(0 7%, 100% 0, 100% 93%, 0 100%);
+}
+@media (max-width: 767px) {
+  .diag-cut {
+    clip-path: polygon(0 3%, 100% 0, 100% 97%, 0 100%);
+  }
+}
+
+/* Modal de caso: fondo con blur. */
+.case-modal__backdrop {
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.a11y-reduce-motion) .kin-line {
+    animation: kin-up 0.8s var(--ease-demo) both;
+    animation-delay: calc(var(--k, 0) * 130ms);
+  }
+  html:not(.a11y-reduce-motion) .slash-sweep--hero::before {
+    animation: slash-sweep 0.95s var(--ease-soft) 0.15s 1 both;
+  }
+  html.fx-on .slash-sweep[data-fx][data-fx-in]::before {
+    animation: slash-sweep 0.95s var(--ease-soft) 1 both;
+  }
+  html.fx-on .price-reveal:not([data-fx-in]) > span {
+    transform: translate3d(0, 105%, 0);
+  }
+  html.fx-on .price-reveal > span {
+    transition: transform 0.8s var(--ease-demo) var(--fx-delay, 0ms);
+  }
+  html:not(.a11y-reduce-motion) .client-marquee__track {
+    animation: marquee-x 26s linear infinite;
+  }
+  @media (hover: hover) {
+    html:not(.a11y-reduce-motion) .price-card--featured:hover .price-shine::before {
+      animation: price-shine 0.9s var(--ease-soft) 1;
+    }
+  }
+}
+/* Movimiento reducido: el morph cambia directo y nada barre. */
+@media (prefers-reduced-motion: reduce) {
+  .morph-ch,
+  .magnetic,
+  .tilt,
+  .case-card__img,
+  .kin-expand {
+    transition: none !important;
+  }
+  .slash-sweep {
+    display: none;
+  }
+}
+html.a11y-reduce-motion .morph-ch,
+html.a11y-reduce-motion .magnetic,
+html.a11y-reduce-motion .tilt,
+html.a11y-reduce-motion .case-card__img {
+  transition: none !important;
+}
+html.a11y-reduce-motion .slash-sweep {
+  display: none;
+}
+
+@keyframes kin-up {
+  from {
+    transform: translate3d(0, 135%, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes slash-sweep {
+  0% {
+    opacity: 0.95;
+    transform: translate3d(-160%, 0, 0) skewX(-20deg);
+  }
+  85% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(620%, 0, 0) skewX(-20deg);
+  }
+}
+@keyframes price-shine {
+  to {
+    transform: translate3d(400%, 0, 0) skewX(-18deg);
+  }
+}
+@keyframes marquee-x {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+/* Sobre tinta el slash se suma a la luz (screen): el texto blanco no se tapa. */
+.slash-sweep--dark::before {
+  mix-blend-mode: screen;
 }

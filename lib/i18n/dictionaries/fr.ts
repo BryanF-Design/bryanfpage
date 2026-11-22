@@ -701,6 +701,7 @@ const fr: Dictionary = {
       price: "Dès 2 000 $ MXN.",
       subtitle: "Design et développement web au Mexique, prêt en 3 jours.",
       ctaWhatsapp: "Je veux mon site",
+      ctaConfigure: "Le configurer moi-même",
       ctaPrices: "Voir les prix",
       whatsappMsg: "Bonjour, je veux mon site dès 2 000 $ MXN.",
       micro: ["150+ projets", "Depuis 2018", "Garantie 60 jours", "Seulement 50% pour démarrer"],

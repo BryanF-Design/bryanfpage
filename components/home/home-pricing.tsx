@@ -42,7 +42,10 @@ function PriceTag({ children, from, label }: { children: string; from?: string; 
     <p ref={ref} className="relative mt-4 inline-flex items-baseline gap-2">
       <span aria-hidden className={cn("price-glow absolute -inset-x-4 -inset-y-2 rounded-full bg-lime/45", on && "is-on")} />
       {from && <span className="relative text-sm font-semibold opacity-70">{from}</span>}
-      <span className="display-xl relative text-[clamp(2.75rem,4.4vw,3.75rem)] leading-none tabular-nums">{children}</span>
+      {/* El precio se descubre detrás de su máscara al entrar en vista. */}
+      <span data-fx="mask" className="price-reveal display-xl relative text-[clamp(2.75rem,4.4vw,3.75rem)] leading-none tabular-nums">
+        <span>{children}</span>
+      </span>
       <span className="relative text-sm font-semibold opacity-60">MXN{label ? ` ${label}` : ""}</span>
     </p>
   );
@@ -77,6 +80,8 @@ export function HomePricing() {
   return (
     <section id="precios" aria-labelledby="precios-title" className="flex flex-col gap-gutter">
       <div className="panel px-5 pb-6 pt-7 shadow-soft sm:px-8 sm:pt-9 lg:px-10 lg:pt-12">
+        {/* El slash lima de la marca abre la sección de precios. */}
+        <span aria-hidden data-fx="sweep" className="slash-sweep" />
         <SectionHeading
           eyebrow={t.nav.precios}
           title={<span id="precios-title">{p.title}</span>}
@@ -92,7 +97,7 @@ export function HomePricing() {
               key={plan.id}
               className={cn(
                 "reveal price-card panel flex flex-col overflow-hidden p-4 sm:p-5",
-                plan.featured ? "panel-ink ring-2 ring-lime" : "shadow-soft"
+                plan.featured ? "price-card--featured panel-ink ring-2 ring-lime" : "shadow-soft"
               )}
               style={{ ["--stagger" as string]: i }}
             >
@@ -132,7 +137,7 @@ export function HomePricing() {
                 <Button
                   asChild
                   size="lg"
-                  className={cn("mt-6 w-full gap-2", plan.featured ? "bg-lime text-ink" : "bg-ink text-white hover:-translate-y-0.5")}
+                  className={cn("mt-6 w-full gap-2", plan.featured ? "bg-lime text-ink" : "bg-ink text-white")}
                 >
                   <TrackedWhatsAppLink
                     href={`https://wa.me/525663012505?text=${encodeURIComponent(plan.data.msg)}`}
@@ -145,6 +150,8 @@ export function HomePricing() {
                   </TrackedWhatsAppLink>
                 </Button>
               </div>
+              {/* Brillo que barre la recomendada al pasar el cursor. */}
+              {plan.featured && <span aria-hidden className="price-shine z-[3]" />}
             </article>
           );
         })}

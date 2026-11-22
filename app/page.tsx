@@ -8,7 +8,7 @@ import { DeviceIntro } from "@/components/intro/device-intro";
 import { HeroPop } from "@/components/sections/hero-pop";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { SiteHeader } from "@/components/sections/site-header";
-import { MarqueeBand } from "@/components/sections/marquee-band";
+import { ClientMarquee } from "@/components/home/client-marquee";
 import { useLanguage } from "@/lib/i18n/context";
 import { DICTIONARIES } from "@/lib/i18n/dictionaries";
 import { SITE_URL } from "@/lib/seo/service-pages";
@@ -145,7 +145,7 @@ export default function HomePage() {
         <SocialProof />
 
         {/* Nombres de clientes en Fraunces, cinta lenta solo con CSS. */}
-        <MarqueeBand words={CLIENT_NAMES} outline />
+        <ClientMarquee names={CLIENT_NAMES} />
 
         {/* Precios a la vista: Landing, Sitio completo y Software. */}
         <HomePricing />

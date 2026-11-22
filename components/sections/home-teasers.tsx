@@ -20,10 +20,10 @@ export function HomeTeasers() {
     <section
       id="conoce"
       aria-label={`${t.home.bryanCta} · ${t.home.luminaCta}`}
-      className="grid gap-gutter lg:grid-cols-2"
+      className="offcanvas-clip grid gap-gutter lg:grid-cols-2"
     >
-      {/* Bryan */}
-      <div data-fx="up" className="min-w-0">
+      {/* Bryan: llega desde la izquierda (preset 02 · off-canvas). */}
+      <div className="reveal reveal-left min-w-0">
         <article className="panel panel-forest relative flex h-full flex-col overflow-hidden sm:flex-row transition-[transform,box-shadow] duration-300 [transition-timing-function:var(--ease-out)] hover:-translate-y-1 hover:shadow-float motion-reduce:transition-none motion-reduce:hover:translate-y-0">
           <div className="relative z-[1] flex flex-1 flex-col items-start gap-4 p-5 sm:p-7 lg:p-8">
             <span className="eyebrow pl-3">
@@ -70,8 +70,8 @@ export function HomeTeasers() {
         </article>
       </div>
 
-      {/* Lumina */}
-      <div data-fx="up" className="min-w-0" style={{ "--fx-delay": "90ms" } as CSSProperties}>
+      {/* Lumina: llega desde la derecha (preset 02 · off-canvas). */}
+      <div className="reveal reveal-right min-w-0" style={{ "--stagger": 1 } as CSSProperties}>
         <article className="panel panel-lime relative flex h-full flex-col overflow-hidden sm:flex-row transition-[transform,box-shadow] duration-300 [transition-timing-function:var(--ease-out)] hover:-translate-y-1 hover:shadow-float motion-reduce:transition-none motion-reduce:hover:translate-y-0">
           <div className="relative z-[1] flex flex-1 flex-col items-start gap-4 p-5 sm:p-7 lg:p-8">
             <span className="eyebrow bg-white/60 pl-3">

@@ -701,6 +701,7 @@ const pt: Dictionary = {
       price: "A partir de $2,000 MXN.",
       subtitle: "Design e desenvolvimento web no México, pronto em 3 dias.",
       ctaWhatsapp: "Quero meu site",
+      ctaConfigure: "Configurar eu mesmo",
       ctaPrices: "Ver preços",
       whatsappMsg: "Olá, quero meu site a partir de $2,000.",
       micro: ["150+ projetos", "Desde 2018", "Garantia de 60 dias", "Só 50% para começar"],

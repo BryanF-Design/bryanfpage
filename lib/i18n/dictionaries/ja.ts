@@ -695,6 +695,7 @@ const ja: Dictionary = {
       price: "ウェブを$2,000 MXNから。",
       subtitle: "メキシコのWebデザイン・開発。最短3日で公開。",
       ctaWhatsapp: "サイトを依頼する",
+      ctaConfigure: "自分で設定する",
       ctaPrices: "料金を見る",
       whatsappMsg: "こんにちは、$2,000からのサイトをお願いしたいです。",
       micro: ["150件以上の実績", "2018年から", "60日間保証", "着手金50%"],

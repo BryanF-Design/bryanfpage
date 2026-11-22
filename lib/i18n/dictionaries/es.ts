@@ -730,6 +730,7 @@ const es = {
       price: "Desde $2,000.",
       subtitle: "Diseño y desarrollo web en México, lista en 3 días.",
       ctaWhatsapp: "Quiero mi página",
+      ctaConfigure: "Configurarlo yo mismo",
       ctaPrices: "Ver precios",
       whatsappMsg: "Hola, quiero mi página desde $2,000.",
       micro: ["150+ proyectos", "Desde 2018", "Garantía 60 días", "Solo 50% para empezar"],

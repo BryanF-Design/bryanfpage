@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 // `default` usa los tokens de la superficie: lima con tinta sobre el lienzo y
 // paneles oscuros, tinta con lima dentro de un panel lima.
 const buttonVariants = cva(
-  "group relative inline-flex select-none items-center justify-center gap-2.5 whitespace-nowrap rounded-full font-sans font-semibold leading-none tracking-[-0.005em] transition-[background-color,color,box-shadow,transform] duration-200 [transition-timing-function:var(--ease-out)] active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 cursor-pointer [&_svg]:shrink-0",
+  "group relative inline-flex select-none items-center justify-center gap-2.5 whitespace-nowrap rounded-full font-sans font-semibold leading-none tracking-[-0.005em] transition-[background-color,color,box-shadow,transform] duration-200 [transition-timing-function:var(--ease-out)] [@media(hover:hover)]:hover:-translate-y-0.5 [@media(hover:hover)]:hover:shadow-[0_18px_40px_-18px_rgba(14,59,42,0.35)] active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 cursor-pointer [&_svg]:shrink-0",
   {
     variants: {
       variant: {

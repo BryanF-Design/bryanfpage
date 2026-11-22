@@ -1,16 +1,132 @@
 "use client";
 
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowRight, ArrowUpRight, X } from "lucide-react";
 
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { SectionHeading } from "@/components/sections/section-heading";
 import { PhoneMockup } from "@/components/home/phone-mockup";
+import { StatCounter } from "@/components/ui/stat-counter";
+import { SPRING, useTilt } from "@/lib/motion-fx";
 import { useLanguage } from "@/lib/i18n/context";
 import { LIVE_CASE } from "@/lib/barber-os";
 import { mobileShot, projects } from "@/lib/projects";
 
 const bySlug = (slug: string) => projects.find((p) => p.slug === slug)!;
+
+type CaseItem = {
+  project: (typeof projects)[number];
+  problem: string;
+  done: string;
+  number: string;
+  label: string;
+};
+
+/** Tarjeta con tilt 3D sutil (máx. 4°) que sigue al cursor en escritorio. */
+function TiltArticle({ children, className, style }: { children: React.ReactNode; className?: string; style?: CSSProperties }) {
+  const ref = useRef<HTMLElement>(null);
+  useTilt(ref, 4);
+  return (
+    <article ref={ref} className={className} style={style}>
+      {children}
+    </article>
+  );
+}
+
+/**
+ * Modal del caso: fondo con blur y entrada con resorte (escala 0.96 → 1).
+ * Se cierra con la X, tocando fuera o con Esc; el foco vuelve a la tarjeta.
+ */
+function CaseModal({ item, onClose }: { item: CaseItem | null; onClose: () => void }) {
+  const { t } = useLanguage();
+  const c = t.v2.cases;
+  const closeRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!item) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeRef.current?.focus();
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [item, onClose]);
+  return (
+    <AnimatePresence>
+      {item && (
+        <motion.div
+          key="case-modal"
+          className="case-modal__backdrop fixed inset-0 z-[80] grid place-items-center bg-ink/45 p-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          onClick={onClose}
+        >
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="case-modal-title"
+            className="panel relative grid max-h-[90dvh] w-full max-w-3xl gap-6 overflow-y-auto p-5 shadow-pop sm:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] sm:p-7"
+            initial={{ opacity: 0, scale: 0.96, y: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.97, y: 8, transition: { duration: 0.18 } }}
+            transition={SPRING}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              ref={closeRef}
+              type="button"
+              onClick={onClose}
+              aria-label={t.lumina.close}
+              className="absolute right-3 top-3 z-[2] grid size-11 place-items-center rounded-full bg-ink text-white transition-transform active:scale-[0.97]"
+            >
+              <X aria-hidden className="h-5 w-5" />
+            </button>
+            <div className="rounded-card bg-mint px-6 py-6">
+              <PhoneMockup src={mobileShot(item.project.slug)} alt={`Sitio de ${item.project.name} en un teléfono`} />
+            </div>
+            <div className="flex min-w-0 flex-col">
+              <h3 id="case-modal-title" className="pr-12 font-display text-3xl font-semibold tracking-[-0.02em]">
+                {item.project.name}
+              </h3>
+              <p className="mt-4 text-[0.975rem] text-ink/75">
+                <span className="font-semibold text-ink">{t.projects.caseLabels.problem}: </span>
+                {item.problem}
+              </p>
+              <p className="mt-2 text-[0.975rem] text-ink/75">
+                <span className="font-semibold text-ink">{t.projects.caseLabels.decision}: </span>
+                {item.done}
+              </p>
+              <p className="mt-5 flex items-baseline gap-3">
+                <span className="display-xl text-[3.25rem] leading-none text-ink">{item.number}</span>
+                <span className="text-sm text-ink/65">{item.label}</span>
+              </p>
+              <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
+                <Button asChild size="lg" variant="ink" className="justify-between pl-6 pr-2.5">
+                  <Link href={`/casos#${item.project.slug}`}>
+                    {c.viewCase}
+                    <ButtonArrow tone="lime" className="-mr-0.5 ml-2" />
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="white" className="ring-1 ring-inset ring-ink/10">
+                  <a href={item.project.url} target="_blank" rel="noopener noreferrer">
+                    {t.projects.visitSite}
+                    <ArrowUpRight aria-hidden className="h-4 w-4" />
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
 
 /**
  * Prompt 2 · Prueba social: tres casos reales grandes (en lugar de la tira de
@@ -29,7 +145,14 @@ export function SocialProof() {
   const efficient = bySlug("efficientplasticolors-com");
   const koi = bySlug("koi-arquitectura-vercel-app");
 
-  const phones = [
+  const [open, setOpen] = useState<CaseItem | null>(null);
+  const lastTrigger = useRef<HTMLElement | null>(null);
+  const closeModal = () => {
+    setOpen(null);
+    lastTrigger.current?.focus();
+  };
+
+  const phones: CaseItem[] = [
     {
       project: efficient,
       problem: t.projects.cases["efficientplasticolors-com"].problem,
@@ -57,7 +180,7 @@ export function SocialProof() {
       </div>
 
       <div className="grid gap-gutter lg:grid-cols-3">
-        {/* CortMart: números grandes y quietos, con su nota de origen. */}
+        {/* CortMart: cifras reales del panel que cuentan al entrar (preset 07). */}
         <article className="reveal panel panel-ink relative flex flex-col overflow-hidden p-6 sm:p-8" style={{ ["--stagger" as string]: 0 }}>
           <div aria-hidden className="mesh-glow-a opacity-70" />
           <div className="relative flex items-center justify-between gap-3">
@@ -68,9 +191,8 @@ export function SocialProof() {
           <dl className="relative mt-6 grid grid-cols-2 gap-x-4 gap-y-5">
             {LIVE_CASE.stats.map((stat, i) => (
               <div key={stat.label} className="reveal reveal-up" style={{ ["--stagger" as string]: i }}>
-                <dd className="display-xl text-[clamp(3rem,6vw,4.5rem)] leading-none text-lime">
-                  {stat.value}
-                  {stat.suffix}
+                <dd className="display-xl text-[clamp(3rem,6vw,4.5rem)] leading-none tabular-nums text-lime">
+                  <StatCounter value={stat.value} suffix={stat.suffix} />
                 </dd>
                 <dt className="mt-1 text-sm text-white/70">{c.cortmart.stats[i]}</dt>
               </div>
@@ -86,19 +208,26 @@ export function SocialProof() {
         </article>
 
         {phones.map((item, i) => (
-          <article
-            key={item.project.slug}
-            className="reveal panel flex flex-col overflow-hidden p-4 shadow-soft sm:p-5"
-            style={{ ["--stagger" as string]: i + 1 }}
-          >
-            {/* La captura real en un teléfono; al hover se oscurece y aparece
-                la acción. Todo el bloque lleva al caso. */}
-            <Link
+          <div key={item.project.slug} className="reveal flex" style={{ ["--stagger" as string]: i + 1 }}>
+          <TiltArticle className="tilt panel flex w-full flex-col overflow-hidden p-4 shadow-soft sm:p-5">
+            {/* La captura real en un teléfono; al hover la imagen crece al
+                104 %, se oscurece y "Ver caso →" sube desde abajo. Abre el
+                caso en un modal (con enlace al caso completo). */}
+            <a
               href={`/casos#${item.project.slug}`}
+              onClick={(e) => {
+                if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+                e.preventDefault();
+                lastTrigger.current = e.currentTarget;
+                setOpen(item);
+              }}
               className="case-card relative block overflow-hidden rounded-card bg-mint px-6 py-8"
               aria-label={`${c.viewCase}: ${item.project.name}`}
+              aria-haspopup="dialog"
             >
-              <PhoneMockup src={mobileShot(item.project.slug)} alt={`Sitio de ${item.project.name} en un teléfono`} />
+              <span className="case-card__img block">
+                <PhoneMockup src={mobileShot(item.project.slug)} alt={`Sitio de ${item.project.name} en un teléfono`} />
+              </span>
               <span aria-hidden className="case-card__shade absolute inset-0 bg-ink/55" />
               <span
                 aria-hidden
@@ -107,7 +236,7 @@ export function SocialProof() {
                 {c.viewCase}
                 <ArrowRight className="h-4 w-4" />
               </span>
-            </Link>
+            </a>
             <div className="flex flex-1 flex-col px-1 pb-1 pt-5">
               <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
                 <h3 className="font-display text-2xl font-semibold tracking-[-0.02em]">{item.project.name}</h3>
@@ -140,9 +269,11 @@ export function SocialProof() {
                 </Link>
               </Button>
             </div>
-          </article>
+          </TiltArticle>
+          </div>
         ))}
       </div>
+      <CaseModal item={open} onClose={closeModal} />
     </section>
   );
 }

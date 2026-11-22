@@ -647,6 +647,7 @@ const zh: Dictionary = {
       price: "网站，起价 $2,000 MXN。",
       subtitle: "墨西哥网页设计与开发，最快 3 天上线。",
       ctaWhatsapp: "我想要网站",
+      ctaConfigure: "自己动手配置",
       ctaPrices: "查看价格",
       whatsappMsg: "你好，我想要起价 $2,000 的网站。",
       micro: ["150+ 个项目", "始于 2018 年", "60 天保障", "只需 50% 即可开始"],
