@@ -2258,3 +2258,17 @@ html.a11y-reduce-motion .slash-sweep {
 html.intro-seen .device-intro {
   display: none;
 }
+
+/* /casos: cada tarjeta entra corta al filtrar (solo opacity/transform). */
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.a11y-reduce-motion) .casos-in {
+    animation: casos-in 0.32s var(--ease-demo) both;
+    animation-delay: calc(var(--i, 0) * 30ms);
+  }
+}
+@keyframes casos-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.97);
+  }
+}

@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { memo, startTransition, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight, X } from "lucide-react";
 import { FaWhatsapp } from "@/components/ui/wa-icon";
 
@@ -59,8 +59,10 @@ const WA = "https://wa.me/525663012505";
 export function CasosIndex() {
   const { t } = useLanguage();
   const c = t.v2.casesIndex;
-  const reduce = useReducedMotion();
   const [filter, setFilter] = useState<Filter>("all");
+  // La píldora cambia al instante; la retícula se filtra en segundo plano
+  // (useDeferredValue): el toque pinta enseguida y el INP queda bajo.
+  const listFilter = useDeferredValue(filter);
   const [open, setOpen] = useState<Item | null>(null);
   const lastTrigger = useRef<HTMLElement | null>(null);
 
@@ -117,13 +119,20 @@ export function CasosIndex() {
     if (row && btn) row.scrollTo({ left: btn.offsetLeft - row.offsetLeft - 8, behavior: "auto" });
   }, [filter]);
 
-  const shown = filter === "all" ? items : items.filter((i) => i.tipos.includes(filter));
+  const shown = useMemo(
+    () => (listFilter === "all" ? items : items.filter((i) => i.tipos.includes(listFilter))),
+    [items, listFilter]
+  );
   const count = (f: Filter) => (f === "all" ? items.length : items.filter((i) => i.tipos.includes(f)).length);
 
-  const close = () => {
+  const close = useCallback(() => {
     setOpen(null);
     lastTrigger.current?.focus();
-  };
+  }, []);
+  const openItem = useCallback((item: Item, el: HTMLElement) => {
+    lastTrigger.current = el;
+    startTransition(() => setOpen(item));
+  }, []);
 
   return (
     <section id="indice" aria-label={c.label} className="flex flex-col gap-gutter">
@@ -164,66 +173,62 @@ export function CasosIndex() {
           </Button>
         </div>
       ) : (
-        <ul className="grid gap-gutter sm:grid-cols-2 lg:grid-cols-3">
-          <AnimatePresence mode="popLayout" initial={false}>
-            {shown.map((item, i) => (
-              <motion.li
-                key={item.id}
-                layout={!reduce}
-                initial={reduce ? false : { opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={reduce ? undefined : { opacity: 0, scale: 0.96, transition: { duration: 0.15 } }}
-                transition={SPRING}
-                className="min-w-0"
-              >
-                <button
-                  type="button"
-                  aria-haspopup="dialog"
-                  onClick={(e) => {
-                    lastTrigger.current = e.currentTarget;
-                    setOpen(item);
-                  }}
-                  className="case-card lift-2 panel flex h-full w-full flex-col overflow-hidden p-2.5 text-left shadow-soft"
-                  style={{ "--stagger": i % 3 } as CSSProperties}
-                >
-                  <span className="relative block aspect-[16/10] overflow-hidden rounded-inner bg-mint">
-                    <Image
-                      src={item.image}
-                      alt=""
-                      fill
-                      loader={cardLoader}
-                      sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw"
-                      className="case-card__img object-cover object-top"
-                    />
-                    <span aria-hidden className="case-card__shade absolute inset-0 bg-ink/45" />
-                    <span aria-hidden className="case-card__cta absolute inset-x-0 bottom-4 mx-auto flex w-fit items-center gap-2 rounded-full bg-lime px-4 py-2 text-sm font-semibold text-ink">
-                      {c.open}
-                      <ArrowRight className="h-4 w-4" />
-                    </span>
-                    {(item.caseSlug || item.cortmart) && (
-                      <span className="absolute left-3 top-3 rounded-full bg-lime px-3 py-1 text-xs font-bold text-ink">{c.caseBadge}</span>
-                    )}
-                  </span>
-                  <span className="flex flex-1 flex-col gap-1 px-2 pb-2 pt-4">
-                    <span className="font-display text-xl font-semibold tracking-[-0.02em] text-ink">{item.name}</span>
-                    <span className="text-[0.9375rem] text-ink/65">{item.desc}</span>
-                    <span className="mt-2 flex flex-wrap gap-1.5">
-                      {item.tipos.map((tp) => (
-                        <span key={tp} className="rounded-full bg-mint px-2.5 py-0.5 text-xs font-semibold text-ink/70">{c[tp]}</span>
-                      ))}
-                    </span>
-                  </span>
-                </button>
-              </motion.li>
-            ))}
-          </AnimatePresence>
-        </ul>
+        <CasosGrid items={shown} onOpen={openItem} />
       )}
 
       <CasoModal item={open} onClose={close} />
     </section>
   );
 }
+
+/** La retícula, memorizada: abrir o cerrar el modal no la vuelve a pintar.
+ *  Cada tarjeta entra con un fundido y escala corta en CSS (sin medir layout). */
+const CasosGrid = memo(function CasosGrid({ items, onOpen }: { items: Item[]; onOpen: (item: Item, el: HTMLElement) => void }) {
+  const { t } = useLanguage();
+  const c = t.v2.casesIndex;
+  return (
+    <ul className="grid gap-gutter sm:grid-cols-2 lg:grid-cols-3">
+      {items.map((item, i) => (
+        <li key={item.id} className="casos-in min-w-0" style={{ "--i": Math.min(i, 8) } as CSSProperties}>
+          <button
+            type="button"
+            aria-haspopup="dialog"
+            onClick={(e) => onOpen(item, e.currentTarget)}
+            className="case-card lift-2 panel flex h-full w-full flex-col overflow-hidden p-2.5 text-left shadow-soft"
+          >
+            <span className="relative block aspect-[16/10] overflow-hidden rounded-inner bg-mint">
+              <Image
+                src={item.image}
+                alt=""
+                fill
+                loader={cardLoader}
+                sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw"
+                className="case-card__img object-cover object-top"
+              />
+              <span aria-hidden className="case-card__shade absolute inset-0 bg-ink/45" />
+              <span aria-hidden className="case-card__cta absolute inset-x-0 bottom-4 mx-auto flex w-fit items-center gap-2 rounded-full bg-lime px-4 py-2 text-sm font-semibold text-ink">
+                {c.open}
+                <ArrowRight className="h-4 w-4" />
+              </span>
+              {(item.caseSlug || item.cortmart) && (
+                <span className="absolute left-3 top-3 rounded-full bg-lime px-3 py-1 text-xs font-bold text-ink">{c.caseBadge}</span>
+              )}
+            </span>
+            <span className="flex flex-1 flex-col gap-1 px-2 pb-2 pt-4">
+              <span className="font-display text-xl font-semibold tracking-[-0.02em] text-ink">{item.name}</span>
+              <span className="text-[0.9375rem] text-ink/65">{item.desc}</span>
+              <span className="mt-2 flex flex-wrap gap-1.5">
+                {item.tipos.map((tp) => (
+                  <span key={tp} className="rounded-full bg-mint px-2.5 py-0.5 text-xs font-semibold text-ink/70">{c[tp]}</span>
+                ))}
+              </span>
+            </span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+});
 
 function CasoModal({ item, onClose }: { item: Item | null; onClose: () => void }) {
   const { t } = useLanguage();

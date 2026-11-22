@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { startTransition, useEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight, X } from "lucide-react";
@@ -219,7 +219,8 @@ export function SocialProof() {
                 if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
                 e.preventDefault();
                 lastTrigger.current = e.currentTarget;
-                setOpen(item);
+                // El modal se arma como transición: el toque pinta al instante.
+                startTransition(() => setOpen(item));
               }}
               className="case-card relative block overflow-hidden rounded-card bg-mint px-6 py-8"
               aria-label={`${c.viewCase}: ${item.project.name}`}
