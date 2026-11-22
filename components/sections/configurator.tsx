@@ -35,6 +35,7 @@ const MERCADOPAGO_BRAND = "#00B1EA";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/sections/section-heading";
 import { cn } from "@/lib/utils";
+import { cardLoader } from "@/lib/image-loaders";
 import { useLanguage } from "@/lib/i18n/context";
 import { trackEvent } from "@/lib/analytics";
 import { LUMINA_QUOTE_EVENT, type LuminaQuote } from "@/lib/lumina-actions";
@@ -59,6 +60,14 @@ import {
  * nunca difiera de lo que cobran Stripe o Mercado Pago.
  */
 const MAX_SECTIONS = 50;
+
+/** Ilustración de cada paquete (public/img/paquetes, lote de Bryan). */
+const PLAN_ART: Record<string, string> = {
+  landing: "/img/paquetes/ilustracion-landing-2000.webp",
+  full: "/img/paquetes/ilustracion-sitio-completo-3500.webp",
+  update: "/img/paquetes/ilustracion-renovacion-1800.webp",
+  maintenance: "/img/paquetes/ilustracion-mantenimiento-1000.webp",
+};
 
 /** Íconos redondos de cada paquete y módulo, por id del catálogo. */
 const PLAN_ICONS: Record<string, LucideIcon> = {
@@ -1077,6 +1086,22 @@ export function Configurator({
                   {currency}
                 </span>
               </div>
+
+              {/* Ilustración del paquete elegido (imágenes de Bryan; el precio de
+                  la imagen es el mismo del catálogo). */}
+              {PLAN_ART[planId] && (
+                <div className="relative aspect-[3/1] overflow-hidden rounded-card ring-1 ring-inset ring-white/10">
+                  <Image
+                    key={planId}
+                    src={PLAN_ART[planId]}
+                    alt={`${PLANS.find((p) => p.id === planId)?.name ?? ""}, ${display(PLANS.find((p) => p.id === planId)?.price ?? 0)}`}
+                    fill
+                    loader={cardLoader}
+                    sizes="(min-width: 1280px) 30vw, (min-width: 768px) 45vw, 92vw"
+                    className="cfg-art object-cover object-[50%_82%]"
+                  />
+                </div>
+              )}
 
               {/* Partidas: filas con ícono redondo, como la actividad reciente. */}
               <ul className="relative flex flex-col rounded-card bg-white/[0.05] px-3 ring-1 ring-inset ring-white/10 sm:px-4">

@@ -8,7 +8,6 @@ import { SubPageShell } from "@/components/pages/sub-page-shell";
 import { LuminaFeature, openLuminaChat } from "@/components/sections/lumina-feature";
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n/context";
-import { useReducedMotionPreference } from "@/lib/motion-preference";
 
 const LuminaJourney = dynamic(() =>
   import("@/components/sections/lumina-journey").then((m) => m.LuminaJourney)
@@ -20,7 +19,7 @@ const ClosingCta = dynamic(() =>
 /** /lumina — la asesora IA: presentación, chat de ejemplo y su recorrido. */
 export function LuminaPage() {
   const { t } = useLanguage();
-  const reduced = useReducedMotionPreference();
+  // (antes: video en bucle; ahora retrato fijo, no depende del movimiento)
   return (
     <SubPageShell>
       <PageIntro
@@ -28,33 +27,19 @@ export function LuminaPage() {
         title={t.pages.lumina.title}
         subtitle={t.pages.lumina.subtitle}
         aside={
-          // Lumina trabajando en su laptop (video en bucle, sin audio): la
-          // tarjeta oscura continúa el fondo negro del video.
+          // Retrato de Lumina sobre su fondo oscuro.
           <div className="overflow-hidden rounded-card bg-black shadow-soft ring-1 ring-ink/[0.05]">
             <div className="relative aspect-[16/10]">
-              {reduced ? (
-                <Image
-                  src="/img/lumina/v2/trabajando-poster.webp"
-                  alt=""
-                  fill
-                  sizes="(min-width: 1024px) 34rem, 100vw"
-                  className="object-cover object-[40%_12%]"
-                />
-              ) : (
-                <video
-                  className="absolute inset-0 size-full object-cover object-[40%_12%]"
-                  poster="/img/lumina/v2/trabajando-poster.webp"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="metadata"
-                  aria-hidden
-                >
-                  <source src="/video/lumina-trabajando.webm" type="video/webm" />
-                  <source src="/video/lumina-trabajando.mp4" type="video/mp4" />
-                </video>
-              )}
+              {/* Retrato nuevo de Lumina (auditoría P1-3): cara entera, sin
+                  recortes ni video. */}
+              <Image
+                src="/img/lumina/retrato-lumina.webp"
+                alt={t.lumina.name}
+                fill
+                priority
+                sizes="(min-width: 1024px) 34rem, 100vw"
+                className="object-cover object-[50%_35%]"
+              />
               <span className="absolute left-3 top-3 inline-flex items-center gap-2 rounded-full bg-black/55 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm sm:left-4 sm:top-4">
                 <span aria-hidden className="size-2 rounded-full bg-lime" />
                 {t.lumina.online}

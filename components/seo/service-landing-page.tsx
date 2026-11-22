@@ -418,6 +418,20 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
           </div>
         </section>
 
+        {/* Ilustración del servicio con su precio (si la página la tiene). */}
+        {page.illustration && (
+          <section aria-label={page.illustration.alt} data-fx="up" className="panel flex justify-center p-4 shadow-soft sm:p-6">
+            <Image
+              src={page.illustration.src}
+              alt={page.illustration.alt}
+              width={1254}
+              height={1254}
+              sizes="(min-width: 768px) 28rem, 92vw"
+              className="h-auto w-full max-w-md rounded-card"
+            />
+          </section>
+        )}
+
         {/* ——— Problemas: cabecera con Lumina dudando y la lista estilo app. ——— */}
         <section
           id="problemas"

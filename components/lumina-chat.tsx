@@ -48,25 +48,10 @@ const MOOD_IMG: Record<Mood, string> = {
   Offline: "/img/lumina/v2/avatar/dormida.webp",
 };
 
-/** Avatar del ánimo actual; "Enfocada" es el video de Lumina trabajando. */
+/** Avatar de Lumina: siempre su retrato (cara entera, sonrisa). */
 function MoodAvatar({ mood, sizes, reducedMotion }: { mood: Mood; sizes: string; reducedMotion: boolean }) {
-  if (mood === "Enfocada" && !reducedMotion) {
-    return (
-      <video
-        className="absolute inset-0 size-full object-cover"
-        poster={MOOD_IMG.Enfocada}
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        aria-hidden
-      >
-        <source src="/video/lumina-trabajando-avatar.webm" type="video/webm" />
-        <source src="/video/lumina-trabajando-avatar.mp4" type="video/mp4" />
-      </video>
-    );
-  }
+  // Retrato nuevo de Lumina (auditoría P1-3): sin video ni caras de modos.
+  void reducedMotion;
   return <Image src={MOOD_IMG[mood]} alt="" fill sizes={sizes} unoptimized className="object-cover" />;
 }
 

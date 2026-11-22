@@ -26,6 +26,8 @@ export interface ServicePage {
   }>;
   relatedSlugs: string[];
   relatedCases: string[];
+  /** Ilustración del servicio con su precio (imágenes de Bryan). */
+  illustration?: { src: string; alt: string };
 }
 
 export const servicePages: ServicePage[] = [
@@ -163,6 +165,7 @@ export const servicePages: ServicePage[] = [
   },
   {
     slug: "diseno-ux-ui-mexico",
+    illustration: { src: "/img/paquetes/ilustracion-uxui-5000.webp", alt: "Diseño UX/UI, desde $5,000 MXN" },
     priority: 0.86,
     keyword: "diseño UX/UI en México",
     serviceType: "Diseño UX/UI",

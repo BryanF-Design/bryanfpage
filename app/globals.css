@@ -2313,3 +2313,16 @@ html.menu-open .mobile-tabbar {
   opacity: 0;
   pointer-events: none;
 }
+
+/* Configurador: la ilustración del paquete entra suave al cambiarlo. */
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.a11y-reduce-motion) .cfg-art {
+    animation: casos-in 0.3s var(--ease-demo) both;
+  }
+}
+/* Proceso fijo: el paso nuevo entra corto (solo opacity/transform). */
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.a11y-reduce-motion) .process-swap {
+    animation: casos-in 0.3s var(--ease-demo) both;
+  }
+}

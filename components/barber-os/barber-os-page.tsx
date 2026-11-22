@@ -698,6 +698,15 @@ export function BarberOsPage() {
                   la renta es de <strong className="text-ink">{MONTHLY_PRICE_LABEL}</strong>, con el
                   setup incluido y garantía de {GUARANTEE_DAYS} días contra defectos.
                 </p>
+                {/* Ilustración del producto con su precio real (imagen de Bryan). */}
+                <Image
+                  src="/img/paquetes/ilustracion-barber-os-599.webp"
+                  alt={`Sistema para barberías, ${MONTHLY_PRICE_LABEL}`}
+                  width={1254}
+                  height={1254}
+                  sizes="(min-width: 1024px) 24rem, 90vw"
+                  className="h-auto w-full max-w-sm rounded-card shadow-float"
+                />
                 <Button asChild size="lg" variant="ink" className="h-auto min-h-14 w-full justify-between whitespace-normal py-2 pl-6 pr-2.5 text-left sm:w-auto">
                   <TrackedWhatsAppLink href={BARBER_OS_TRIAL_URL} service={BARBER_OS_SLUG}>
                     {BARBER_OS_CTA}

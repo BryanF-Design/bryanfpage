@@ -27,12 +27,9 @@ import { mobileShot } from "@/lib/projects";
 
 type MoodKey = "normal" | "enfocada" | "duda" | "aburrida" | "dormida";
 
-/** Recortes de Lumina, en el orden en que cambian al tocarla (medidas reales).
- *  Sin "enfocada" (ceño fruncido) ni "aburrida": auditoría P1-3. */
+/** Retrato de Lumina (auditoría P1-3: un solo retrato, sin modos de ánimo). */
 const MOODS: { key: MoodKey; src: string; width: number; height: number }[] = [
-  { key: "normal", src: "/img/lumina/v2/cutout/normal.webp", width: 1058, height: 1100 },
-  { key: "duda", src: "/img/lumina/v2/cutout/duda.webp", width: 1031, height: 1100 },
-  { key: "dormida", src: "/img/lumina/v2/cutout/dormida.webp", width: 1080, height: 1100 },
+  { key: "normal", src: "/img/lumina/v2/cutout/normal.webp", width: 1000, height: 1000 },
 ];
 
 // Enlaces preconfigurados del cotizador, en el mismo orden que
@@ -217,6 +214,8 @@ export function LuminaFeature() {
               teléfono cabalga la unión entre Lumina y la hoja, a la altura del
               hombro (nunca sobre su cara); en escritorio flota junto a su
               cabeza, fuera del panel, como un globo. */}
+          {/* Auditoría P1-3: un solo retrato, sin modos de ánimo que cambiar. */}
+          {MOODS.length > 1 && (
           <div className="absolute right-3 top-[13.5rem] z-30 sm:right-6 sm:top-[22rem] lg:left-[52%] lg:right-auto lg:top-[-4.25rem]">
             <span aria-hidden className="absolute -bottom-1 left-7 hidden size-3.5 rotate-45 rounded-[3px] bg-white lg:block" />
             <div className="relative flex items-center gap-2.5 rounded-[1.35rem] bg-white py-2 pl-2 pr-4 text-ink shadow-pop">
@@ -258,6 +257,7 @@ export function LuminaFeature() {
               </span>
             </div>
           </div>
+          )}
 
           {/* Relato. En teléfono es una hoja blanca que tapa la base del
               recorte (como una app); en escritorio vive sobre el bosque. */}

@@ -12,6 +12,7 @@ import { GestureIcon, type Gesture } from "@/components/ui/gesture-icon";
 import { TrackedWhatsAppLink } from "@/components/analytics/tracked-whatsapp-link";
 import { useLanguage } from "@/lib/i18n/context";
 import { CONFIGURATOR_PLANS, ENTRY_SERVICE_PRICES } from "@/lib/catalog";
+import { cardLoader } from "@/lib/image-loaders";
 import { cn } from "@/lib/utils";
 
 const money = (n: number) => `$${n.toLocaleString("en-US")}`;
@@ -70,9 +71,9 @@ export function HomePricing() {
     icon: typeof Code2;
     gesture: Gesture;
   }[] = [
-    { id: "landing", data: p.plans.landing, amount: money(ENTRY_SERVICE_PRICES.find((e) => e.id === "landingEsencial")?.price ?? 2000), shot: "/img/paquetes/landing.svg", icon: LayoutTemplate, gesture: "design" },
-    { id: "site", data: p.plans.site, amount: money(planPrice("full") ?? 3500), featured: true, shot: "/img/paquetes/sitio.svg", icon: Code2, gesture: "code" },
-    { id: "software", data: p.plans.software, amount: money(10000), from: true, shot: "/img/paquetes/software.svg", icon: Settings2, gesture: "gear" },
+    { id: "landing", data: p.plans.landing, amount: money(ENTRY_SERVICE_PRICES.find((e) => e.id === "landingEsencial")?.price ?? 2000), shot: "/img/paquetes/ilustracion-landing-2000.webp", icon: LayoutTemplate, gesture: "design" },
+    { id: "site", data: p.plans.site, amount: money(planPrice("full") ?? 3500), featured: true, shot: "/img/paquetes/ilustracion-sitio-completo-3500.webp", icon: Code2, gesture: "code" },
+    { id: "software", data: p.plans.software, amount: money(10000), from: true, shot: "/img/paquetes/ilustracion-software-medida-10000.webp", icon: Settings2, gesture: "gear" },
   ];
 
   return (
@@ -101,12 +102,12 @@ export function HomePricing() {
             >
               {/* Ilustración propia de cada paquete (auditoría P2-3), no la foto
                   de otro proyecto. */}
-              <div className="relative aspect-[16/10] overflow-hidden rounded-inner bg-mint">
+              <div className="relative aspect-square overflow-hidden rounded-inner bg-mint">
                 <Image
                   src={plan.shot}
-                  alt=""
+                  alt={`${plan.data.name}, ${plan.from ? `${p.from.toLowerCase()} ` : ""}${plan.amount} MXN`}
                   fill
-                  unoptimized
+                  loader={cardLoader}
                   sizes="(min-width: 768px) 30vw, 92vw"
                   className="price-card__img object-cover object-center"
                 />
