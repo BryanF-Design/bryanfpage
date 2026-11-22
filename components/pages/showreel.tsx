@@ -25,11 +25,17 @@ let paused: boolean | null = null;
 
 function read() {
   if (paused === null) {
+    // En teléfono (o con ahorro de datos) no se reproduce solo: arranca en
+    // pausa y el botón global lo enciende (auditoría P2-4).
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    const lean = window.matchMedia("(max-width: 767px)").matches || !!conn?.saveData;
+    let stored: string | null = null;
     try {
-      paused = window.sessionStorage.getItem(KEY) === "1" || isReducedMotionRequested();
+      stored = window.sessionStorage.getItem(KEY);
     } catch {
-      paused = isReducedMotionRequested();
+      stored = null;
     }
+    paused = isReducedMotionRequested() || (stored === null ? lean : stored === "1");
   }
   return paused;
 }

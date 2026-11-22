@@ -24,15 +24,6 @@ const WHATSAPP_HREF = `https://wa.me/525663012505?text=${encodeURIComponent("Hol
 
 /** "venden" ↔ "convierten" cada 4 s, sin mover el layout (ambas palabras
  *  ocupan la misma celda; el ancho es el de la más larga). */
-function useAlternatingWord() {
-  const [second, setSecond] = useState(false);
-  useEffect(() => {
-    if (isReducedMotionRequested()) return;
-    const id = window.setInterval(() => setSecond((v) => !v), 4000);
-    return () => window.clearInterval(id);
-  }, []);
-  return second;
-}
 
 /** El proyecto que presume el hero: el mismo destacado del portafolio. */
 const FEATURED = projects.find((p) => p.slug === "mixteca-web-vercel-app") ?? projects[0];
@@ -56,24 +47,6 @@ function useCdmxTime() {
     return () => window.clearInterval(id);
   }, []);
   return time;
-}
-
-/** Palabra partida en letras para el morph (cada letra entra/sale con su
- *  retraso). `css`: la palabra no va en el texto del HTML (sale por CSS). */
-function MorphWord({ word, css = false }: { word: string; css?: boolean }) {
-  return (
-    <>
-      {Array.from(word).map((ch, i) =>
-        css ? (
-          <span key={i} className="morph-ch morph-ch--css" data-ch={ch} style={{ "--c": i } as CSSProperties} />
-        ) : (
-          <span key={i} className="morph-ch" style={{ "--c": i } as CSSProperties}>
-            {ch}
-          </span>
-        )
-      )}
-    </>
-  );
 }
 
 function delay(ms: number) {
@@ -116,15 +89,13 @@ export function HeroPop() {
   const { t } = useLanguage();
   const h = t.v2.hero;
   const cdmxTime = useCdmxTime();
-  const second = useAlternatingWord();
   const photoRef = useRef<HTMLDivElement>(null);
   useParallax8(photoRef);
 
   // Ancho de cada palabra gigante; desde md comparten el tamaño de la mayor.
   // La palabra alterna mide lo de la más larga de las dos (+ el punto).
-  const fitTitle = Math.max(wordEm(`${h.titleWord}.`), wordEm(`${h.wordB}.`));
-  const fitSide = wordEm(h.priceValue);
-  const fitShared = Math.max(fitTitle, fitSide);
+  const fitTitle = wordEm(`${h.titleWord}.`);
+  const fitShared = fitTitle;
   const fit = (own: number) =>
     ({ "--fit-own": own.toFixed(2), "--fit-shared": fitShared.toFixed(2) }) as CSSProperties;
 
@@ -143,8 +114,7 @@ export function HeroPop() {
           id="hero-title"
           className="relative z-[1] min-w-0 text-ink [container-type:inline-size]"
         >
-          {/* El H1 que lee Google: "Páginas web que venden. Desde $2,000 MXN."
-              La palabra alterna ("convierten") sale por CSS, fuera del texto. */}
+          {/* El H1 que lee Google: "Páginas web que venden. Desde $2,000 MXN." */}
           <span className="hero-headline block">
             <span className="kin-row display-italic block text-[clamp(1.9rem,4.2vw,4.25rem)] leading-none">
               <span className="kin-line" style={{ "--k": 1 } as CSSProperties}>
@@ -155,21 +125,10 @@ export function HeroPop() {
               className="kin-row display-xl fit-word block [--fit-max:clamp(4.25rem,18vw,6rem)] md:[--fit-max:clamp(4.75rem,10.5vw,11rem)]"
               style={fit(fitTitle)}
             >
-              <span className="kin-line hero-word-swap" style={{ "--k": 2 } as CSSProperties}>
-                <span className="hero-word" data-on={!second}>
-                  <span className="hero-keyword">
-                    <MorphWord word={h.titleWord} />
-                  </span>
-                  <span className="morph-ch" style={{ "--c": Array.from(h.titleWord).length } as CSSProperties}>
-                    .
-                  </span>
-                </span>
-                <span aria-hidden className="hero-word" data-on={second}>
-                  <span className="hero-keyword">
-                    <MorphWord word={h.wordB} css />
-                  </span>
-                  <span className="morph-ch hero-dot" style={{ "--c": Array.from(h.wordB).length } as CSSProperties} />
-                </span>
+              {/* Auditoría P2-1: una sola frase fija, sin palabra que alterna
+                  (se cortaba a media animación) ni subrayado que parecía tachado. */}
+              <span className="kin-line" style={{ "--k": 2 } as CSSProperties}>
+                <span className="hero-keyword hero-keyword--plain">{h.titleWord}</span>.
               </span>
             </span>
           </span>
@@ -183,15 +142,13 @@ export function HeroPop() {
           aria-hidden
           className="price-breathe relative z-[1] flex min-w-0 flex-wrap items-baseline gap-x-3 text-ink [container-type:inline-size] md:block md:text-right"
         >
-          <span className="kin-row display-italic block text-[clamp(1.5rem,4.2vw,4.25rem)] leading-none">
+          {/* Auditoría P2-1: el precio acompaña, nunca más grande que el titular. */}
+          <span className="kin-row display-italic block text-[clamp(1.25rem,2.4vw,2.25rem)] leading-none">
             <span className="kin-line kin-expand" style={{ "--k": 3 } as CSSProperties}>
               {h.priceTop}
             </span>
           </span>
-          <span
-            className="display-xl fit-word relative inline-block text-forest [--fit-max:clamp(3.1rem,13vw,4.5rem)] md:[--fit-max:clamp(4.75rem,10.5vw,11rem)]"
-            style={fit(fitSide)}
-          >
+          <span className="display-xl relative inline-block text-[clamp(2.5rem,5vw,4.75rem)] leading-[0.95] text-forest">
             <span className="kin-row inline-block align-bottom">
               <span className="kin-line" style={{ "--k": 4 } as CSSProperties}>
                 {h.priceValue}
@@ -202,7 +159,7 @@ export function HeroPop() {
               className="float-y absolute -right-7 -top-3 h-7 w-7 fill-lime text-lime-deep max-md:hidden sm:h-10 sm:w-10 md:-left-12 md:right-auto md:top-1 xl:-left-14"
             />
           </span>
-          <span className="block w-full text-sm font-semibold text-ink/65 md:mt-2">{h.priceNote}</span>
+          <span className="block w-full text-sm font-semibold text-ink/65 md:mt-2">MXN</span>
         </p>
       </div>
 
@@ -225,7 +182,6 @@ export function HeroPop() {
         <Link href="#precios" data-track-cta="hero_ver_precios" className="nav-underline relative mx-auto inline-flex min-h-11 items-center px-4 text-sm font-semibold text-ink/75">
           {h.ctaPrices} ↓
         </Link>
-        <p className="text-center text-[0.8125rem] font-medium text-ink/60">{h.micro.join(" · ")}</p>
       </div>
 
       {/* Panel lima: propuesta, acciones y ventajas. Bryan sale de él. */}
@@ -238,22 +194,6 @@ export function HeroPop() {
               de su columna (`cqi`), así que no tapa el texto de al lado. */}
           <div className="hero-in hero-in-rise pointer-events-none relative -mt-24 [container-type:inline-size] md:order-2 md:mt-0 md:self-stretch" style={delay(860)}>
             <div className="relative mx-auto aspect-[704/1184] h-[18rem] sm:h-[20rem] md:absolute md:left-1/2 md:top-[-6rem] md:h-[min(calc(100%+6rem),calc(100cqi*1.68))] md:-translate-x-1/2 xl:bottom-[-2.5rem] xl:top-auto xl:h-[min(calc(100%+13rem),calc((100cqi+3rem)*1.68))]">
-              <svg
-                aria-hidden
-                viewBox="0 0 400 140"
-                className="float-y absolute left-1/2 top-[3%] w-[160%] max-w-none -translate-x-1/2 text-ink/30"
-              >
-                <ellipse
-                  cx="200"
-                  cy="70"
-                  rx="190"
-                  ry="40"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.25"
-                  transform="rotate(-9 200 70)"
-                />
-              </svg>
               {/* Hasta lg la foto termina en un arco con base redondeada (un
                   marco limpio, sin difuminar el saco); en xl baja hasta el
                   canto de la tarjeta lima. */}
@@ -293,14 +233,9 @@ export function HeroPop() {
               className="hero-in hero-in-up display-title max-w-[22ch] text-balance text-[clamp(1.75rem,3vw,2.75rem)] text-ink"
               style={delay(500)}
             >
-              {h.subtitle}
-            </h2>
-            <p
-              className="hero-in hero-in-fade max-w-md text-pretty text-[0.975rem] leading-relaxed text-ink/75 max-sm:order-1 md:text-base"
-              style={delay(600)}
-            >
+              {/* Un solo beneficio (auditoría P2-1). */}
               {h.subtitle2}
-            </p>
+            </h2>
             <div
               className="hero-in hero-in-up flex w-full flex-col gap-2.5 max-md:hidden sm:w-auto sm:flex-row sm:flex-wrap"
               style={delay(700)}
@@ -330,7 +265,6 @@ export function HeroPop() {
               <Link href="#precios" data-track-cta="hero_ver_precios" className="nav-underline relative inline-flex min-h-11 items-center px-4 text-sm font-semibold text-ink">
                 {h.ctaPrices} ↓
               </Link>
-              <p className="max-w-[26rem] text-sm font-semibold text-ink/70">{h.micro.join(" · ")}</p>
             </div>
 
             <div
@@ -358,35 +292,14 @@ export function HeroPop() {
             </div>
           </div>
 
-          {/* Ventajas + proyecto destacado: fila inferior en md–lg, columna
-              derecha en xl. */}
-          <div className="relative flex min-w-0 flex-col gap-5 md:order-3 md:col-span-2 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] md:items-center md:gap-8 xl:col-span-1 xl:flex xl:flex-col xl:items-end xl:justify-between xl:gap-5">
-            <ul
-              className="hero-in hero-in-fade grid grid-cols-3 gap-2 xl:w-full xl:max-w-[22rem]"
-              style={delay(380)}
-            >
-              {t.hero.features.map((feature, index) => {
-                const Icon = FEATURE_ICONS[index] ?? Timer;
-                return (
-                  <li key={feature} data-gesture-host className="flex min-w-0 flex-col items-center gap-2 text-center">
-                    <span className="grid size-11 place-items-center rounded-full bg-ink text-lime">
-                      <GestureIcon gesture={FEATURE_GESTURES[index] ?? "lift"}>
-                        <Icon aria-hidden className="h-5 w-5" />
-                      </GestureIcon>
-                    </span>
-                    <span className="text-balance text-sm font-semibold leading-snug text-ink">
-                      {feature}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
+          {/* Proyecto destacado: fila inferior a la derecha en md–lg, columna
+              derecha en xl, siempre fuera de la foto (auditoría P2-1). */}
+          <div className="relative z-[2] flex min-w-0 flex-col gap-5 md:order-3 md:col-span-2 md:flex-row md:justify-end xl:col-span-1 xl:flex-col xl:items-end xl:justify-end">
 
-            <a
-              href={FEATURED.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hero-in hero-in-up group card-pop flex w-full min-w-0 gap-3 p-2.5 transition-transform duration-300 hover:-translate-y-1 xl:max-w-[22rem] xl:flex-col xl:p-3"
+            {/* Proyecto destacado: la tarjeta NO es un enlace entero; lleva dos
+                enlaces explícitos y los dos son de Mixteca (sitio y caso). */}
+            <div
+              className="hero-in hero-in-up group card-pop flex w-full min-w-0 gap-3 p-2.5 md:max-w-[26rem] xl:max-w-[22rem] xl:flex-col xl:p-3"
               style={delay(460)}
             >
               <span className="relative aspect-[4/3] w-32 shrink-0 overflow-hidden rounded-inner bg-mint sm:w-40 xl:w-full">
@@ -405,17 +318,34 @@ export function HeroPop() {
                   />
                 )}
               </span>
-              <span className="flex min-w-0 flex-1 flex-col justify-between gap-2 py-1 xl:flex-row xl:items-center xl:px-1">
+              <span className="flex min-w-0 flex-1 flex-col justify-between gap-2 py-1 xl:px-1">
                 <span className="min-w-0">
                   <span className="block text-xs font-semibold text-ink/65">{t.hero.featured}</span>
                   <span className="block truncate text-lg font-bold text-ink">{FEATURED.name}</span>
                 </span>
-                <span className="inline-flex min-h-10 w-fit max-w-full items-center gap-1.5 rounded-full bg-lime px-4 py-1.5 text-sm font-semibold leading-tight text-ink sm:shrink-0 sm:whitespace-nowrap">
-                  {t.projects.visitSite}
-                  <ArrowUpRight aria-hidden className="h-4 w-4 transition-transform group-hover:rotate-45" />
+                <span className="flex flex-wrap gap-2">
+                  <a
+                    href={FEATURED.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-track-cta="hero_destacado_sitio"
+                    className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-lime px-4 text-sm font-semibold text-ink transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.97]"
+                  >
+                    {t.projects.visitSite}
+                    <span className="sr-only"> {FEATURED.name}</span>
+                    <ArrowUpRight aria-hidden className="h-4 w-4" />
+                  </a>
+                  <Link
+                    href={`/casos#${FEATURED.slug}`}
+                    data-track-cta="hero_destacado_caso"
+                    className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-white px-4 text-sm font-semibold text-ink ring-1 ring-inset ring-ink/10 transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.97]"
+                  >
+                    {t.v2.cases.viewCase}
+                    <span className="sr-only"> {FEATURED.name}</span>
+                  </Link>
                 </span>
               </span>
-            </a>
+            </div>
           </div>
         </div>
       </div>

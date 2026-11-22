@@ -4,7 +4,7 @@ import { useRef, type CSSProperties } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, type MotionStyle } from "framer-motion";
-import { ArrowUp, ArrowUpRight, LogIn, Mail, Phone, Star } from "lucide-react";
+import { ArrowUp, ArrowUpRight, Mail, Phone, Star } from "lucide-react";
 import { FaWhatsapp } from "@/components/ui/wa-icon";
 import {
   FaInstagram,
@@ -42,9 +42,9 @@ const social = [
   { Icon: FaGithub, href: "https://github.com/BryanF-Design", label: "GitHub" },
 ];
 
-// Portal de clientes (Bitácora). Mismo proyecto de Vercel que el .com.mx,
-// con el dominio .com verificado: el sitio nunca enlaza al .mx.
-const CLIENT_PORTAL = "https://access.bryanfdesign.com/";
+// "Acceso clientes" se quitó (auditoría P0-3): access.bryanfdesign.com y
+// access.bryanfdesign.com.mx no tienen DNS configurado (no hay portal real).
+// Vuelve cuando el portal exista en una URL que resuelva.
 
 // Clases largas movidas a CSS (.f-link / .f-col-link en globals.css): el
 // pie repite estos enlaces muchas veces y así el HTML pesa menos.
@@ -91,11 +91,10 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
   const nav = [
     { label: t.nav.inicio, href: "/" },
     { label: t.nav.proceso, href: "/#proceso" },
-    { label: t.nav.proyectos, href: "/#casos" },
     { label: t.nav.casos, href: "/casos" },
     { label: t.nav.serviciosEntrada, href: "/#servicios-entrada" },
     { label: t.nav.precios, href: "/#precios" },
-    { label: t.nav.faq, href: "/#faq" },
+    { label: t.nav.faq, href: "/contacto#faq" },
     // Secciones que se mudaron del inicio a su propia página.
     { label: t.nav.conoceme, href: "/conoceme" },
     { label: t.nav.lumina, href: "/lumina" },
@@ -258,18 +257,6 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                     </li>
                   ))}
                 </ul>
-                {/* Desde sm la píldora vive bajo la navegación. En teléfono se
-                    muestra la de abajo, que cruza ambas columnas debajo de las
-                    dos listas (Servicios es más larga que Navegación). */}
-                <Link
-                  href={CLIENT_PORTAL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-3 hidden min-h-11 w-auto items-center justify-start gap-2 rounded-full border border-lime/40 px-4 text-sm font-semibold text-lime transition-colors hover:bg-lime hover:text-ink sm:inline-flex"
-                >
-                  <LogIn aria-hidden className="h-4 w-4" />
-                  {t.v2.clientAccess}
-                </Link>
               </nav>
 
               {/* Servicios */}
@@ -286,18 +273,6 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                   ))}
                 </ul>
               </nav>
-
-              {/* Teléfono: la píldora de clientes, a lo ancho y bajo las dos
-                  listas (-mt-4 deja 0.5rem sobre el gap-y-6 de la retícula). */}
-              <Link
-                href={CLIENT_PORTAL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="col-span-2 -mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-lime/40 px-4 text-sm font-semibold text-lime transition-colors hover:bg-lime hover:text-ink sm:hidden"
-              >
-                <LogIn aria-hidden className="h-4 w-4" />
-                {t.v2.clientAccess}
-              </Link>
 
               {/* Legal y contacto */}
               <div className="col-span-2 min-w-0 lg:col-span-1">

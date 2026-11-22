@@ -32,8 +32,6 @@ const nextConfig = {
   // (app/crear-web) con el Configurador nuevo y el catálogo centralizado.
   async rewrites() {
     return [
-      { source: "/privacidad", destination: "/privacidad.html" },
-      { source: "/terminos", destination: "/terminos.html" },
       { source: "/gracias", destination: "/gracias.html" },
     ];
   },

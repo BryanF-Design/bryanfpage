@@ -130,9 +130,9 @@ export function NotFoundContent() {
               </div>
               {/* Fuera del recorte del panel para que la cabeza cruce el canto. */}
               <Image
-                src="/img/lumina/v2/cutout/aburrida.webp"
+                src="/img/lumina/v2/cutout/duda.webp"
                 alt=""
-                width={1039}
+                width={1031}
                 height={1100}
                 priority
                 sizes="(min-width: 1024px) 22rem, 16rem"

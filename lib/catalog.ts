@@ -75,7 +75,7 @@ export const STUDIO_FACTS = {
   /** Trayectoria de Bryan. */
   since: 2018,
   /** Estudio BryanF Design. */
-  studioSince: 2020,
+  studioSince: 2018,
   guaranteeDays: 60,
   adjustmentDays: 15,
   deliveryDays: 3,

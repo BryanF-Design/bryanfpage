@@ -415,6 +415,11 @@ export function BarberOsPage() {
                     <StatCounter value={LIVE_CASE.revenue} prefix="$" />
                   </p>
                   <p className="mt-2 text-xs font-semibold text-white/50">MXN · {LIVE_CASE.cutoff}</p>
+                  {/* Auditoría P1-7: qué es Partum y por qué aparece en CortMart. */}
+                  <p className="mt-4 max-w-md text-pretty text-sm leading-relaxed text-white/70">
+                    El sitio de CortMart lo hice cuando dirigía el desarrollo en Partum Design, la
+                    agencia donde trabajé; por eso su pie dice “Desarrollado por Partum Design”.
+                  </p>
                 </div>
                 <a
                   href={LIVE_CASE.url}

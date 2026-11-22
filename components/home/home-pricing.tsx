@@ -12,8 +12,6 @@ import { GestureIcon, type Gesture } from "@/components/ui/gesture-icon";
 import { TrackedWhatsAppLink } from "@/components/analytics/tracked-whatsapp-link";
 import { useLanguage } from "@/lib/i18n/context";
 import { CONFIGURATOR_PLANS, ENTRY_SERVICE_PRICES } from "@/lib/catalog";
-import { cardLoader } from "@/lib/image-loaders";
-import { desktopShot } from "@/lib/projects";
 import { cn } from "@/lib/utils";
 
 const money = (n: number) => `$${n.toLocaleString("en-US")}`;
@@ -72,9 +70,9 @@ export function HomePricing() {
     icon: typeof Code2;
     gesture: Gesture;
   }[] = [
-    { id: "landing", data: p.plans.landing, amount: money(ENTRY_SERVICE_PRICES.find((e) => e.id === "landingEsencial")?.price ?? 2000), shot: desktopShot("mixteca-web-vercel-app"), icon: LayoutTemplate, gesture: "design" },
-    { id: "site", data: p.plans.site, amount: money(planPrice("full") ?? 3500), featured: true, shot: desktopShot("koi-arquitectura-vercel-app"), icon: Code2, gesture: "code" },
-    { id: "software", data: p.plans.software, amount: money(10000), from: true, shot: desktopShot("homeflowoficial-com"), icon: Settings2, gesture: "gear" },
+    { id: "landing", data: p.plans.landing, amount: money(ENTRY_SERVICE_PRICES.find((e) => e.id === "landingEsencial")?.price ?? 2000), shot: "/img/paquetes/landing.svg", icon: LayoutTemplate, gesture: "design" },
+    { id: "site", data: p.plans.site, amount: money(planPrice("full") ?? 3500), featured: true, shot: "/img/paquetes/sitio.svg", icon: Code2, gesture: "code" },
+    { id: "software", data: p.plans.software, amount: money(10000), from: true, shot: "/img/paquetes/software.svg", icon: Settings2, gesture: "gear" },
   ];
 
   return (
@@ -101,14 +99,16 @@ export function HomePricing() {
               )}
               style={{ ["--stagger" as string]: i }}
             >
+              {/* Ilustración propia de cada paquete (auditoría P2-3), no la foto
+                  de otro proyecto. */}
               <div className="relative aspect-[16/10] overflow-hidden rounded-inner bg-mint">
                 <Image
                   src={plan.shot}
                   alt=""
                   fill
-                  loader={cardLoader}
+                  unoptimized
                   sizes="(min-width: 768px) 30vw, 92vw"
-                  className="price-card__img object-cover object-top"
+                  className="price-card__img object-cover object-center"
                 />
                 {plan.featured && (
                   <span className="absolute left-3 top-3 rounded-full bg-lime px-3 py-1 text-xs font-bold text-ink">

@@ -77,7 +77,7 @@ const pt: CvDict = {
       { title: "Cliente e negócio", desc: "Defino o escopo, explico decisões técnicas e acompanho cada implementação." },
       { title: "Design", desc: "Uno identidade visual, usabilidade, responsividade e resultados de negócio." },
     ],
-    studioLabel: "projetos digitais impulsionados pelo estúdio BryanF Design desde 2020",
+    studioLabel: "projetos digitais impulsionados pelo estúdio BryanF Design desde 2018",
     marketsLabel: "México · Espanha · França",
   },
   quests: {

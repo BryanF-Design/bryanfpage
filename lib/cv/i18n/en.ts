@@ -77,7 +77,7 @@ const en: CvDict = {
       { title: "Client & business", desc: "I define scope, explain technical decisions and support every rollout." },
       { title: "Design", desc: "I bring together visual identity, usability, responsive design and business results." },
     ],
-    studioLabel: "digital projects delivered by the BryanF Design studio since 2020",
+    studioLabel: "digital projects delivered by the BryanF Design studio since 2018",
     marketsLabel: "Mexico · Spain · France",
   },
   quests: {

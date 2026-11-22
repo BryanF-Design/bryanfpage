@@ -16,7 +16,7 @@ import { cvStyles as s } from "./cv-parts";
 // mover con CSS, para que siempre quede centrada.
 const FACE: Record<LevelId, string> = {
   perfil: "/img/lumina/v2/face/normal.webp",
-  misiones: "/img/lumina/v2/face/enfocada.webp",
+  misiones: "/img/lumina/v2/face/normal.webp",
   inventario: "/img/lumina/v2/face/duda.webp",
   logros: "/img/lumina/v2/face/normal.webp",
   academia: "/img/lumina/v2/face/duda.webp",

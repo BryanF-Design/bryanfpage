@@ -69,7 +69,7 @@ const zh: CvDict = {
       { title: "客户与业务", desc: "明确范围，解释技术决策，并陪伴每一次上线。" },
       { title: "设计", desc: "融合视觉识别、可用性、响应式设计与业务成果。" },
     ],
-    studioLabel: "BryanF Design 工作室自 2020 年以来推动的数字项目",
+    studioLabel: "BryanF Design 工作室自 2018 年以来推动的数字项目",
     marketsLabel: "墨西哥 · 西班牙 · 法国",
   },
   quests: {

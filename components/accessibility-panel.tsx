@@ -335,7 +335,7 @@ export function AccessibilityPanel() {
           izquierdo: queda sobre el margen del lienzo y no tapa el texto ni
           los botones de las secciones. Desde sm vuelve a ser un flotante. */}
       <div
-        className="fab-slot fixed bottom-[var(--fab-edge)] left-0 z-[120] sm:left-6"
+        className="fab-slot fab-slot-a11y fixed bottom-[var(--fab-edge)] left-0 z-[120] sm:left-6"
         data-hidden={footerInView}
       >
         <button

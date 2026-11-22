@@ -27,12 +27,11 @@ import { mobileShot } from "@/lib/projects";
 
 type MoodKey = "normal" | "enfocada" | "duda" | "aburrida" | "dormida";
 
-/** Recortes de Lumina, en el orden en que cambian al tocarla (medidas reales). */
+/** Recortes de Lumina, en el orden en que cambian al tocarla (medidas reales).
+ *  Sin "enfocada" (ceño fruncido) ni "aburrida": auditoría P1-3. */
 const MOODS: { key: MoodKey; src: string; width: number; height: number }[] = [
   { key: "normal", src: "/img/lumina/v2/cutout/normal.webp", width: 1058, height: 1100 },
-  { key: "enfocada", src: "/img/lumina/v2/cutout/enfocada.webp", width: 1087, height: 1100 },
   { key: "duda", src: "/img/lumina/v2/cutout/duda.webp", width: 1031, height: 1100 },
-  { key: "aburrida", src: "/img/lumina/v2/cutout/aburrida.webp", width: 1039, height: 1100 },
   { key: "dormida", src: "/img/lumina/v2/cutout/dormida.webp", width: 1080, height: 1100 },
 ];
 

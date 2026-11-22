@@ -248,8 +248,8 @@ const es = {
   },
   clients: {
     eyebrow: "Clientes",
-    label: "Marcas que han confiado",
-    subtitle: "Del corporativo al estudio independiente, cada proyecto recibe el mismo cuidado.",
+    label: "Marcas con las que he trabajado",
+    subtitle: "La mayoría, a través de Partum Design, Indusecc y Herman Miller, donde trabajé; no todas fueron clientes directos.",
     brands: "marcas",
   },
   entryServices: {
@@ -837,6 +837,8 @@ const es = {
       fullCase: "Ver el caso completo",
       visit: "Visitar sitio",
       open: "Ver proyecto",
+      note: "Aquí ves {n} proyectos publicados de los 150+ que he hecho desde 2018. Cuatro tienen su caso contado a fondo (Koi, Element, Efficient y NKMOH). CortMart es una barbería que usa Barber OS: su sitio lo hice cuando dirigía el desarrollo en Partum Design (por eso su pie dice Partum) y su historia está en Sistema para barberías.",
+      cortBadge: "Barber OS",
     },
     showreel: {
       title: "Showreel",
@@ -845,6 +847,26 @@ const es = {
       play: "Reproducir todos los videos",
       pauseShort: "Pausa",
       playShort: "Reproducir",
+    },
+    luminaLead: {
+      title: "Antes de mandárselo a Bryan, ¿cómo te llamas y de qué es tu negocio?",
+      name: "Tu nombre",
+      business: "Tu negocio (ej. barbería, despacho, tienda)",
+      send: "Mandar resumen por WhatsApp",
+      intro: "Hola Bryan, vengo de platicar con Lumina en tu sitio.",
+      me: "Soy {name}, de {business}.",
+      plan: "Paquete que me interesa: {plan}, {price} MXN (anticipo del 50%: {advance} MXN).",
+      told: "Lo que le conté a Lumina:",
+      mic: "Dictar mensaje",
+      micStop: "Dejar de dictar",
+      micUnsupported: "Tu navegador no permite dictar; escribe tu mensaje.",
+    },
+    software: {
+      name: "Software a medida",
+      price: "Desde $10,000 MXN",
+      desc: "Procesos, reservas, sistemas o automatización. Se cotiza según el alcance: no se paga aquí.",
+      cta: "Cotizar por WhatsApp",
+      msg: "Hola Bryan, quiero cotizar un software a medida (desde $10,000).",
     },
     faq: {
       title: "Preguntas frecuentes",

@@ -240,8 +240,8 @@ const fr: Dictionary = {
   },
   clients: {
     eyebrow: "Clients",
-    label: "Des marques qui nous ont fait confiance",
-    subtitle: "Du grand groupe au studio indépendant : le même soin à chaque livraison.",
+    label: "Des marques avec lesquelles j’ai travaillé",
+    subtitle: "La plupart via Partum Design, Indusecc et Herman Miller, où j’ai travaillé ; toutes n’étaient pas des clients directs.",
     brands: "marques",
   },
   entryServices: {
@@ -809,6 +809,8 @@ const fr: Dictionary = {
       fullCase: "Voir l’étude complète",
       visit: "Visiter le site",
       open: "Voir le projet",
+      note: "Vous voyez ici {n} projets publiés sur les 150+ réalisés depuis 2018. Quatre ont une étude de cas complète (Koi, Element, Efficient et NKMOH). CortMart est un barbier qui utilise Barber OS : j’ai fait son site quand je dirigeais le développement chez Partum Design (d’où « Partum » en pied de page) ; son histoire est sur la page du système pour barbiers.",
+      cortBadge: "Barber OS",
     },
     showreel: {
       title: "Showreel",
@@ -817,6 +819,26 @@ const fr: Dictionary = {
       play: "Lire toutes les vidéos",
       pauseShort: "Pause",
       playShort: "Lire",
+    },
+    luminaLead: {
+      title: "Avant d’envoyer ça à Bryan, comment vous appelez-vous et quelle est votre activité ?",
+      name: "Votre nom",
+      business: "Votre activité (ex. barbier, cabinet, boutique)",
+      send: "Envoyer le résumé sur WhatsApp",
+      intro: "Bonjour Bryan, je viens de discuter avec Lumina sur votre site.",
+      me: "Je suis {name}, de {business}.",
+      plan: "Formule qui m’intéresse : {plan}, {price} MXN (acompte de 50 % : {advance} MXN).",
+      told: "Ce que j’ai dit à Lumina :",
+      mic: "Dicter le message",
+      micStop: "Arrêter la dictée",
+      micUnsupported: "Votre navigateur ne permet pas la dictée ; écrivez votre message.",
+    },
+    software: {
+      name: "Logiciel sur mesure",
+      price: "À partir de $10,000 MXN",
+      desc: "Processus, réservations, systèmes ou automatisation. Devis selon le périmètre : pas de paiement ici.",
+      cta: "Demander un devis sur WhatsApp",
+      msg: "Bonjour Bryan, je voudrais un devis pour un logiciel sur mesure (à partir de $10,000).",
     },
     faq: {
       title: "Questions fréquentes",

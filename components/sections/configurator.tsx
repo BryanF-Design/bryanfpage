@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNod
 import {
   ArrowDown,
   Building2,
+  Settings2,
   Check,
   Copy,
   CreditCard,
@@ -709,7 +710,7 @@ export function Configurator({
       ...items.map((it) => `• ${it.source}: ${display(it.price)}`),
       "",
       `${t.configurator.totalProject}: ${formatMoney(projectTotal, currency)}`,
-      `${t.configurator.payNow}: $<TweenMoney value={payableNow} currency={currency} />`,
+      `${t.configurator.payNow}: ${formatMoney(payableNow, currency)}`,
     ].join("\n")
   )}`;
   const remaining = Math.max(0, projectTotal - payableNow);
@@ -848,6 +849,32 @@ export function Configurator({
                   </label>
                 );
               })}
+            </div>
+            {/* Auditoría P1-4: el Software a medida que anuncia la home también
+                vive aquí. Se cotiza según el alcance (no tiene precio fijo que
+                cobrar en línea), así que sale por WhatsApp. */}
+            <div className="mt-2.5 flex flex-col gap-3 rounded-card bg-mint p-3.5 ring-1 ring-inset ring-ink/10 sm:ml-14 sm:flex-row sm:items-center sm:justify-between sm:p-4 lg:mt-3">
+              <span className="flex min-w-0 items-start gap-3">
+                <span aria-hidden className="grid size-11 shrink-0 place-items-center rounded-full bg-white text-ink ring-1 ring-ink/10">
+                  <Settings2 className="h-5 w-5" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[0.9375rem] font-semibold text-ink">
+                    {t.v2.software.name} · <span className="tabular-nums">{t.v2.software.price}</span>
+                  </span>
+                  <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">{t.v2.software.desc}</span>
+                </span>
+              </span>
+              <a
+                href={`https://wa.me/${WA_PHONE}?text=${encodeURIComponent(t.v2.software.msg)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-track-service="configurador_software"
+                className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-ink px-4 text-sm font-semibold text-white transition-transform active:scale-[0.97]"
+              >
+                <FaWhatsapp aria-hidden className="h-4 w-4 text-lime" />
+                {t.v2.software.cta}
+              </a>
             </div>
           </Step>
 
@@ -1104,7 +1131,7 @@ export function Configurator({
                       </span>
                     </p>
                     <p className="display-xl mt-3 break-all text-[clamp(3.25rem,6vw,4.25rem)] leading-[0.9] tabular-nums text-lime">
-                      {formatMoney(payableNow, currency)}
+                      <TweenMoney value={payableNow} currency={currency} />
                     </p>
                     {currency === "USD" && (
                       <p className="mt-1.5 text-xs font-medium tabular-nums text-white/60">
@@ -1128,7 +1155,7 @@ export function Configurator({
                 <div className="relative mt-4 flex items-center justify-between gap-3 border-t border-dashed border-white/15 pt-4 text-sm">
                   <span className="text-white/65">{t.configurator.totalProject}</span>
                   <span className="font-bold tabular-nums text-white">
-                    {formatMoney(projectTotal, currency)}
+                    <TweenMoney value={projectTotal} currency={currency} />
                   </span>
                 </div>
                 {/* Qué pasa con el resto: cuándo se paga y qué lo dispara. */}

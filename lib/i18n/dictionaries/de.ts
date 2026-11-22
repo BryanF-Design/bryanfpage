@@ -240,8 +240,8 @@ const de: Dictionary = {
   },
   clients: {
     eyebrow: "Kunden",
-    label: "Marken, die uns vertraut haben",
-    subtitle: "Vom Großkonzern bis zum unabhängigen Studio: dieselbe Sorgfalt bei jeder Lieferung.",
+    label: "Marken, mit denen ich gearbeitet habe",
+    subtitle: "Die meisten über Partum Design, Indusecc und Herman Miller, wo ich gearbeitet habe; nicht alle waren direkte Kunden.",
     brands: "Marken",
   },
   entryServices: {
@@ -809,6 +809,8 @@ const de: Dictionary = {
       fullCase: "Ganze Fallstudie ansehen",
       visit: "Website besuchen",
       open: "Projekt ansehen",
+      note: "Hier siehst du {n} veröffentlichte Projekte von über 150 seit 2018. Vier haben eine ausführliche Fallstudie (Koi, Element, Efficient und NKMOH). CortMart ist ein Barbershop, der Barber OS nutzt: Die Website habe ich gebaut, als ich die Entwicklung bei Partum Design geleitet habe (deshalb steht Partum im Footer); die Geschichte steht auf der Seite zum Barbershop-System.",
+      cortBadge: "Barber OS",
     },
     showreel: {
       title: "Showreel",
@@ -817,6 +819,26 @@ const de: Dictionary = {
       play: "Alle Videos abspielen",
       pauseShort: "Pause",
       playShort: "Abspielen",
+    },
+    luminaLead: {
+      title: "Bevor ich es an Bryan schicke: Wie heißt du und was ist dein Geschäft?",
+      name: "Dein Name",
+      business: "Dein Geschäft (z. B. Barbershop, Kanzlei, Laden)",
+      send: "Zusammenfassung per WhatsApp senden",
+      intro: "Hallo Bryan, ich habe gerade mit Lumina auf deiner Website gesprochen.",
+      me: "Ich bin {name}, von {business}.",
+      plan: "Paket, das mich interessiert: {plan}, {price} MXN (50 % Anzahlung: {advance} MXN).",
+      told: "Was ich Lumina erzählt habe:",
+      mic: "Nachricht diktieren",
+      micStop: "Diktat beenden",
+      micUnsupported: "Dein Browser unterstützt kein Diktat; bitte tippe deine Nachricht.",
+    },
+    software: {
+      name: "Individuelle Software",
+      price: "Ab $10,000 MXN",
+      desc: "Prozesse, Buchungen, Systeme oder Automatisierung. Angebot nach Umfang: hier nicht bezahlbar.",
+      cta: "Angebot per WhatsApp",
+      msg: "Hallo Bryan, ich möchte ein Angebot für individuelle Software (ab $10,000).",
     },
     faq: {
       title: "Häufige Fragen",

@@ -2272,3 +2272,44 @@ html.intro-seen .device-intro {
     transform: translate3d(0, 10px, 0) scale(0.97);
   }
 }
+
+/* Hero: palabra clave fija, sin subrayado (se leía como tachadura). */
+.hero-keyword--plain::after {
+  display: none;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   Auditoría P2-4 · teléfono (<768 px): barra inferior tipo app
+   ════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  /* Lumina (y cualquier flotante) vive encima de la barra: 88 px. */
+  html.has-tabbar {
+    --fab-edge: calc(88px + env(safe-area-inset-bottom));
+  }
+  /* El contenido no queda debajo de la barra (footer, CTA final, precio). */
+  html.has-tabbar body {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
+  /* Sin WhatsApp flotante duplicado (está en la barra) ni botón de
+     accesibilidad en teléfono. */
+  html.has-tabbar .fab-slot-dock,
+  html.has-tabbar .fab-slot-a11y {
+    display: none !important;
+  }
+  /* Con el teclado abierto, la barra se va y los flotantes bajan. */
+  html.tabbar-hidden {
+    --fab-edge: calc(0.875rem + env(safe-area-inset-bottom));
+  }
+  html.tabbar-hidden body {
+    padding-bottom: 0;
+  }
+}
+.mobile-tabbar {
+  transition: transform 0.3s var(--ease-out), opacity 0.3s var(--ease-out);
+}
+.mobile-tabbar[data-hidden="true"],
+html.menu-open .mobile-tabbar {
+  transform: translateY(110%);
+  opacity: 0;
+  pointer-events: none;
+}

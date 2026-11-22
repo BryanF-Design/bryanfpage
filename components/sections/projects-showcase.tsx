@@ -26,6 +26,7 @@ import { SitePreview } from "@/components/site-preview";
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { SectionHeading } from "@/components/sections/section-heading";
 import { useLanguage } from "@/lib/i18n/context";
+import { isReducedMotionRequested } from "@/lib/motion-preference";
 import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { cn } from "@/lib/utils";
 
@@ -649,9 +650,20 @@ export function ProjectCases({ hideHeading = false }: { hideHeading?: boolean } 
   // Las tarjetas compactas del inicio enlazan a /casos#<slug>: ese caso abre
   // ya seleccionado (y también si el hash cambia estando en la página).
   useEffect(() => {
+    // …y la página baja hasta la sección del caso (auditoría P0-5): el
+    // navegador no lo hace solo porque ningún elemento tiene ese id.
     const sync = () => {
       const index = CASE_SLUGS.indexOf(window.location.hash.slice(1) as CaseSlug);
-      if (index >= 0) setActive(index);
+      if (index < 0) return;
+      setActive(index);
+      const go = () =>
+        document.getElementById("casos-de-estudio")?.scrollIntoView({
+          behavior: isReducedMotionRequested() ? "auto" : "smooth",
+          block: "start",
+        });
+      requestAnimationFrame(() => requestAnimationFrame(go));
+      // Las imágenes de arriba pueden mover el punto: se corrige una vez.
+      window.setTimeout(go, 700);
     };
     sync();
     window.addEventListener("hashchange", sync);
@@ -686,7 +698,7 @@ export function ProjectCases({ hideHeading = false }: { hideHeading?: boolean } 
     <section
       id="casos-de-estudio"
       aria-label={t.projects.casesTitle}
-      className="grid gap-gutter lg:grid-cols-12 lg:grid-rows-[auto_1fr]"
+      className="grid scroll-mt-24 gap-gutter lg:grid-cols-12 lg:grid-rows-[auto_1fr]"
     >
       {/* Cabecera + pestañas. */}
       <div data-fx="panel" className="min-w-0 lg:col-span-7">

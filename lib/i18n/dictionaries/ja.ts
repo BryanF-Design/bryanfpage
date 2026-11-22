@@ -239,8 +239,8 @@ const ja: Dictionary = {
   },
   clients: {
     eyebrow: "クライアント",
-    label: "信頼していただいたブランド",
-    subtitle: "大手企業から独立系スタジオまで、どの案件にも同じこだわりを。",
+    label: "一緒に仕事をしたブランド",
+    subtitle: "多くは在籍していたPartum Design、Indusecc、Herman Millerを通じたもので、すべてが直接のクライアントではありません。",
     brands: "ブランド",
   },
   entryServices: {
@@ -803,6 +803,8 @@ const ja: Dictionary = {
       fullCase: "事例の詳細を見る",
       visit: "サイトを見る",
       open: "プロジェクトを見る",
+      note: "ここでは、2018年以降に手がけた150件以上のうち公開中の{n}件を紹介しています。詳細な事例は4件（Koi、Element、Efficient、NKMOH）です。CortMartはBarber OSを使う理容室で、サイトは私がPartum Designで開発を率いていた時に制作しました（そのためフッターにPartumとあります）。詳しくは理容室システムのページへ。",
+      cortBadge: "Barber OS",
     },
     showreel: {
       title: "ショーリール",
@@ -811,6 +813,26 @@ const ja: Dictionary = {
       play: "すべての動画を再生",
       pauseShort: "一時停止",
       playShort: "再生",
+    },
+    luminaLead: {
+      title: "Bryanに送る前に、お名前とご商売を教えてください。",
+      name: "お名前",
+      business: "ご商売（例：理容室、事務所、店舗）",
+      send: "WhatsAppで要約を送る",
+      intro: "こんにちはBryanさん、サイトでLuminaと話しました。",
+      me: "{business}の{name}です。",
+      plan: "気になっているパッケージ：{plan}、{price} MXN（50%の前金：{advance} MXN）。",
+      told: "Luminaに伝えたこと：",
+      mic: "音声で入力",
+      micStop: "音声入力を止める",
+      micUnsupported: "このブラウザは音声入力に対応していません。文字で入力してください。",
+    },
+    software: {
+      name: "オーダーメイドのソフトウェア",
+      price: "$10,000 MXN〜",
+      desc: "業務、予約、システム、自動化。範囲に応じてお見積もり（ここでは支払いできません）。",
+      cta: "WhatsAppで見積もり",
+      msg: "こんにちはBryanさん、オーダーメイドのソフトウェア（$10,000〜）の見積もりをお願いします。",
     },
     faq: {
       title: "よくある質問",

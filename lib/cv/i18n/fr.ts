@@ -77,7 +77,7 @@ const fr: CvDict = {
       { title: "Client et business", desc: "Je cadre le périmètre, explique les choix techniques et accompagne chaque mise en œuvre." },
       { title: "Design", desc: "J'unis identité visuelle, ergonomie, responsive et résultats business." },
     ],
-    studioLabel: "projets numériques portés par le studio BryanF Design depuis 2020",
+    studioLabel: "projets numériques portés par le studio BryanF Design depuis 2018",
     marketsLabel: "Mexique · Espagne · France",
   },
   quests: {

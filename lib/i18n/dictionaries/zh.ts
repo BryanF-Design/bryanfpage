@@ -226,8 +226,8 @@ const zh: Dictionary = {
   },
   clients: {
     eyebrow: "客户",
-    label: "值得信赖的合作品牌",
-    subtitle: "从大型企业到独立工作室，每一次交付都同样用心。",
+    label: "合作过的品牌",
+    subtitle: "大多是通过我曾任职的 Partum Design、Indusecc 和 Herman Miller 合作的，并非都是直接客户。",
     brands: "个品牌",
   },
   entryServices: {
@@ -764,6 +764,8 @@ const zh: Dictionary = {
       fullCase: "查看完整案例",
       visit: "访问网站",
       open: "查看项目",
+      note: "这里展示的是我自 2018 年以来完成的 150+ 个项目中已公开的 {n} 个。其中四个有完整案例（Koi、Element、Efficient 和 NKMOH）。CortMart 是一家使用 Barber OS 的理发店：它的网站是我在 Partum Design 负责开发时做的（所以页脚写着 Partum），详情见理发店系统页面。",
+      cortBadge: "Barber OS",
     },
     showreel: {
       title: "作品集锦",
@@ -772,6 +774,26 @@ const zh: Dictionary = {
       play: "播放所有视频",
       pauseShort: "暂停",
       playShort: "播放",
+    },
+    luminaLead: {
+      title: "发给 Bryan 之前，请问你的名字和你的生意是什么？",
+      name: "你的名字",
+      business: "你的生意（例如理发店、事务所、商店）",
+      send: "通过 WhatsApp 发送摘要",
+      intro: "你好 Bryan，我刚在你的网站上和 Lumina 聊过。",
+      me: "我是 {business} 的 {name}。",
+      plan: "我感兴趣的套餐：{plan}，{price} MXN（50% 定金：{advance} MXN）。",
+      told: "我告诉 Lumina 的内容：",
+      mic: "语音输入",
+      micStop: "停止语音输入",
+      micUnsupported: "你的浏览器不支持语音输入，请直接输入文字。",
+    },
+    software: {
+      name: "定制软件",
+      price: "$10,000 MXN 起",
+      desc: "流程、预约、系统或自动化。按范围报价：此处无法付款。",
+      cta: "通过 WhatsApp 报价",
+      msg: "你好 Bryan，我想咨询定制软件报价（$10,000 起）。",
     },
     faq: {
       title: "常见问题",

@@ -94,7 +94,7 @@ const faqJsonLd = {
 };
 
 // En teléfono (o pantalla vertical) la intro no corre: el hero entra directo.
-const INTRO_BOOTSTRAP = `(function(){try{var d=document.documentElement;var r=window.matchMedia("(prefers-reduced-motion: reduce)").matches||d.classList.contains("a11y-reduce-motion");var m=window.matchMedia("(max-width: 767px), (max-aspect-ratio: 3/4)").matches;var v=false;try{v=sessionStorage.getItem("bfd-intro-seen")==="1"}catch(e){}if(v)d.classList.add("intro-seen");var p=!(r||m||v);d.dataset.intro=p?"pending":"off";if(p){d.classList.add("intro-lock");setTimeout(function(){if(!d.classList.contains("intro-live")){d.classList.remove("intro-lock");d.classList.add("intro-seen");d.dataset.intro="off";try{sessionStorage.setItem("bfd-intro-seen","1")}catch(e){}}},12000)}}catch(e){}})();`;
+const INTRO_BOOTSTRAP = `(function(){try{var d=document.documentElement;var r=window.matchMedia("(prefers-reduced-motion: reduce)").matches||d.classList.contains("a11y-reduce-motion");var m=window.matchMedia("(max-width: 767px), (max-aspect-ratio: 3/4)").matches;var v=location.hash.length>1;try{v=v||sessionStorage.getItem("bfd-intro-seen")==="1"}catch(e){}if(v)d.classList.add("intro-seen");var p=!(r||m||v);d.dataset.intro=p?"pending":"off";if(p){d.classList.add("intro-lock");setTimeout(function(){if(!d.classList.contains("intro-live")){d.classList.remove("intro-lock");d.classList.add("intro-seen");d.dataset.intro="off";try{sessionStorage.setItem("bfd-intro-seen","1")}catch(e){}}},12000)}}catch(e){}})();`;
 
 export default function HomePage() {
   const { t } = useLanguage();

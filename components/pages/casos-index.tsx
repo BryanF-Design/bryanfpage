@@ -16,7 +16,8 @@ import { SPRING } from "@/lib/motion-fx";
 import { desktopShot, projects } from "@/lib/projects";
 import { cn } from "@/lib/utils";
 
-const TIPOS = ["web", "branding", "motion", "sistemas"] as const;
+// "Motion" se quitó (auditoría P1-5): no hay proyectos publicados de motion.
+const TIPOS = ["web", "branding", "sistemas"] as const;
 type Tipo = (typeof TIPOS)[number];
 type Filter = "all" | Tipo;
 
@@ -27,8 +28,7 @@ const isCase = (slug: string): slug is CaseSlug => (CASE_SLUGS as readonly strin
 
 /** Categoría de cada proyecto según lo que el propio proyecto dice ser:
  *  todos son sitios web; Repissa es "Marca y sitio web"; HomeFlow es una
- *  plataforma y CortMart usa Barber OS (sistemas). Motion aún no tiene
- *  proyectos publicados: la píldora lo dice en vez de prometer. */
+ *  plataforma y CortMart usa Barber OS (sistemas). */
 const EXTRA_TIPOS: Record<string, Tipo[]> = {
   "repissa-vercel-app": ["branding"],
   "homeflowoficial-com": ["sistemas"],
@@ -92,6 +92,27 @@ export function CasosIndex() {
     ];
   }, [t]);
 
+  // /casos#<slug> de un proyecto sin caso contado abajo (p. ej. Mixteca
+  // desde el hero, o CortMart): baja al índice y abre su ficha.
+  useEffect(() => {
+    let t = 0;
+    const sync = () => {
+      const id = window.location.hash.slice(1);
+      if (!id || isCase(id)) return;
+      const item = items.find((i) => i.id === id);
+      if (!item) return;
+      document.getElementById("indice")?.scrollIntoView({ block: "start" });
+      window.clearTimeout(t);
+      t = window.setTimeout(() => setOpen(item), 250);
+    };
+    sync();
+    window.addEventListener("hashchange", sync);
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener("hashchange", sync);
+    };
+  }, [items]);
+
   // ?tipo=… al entrar (enlace compartido) y al ir atrás/adelante.
   useEffect(() => {
     const read = () => {
@@ -135,7 +156,7 @@ export function CasosIndex() {
   }, []);
 
   return (
-    <section id="indice" aria-label={c.label} className="flex flex-col gap-gutter">
+    <section id="indice" aria-label={c.label} className="flex scroll-mt-24 flex-col gap-gutter">
       <div className="panel flex flex-col gap-4 px-4 py-4 shadow-soft sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <div ref={pillsRef} role="group" aria-label={c.label} className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {(["all", ...TIPOS] as Filter[]).map((f) => {
@@ -161,6 +182,9 @@ export function CasosIndex() {
           {shown.length} {c.count}
         </p>
       </div>
+
+      {/* Auditoría P1-5: qué se ve aquí y qué no (sin prometer de más). */}
+      <p className="px-1 text-pretty text-[0.9375rem] leading-relaxed text-ink/70">{c.note.replace("{n}", String(items.length))}</p>
 
       {shown.length === 0 ? (
         <div className="panel flex flex-col items-start gap-4 p-6 shadow-soft sm:p-8">
@@ -211,7 +235,9 @@ const CasosGrid = memo(function CasosGrid({ items, onOpen }: { items: Item[]; on
                 <ArrowRight className="h-4 w-4" />
               </span>
               {(item.caseSlug || item.cortmart) && (
-                <span className="absolute left-3 top-3 rounded-full bg-lime px-3 py-1 text-xs font-bold text-ink">{c.caseBadge}</span>
+                <span className="absolute left-3 top-3 rounded-full bg-lime px-3 py-1 text-xs font-bold text-ink">
+                  {item.cortmart ? c.cortBadge : c.caseBadge}
+                </span>
               )}
             </span>
             <span className="flex flex-1 flex-col gap-1 px-2 pb-2 pt-4">

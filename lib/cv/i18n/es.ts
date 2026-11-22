@@ -82,7 +82,7 @@ const es = {
       { title: "Cliente y negocio", desc: "Aterrizo el alcance, explico decisiones técnicas y acompaño cada implementación." },
       { title: "Diseño", desc: "Uno identidad visual, usabilidad, responsive y resultados de negocio." },
     ],
-    studioLabel: "proyectos digitales impulsados por el estudio BryanF Design desde 2020",
+    studioLabel: "proyectos digitales impulsados por el estudio BryanF Design desde 2018",
     marketsLabel: "México · España · Francia",
   },
   quests: {

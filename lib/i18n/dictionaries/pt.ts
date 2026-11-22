@@ -240,8 +240,8 @@ const pt: Dictionary = {
   },
   clients: {
     eyebrow: "Clientes",
-    label: "Marcas que confiaram",
-    subtitle: "Da grande corporação ao estúdio independente: o mesmo cuidado em cada entrega.",
+    label: "Marcas com as quais trabalhei",
+    subtitle: "A maioria por meio da Partum Design, Indusecc e Herman Miller, onde trabalhei; nem todas foram clientes diretos.",
     brands: "marcas",
   },
   entryServices: {
@@ -809,6 +809,8 @@ const pt: Dictionary = {
       fullCase: "Ver o caso completo",
       visit: "Visitar site",
       open: "Ver projeto",
+      note: "Aqui você vê {n} projetos publicados dos 150+ que fiz desde 2018. Quatro têm o caso contado a fundo (Koi, Element, Efficient e NKMOH). A CortMart é uma barbearia que usa o Barber OS: fiz o site quando liderava o desenvolvimento na Partum Design (por isso o rodapé diz Partum), e a história está na página do sistema para barbearias.",
+      cortBadge: "Barber OS",
     },
     showreel: {
       title: "Showreel",
@@ -817,6 +819,26 @@ const pt: Dictionary = {
       play: "Reproduzir todos os vídeos",
       pauseShort: "Pausar",
       playShort: "Reproduzir",
+    },
+    luminaLead: {
+      title: "Antes de mandar para o Bryan, qual é o seu nome e o seu negócio?",
+      name: "Seu nome",
+      business: "Seu negócio (ex.: barbearia, escritório, loja)",
+      send: "Enviar resumo pelo WhatsApp",
+      intro: "Olá Bryan, acabei de conversar com a Lumina no seu site.",
+      me: "Sou {name}, de {business}.",
+      plan: "Pacote que me interessa: {plan}, {price} MXN (entrada de 50%: {advance} MXN).",
+      told: "O que contei para a Lumina:",
+      mic: "Ditar mensagem",
+      micStop: "Parar de ditar",
+      micUnsupported: "Seu navegador não permite ditado; escreva sua mensagem.",
+    },
+    software: {
+      name: "Software sob medida",
+      price: "A partir de $10,000 MXN",
+      desc: "Processos, reservas, sistemas ou automação. Orçado conforme o escopo: não se paga aqui.",
+      cta: "Pedir orçamento no WhatsApp",
+      msg: "Olá Bryan, quero orçar um software sob medida (a partir de $10,000).",
     },
     faq: {
       title: "Perguntas frequentes",

@@ -77,7 +77,7 @@ const de: CvDict = {
       { title: "Kunde & Business", desc: "Ich definiere den Umfang, erkläre technische Entscheidungen und begleite jede Umsetzung." },
       { title: "Design", desc: "Ich verbinde visuelle Identität, Usability, Responsive Design und Geschäftsergebnisse." },
     ],
-    studioLabel: "digitale Projekte des Studios BryanF Design seit 2020",
+    studioLabel: "digitale Projekte des Studios BryanF Design seit 2018",
     marketsLabel: "Mexiko · Spanien · Frankreich",
   },
   quests: {

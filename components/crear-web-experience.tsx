@@ -27,7 +27,8 @@ const LuminaChat = dynamic(
 const FEATURE_ICONS = [Timer, Search, CreditCard];
 
 /** El paquete principal (el destacado del catálogo) y su precio fuente. */
-const FEATURED_PLAN = CONFIGURATOR_PLANS.find((p) => p.featured) ?? CONFIGURATOR_PLANS[0];
+/** Precio de entrada del sitio (Landing): el mismo "Desde $2,000" de la home. */
+const STARTING_PRICE = Math.min(...CONFIGURATOR_PLANS.filter((p) => p.id !== "maintenance").map((p) => p.price));
 
 function delay(ms: number) {
   return { "--hd": `${ms}ms` } as CSSProperties;
@@ -44,9 +45,6 @@ function delay(ms: number) {
  */
 export function CrearWebExperience() {
   const { t } = useLanguage();
-  const featuredName =
-    t.configurator.plans[FEATURED_PLAN.id as keyof typeof t.configurator.plans]?.name ??
-    t.configurator.plans.full.name;
 
   return (
     <>
@@ -166,11 +164,12 @@ export function CrearWebExperience() {
                     transform="rotate(-8 200 70)"
                   />
                 </svg>
+                {/* Auditoría P1-8: aquí va Bryan (quien arma tu web), no Lumina. */}
                 <Image
-                  src="/img/lumina/v2/cutout/normal.webp"
+                  src="/img/brand/bryan-cutout.webp"
                   alt=""
-                  width={1058}
-                  height={1100}
+                  width={1122}
+                  height={1114}
                   priority
                   sizes="(min-width: 1024px) 36rem, 26rem"
                   className="absolute bottom-[-2.5rem] left-1/2 h-[calc(100%+7rem)] w-auto max-w-[115%] -translate-x-1/2 object-contain object-bottom drop-shadow-[0_28px_36px_hsl(160_40%_8%/0.3)] sm:h-[calc(100%+8rem)] lg:bottom-[-3rem] lg:h-[calc(100%+8.5rem)] xl:h-[calc(100%+11rem)]"
@@ -190,9 +189,10 @@ export function CrearWebExperience() {
                   <Rocket className="h-5 w-5" />
                 </span>
                 <span className="min-w-0 flex-1 pr-1">
-                  <span className="block truncate text-xs font-semibold text-white/65">{featuredName}</span>
+                  {/* Auditoría P1-4: el mismo precio de entrada que la home. */}
+                  <span className="block truncate text-xs font-semibold text-white/65">{t.v2.hero.priceTop}</span>
                   <span className="block text-lg font-bold leading-tight tabular-nums text-lime">
-                    {formatMoney(FEATURED_PLAN.price, "MXN")} MXN
+                    {formatMoney(STARTING_PRICE, "MXN")} MXN
                   </span>
                 </span>
                 <span aria-hidden className="flex shrink-0 -space-x-2.5">

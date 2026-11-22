@@ -5,10 +5,11 @@ import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowDown, ArrowRight, ArrowUpRight, Calculator, MessageCircle, RotateCcw, Send, X } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, Calculator, MessageCircle, Mic, MicOff, RotateCcw, Send, X } from "lucide-react";
 import { FaWhatsapp } from "@/components/ui/wa-icon";
 
 import { cn } from "@/lib/utils";
+import { buildQuoteLinesMxn } from "@/lib/quote";
 import { GestureIcon } from "@/components/ui/gesture-icon";
 import { useFooterInView } from "@/lib/use-footer-in-view";
 import { useLanguage } from "@/lib/i18n/context";
@@ -92,6 +93,8 @@ Reglas:
 - Si no sabes algo, dilo y ofrece hablar con Bryan por WhatsApp con [[whatsapp]]. Nunca prometas ventas ni posiciones en Google.
 - Solo precios, paquetes y formas de pago de la lista. Si te piden algo que no está (descuento, promoción, otro precio), dilo con amabilidad y ofrece ajustar el alcance o hablar con Bryan.
 - No uses guiones largos.
+- Habla como una persona, en español mexicano natural y cercano. Nada de frases hechas de asistente como "Mi equipo está disponible para ayudarte", "Estoy aquí para guiarte paso a paso" o "Cuéntame qué necesitas y te guiaré con claridad". Bryan trabaja solo: nunca digas "mi equipo" ni "nuestro equipo".
+- Los botones son opcionales: di a dónde lleva cada uno, no digas que ya llevaste al visitante a ningún lado.
 - Usa HTML básico: <strong>, <br>, <ul>, <li>, <a>.`;
 }
 
@@ -124,8 +127,8 @@ function ensureIntentActions(userText: string, actions: LuminaAction[]) {
   const hasGo = (section: LuminaSection) => actions.some((a) => a.kind === "go" && a.section === section);
   const hasPage = (page: LuminaPage) => actions.some((a) => a.kind === "page" && a.page === page);
   if (OWNER_INTENT.test(userText)) {
-    if (!hasGo("nosotros") && actions.length < 5) actions.unshift({ kind: "go", section: "nosotros" });
-    if (!hasPage("conoceme") && actions.length < 5) actions.push({ kind: "page", page: "conoceme" });
+    // "Conoce a Bryan" lleva a /conoceme (auditoría P1-6), no a una sección.
+    if (!hasPage("conoceme") && actions.length < 5) actions.unshift({ kind: "page", page: "conoceme" });
   }
   if (BARBER_INTENT.test(userText) && !hasPage("barberias") && actions.length < 5) {
     actions.unshift({ kind: "page", page: "barberias" });
@@ -340,6 +343,91 @@ function usePastHero() {
   return past;
 }
 
+type Lead = { name: string; business: string };
+const LEAD_KEY = "bfd-lumina-lead";
+
+/** Dictado con Web Speech API (es-MX); el texto se suma a la caja. */
+function useDictation(onText: (text: string) => void) {
+  const [supported, setSupported] = useState(false);
+  const [listening, setListening] = useState(false);
+  const recRef = useRef<{ start: () => void; stop: () => void } | null>(null);
+  const onTextRef = useRef(onText);
+  onTextRef.current = onText;
+  useEffect(() => {
+    const w = window as unknown as { SpeechRecognition?: new () => unknown; webkitSpeechRecognition?: new () => unknown };
+    const Ctor = w.SpeechRecognition ?? w.webkitSpeechRecognition;
+    if (!Ctor) return;
+    const rec = new Ctor() as {
+      lang: string;
+      interimResults: boolean;
+      continuous: boolean;
+      onresult: (e: { results: ArrayLike<ArrayLike<{ transcript: string }> & { isFinal: boolean }> }) => void;
+      onend: () => void;
+      onerror: () => void;
+      start: () => void;
+      stop: () => void;
+    };
+    rec.lang = document.documentElement.lang || "es-MX";
+    rec.interimResults = false;
+    rec.continuous = false;
+    rec.onresult = (e) => {
+      const last = e.results[e.results.length - 1];
+      if (last && last.isFinal && last[0]) onTextRef.current(last[0].transcript.trim());
+    };
+    rec.onend = () => setListening(false);
+    rec.onerror = () => setListening(false);
+    recRef.current = rec;
+    setSupported(true);
+    return () => rec.stop();
+  }, []);
+  const toggle = () => {
+    const rec = recRef.current;
+    if (!rec) return;
+    if (listening) {
+      rec.stop();
+      setListening(false);
+    } else {
+      try {
+        rec.start();
+        setListening(true);
+      } catch {
+        setListening(false);
+      }
+    }
+  };
+  return { supported, listening, toggle };
+}
+
+/** Nombre y negocio antes de mandar el resumen a Bryan (auditoría P1-3). */
+function LeadForm({ lead, onSubmit }: { lead: Lead; onSubmit: (who: Lead) => void }) {
+  const { t } = useLanguage();
+  const L = t.v2.luminaLead;
+  const [name, setName] = useState(lead.name);
+  const [business, setBusiness] = useState(lead.business);
+  const field =
+    "h-11 w-full rounded-full border border-ink/[0.12] bg-white px-4 text-base text-ink outline-none focus-visible:border-forest focus-visible:shadow-[0_0_0_4px_hsl(var(--lime)/0.45)] sm:text-[0.9375rem]";
+  return (
+    <form
+      className="flex w-full flex-col gap-2 rounded-[1.25rem] bg-mint p-3 ring-1 ring-ink/[0.06]"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!name.trim() || !business.trim()) return;
+        onSubmit({ name: name.trim().slice(0, 80), business: business.trim().slice(0, 120) });
+      }}
+    >
+      <p className="text-sm font-semibold text-ink">{L.title}</p>
+      <label className="sr-only" htmlFor="lead-name">{L.name}</label>
+      <input id="lead-name" autoComplete="name" required value={name} onChange={(e) => setName(e.target.value)} placeholder={L.name} className={field} />
+      <label className="sr-only" htmlFor="lead-business">{L.business}</label>
+      <input id="lead-business" autoComplete="organization" required value={business} onChange={(e) => setBusiness(e.target.value)} placeholder={L.business} className={field} />
+      <button type="submit" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-lime px-4 text-sm font-semibold text-ink transition-transform active:scale-[0.97]">
+        <FaWhatsapp aria-hidden className="h-4 w-4" />
+        {L.send}
+      </button>
+    </form>
+  );
+}
+
 export function LuminaChat() {
   const { t } = useLanguage();
   const reducedMotion = useReducedMotionPreference();
@@ -348,6 +436,27 @@ export function LuminaChat() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [mood, setMood] = useState<Mood>("Normal");
+  // Nombre y negocio para el resumen de WhatsApp (sessionStorage).
+  const [lead, setLead] = useState<Lead>({ name: "", business: "" });
+  const [askLead, setAskLead] = useState(false);
+  useEffect(() => {
+    try {
+      const raw = window.sessionStorage.getItem(LEAD_KEY);
+      if (raw) setLead(JSON.parse(raw) as Lead);
+    } catch {
+      /* sin almacenamiento */
+    }
+  }, []);
+  function saveLead(who: Lead) {
+    setLead(who);
+    try {
+      window.sessionStorage.setItem(LEAD_KEY, JSON.stringify(who));
+    } catch {
+      /* sin almacenamiento */
+    }
+  }
+  // Dictado por voz (Web Speech API), donde el navegador lo permite.
+  const dictation = useDictation((text) => setInput((v) => (v ? `${v} ${text}` : text)));
   const [teaser, setTeaser] = useState(false);
   const [teaserDue, setTeaserDue] = useState(false);
   const isPhone = useIsPhone();
@@ -782,7 +891,9 @@ export function LuminaChat() {
       setMood(uncertain ? "Duda" : "Normal");
       if (uncertain) window.setTimeout(() => setMood("Normal"), 4000);
       if (data?.error) setRetryText(content);
-      else scheduleAutoNav(actions, intentOf(content));
+      // Auditoría P1-2: sin auto-navegación. Los botones quedan en la
+      // respuesta y solo llevan al destino si el visitante los toca.
+      else trackEvent("lumina_intent", { intent: intentOf(content) });
     } catch {
       setMessages((m) => [
         ...m,
@@ -919,13 +1030,59 @@ export function LuminaChat() {
     revealSection("configurador");
   }
 
-  function whatsappHref() {
+  // Auditoría P1-1: el resumen sí resume. Nombre y negocio (se piden antes
+  // de mandarlo), paquete con precio y anticipo (la última cotización que
+  // armó Lumina o, si no, la del configurador) y todo lo que contó.
+  function whatsappHref(who: Lead) {
+    const L = t.v2.luminaLead;
+    const lines: string[] = [L.intro];
+    if (who.name || who.business) {
+      lines.push(L.me.replace("{name}", who.name || "—").replace("{business}", who.business || "—"));
+    }
+    const sel = lastQuoteSelection();
+    if (sel) {
+      const total = buildQuoteLinesMxn(sel).reduce((a, l) => a + l.price, 0);
+      const planName =
+        (t.configurator.plans as Record<string, { name: string }>)[sel.planId]?.name ?? sel.planId;
+      const money = (n: number) => `$${n.toLocaleString("en-US")}`;
+      lines.push(
+        L.plan
+          .replace("{plan}", planName)
+          .replace("{price}", money(total))
+          .replace("{advance}", money(Math.ceil(total * 0.5)))
+      );
+    }
     const asks = messages
       .filter((m) => m.role === "user")
-      .slice(-4)
+      .slice(-8)
       .map((m) => `• ${m.content.slice(0, 220)}`);
-    const text = [t.lumina.actions.whatsappIntro, ...asks].join("\n");
-    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+    if (asks.length) lines.push("", L.told, ...asks);
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`;
+  }
+
+  function lastQuoteSelection(): { planId: string; moduleIds: string[]; sections: number } | null {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const q = messages[i].actions?.find((a) => a.kind === "quote");
+      if (q && q.kind === "quote") return { planId: q.quote.plan, moduleIds: q.quote.modules, sections: q.quote.sections };
+    }
+    try {
+      const raw = window.localStorage.getItem("bryanf_quote_v1");
+      if (!raw) return null;
+      const st = JSON.parse(raw) as { planId?: string; mods?: Record<string, boolean>; sections?: number };
+      if (!st.planId) return null;
+      return {
+        planId: st.planId,
+        moduleIds: Object.entries(st.mods ?? {}).filter(([, v]) => v).map(([k]) => k),
+        sections: Number(st.sections) || 0,
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  function openWhatsappSummary(who: Lead) {
+    trackEvent("lumina_action", { action: "whatsapp" });
+    window.open(whatsappHref(who), "_blank", "noopener,noreferrer");
   }
 
   function sectionLabel(section: LuminaSection) {
@@ -938,7 +1095,7 @@ export function LuminaChat() {
       configurador: t.nav.armaTuWeb,
       pago: t.configurator.step3.replace(/^\d+\.\s*/, ""),
       lumina: t.lumina.name,
-      nosotros: t.v2.about.cta,
+      nosotros: t.v2.about.title.split(/[.。]/)[0],
       faq: t.nav.faq,
     };
     return labels[section];
@@ -1037,20 +1194,25 @@ export function LuminaChat() {
               </button>
             );
           }
+          if (askLead) {
+            return <LeadForm key="lead" lead={lead} onSubmit={(who) => { saveLead(who); setAskLead(false); openWhatsappSummary(who); }} />;
+          }
           return (
-            <a
+            <button
               key="whatsapp"
-              href={whatsappHref()}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackEvent("lumina_action", { action: "whatsapp" })}
+              type="button"
+              onClick={() => {
+                // Primero nombre y negocio (una vez por sesión).
+                if (lead.name && lead.business) openWhatsappSummary(lead);
+                else setAskLead(true);
+              }}
               className={cn(pill, "self-start bg-lime text-ink hover:bg-white hover:ring-1 hover:ring-ink/10")}
             >
               <span className="grid size-8 shrink-0 place-items-center rounded-full bg-ink text-lime">
                 <FaWhatsapp aria-hidden className="h-4 w-4" />
               </span>
               {t.lumina.actions.whatsapp}
-            </a>
+            </button>
           );
         })}
       </div>
@@ -1216,6 +1378,20 @@ export function LuminaChat() {
                 enterKeyHint="send"
                 className="h-12 min-w-0 flex-1 rounded-full border border-ink/[0.12] bg-white px-5 text-base text-ink outline-none transition-[border-color,box-shadow] placeholder:text-ink/60 focus-visible:border-forest focus-visible:shadow-[0_0_0_4px_hsl(var(--lime)/0.45)] sm:text-[0.9375rem]"
               />
+              {dictation.supported && (
+                <button
+                  type="button"
+                  onClick={dictation.toggle}
+                  aria-pressed={dictation.listening}
+                  aria-label={dictation.listening ? t.v2.luminaLead.micStop : t.v2.luminaLead.mic}
+                  className={cn(
+                    "grid size-12 shrink-0 place-items-center rounded-full ring-1 ring-inset transition-[transform,background-color] duration-200 active:scale-95",
+                    dictation.listening ? "bg-ink text-lime ring-ink" : "bg-white text-ink ring-ink/15 hover:bg-mint"
+                  )}
+                >
+                  {dictation.listening ? <MicOff aria-hidden className="h-5 w-5" /> : <Mic aria-hidden className="h-5 w-5" />}
+                </button>
+              )}
               <button
                 type="submit"
                 disabled={loading || !input.trim()}
@@ -1241,12 +1417,17 @@ export function LuminaChat() {
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.98 }}
             transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
             style={
+              // Con teclado: la hoja se pega arriba del teclado y nunca pasa
+              // del 70 % del alto (la página se sigue viendo detrás).
               viewportBox
-                ? { top: viewportBox.top, height: viewportBox.height, bottom: "auto" }
+                ? (() => {
+                    const h = Math.min(viewportBox.height, Math.round(window.innerHeight * 0.7));
+                    return { top: viewportBox.top + viewportBox.height - h, height: h, bottom: "auto" };
+                  })()
                 : undefined
             }
             className={cn(
-              "fixed inset-0 z-[130] flex h-[100dvh] w-full flex-col overflow-hidden bg-white text-ink outline-none sm:inset-auto sm:bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] sm:h-auto sm:max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] sm:w-[min(92vw,24.5rem)] sm:rounded-[2rem] sm:shadow-[0_40px_80px_-30px_hsl(var(--ink)/0.55)] sm:ring-1 sm:ring-ink/[0.06]",
+              "fixed inset-x-0 bottom-0 z-[130] flex h-[70dvh] w-full flex-col overflow-hidden rounded-t-[1.75rem] bg-white text-ink shadow-[0_-24px_60px_-24px_hsl(var(--ink)/0.55)] outline-none ring-1 ring-ink/[0.06] sm:inset-auto sm:bottom-[calc(var(--fab-edge)+var(--fab-size)+var(--fab-gap))] sm:h-auto sm:max-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] sm:w-[min(92vw,24.5rem)] sm:rounded-[2rem] sm:shadow-[0_40px_80px_-30px_hsl(var(--ink)/0.55)] sm:ring-1 sm:ring-ink/[0.06]",
               // A la izquierda mientras el resumen de pago está a la vista (en
               // md y lg el resumen es ancho: un poco más angosto para no
               // rozar la columna de los botones).

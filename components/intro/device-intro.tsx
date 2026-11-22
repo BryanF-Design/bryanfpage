@@ -42,6 +42,8 @@ export const INTRO_SEEN_KEY = "bfd-intro-seen";
 let seenInMemory = false;
 function introSeen() {
   if (seenInMemory) return true;
+  // Llegar con un ancla (/#precios, /#configurador…) es ir directo a algo.
+  if (window.location.hash.length > 1) return true;
   try {
     return window.sessionStorage.getItem(INTRO_SEEN_KEY) === "1";
   } catch {

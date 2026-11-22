@@ -8,6 +8,7 @@ import { ClickTracking } from "@/components/analytics/click-tracking";
 import { LanguageProvider } from "@/lib/i18n/context";
 import { MotionPreferenceProvider } from "@/components/motion-preference-provider";
 import { SkipLink } from "@/components/skip-link";
+import { MobileTabBar } from "@/components/mobile-tab-bar";
 import { SITE_URL } from "@/lib/seo/service-pages";
 
 // Client-only widget, no SEO content: skip SSR entirely to shave initial payload.
@@ -235,6 +236,9 @@ const a11yBootstrap = `
 const fxBootstrap = `
   (function () {
     try {
+      // Revisión 2 / auditoría P1-2: si la visita entra por otra página, ya
+      // "entró al sitio": la intro 3D de la home no se dispara después.
+      if (location.pathname !== "/") { try { sessionStorage.setItem("bfd-intro-seen", "1"); } catch (e) {} }
       var d = document.documentElement;
       var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
         d.classList.contains("a11y-reduce-motion");
@@ -363,6 +367,7 @@ export default function RootLayout({
             {children}
             <LanguageNotice />
             <FloatingDock />
+            <MobileTabBar />
           </LanguageProvider>
           <AccessibilityPanel />
         </MotionPreferenceProvider>

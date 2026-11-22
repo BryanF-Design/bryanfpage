@@ -77,7 +77,7 @@ const ja: CvDict = {
       { title: "顧客とビジネス", desc: "要件を整理し、技術判断をわかりやすく説明し、導入まで伴走します。" },
       { title: "デザイン", desc: "ビジュアルアイデンティティ、使いやすさ、レスポンシブ、ビジネス成果をつなぎます。" },
     ],
-    studioLabel: "2020年以降 BryanF Design スタジオが手がけたデジタルプロジェクト",
+    studioLabel: "2018年以降 BryanF Design スタジオが手がけたデジタルプロジェクト",
     marketsLabel: "メキシコ · スペイン · フランス",
   },
   quests: {

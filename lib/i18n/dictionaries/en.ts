@@ -240,8 +240,8 @@ const en: Dictionary = {
   },
   clients: {
     eyebrow: "Clients",
-    label: "Brands that have trusted us",
-    subtitle: "From global corporations to independent studios: the same care in every delivery.",
+    label: "Brands I've worked with",
+    subtitle: "Most of them through Partum Design, Indusecc and Herman Miller, where I worked; not all were direct clients.",
     brands: "brands",
   },
   entryServices: {
@@ -809,6 +809,8 @@ const en: Dictionary = {
       fullCase: "See the full case",
       visit: "Visit site",
       open: "View project",
+      note: "Here you see {n} published projects out of the 150+ I've built since 2018. Four have a full case study (Koi, Element, Efficient and NKMOH). CortMart is a barbershop that uses Barber OS: I built its site while leading development at Partum Design (that's why its footer says Partum), and its story is on the barbershop system page.",
+      cortBadge: "Barber OS",
     },
     showreel: {
       title: "Showreel",
@@ -817,6 +819,26 @@ const en: Dictionary = {
       play: "Play all videos",
       pauseShort: "Pause",
       playShort: "Play",
+    },
+    luminaLead: {
+      title: "Before I send this to Bryan, what's your name and what's your business?",
+      name: "Your name",
+      business: "Your business (e.g. barbershop, firm, store)",
+      send: "Send summary on WhatsApp",
+      intro: "Hi Bryan, I was just chatting with Lumina on your site.",
+      me: "I'm {name}, from {business}.",
+      plan: "Package I'm interested in: {plan}, {price} MXN (50% deposit: {advance} MXN).",
+      told: "What I told Lumina:",
+      mic: "Dictate message",
+      micStop: "Stop dictating",
+      micUnsupported: "Your browser doesn't support dictation; please type your message.",
+    },
+    software: {
+      name: "Custom software",
+      price: "From $10,000 MXN",
+      desc: "Processes, bookings, systems or automation. Quoted by scope: not paid here.",
+      cta: "Get a quote on WhatsApp",
+      msg: "Hi Bryan, I'd like a quote for custom software (from $10,000).",
     },
     faq: {
       title: "Frequently asked questions",
