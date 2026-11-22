@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, CreditCard, Heart, Search, Sparkle, Timer } from "lucide-react";
-import { FaWhatsapp } from "react-icons/fa";
+import { FaWhatsapp } from "@/components/ui/wa-icon";
 
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n/context";
@@ -346,9 +346,9 @@ export function HeroPop() {
                     <Image
                       src={mobileShot(slug)}
                       alt=""
-                      fill
-                      sizes="40px"
-                      className="object-cover object-top"
+                      width={40}
+                      height={40}
+                      className="absolute inset-0 h-full w-full object-cover object-top"
                     />
                   </span>
                 ))}

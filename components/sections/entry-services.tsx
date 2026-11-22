@@ -127,9 +127,8 @@ function CardMock({ fromLabel }: { fromLabel: string }) {
           <Image
             src="/img/brand/logo-dark.png"
             alt=""
-            width={720}
-            height={253}
-            sizes="96px"
+            width={96}
+            height={34}
             className="h-6 w-auto"
           />
           <span className="grid size-8 place-items-center rounded-full bg-lime text-ink">
@@ -143,9 +142,9 @@ function CardMock({ fromLabel }: { fromLabel: string }) {
               <Image
                 src="/img/brand/bryan-cutout.webp"
                 alt=""
-                fill
-                sizes="128px"
-                className="origin-top scale-[1.1] object-cover object-top"
+                width={64}
+                height={64}
+                className="absolute inset-0 h-full w-full origin-top scale-[1.1] object-cover object-top"
               />
             </span>
             <span className="mt-3 block text-lg font-bold leading-tight tracking-[-0.01em]">Bryan F.</span>
@@ -190,9 +189,9 @@ function MiniCardMock({ fromLabel }: { fromLabel: string }) {
             <Image
               src="/img/brand/bryan-cutout.webp"
               alt=""
-              fill
-              sizes="128px"
-              className="origin-top scale-[1.1] object-cover object-top"
+              width={64}
+              height={64}
+              className="absolute inset-0 h-full w-full origin-top scale-[1.1] object-cover object-top"
             />
           </span>
           <span className="min-w-0 flex-1">

@@ -148,7 +148,7 @@ const jsonLd = {
       image: `${SITE_URL}/img/og-bryanf-apex.png`,
       email: "bryanf@bryanfdesign.com",
       telephone: "+525663012505",
-      priceRange: "Desde $3,500 MXN",
+      priceRange: "Desde $2,000 MXN",
       currenciesAccepted: "MXN, USD",
       paymentAccepted: "Tarjeta de crédito, Tarjeta de débito, Mercado Pago, Transferencia bancaria",
       foundingDate: "2020",

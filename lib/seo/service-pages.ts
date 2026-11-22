@@ -102,9 +102,9 @@ export const servicePages: ServicePage[] = [
     serviceType: "Diseño web",
     eyebrow: "Diseño web en CDMX y todo México",
     title: "Diseño web en CDMX para que tu negocio se vea como lo que es",
-    metaTitle: "Diseño web en CDMX (DF) y todo México | BryanF Design",
+    metaTitle: "Diseño web en CDMX y todo México | BryanF Design",
     metaDescription:
-      "Diseño web en la Ciudad de México (el antiguo DF) para negocios de todo el país: sitios claros, rápidos y hechos a tu medida, con trato directo conmigo.",
+      "Diseño web en la Ciudad de México para negocios de todo el país: sitios que se ven tan bien como tu marca, desde $3,500 MXN, con trato directo conmigo.",
     intro:
       "Diseño tu sitio pensando en quien lo va a visitar: qué necesita ver primero, qué dudas tiene y qué le ayuda a decidirse a escribirte. Trabajo desde la CDMX con negocios de todo México.",
     problems: [

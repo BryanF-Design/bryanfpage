@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowDown, ArrowRight, ArrowUpRight, Calculator, MessageCircle, RotateCcw, Send, X } from "lucide-react";
-import { FaWhatsapp } from "react-icons/fa";
+import { FaWhatsapp } from "@/components/ui/wa-icon";
 
 import { cn } from "@/lib/utils";
 import { GestureIcon } from "@/components/ui/gesture-icon";
@@ -88,7 +88,8 @@ ${actionsPrompt(section)}
 Reglas:
 - Responde siempre en ${languageName}, sin importar en qué idioma esté escrito este prompt.
 - Breve: 2 a 4 líneas, una idea por línea. Termina con una pregunta o un siguiente paso.
-- Si preguntan precio sin más contexto: los proyectos empiezan en ${"$"}3,500 MXN y hay servicios de entrada desde ${"$"}350 MXN; pregunta qué necesita y recomiéndale una opción concreta con su botón.
+- Si preguntan precio sin más contexto: una landing cuesta ${"$"}2,000 MXN y queda lista desde 3 días; el sitio completo ${"$"}3,500 MXN, y hay servicios de entrada desde ${"$"}350 MXN. Pregunta qué necesita y recomiéndale una opción concreta con su botón.
+- Si no sabes algo, dilo y ofrece hablar con Bryan por WhatsApp con [[whatsapp]]. Nunca prometas ventas ni posiciones en Google.
 - Solo precios, paquetes y formas de pago de la lista. Si te piden algo que no está (descuento, promoción, otro precio), dilo con amabilidad y ofrece ajustar el alcance o hablar con Bryan.
 - No uses guiones largos.
 - Usa HTML básico: <strong>, <br>, <ul>, <li>, <a>.`;
@@ -101,14 +102,55 @@ Reglas:
  */
 const OWNER_INTENT =
   /(qui[eé]n|quien)\s+(es|est[aá])\s+(el\s+|la\s+)?(due[ñn]o|due[ñn]a|fundador|fundadora|bryan|detr[aá]s|a cargo)|\bqui[eé]n es bryan\b|who\s+(is|owns|runs|founded)|owner|founder|fondateur|propri[ée]taire|gr[üu]nder|inhaber|dono|fundador/i;
+const BARBER_INTENT = /barber|peluquer|sal[oó]n de belleza|barbershop|barbier|理容|理发/i;
+const PAY_INTENT = /mercado\s*pago|tarjeta|spei|transferencia|c[oó]mo (se )?pag|formas? de pago|pay with|payment|paiement|zahl|pagamento|支払|付款/i;
+const PRICE_INTENT = /cu[aá]nto cuesta|precio|cost|price|prix|preis|preço|料金|多少钱|landing/i;
+const WANT_INTENT = /quiero (mi|una) p[aá]gina|quiero mi (web|sitio)|i want (my|a) (website|site)|je veux mon site|quero meu site/i;
 const BUDGET_INTENT =
   /(\$\s?\d|\d[\d,.]*\s*(mxn|pesos|mil)\b|presupuesto|budget|caro|car[ií]simo|no me alcanza|muy justo|se me hace justo|expensive|cher|teuer|caro demais)/i;
 
+/** Intención de la pregunta (para medir qué preguntas llevan a qué sección). */
+function intentOf(userText: string) {
+  if (OWNER_INTENT.test(userText)) return "bryan";
+  if (BARBER_INTENT.test(userText)) return "barberias";
+  if (PAY_INTENT.test(userText)) return "pago";
+  if (WANT_INTENT.test(userText)) return "quiero_pagina";
+  if (PRICE_INTENT.test(userText) || BUDGET_INTENT.test(userText)) return "precio";
+  return "otra";
+}
+
 function ensureIntentActions(userText: string, actions: LuminaAction[]) {
   const has = (kind: LuminaAction["kind"]) => actions.some((a) => a.kind === kind);
-  if (OWNER_INTENT.test(userText) && !actions.some((a) => a.kind === "page" && a.page === "conoceme")) {
-    if (actions.length < 5) actions.unshift({ kind: "page", page: "conoceme" });
+  const hasGo = (section: LuminaSection) => actions.some((a) => a.kind === "go" && a.section === section);
+  const hasPage = (page: LuminaPage) => actions.some((a) => a.kind === "page" && a.page === page);
+  if (OWNER_INTENT.test(userText)) {
+    if (!hasGo("nosotros") && actions.length < 5) actions.unshift({ kind: "go", section: "nosotros" });
+    if (!hasPage("conoceme") && actions.length < 5) actions.push({ kind: "page", page: "conoceme" });
   }
+  if (BARBER_INTENT.test(userText) && !hasPage("barberias") && actions.length < 5) {
+    actions.unshift({ kind: "page", page: "barberias" });
+  }
+  // Preguntas de pago: siempre a la sección de pago (antes que cualquier otra).
+  if (PAY_INTENT.test(userText) && !hasGo("pago") && actions.length < 5) {
+    actions.unshift({ kind: "go", section: "pago" });
+  }
+  if (WANT_INTENT.test(userText)) {
+    if (!has("quote") && actions.length < 5) actions.push({ kind: "quote", quote: { plan: "landing", modules: [], sections: 0 } });
+    if (!has("whatsapp") && actions.length < 5) actions.push({ kind: "whatsapp" });
+  }
+  // "¿Cuánto cuesta…?" lleva a la sección de precios (las tarjetas), aunque
+  // el modelo también haya armado una cotización.
+  if (
+    PRICE_INTENT.test(userText) &&
+    !WANT_INTENT.test(userText) &&
+    !BARBER_INTENT.test(userText) &&
+    !has("go") &&
+    actions.length < 5
+  ) {
+    actions.unshift({ kind: "go", section: "precios" });
+  }
+  // Nunca sin siguiente paso: si no quedó ningún botón, WhatsApp con Bryan.
+  if (!actions.length) actions.push({ kind: "whatsapp" });
   if (BUDGET_INTENT.test(userText) && !has("quote") && !has("go") && !has("page") && actions.length < 5) {
     actions.push({ kind: "go", section: "precios" });
   }
@@ -740,7 +782,7 @@ export function LuminaChat() {
       setMood(uncertain ? "Duda" : "Normal");
       if (uncertain) window.setTimeout(() => setMood("Normal"), 4000);
       if (data?.error) setRetryText(content);
-      else scheduleAutoNav(actions);
+      else scheduleAutoNav(actions, intentOf(content));
     } catch {
       setMessages((m) => [
         ...m,
@@ -777,7 +819,7 @@ export function LuminaChat() {
     // En escritorio, al ir al cotizador, el panel se muda a la izquierda para
     // no tapar el resumen ni los botones de pago (si no cabe, se recoge).
     if (isPhone) setOpen(false);
-    else if (id === "configurador") {
+    else if (id === "configurador" || id === "pago") {
       if (window.innerWidth >= 768) setDockLeft(true);
       else setOpen(false);
     }
@@ -787,7 +829,7 @@ export function LuminaChat() {
         target.classList.remove("lumina-spot");
         void target.offsetWidth;
         target.classList.add("lumina-spot");
-        window.setTimeout(() => target.classList.remove("lumina-spot"), 2600);
+        window.setTimeout(() => target.classList.remove("lumina-spot"), 2000);
       },
       isPhone ? 260 : 0
     );
@@ -837,18 +879,25 @@ export function LuminaChat() {
     if (autoNavRef.current) window.clearTimeout(autoNavRef.current);
     autoNavRef.current = null;
   }
-  function scheduleAutoNav(actions: LuminaAction[]) {
+  function scheduleAutoNav(actions: LuminaAction[], intent: string) {
     cancelAutoNav();
-    if (isPhone || window.matchMedia("(max-width: 767px)").matches) return;
+    const phone = isPhone || window.matchMedia("(max-width: 767px)").matches;
     const nav = actions.filter((a) => a.kind === "page" || a.kind === "go" || a.kind === "quote");
-    if (nav.length !== 1) return;
-    const action = nav[0];
+    // Primero una sección de esta misma página; si no, la única acción.
+    const go = nav.find((a) => a.kind === "go");
+    const action = go ?? (nav.length === 1 ? nav[0] : null);
+    if (!action) return;
+    trackEvent("lumina_route", {
+      intent,
+      target: action.kind === "go" ? action.section : action.kind === "page" ? action.page : "cotizador",
+    });
+    // En teléfono se deja leer un poco más; al llegar, el chat se minimiza.
     autoNavRef.current = window.setTimeout(() => {
       autoNavRef.current = null;
       if (action.kind === "page") goToPage(action.page);
       else if (action.kind === "go") goTo(action.section);
       else if (action.kind === "quote") applyQuote(action.quote);
-    }, 1600);
+    }, phone ? 2600 : 1600);
   }
   useEffect(() => () => cancelAutoNav(), []);
 
@@ -887,6 +936,9 @@ export function LuminaChat() {
       servicios: t.nav.serviciosEntrada,
       precios: t.nav.precios,
       configurador: t.nav.armaTuWeb,
+      pago: t.configurator.step3.replace(/^\d+\.\s*/, ""),
+      lumina: t.lumina.name,
+      nosotros: t.v2.about.cta,
       faq: t.nav.faq,
     };
     return labels[section];

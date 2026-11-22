@@ -16,7 +16,7 @@ export function PhoneMockup({ src, alt, className }: { src: string; alt: string;
     <div className={cn("phone-turn relative mx-auto w-[11.5rem] md:w-[13rem]", className)}>
       <div className="rounded-[2.2rem] bg-ink p-[0.45rem] shadow-float">
         <div className="relative aspect-[390/845] overflow-hidden rounded-[1.8rem] bg-white">
-          <Image src={src} alt={alt} fill loader={thumbLoader} sizes="13rem" className="object-cover object-top" />
+          <Image src={src} alt={alt} width={208} height={451} loader={thumbLoader} className="absolute inset-0 h-full w-full object-cover object-top" />
           <span aria-hidden className="absolute left-1/2 top-2 h-[1.15rem] w-[4.2rem] -translate-x-1/2 rounded-full bg-ink" />
         </div>
       </div>

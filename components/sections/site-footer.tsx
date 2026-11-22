@@ -5,8 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, type MotionStyle } from "framer-motion";
 import { ArrowUp, ArrowUpRight, LogIn, Mail, Phone, Star } from "lucide-react";
+import { FaWhatsapp } from "@/components/ui/wa-icon";
 import {
-  FaWhatsapp,
   FaInstagram,
   FaFacebookF,
   FaLinkedinIn,
@@ -46,23 +46,22 @@ const social = [
 // con el dominio .com verificado: el sitio nunca enlaza al .mx.
 const CLIENT_PORTAL = "https://access.bryanfdesign.com/";
 
-const linkClass =
-  "link-grow group/link relative inline-flex min-h-11 items-center gap-1.5 text-[0.9375rem] text-white/70 transition-colors hover:text-white lg:min-h-10";
+// Clases largas movidas a CSS (.f-link / .f-col-link en globals.css): el
+// pie repite estos enlaces muchas veces y así el HTML pesa menos.
+const linkClass = "link-grow group/link f-link";
 // Navegación y servicios van lado a lado en dos columnas de texto desde el
 // teléfono (antes eran chips que ocupaban media pantalla).
 const listClass = "flex flex-col";
-const columnLinkClass =
-  "link-grow group/link relative inline-flex min-h-11 min-w-11 items-center gap-1.5 text-[0.9375rem] leading-snug text-white/80 transition-colors hover:text-white sm:leading-[inherit] sm:text-white/70 lg:min-h-10";
+const columnLinkClass = "link-grow group/link f-col-link";
 const headingClass =
   "mb-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-lime sm:mb-3";
 
 /** Flecha que asoma al pasar el puntero por un enlace de columna. */
 function LinkArrow() {
   return (
-    <ArrowUpRight
-      aria-hidden
-      className="hidden h-3.5 w-3.5 -translate-x-1 text-lime opacity-0 transition-[opacity,transform] duration-200 group-hover/link:translate-x-0 group-hover/link:opacity-100 sm:block"
-    />
+    <span aria-hidden className="f-arrow">
+      ↗
+    </span>
   );
 }
 
@@ -189,9 +188,8 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                   <Image
                     src="/img/brand/logo-light.png"
                     alt="BryanF Design"
-                    width={720}
-                    height={253}
-                    sizes="150px"
+                    width={150}
+                    height={53}
                     className="h-9 w-auto sm:h-11 md:h-12"
                   />
                 </Link>

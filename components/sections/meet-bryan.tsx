@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 import Image from "next/image";
 import Link from "next/link";
 import { Check, CodeXml, Crosshair, Gauge, Network, Sparkle, type LucideIcon } from "lucide-react";
-import { FaWhatsapp } from "react-icons/fa";
+import { FaWhatsapp } from "@/components/ui/wa-icon";
 
 import { ChapterMark } from "@/components/sections/chapter-mark";
 import { Button, ButtonArrow } from "@/components/ui/button";

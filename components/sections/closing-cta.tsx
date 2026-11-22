@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, Sparkle } from "lucide-react";
-import { FaWhatsapp } from "react-icons/fa";
+import { FaWhatsapp } from "@/components/ui/wa-icon";
 
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { GestureIcon } from "@/components/ui/gesture-icon";
@@ -45,7 +45,7 @@ const FAN = [
 ];
 
 /** Teléfono de tinta con la primera pantalla del sitio (390 × 845). */
-function Phone({ slug, sizes }: { slug: string; sizes: string }) {
+function Phone({ slug }: { slug: string }) {
   return (
     <div
       className="aspect-[390/800] bg-ink p-[3.2%] shadow-[0_30px_50px_-20px_hsl(var(--ink)/0.55)] ring-1 ring-ink/10"
@@ -62,10 +62,10 @@ function Phone({ slug, sizes }: { slug: string; sizes: string }) {
           <Image
             src={mobileShot(slug)}
             alt=""
-            fill
-            sizes={sizes}
+            width={240}
+            height={492}
             quality={75}
-            className="object-cover object-top"
+            className="absolute inset-0 h-full w-full object-cover object-top"
           />
         </span>
       </div>
@@ -133,9 +133,9 @@ export function ClosingCta() {
                     <Image
                       src={mobileShot(slug)}
                       alt=""
-                      fill
-                      sizes="40px"
-                      className="object-cover object-top"
+                      width={40}
+                      height={40}
+                      className="absolute inset-0 h-full w-full object-cover object-top"
                     />
                   </span>
                 ))}
@@ -182,10 +182,7 @@ export function ClosingCta() {
                     className={cn("absolute", phone.className)}
                     style={{ "--fx-delay": phone.delay } as CSSProperties}
                   >
-                    <Phone
-                      slug={phone.slug}
-                      sizes="(min-width: 1280px) 240px, (min-width: 640px) 180px, 150px"
-                    />
+                    <Phone slug={phone.slug} />
                   </div>
                 ))}
                 <Sparkle className="float-y absolute right-[1%] top-[4%] z-[3] h-8 w-8 fill-ink text-ink sm:h-10 sm:w-10" />

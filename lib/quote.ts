@@ -10,6 +10,7 @@
 import {
   CONFIGURATOR_MODULES,
   CONFIGURATOR_PLANS,
+  DEFAULT_PLAN_ID,
   SECTION_PRICE,
 } from "./catalog";
 import { mxnToUsd, type Currency } from "./currency";
@@ -34,7 +35,7 @@ export function normalizeSelection(raw: unknown): QuoteSelection {
     typeof obj.planId === "string" &&
     CONFIGURATOR_PLANS.some((p) => p.id === obj.planId)
       ? obj.planId
-      : CONFIGURATOR_PLANS[0].id;
+      : DEFAULT_PLAN_ID;
   const moduleIds = Array.isArray(obj.moduleIds)
     ? obj.moduleIds.filter(
         (id): id is string =>
@@ -52,7 +53,9 @@ export function normalizeSelection(raw: unknown): QuoteSelection {
 export function buildQuoteLinesMxn(sel: QuoteSelection): QuoteLineMxn[] {
   const lines: QuoteLineMxn[] = [];
   const plan =
-    CONFIGURATOR_PLANS.find((p) => p.id === sel.planId) ?? CONFIGURATOR_PLANS[0];
+    CONFIGURATOR_PLANS.find((p) => p.id === sel.planId) ??
+    CONFIGURATOR_PLANS.find((p) => p.id === DEFAULT_PLAN_ID) ??
+    CONFIGURATOR_PLANS[0];
   lines.push({ id: `plan:${plan.id}`, price: plan.price });
 
   for (const m of CONFIGURATOR_MODULES) {

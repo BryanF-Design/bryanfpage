@@ -12,6 +12,7 @@ import {
   Mail,
   Minus,
   Nfc,
+  PanelTop,
   Plus,
   RefreshCw,
   Rocket,
@@ -23,8 +24,9 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import Image from "next/image";
-import { FaWhatsapp } from "react-icons/fa";
-import { SiStripe, SiMercadopago } from "react-icons/si";
+import { FaWhatsapp } from "@/components/ui/wa-icon";
+import { SiStripe } from "react-icons/si";
+import { SiMercadopago } from "@/components/ui/wa-icon";
 
 const STRIPE_BRAND = "#635BFF";
 const MERCADOPAGO_BRAND = "#00B1EA";
@@ -59,6 +61,7 @@ const MAX_SECTIONS = 50;
 
 /** Íconos redondos de cada paquete y módulo, por id del catálogo. */
 const PLAN_ICONS: Record<string, LucideIcon> = {
+  landing: PanelTop,
   full: Rocket,
   update: RefreshCw,
   maintenance: ShieldCheck,
@@ -87,9 +90,39 @@ function StepHeader({ n, id, label }: { n: number; id?: string; label: string })
 }
 
 /** Un paso del cobro: la insignia y un riel punteado que baja al siguiente. */
-function Step({ children, last = false }: { children: ReactNode; last?: boolean }) {
+/** Cifra que se mueve suave (200 ms) al cambiar, nunca de golpe (Prompt 4). */
+function TweenMoney({ value, currency }: { value: number; currency: Currency }) {
+  const [shown, setShown] = useState(value);
+  const from = useRef(value);
+  useEffect(() => {
+    if (from.current === value) return;
+    if (isReducedMotionRequested()) {
+      from.current = value;
+      setShown(value);
+      return;
+    }
+    const start = performance.now();
+    const a = from.current;
+    let raf = 0;
+    const tick = (now: number) => {
+      const k = Math.min(1, (now - start) / 200);
+      const eased = 1 - Math.pow(1 - k, 3);
+      setShown(k < 1 ? a + (value - a) * eased : value);
+      if (k < 1) raf = requestAnimationFrame(tick);
+      else from.current = value;
+    };
+    raf = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(raf);
+      from.current = value;
+    };
+  }, [value]);
+  return <>{formatMoney(shown === value ? value : Math.round(shown), currency)}</>;
+}
+
+function Step({ children, last = false, id }: { children: ReactNode; last?: boolean; id?: string }) {
   return (
-    <div data-fx="up" className="relative">
+    <div id={id} data-fx="up" className="relative scroll-mt-28">
       {!last && (
         <span
           aria-hidden
@@ -676,7 +709,7 @@ export function Configurator({
       ...items.map((it) => `• ${it.source}: ${display(it.price)}`),
       "",
       `${t.configurator.totalProject}: ${formatMoney(projectTotal, currency)}`,
-      `${t.configurator.payNow}: ${formatMoney(payableNow, currency)}`,
+      `${t.configurator.payNow}: $<TweenMoney value={payableNow} currency={currency} />`,
     ].join("\n")
   )}`;
   const remaining = Math.max(0, projectTotal - payableNow);
@@ -733,11 +766,11 @@ export function Configurator({
               <StepHeader n={1} id="configurator-plan-label" label={t.configurator.step1} />
             </p>
             {/* Elección única: radios nativos (flechas del teclado incluidas).
-                Filas horizontales hasta lg; desde lg, tres fichas. */}
+                Filas horizontales hasta lg; desde lg, fichas en 2 columnas. */}
             <div
               role="radiogroup"
               aria-labelledby="configurator-plan-label"
-              className="mt-4 grid gap-2.5 sm:mt-5 sm:pl-14 lg:grid-cols-3 lg:gap-3"
+              className="mt-4 grid gap-2.5 sm:mt-5 sm:pl-14 lg:grid-cols-2 lg:gap-3"
             >
               {PLANS.map((p) => {
                 const active = p.id === planId;
@@ -747,8 +780,9 @@ export function Configurator({
                     key={p.id}
                     className={cn(
                       "group relative grid min-h-11 cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2.5 rounded-card p-3.5 text-left text-ink transition-[background-color,box-shadow,transform] duration-300 [transition-timing-function:var(--ease-out)] hover:-translate-y-0.5 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ink has-[:focus-visible]:ring-offset-2 sm:gap-x-4 sm:p-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:content-start lg:items-start lg:gap-x-3 lg:gap-y-0 lg:p-5",
+                      // Activo: verde oscuro con acento lima (Prompt 4).
                       active
-                        ? "bg-lime shadow-[0_18px_36px_-20px_hsl(var(--lime-deep)/0.95)]"
+                        ? "bg-forest text-white shadow-[0_18px_36px_-20px_hsl(var(--ink)/0.8)] ring-2 ring-inset ring-lime"
                         : "bg-mint ring-1 ring-inset ring-ink/10 hover:ring-ink/30"
                     )}
                   >
@@ -764,7 +798,7 @@ export function Configurator({
                       aria-hidden
                       className={cn(
                         "grid size-11 place-items-center rounded-full transition-colors duration-300 lg:col-start-1 lg:row-start-1",
-                        active ? "bg-ink text-lime" : "bg-white text-ink ring-1 ring-ink/10"
+                        active ? "bg-lime text-ink" : "bg-white text-ink ring-1 ring-ink/10"
                       )}
                     >
                       <Icon className="h-5 w-5" />
@@ -773,7 +807,7 @@ export function Configurator({
                       <span className="flex items-center gap-1.5 text-[0.9375rem] font-semibold leading-tight">
                         {p.name}
                         {p.featured && (
-                          <Sparkle aria-hidden className="h-3.5 w-3.5 shrink-0 fill-ink text-ink" />
+                          <Sparkle aria-hidden className={cn("h-3.5 w-3.5 shrink-0", active ? "fill-lime text-lime" : "fill-ink text-ink")} />
                         )}
                       </span>
                       <span className="display-title mt-1 block text-[1.6rem] tabular-nums sm:mt-0 sm:text-[1.75rem] lg:mt-1.5 lg:text-[2rem]">
@@ -785,7 +819,7 @@ export function Configurator({
                       className={cn(
                         "grid size-7 place-items-center rounded-full transition-all duration-300 [transition-timing-function:var(--ease-pop)] lg:col-start-2 lg:row-start-1 lg:justify-self-end",
                         active
-                          ? "scale-100 bg-ink text-lime"
+                          ? "scale-100 bg-lime text-ink"
                           : "scale-90 text-transparent ring-[1.5px] ring-inset ring-ink/25"
                       )}
                     >
@@ -794,11 +828,23 @@ export function Configurator({
                     <span
                       className={cn(
                         "col-span-3 text-pretty text-[0.9375rem] leading-snug sm:col-span-1 sm:col-start-2 lg:col-span-2 lg:col-start-1 lg:row-start-3 lg:mt-2 lg:text-sm",
-                        active ? "text-ink/75" : "text-muted-foreground"
+                        active ? "text-white/75" : "text-muted-foreground"
                       )}
                     >
                       {p.desc}
                     </span>
+                    {/* Qué incluye: 3 puntos por paquete, junto al precio. */}
+                    <ul
+                      aria-label={t.configurator.includesLabel}
+                      className={cn("col-span-3 grid gap-1 text-sm leading-snug sm:col-span-1 sm:col-start-2 lg:col-span-2 lg:col-start-1 lg:row-start-4 lg:mt-3", active ? "text-white/85" : "text-ink/80")}
+                    >
+                      {p.includes.map((item) => (
+                        <li key={item} className="flex items-start gap-2">
+                          <Check aria-hidden className={cn("mt-0.5 h-3.5 w-3.5 shrink-0", active && "text-lime")} strokeWidth={3} />
+                          <span className="min-w-0">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </label>
                 );
               })}
@@ -820,7 +866,7 @@ export function Configurator({
                 return (
                   <label
                     key={m.id}
-                    className="flex min-h-16 cursor-pointer items-center gap-3 rounded-[calc(var(--r-card)-0.375rem)] bg-white p-2.5 pr-3 transition-colors duration-300 hover:bg-white/70 has-[:checked]:bg-lime-soft has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ink sm:p-3 sm:pr-4"
+                    className="flex min-h-16 cursor-pointer items-center gap-3 rounded-[calc(var(--r-card)-0.375rem)] bg-white p-2.5 pr-3 transition-colors duration-300 hover:bg-white/70 has-[:checked]:bg-lime has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ink sm:p-3 sm:pr-4"
                   >
                     <span
                       aria-hidden
@@ -906,8 +952,8 @@ export function Configurator({
             </div>
           </Step>
 
-          {/* Paso 3: modalidad, moneda y cupón. */}
-          <Step last>
+          {/* Paso 3: modalidad, moneda y cupón (#pago: aquí lleva Lumina). */}
+          <Step last id="pago">
             <fieldset>
               <legend className="px-1 sm:px-0">
                 <StepHeader n={3} label={t.configurator.step3} />
@@ -1292,6 +1338,23 @@ export function Configurator({
                   </div>
                 </div>
               )}
+
+              {/* Enviar por WhatsApp: el resumen completo va prellenado. */}
+              <Button
+                asChild
+                variant="ghost"
+                className="w-full text-white hover:bg-white/[0.06] hover:text-white"
+              >
+                <a
+                  href={quoteWhatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-track-service={`configurador_${plan.id}`}
+                >
+                  <FaWhatsapp aria-hidden className="h-4 w-4 text-lime" />
+                  {t.configurator.sendQuoteWhatsapp}
+                </a>
+              </Button>
 
               {/* Enviar la cotización por correo: pide el correo y confirma. */}
               <div className="relative flex flex-col gap-2">

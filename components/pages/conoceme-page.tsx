@@ -10,11 +10,14 @@ import { useLanguage } from "@/lib/i18n/context";
 const StackOrbit = dynamic(() =>
   import("@/components/sections/stack-orbit").then((m) => m.StackOrbit)
 );
+const ProcessOrbital = dynamic(() =>
+  import("@/components/sections/process-orbital").then((m) => m.ProcessOrbital)
+);
 const ClosingCta = dynamic(() =>
   import("@/components/sections/closing-cta").then((m) => m.ClosingCta)
 );
 
-/** /conoceme — la historia de Bryan y su stack completo (antes en el inicio). */
+/** /conoceme — la historia de Bryan, su proceso completo y su stack. */
 export function ConocemePage() {
   const { t } = useLanguage();
   return (
@@ -25,7 +28,9 @@ export function ConocemePage() {
         subtitle={t.pages.conoceme.subtitle}
       />
       <MeetBryan chapter={1} />
-      <StackOrbit chapter={2} />
+      {/* El proceso completo, paso por paso (el inicio muestra 4 en corto). */}
+      <ProcessOrbital chapter={2} />
+      <StackOrbit chapter={3} />
       <ClosingCta />
     </SubPageShell>
   );

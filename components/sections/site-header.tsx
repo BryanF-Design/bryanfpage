@@ -5,8 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, ChevronDown, Menu, X } from "lucide-react";
+import { FaWhatsapp } from "@/components/ui/wa-icon";
 import {
-  FaWhatsapp,
   FaInstagram,
   FaFacebookF,
   FaLinkedinIn,
@@ -182,10 +182,9 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
             <Image
               src="/img/brand/logo-dark.png"
               alt="BryanF Design"
-              width={720}
-              height={253}
+              width={120}
+              height={42}
               priority
-              sizes="120px"
               className="h-7 w-auto md:h-8"
             />
           </Link>

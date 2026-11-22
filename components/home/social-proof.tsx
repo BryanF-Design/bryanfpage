@@ -60,7 +60,7 @@ function CaseModal({ item, onClose }: { item: CaseItem | null; onClose: () => vo
       {item && (
         <motion.div
           key="case-modal"
-          className="case-modal__backdrop fixed inset-0 z-[80] grid place-items-center bg-ink/45 p-4"
+          className="case-modal__backdrop fixed inset-0 z-[125] grid place-items-center bg-ink/45 p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

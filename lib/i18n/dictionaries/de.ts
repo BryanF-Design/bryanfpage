@@ -326,19 +326,28 @@ const de: Dictionary = {
     subtitle: "Wähle dein Paket, ergänze die benötigten Module und bezahle per Karte, Mercado Pago oder Überweisung. Keine Überraschungen.",
     step1: "1. Wähle dein Paket",
     plans: {
+      landing: {
+        name: "Landingpage",
+        desc: "Eine Seite, die verkauft und zum Schreiben einlädt.",
+        includes: ["Individuelles Design, Texte und WhatsApp-Button", "Basis-SEO, Domain und Hosting im ersten Jahr", "Lieferung ab 3 Werktagen"],
+      },
       full: {
         name: "Webentwicklung",
         desc: "Deine maßgeschneiderte Website, schnell und so gebaut, dass man dich kontaktiert.",
+        includes: ["Alles aus Landing + bis zu 5 Bereiche", "E-Mail-Konten und Google Business Profile", "30 Minuten Einweisung"],
       },
       update: {
         name: "Auffrischung",
         desc: "Erneuere deine bestehende Website mit echtem Design und echter Performance.",
+        includes: ["Neues Design für deine aktuelle Website", "Schneller auf dem Handy", "WhatsApp und technisches SEO geprüft"],
       },
       maintenance: {
         name: "Wartung",
         desc: "Deine Website immer aktuell, sicher und gesichert. Pro Monat.",
+        includes: ["Deine Website aktuell und gesichert", "Sicherheit und monatlicher Check", "Direkter Support von mir"],
       },
     },
+    includesLabel: "Enthält",
     step2: "2. Zusatzmodule",
     modules: {
       ecommerce: "E-Commerce / Onlineshop",
@@ -383,6 +392,7 @@ const de: Dictionary = {
     copyLabel: (label) => `${label} kopieren`,
     sendWhatsapp: "Beleg per WhatsApp senden",
     sendEmail: "Beleg per E-Mail senden",
+    sendQuoteWhatsapp: "Per WhatsApp senden",
     emailQuote: "Angebot per E-Mail senden",
     emailQuoteSubject: "Mein Angebot · BryanF Design",
     securePaymentPrefix: "Sichere Zahlung. Mit dem Fortfahren akzeptierst du unsere",
@@ -474,7 +484,7 @@ const de: Dictionary = {
   },
   closingCta: {
     title: "Starten wir deine Website?",
-    subtitle: "Gestalte deine Website, wähle deine Zahlungsart (Karte, Mercado Pago oder Überweisung) und wir legen los. Projekte ab $3.500 MXN.",
+    subtitle: "Gestalte deine Website, wähle deine Zahlungsart (Karte, Mercado Pago oder SPEI-Überweisung) und wir legen los. Ab $2.000, fertig in 3 Tagen.",
     ctaPrimary: "Website gestalten",
     ctaSecondary: "Direkt per WhatsApp",
   },
@@ -774,6 +784,31 @@ const de: Dictionary = {
       line: "Du arbeitest direkt mit mir, von der Idee bis zum Launch. Seit 2018, 150+ Projekte.",
       cta: "Lerne Bryan kennen",
       photoAlt: "Bryan F. in seinem Studio",
+    },
+    process: {
+      title: "Ein klarer Prozess, von der Idee bis zum Launch.",
+      more: "Den ganzen Prozess ansehen",
+      steps: [
+        { title: "Erzähl mir von deinem Geschäft", line: "Ein kurzes Gespräch." },
+        { title: "Design", line: "Du siehst es, bevor du den Rest zahlst." },
+        { title: "Entwicklung", line: "Schnell und so gebaut, dass man dir schreibt." },
+        { title: "Launch", line: "Mit 30-minütiger Schulung." },
+      ],
+    },
+    casesIndex: {
+      label: "Projekte filtern",
+      all: "Alle",
+      web: "Web",
+      branding: "Branding",
+      motion: "Motion",
+      sistemas: "Systeme",
+      caseBadge: "Ganze Fallstudie",
+      count: "Projekte",
+      empty: "In dieser Kategorie gibt es noch keine veröffentlichten Projekte. Frag mich per WhatsApp, ich zeige dir Beispiele.",
+      emptyCta: "Per WhatsApp fragen",
+      fullCase: "Ganze Fallstudie ansehen",
+      visit: "Website besuchen",
+      open: "Projekt ansehen",
     },
     faq: {
       title: "Häufige Fragen",

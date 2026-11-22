@@ -335,19 +335,28 @@ const es = {
       "Elige tu paquete, suma los módulos que necesites y paga con tarjeta, Mercado Pago o transferencia. Sin sorpresas.",
     step1: "1. Elige tu paquete",
     plans: {
+      landing: {
+        name: "Landing",
+        desc: "Una página que vende, pensada para que te escriban.",
+        includes: ["Diseño a medida, textos y botón de WhatsApp", "SEO básico, dominio y hosting el primer año", "Entrega desde 3 días hábiles"],
+      },
       full: {
         name: "Desarrollo Web",
         desc: "Tu sitio a la medida, rápido y pensado para que te contacten.",
+        includes: ["Todo lo de Landing + hasta 5 secciones", "Correos y Google Business Profile", "Capacitación de 30 minutos"],
       },
       update: {
         name: "Actualización",
         desc: "Una renovación de verdad para tu web actual: diseño y velocidad.",
+        includes: ["Diseño renovado para tu web actual", "Más velocidad en celular", "WhatsApp y SEO técnico revisados"],
       },
       maintenance: {
         name: "Mantenimiento",
         desc: "Tu sitio siempre al día, seguro y respaldado. Por mes.",
+        includes: ["Tu sitio al día y respaldado", "Seguridad y revisión cada mes", "Soporte directo conmigo"],
       },
     },
+    includesLabel: "Incluye",
     step2: "2. Módulos extra",
     modules: {
       ecommerce: "E-commerce / tienda en línea",
@@ -394,6 +403,7 @@ const es = {
     copyLabel: (label: string) => `Copiar ${label}`,
     sendWhatsapp: "Enviar comprobante por WhatsApp",
     sendEmail: "Enviar comprobante por correo",
+    sendQuoteWhatsapp: "Enviar por WhatsApp",
     emailQuote: "Enviar cotización por correo",
     emailQuoteSubject: "Mi cotización · BryanF Design",
     securePaymentPrefix: "Pago seguro. Al continuar aceptas nuestros",
@@ -493,8 +503,7 @@ const es = {
   },
   closingCta: {
     title: "¿Empezamos tu web?",
-    subtitle:
-      "Arma tu web, elige cómo pagar (tarjeta, Mercado Pago o transferencia) y arrancamos. Proyectos desde $3,500 MXN.",
+    subtitle: "Arma tu web, elige cómo pagar (tarjeta, Mercado Pago o transferencia SPEI) y arrancamos. Desde $2,000, lista en 3 días.",
     ctaPrimary: "Arma tu web",
     ctaSecondary: "WhatsApp directo",
   },
@@ -803,6 +812,31 @@ const es = {
       line: "Trabajas directo conmigo, de la idea al lanzamiento. Desde 2018, 150+ proyectos.",
       cta: "Conoce a Bryan",
       photoAlt: "Bryan F. en su estudio",
+    },
+    process: {
+      title: "Un proceso claro, de la idea al lanzamiento.",
+      more: "Ver el proceso completo",
+      steps: [
+        { title: "Cuéntame tu negocio", line: "Una llamada corta." },
+        { title: "Diseño", line: "Lo ves antes de pagar el resto." },
+        { title: "Desarrollo", line: "Rápido, pensado para que te escriban." },
+        { title: "Lanzamiento", line: "Con capacitación de 30 minutos." },
+      ],
+    },
+    casesIndex: {
+      label: "Filtrar proyectos",
+      all: "Todos",
+      web: "Web",
+      branding: "Branding",
+      motion: "Motion",
+      sistemas: "Sistemas",
+      caseBadge: "Caso completo",
+      count: "proyectos",
+      empty: "Todavía no hay proyectos publicados en esta categoría. Pregúntame por WhatsApp y te enseño ejemplos.",
+      emptyCta: "Preguntar por WhatsApp",
+      fullCase: "Ver el caso completo",
+      visit: "Visitar sitio",
+      open: "Ver proyecto",
     },
     faq: {
       title: "Preguntas frecuentes",

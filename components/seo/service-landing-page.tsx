@@ -332,7 +332,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                     ))}
                   </span>
                   <span className="text-sm font-semibold leading-tight text-ink">
-                    +100 proyectos lanzados
+                    150+ proyectos, desde 2018
                   </span>
                   <Heart aria-hidden className="h-4 w-4 fill-ink text-ink" />
                 </div>

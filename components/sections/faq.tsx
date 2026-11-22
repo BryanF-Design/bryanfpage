@@ -4,16 +4,11 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Sparkle } from "lucide-react";
-import { FaWhatsapp } from "react-icons/fa";
+import { FaWhatsapp } from "@/components/ui/wa-icon";
 
 import { openLuminaChat } from "@/components/sections/lumina-feature";
 import { SectionHeading } from "@/components/sections/section-heading";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { MotionAccordion } from "@/components/ui/motion-accordion";
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n/context";
 
@@ -30,16 +25,19 @@ const WHATSAPP = "https://wa.me/525663012505";
 export function Faq({
   chapter = 10,
   only,
+  items: given,
   moreHref,
 }: {
   chapter?: number;
   /** Índices (del diccionario) de las preguntas a mostrar; sin esto, todas. */
   only?: readonly number[];
+  /** Preguntas propias (el inicio usa las 4 cortas de v2). */
+  items?: readonly { title: string; content: string }[];
   /** Enlace a la lista completa (el inicio muestra solo las clave). */
   moreHref?: string;
 } = {}) {
   const { t } = useLanguage();
-  const source = only ? only.map((i) => t.faq.items[i]).filter(Boolean) : t.faq.items;
+  const source = given ?? (only ? only.map((i) => t.faq.items[i]).filter(Boolean) : t.faq.items);
   const items = source.map((item, index) => ({
     id: String(index + 1),
     ...item,
@@ -83,9 +81,8 @@ export function Faq({
                 <Image
                   src="/img/lumina/v2/cutout/duda.webp"
                   alt=""
-                  width={1031}
-                  height={1100}
-                  sizes="(min-width: 1024px) 196px, (min-width: 640px) 160px, 140px"
+                  width={196}
+                  height={209}
                   className="h-auto w-full drop-shadow-[0_18px_24px_hsl(165_40%_8%/0.35)]"
                 />
               </div>
@@ -98,37 +95,9 @@ export function Faq({
               </span>
 
               <div className="panel surface-white relative z-10 p-2 shadow-float sm:p-3">
-                <Accordion
-                  data-fx="stagger"
-                  type="single"
-                  defaultValue="1"
-                  collapsible
-                  className="flex w-full flex-col gap-2"
-                >
-                  {items.map((item) => (
-                    <AccordionItem
-                      value={item.id}
-                      key={item.id}
-                      className="rounded-card border-0 bg-mint px-3.5 ring-1 ring-ink/[0.05] transition-colors duration-300 data-[state=open]:bg-lime data-[state=open]:ring-0 data-[state=closed]:hover:bg-lime-soft/70 sm:px-5 lg:px-6"
-                    >
-                      <AccordionTrigger className="min-h-[4.5rem] gap-3 rounded-2xl py-3.5 text-ink sm:gap-4 md:min-h-[5.25rem]">
-                        <span className="flex flex-1 items-center gap-3 sm:gap-4">
-                          {/* Número en tinta al 75 %: AA sobre blanco (5.5:1). */}
-                          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-white text-xs font-bold tabular-nums text-ink/75 ring-1 ring-ink/[0.06] transition-colors duration-300 group-data-[state=open]/acc:bg-ink group-data-[state=open]/acc:text-lime group-data-[state=open]/acc:ring-0 md:size-11 md:text-sm">
-                            {item.id.padStart(2, "0")}
-                          </span>
-                          <span className="display-title text-pretty text-[1.0625rem] leading-[1.15] tracking-[-0.02em] sm:text-[1.25rem] lg:text-[1.5rem]">
-                            {item.title}
-                          </span>
-                        </span>
-                      </AccordionTrigger>
-
-                      <AccordionContent className="pb-5 pl-12 pr-1 text-[0.9375rem] leading-relaxed text-ink/80 sm:pl-[3.25rem] md:pb-7 md:pl-[3.75rem] md:pr-16 md:text-base">
-                        {item.content}
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
+                <div data-fx="stagger">
+                  <MotionAccordion items={items} defaultOpen="1" />
+                </div>
               </div>
               {moreHref && (
                 <Link
@@ -178,9 +147,9 @@ export function Faq({
                       <Image
                         src="/img/lumina/v2/face/normal.webp"
                         alt=""
-                        fill
-                        sizes="40px"
-                        className="object-cover"
+                        width={40}
+                        height={40}
+                        className="absolute inset-0 h-full w-full object-cover"
                       />
                     </span>
                     {/* En línea: punto verde sobre el avatar. */}

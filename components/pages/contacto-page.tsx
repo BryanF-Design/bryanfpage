@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { ArrowUpRight, Mail, Phone } from "lucide-react";
-import { FaWhatsapp } from "react-icons/fa";
+import { FaWhatsapp } from "@/components/ui/wa-icon";
 
 import { PageIntro } from "@/components/pages/page-intro";
 import { SubPageShell } from "@/components/pages/sub-page-shell";

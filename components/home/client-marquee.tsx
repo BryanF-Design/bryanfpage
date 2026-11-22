@@ -18,10 +18,10 @@ export function ClientMarquee({ names }: { names: string[] }) {
     <ul aria-hidden={copy > 0 || undefined} className="flex shrink-0 items-center">
       {names.map((name) => (
         <Fragment key={`${copy}-${name}`}>
-          <li className="whitespace-nowrap px-6 font-display text-[clamp(1.5rem,3vw,2.25rem)] font-[560] tracking-[-0.01em] text-ink">
+          <li className="client-marquee__name">
             {name}
           </li>
-          <li aria-hidden className="font-display text-[clamp(1.5rem,3vw,2.25rem)] text-lime-deep">
+          <li aria-hidden className="client-marquee__dot">
             ·
           </li>
         </Fragment>

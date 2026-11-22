@@ -326,19 +326,28 @@ const en: Dictionary = {
     subtitle: "Pick your package, add the modules you need, and pay by card, Mercado Pago, or transfer. No surprises.",
     step1: "1. Choose your package",
     plans: {
+      landing: {
+        name: "Landing page",
+        desc: "One page that sells, made so people reach out.",
+        includes: ["Custom design, copy and WhatsApp button", "Basic SEO, domain and hosting for the first year", "Delivery from 3 business days"],
+      },
       full: {
         name: "Web Development",
         desc: "Your custom site, fast and made so people get in touch.",
+        includes: ["Everything in Landing + up to 5 sections", "Email accounts and Google Business Profile", "30-minute training"],
       },
       update: {
         name: "Refresh",
         desc: "Renew your current site with real design and performance.",
+        includes: ["Refreshed design for your current site", "Faster on mobile", "WhatsApp and technical SEO reviewed"],
       },
       maintenance: {
         name: "Maintenance",
         desc: "Your site always up to date, secure, and backed up. Per month.",
+        includes: ["Your site updated and backed up", "Security and a monthly check", "Direct support with me"],
       },
     },
+    includesLabel: "Includes",
     step2: "2. Extra modules",
     modules: {
       ecommerce: "E-commerce / online store",
@@ -383,6 +392,7 @@ const en: Dictionary = {
     copyLabel: (label) => `Copy ${label}`,
     sendWhatsapp: "Send receipt via WhatsApp",
     sendEmail: "Send receipt via email",
+    sendQuoteWhatsapp: "Send via WhatsApp",
     emailQuote: "Email me this quote",
     emailQuoteSubject: "My quote · BryanF Design",
     securePaymentPrefix: "Secure payment. By continuing you accept our",
@@ -474,7 +484,7 @@ const en: Dictionary = {
   },
   closingCta: {
     title: "Shall we start your website?",
-    subtitle: "Build your site, choose how to pay (card, Mercado Pago, or transfer), and let's get started. Projects from $3,500 MXN.",
+    subtitle: "Build your site, choose how to pay (card, Mercado Pago, or SPEI bank transfer) and let's get started. From $2,000, ready in 3 days.",
     ctaPrimary: "Build your site",
     ctaSecondary: "WhatsApp us directly",
   },
@@ -774,6 +784,31 @@ const en: Dictionary = {
       line: "You work directly with me, from idea to launch. Since 2018, 150+ projects.",
       cta: "Meet Bryan",
       photoAlt: "Bryan F. in his studio",
+    },
+    process: {
+      title: "A clear process, from idea to launch.",
+      more: "See the full process",
+      steps: [
+        { title: "Tell me about your business", line: "A short call." },
+        { title: "Design", line: "You see it before paying the rest." },
+        { title: "Development", line: "Fast, and built so people message you." },
+        { title: "Launch", line: "With a 30-minute training." },
+      ],
+    },
+    casesIndex: {
+      label: "Filter projects",
+      all: "All",
+      web: "Web",
+      branding: "Branding",
+      motion: "Motion",
+      sistemas: "Systems",
+      caseBadge: "Full case",
+      count: "projects",
+      empty: "There are no published projects in this category yet. Ask me on WhatsApp and I'll show you examples.",
+      emptyCta: "Ask on WhatsApp",
+      fullCase: "See the full case",
+      visit: "Visit site",
+      open: "View project",
     },
     faq: {
       title: "Frequently asked questions",

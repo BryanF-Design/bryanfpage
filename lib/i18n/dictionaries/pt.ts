@@ -326,19 +326,28 @@ const pt: Dictionary = {
     subtitle: "Escolha seu pacote, some os módulos que precisar e pague com cartão, Mercado Pago ou transferência. Sem surpresas.",
     step1: "1. Escolha seu pacote",
     plans: {
+      landing: {
+        name: "Landing page",
+        desc: "Uma página que vende, feita para que te escrevam.",
+        includes: ["Design sob medida, textos e botão de WhatsApp", "SEO básico, domínio e hospedagem no primeiro ano", "Entrega a partir de 3 dias úteis"],
+      },
       full: {
         name: "Desenvolvimento Web",
         desc: "Seu site sob medida, rápido e pensado para que te procurem.",
+        includes: ["Tudo da Landing + até 5 seções", "E-mails e Google Business Profile", "Treinamento de 30 minutos"],
       },
       update: {
         name: "Atualização",
         desc: "Renove seu site atual com design e performance de verdade.",
+        includes: ["Design renovado para o seu site atual", "Mais velocidade no celular", "WhatsApp e SEO técnico revisados"],
       },
       maintenance: {
         name: "Manutenção",
         desc: "Seu site sempre atualizado, seguro e com backup. Por mês.",
+        includes: ["Seu site em dia e com backup", "Segurança e revisão mensal", "Suporte direto comigo"],
       },
     },
+    includesLabel: "Inclui",
     step2: "2. Módulos extras",
     modules: {
       ecommerce: "E-commerce / loja online",
@@ -383,6 +392,7 @@ const pt: Dictionary = {
     copyLabel: (label) => `Copiar ${label}`,
     sendWhatsapp: "Enviar comprovante pelo WhatsApp",
     sendEmail: "Enviar comprovante por e-mail",
+    sendQuoteWhatsapp: "Enviar pelo WhatsApp",
     emailQuote: "Enviar orçamento por e-mail",
     emailQuoteSubject: "Meu orçamento · BryanF Design",
     securePaymentPrefix: "Pagamento seguro. Ao continuar você aceita nossos",
@@ -474,7 +484,7 @@ const pt: Dictionary = {
   },
   closingCta: {
     title: "Vamos começar seu site?",
-    subtitle: "Monte seu site, escolha como pagar (cartão, Mercado Pago ou transferência) e vamos começar. Projetos a partir de $3.500 MXN.",
+    subtitle: "Monte seu site, escolha como pagar (cartão, Mercado Pago ou transferência SPEI) e vamos começar. A partir de $2.000, pronto em 3 dias.",
     ctaPrimary: "Monte seu site",
     ctaSecondary: "WhatsApp direto",
   },
@@ -774,6 +784,31 @@ const pt: Dictionary = {
       line: "Você trabalha direto comigo, da ideia ao lançamento. Desde 2018, 150+ projetos.",
       cta: "Conheça o Bryan",
       photoAlt: "Bryan F. no seu estúdio",
+    },
+    process: {
+      title: "Um processo claro, da ideia ao lançamento.",
+      more: "Ver o processo completo",
+      steps: [
+        { title: "Conte-me sobre seu negócio", line: "Uma ligação curta." },
+        { title: "Design", line: "Você vê antes de pagar o restante." },
+        { title: "Desenvolvimento", line: "Rápido e pensado para que te escrevam." },
+        { title: "Lançamento", line: "Com treinamento de 30 minutos." },
+      ],
+    },
+    casesIndex: {
+      label: "Filtrar projetos",
+      all: "Todos",
+      web: "Web",
+      branding: "Branding",
+      motion: "Motion",
+      sistemas: "Sistemas",
+      caseBadge: "Caso completo",
+      count: "projetos",
+      empty: "Ainda não há projetos publicados nesta categoria. Pergunte pelo WhatsApp e eu mostro exemplos.",
+      emptyCta: "Perguntar pelo WhatsApp",
+      fullCase: "Ver o caso completo",
+      visit: "Visitar site",
+      open: "Ver projeto",
     },
     faq: {
       title: "Perguntas frequentes",

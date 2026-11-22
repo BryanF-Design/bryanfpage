@@ -325,19 +325,28 @@ const ja: Dictionary = {
     subtitle: "プランを選び、必要なモジュールを追加し、カード・Mercado Pago・銀行振込でお支払いいただけます。追加費用の心配はありません。",
     step1: "1. プランを選ぶ",
     plans: {
+      landing: {
+        name: "ランディングページ",
+        desc: "問い合わせにつながる、売れる1ページ。",
+        includes: ["オーダーメイドのデザイン、文章、WhatsAppボタン", "基本SEO、初年度のドメインとホスティング", "最短3営業日で納品"],
+      },
       full: {
         name: "ウェブ制作",
         desc: "問い合わせにつながる、速くてオーダーメイドのサイト。",
+        includes: ["ランディングの内容＋最大5セクション", "メールとGoogleビジネスプロフィール", "30分のレクチャー"],
       },
       update: {
         name: "リニューアル",
         desc: "本格的なデザインとパフォーマンスで既存サイトを刷新します。",
+        includes: ["今のサイトのデザインを刷新", "スマホでの表示を高速化", "WhatsAppとテクニカルSEOを見直し"],
       },
       maintenance: {
         name: "保守運用",
         desc: "常に最新・安全でバックアップ済みの状態を維持します（月額）。",
+        includes: ["サイトを最新に保ちバックアップ", "セキュリティと毎月の点検", "私が直接サポート"],
       },
     },
+    includesLabel: "含まれるもの",
     step2: "2. 追加モジュール",
     modules: {
       ecommerce: "ECサイト / オンラインストア",
@@ -382,6 +391,7 @@ const ja: Dictionary = {
     copyLabel: (label) => `${label}をコピー`,
     sendWhatsapp: "WhatsAppで領収書を送る",
     sendEmail: "メールで領収書を送る",
+    sendQuoteWhatsapp: "WhatsAppで送る",
     emailQuote: "見積もりをメールで送る",
     emailQuoteSubject: "私の見積もり · BryanF Design",
     securePaymentPrefix: "安全な決済です。続行すると、以下に同意したことになります：",
@@ -470,7 +480,7 @@ const ja: Dictionary = {
   },
   closingCta: {
     title: "あなたのウェブ、始めましょうか？",
-    subtitle: "サイトを作り、支払い方法（カード・Mercado Pago・銀行振込）を選んで、すぐに始めましょう。3,500メキシコペソから。",
+    subtitle: "サイトを作り、支払い方法（カード・Mercado Pago・SPEI振込）を選んで、すぐに始めましょう。2,000メキシコペソから、最短3日。",
     ctaPrimary: "サイトを作る",
     ctaSecondary: "WhatsAppで直接連絡",
   },
@@ -768,6 +778,31 @@ const ja: Dictionary = {
       line: "アイデアから公開まで私と直接。2018年から、150件以上の実績。",
       cta: "Bryanについて",
       photoAlt: "スタジオのBryan F.",
+    },
+    process: {
+      title: "アイデアから公開まで、明確なプロセス。",
+      more: "プロセスの詳細を見る",
+      steps: [
+        { title: "ビジネスについて教えてください", line: "短い通話から。" },
+        { title: "デザイン", line: "残金を支払う前に確認できます。" },
+        { title: "開発", line: "速く、問い合わせにつながる作り。" },
+        { title: "公開", line: "30分のレクチャー付き。" },
+      ],
+    },
+    casesIndex: {
+      label: "プロジェクトを絞り込む",
+      all: "すべて",
+      web: "Web",
+      branding: "ブランディング",
+      motion: "モーション",
+      sistemas: "システム",
+      caseBadge: "詳細事例",
+      count: "件",
+      empty: "このカテゴリにはまだ公開中のプロジェクトがありません。WhatsAppでお尋ねいただければ事例をお見せします。",
+      emptyCta: "WhatsAppで聞く",
+      fullCase: "事例の詳細を見る",
+      visit: "サイトを見る",
+      open: "プロジェクトを見る",
     },
     faq: {
       title: "よくある質問",

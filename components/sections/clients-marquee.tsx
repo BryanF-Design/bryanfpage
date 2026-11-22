@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 
 import { MarqueeToggle } from "@/components/sections/marquee-band";
@@ -150,9 +150,8 @@ function LogoTile({
             <Image
               src={logo.src}
               alt={decorative ? "" : logo.alt}
-              width={logo.w}
-              height={logo.h}
-              sizes="(min-width: 1024px) 190px, 150px"
+              width={190}
+              height={Math.round((190 * logo.h) / logo.w)}
               className={cn(LOGO_CLASS, logo.size)}
             />
           )}
@@ -175,6 +174,10 @@ export function ClientsMarquee() {
   const { t } = useLanguage();
   const reduced = useReducedMotionPreference();
   const [paused, setPaused] = useState(false);
+  // La segunda copia de la cinta (decorativa) se pinta ya en el navegador:
+  // el HTML del servidor lleva los logos una sola vez (más ligero).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   return (
     <section aria-label={t.clients.label}>
@@ -204,9 +207,8 @@ export function ClientsMarquee() {
                         <Image
                           src={logo.src}
                           alt=""
-                          width={logo.w}
-                          height={logo.h}
-                          sizes="28px"
+                          width={28}
+                          height={Math.round((28 * logo.h) / logo.w)}
                           className={cn("h-auto max-h-full w-auto max-w-full object-contain", LOGO_INK)}
                         />
                       </span>
@@ -241,7 +243,7 @@ export function ClientsMarquee() {
                 <div
                   className="flex w-max group-focus-within/band:[animation-play-state:paused] group-hover/row:[animation-play-state:paused]"
                   style={{
-                    animationName: "logos-x",
+                    animationName: mounted ? "logos-x" : "none",
                     animationDuration: "48s",
                     animationTimingFunction: "linear",
                     animationIterationCount: "infinite",
@@ -250,7 +252,7 @@ export function ClientsMarquee() {
                     animationPlayState: paused ? "paused" : undefined,
                   }}
                 >
-                  {[0, 1].map((copy) => (
+                  {(mounted ? [0, 1] : [0]).map((copy) => (
                     <ul
                       key={copy}
                       aria-hidden={copy === 1 || undefined}

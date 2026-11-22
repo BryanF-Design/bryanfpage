@@ -20,8 +20,8 @@ import { SITE_URL } from "@/lib/seo/service-pages";
 const ClosingCta = dynamic(() =>
   import("@/components/sections/closing-cta").then((m) => m.ClosingCta)
 );
-const ProcessOrbital = dynamic(() =>
-  import("@/components/sections/process-orbital").then((m) => m.ProcessOrbital)
+const ProcessSteps = dynamic(() =>
+  import("@/components/home/process-steps").then((m) => m.ProcessSteps)
 );
 const SocialProof = dynamic(() =>
   import("@/components/home/social-proof").then((m) => m.SocialProof)
@@ -29,8 +29,11 @@ const SocialProof = dynamic(() =>
 const HomePricing = dynamic(() =>
   import("@/components/home/home-pricing").then((m) => m.HomePricing)
 );
-const HomeTeasers = dynamic(() =>
-  import("@/components/sections/home-teasers").then((m) => m.HomeTeasers)
+const LuminaDiagonal = dynamic(() =>
+  import("@/components/home/lumina-diagonal").then((m) => m.LuminaDiagonal)
+);
+const AboutDiagonal = dynamic(() =>
+  import("@/components/home/about-diagonal").then((m) => m.AboutDiagonal)
 );
 const ClientsMarquee = dynamic(() =>
   import("@/components/sections/clients-marquee").then((m) => m.ClientsMarquee)
@@ -60,7 +63,6 @@ const LuminaChat = dynamic(
  * tiempos, costos, qué se necesita para empezar y qué se entrega. Todas las
  * demás viven en /contacto.
  */
-const KEY_FAQ = [0, 3, 4, 5] as const;
 
 /** Clientes con su sitio en línea (nombres reales) para la cinta. */
 const CLIENT_NAMES = [
@@ -83,10 +85,11 @@ const faqJsonLd = {
   "@id": `${SITE_URL}/#faq`,
   url: `${SITE_URL}/`,
   inLanguage: "es-MX",
-  mainEntity: KEY_FAQ.map((i) => DICTIONARIES.es.faq.items[i]).map((item) => ({
+  // Las mismas 4 preguntas cortas que se ven en el inicio (Prompt 9).
+  mainEntity: DICTIONARIES.es.v2.faq.items.map((item) => ({
     "@type": "Question",
-    name: item.title,
-    acceptedAnswer: { "@type": "Answer", text: item.content },
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.a },
   })),
 };
 
@@ -152,17 +155,23 @@ export default function HomePage() {
 
         <Configurator chapter={5} />
 
-        {/* Bryan y Lumina, en corto: su historia completa vive en /conoceme y
-            /lumina. */}
-        <HomeTeasers />
-
-        <ProcessOrbital chapter={3} />
-
         <EntryServices chapter={4} />
+
+        {/* Prompt 5 · Diagonal Lumina con chips que la ponen a trabajar. */}
+        <LuminaDiagonal />
+
+        {/* Prompt 6 · Proceso en 4 pasos (el detalle vive en /conoceme). */}
+        <ProcessSteps />
+
+        {/* Prompt 7 · Diagonal Nosotros: Bryan, foto con parallax de 8 px. */}
+        <AboutDiagonal />
+
+        {/* Prompt 8 · Testimonios: pendientes hasta que Bryan pase los reales
+            (nombre, negocio y foto). No se inventa ninguno. */}
 
         <ClientsMarquee />
 
-        <Faq chapter={6} only={KEY_FAQ} moreHref="/contacto#faq" />
+        <Faq chapter={6} items={t.v2.faq.items.map((f) => ({ title: f.q, content: f.a }))} moreHref="/contacto#faq" />
 
         <ClosingCta />
       </main>

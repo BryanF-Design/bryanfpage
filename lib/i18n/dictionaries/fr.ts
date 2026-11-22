@@ -326,19 +326,28 @@ const fr: Dictionary = {
     subtitle: "Choisissez votre formule, ajoutez les modules dont vous avez besoin et payez par carte, Mercado Pago ou virement. Sans surprise.",
     step1: "1. Choisissez votre formule",
     plans: {
+      landing: {
+        name: "Landing page",
+        desc: "Une page qui vend, pensée pour qu'on vous écrive.",
+        includes: ["Design sur mesure, textes et bouton WhatsApp", "SEO de base, domaine et hébergement la première année", "Livraison dès 3 jours ouvrés"],
+      },
       full: {
         name: "Développement web",
         desc: "Votre site sur mesure, rapide et pensé pour qu'on vous contacte.",
+        includes: ["Tout le contenu Landing + jusqu'à 5 sections", "E-mails et Google Business Profile", "Formation de 30 minutes"],
       },
       update: {
         name: "Refonte",
         desc: "Modernisez votre site actuel avec un vrai design et de vraies performances.",
+        includes: ["Design renouvelé pour votre site actuel", "Plus rapide sur mobile", "WhatsApp et SEO technique révisés"],
       },
       maintenance: {
         name: "Maintenance",
         desc: "Votre site toujours à jour, sécurisé et sauvegardé. Par mois.",
+        includes: ["Votre site à jour et sauvegardé", "Sécurité et contrôle mensuel", "Support direct avec moi"],
       },
     },
+    includesLabel: "Inclus",
     step2: "2. Modules supplémentaires",
     modules: {
       ecommerce: "E-commerce / boutique en ligne",
@@ -383,6 +392,7 @@ const fr: Dictionary = {
     copyLabel: (label) => `Copier ${label}`,
     sendWhatsapp: "Envoyer le justificatif par WhatsApp",
     sendEmail: "Envoyer le justificatif par e-mail",
+    sendQuoteWhatsapp: "Envoyer par WhatsApp",
     emailQuote: "Recevoir le devis par e-mail",
     emailQuoteSubject: "Mon devis · BryanF Design",
     securePaymentPrefix: "Paiement sécurisé. En continuant, vous acceptez nos",
@@ -474,7 +484,7 @@ const fr: Dictionary = {
   },
   closingCta: {
     title: "On commence votre site ?",
-    subtitle: "Créez votre site, choisissez comment payer (carte, Mercado Pago ou virement) et on démarre. Projets dès 3 500 $ MXN.",
+    subtitle: "Créez votre site, choisissez comment payer (carte, Mercado Pago ou virement SPEI) et on démarre. Dès 2 000 $ MXN, prêt en 3 jours.",
     ctaPrimary: "Créer mon site",
     ctaSecondary: "WhatsApp direct",
   },
@@ -774,6 +784,31 @@ const fr: Dictionary = {
       line: "Vous travaillez directement avec moi, de l’idée au lancement. Depuis 2018, 150+ projets.",
       cta: "Découvrir Bryan",
       photoAlt: "Bryan F. dans son studio",
+    },
+    process: {
+      title: "Un processus clair, de l’idée au lancement.",
+      more: "Voir le processus complet",
+      steps: [
+        { title: "Parlez-moi de votre activité", line: "Un court appel." },
+        { title: "Design", line: "Vous le voyez avant de payer le reste." },
+        { title: "Développement", line: "Rapide et pensé pour qu’on vous écrive." },
+        { title: "Lancement", line: "Avec une formation de 30 minutes." },
+      ],
+    },
+    casesIndex: {
+      label: "Filtrer les projets",
+      all: "Tous",
+      web: "Web",
+      branding: "Branding",
+      motion: "Motion",
+      sistemas: "Systèmes",
+      caseBadge: "Étude complète",
+      count: "projets",
+      empty: "Il n’y a pas encore de projets publiés dans cette catégorie. Demandez-moi sur WhatsApp et je vous montre des exemples.",
+      emptyCta: "Demander sur WhatsApp",
+      fullCase: "Voir l’étude complète",
+      visit: "Visiter le site",
+      open: "Voir le projet",
     },
     faq: {
       title: "Questions fréquentes",

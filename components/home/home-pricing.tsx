@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Code2, LayoutTemplate, Settings2 } from "lucide-react";
-import { FaWhatsapp } from "react-icons/fa";
+import { FaWhatsapp } from "@/components/ui/wa-icon";
 
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/sections/section-heading";

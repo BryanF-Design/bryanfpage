@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { BRAND_NAME, SITE_URL, WHATSAPP_URL } from "@/lib/seo/service-pages";
+import { BARBER_OS_PLAN, STUDIO_FACTS } from "@/lib/catalog";
 
 /**
  * Barber OS — sistema de reservas y lealtad para barberías y salones.
@@ -13,12 +14,22 @@ export const BARBER_OS_PATH = `/${BARBER_OS_SLUG}`;
 export const BARBER_OS_NAME = "Barber OS";
 export const BARBER_OS_SERVICE = "Sistema para barberías";
 
-/** Días de prueba gratis. */
-export const TRIAL_DAYS = 14;
+/** Días de prueba gratis (la misma cifra en el sitio y en el outreach). */
+export const TRIAL_DAYS = BARBER_OS_PLAN.trialDays;
 
-/** WhatsApp con el mensaje listo para pedir la prueba. */
+/** Renta mensual en MXN, con el setup incluido. */
+export const MONTHLY_PRICE = BARBER_OS_PLAN.monthly;
+export const MONTHLY_PRICE_LABEL = `$${MONTHLY_PRICE.toLocaleString("en-US")} MXN/mes`;
+
+/** Garantía contra defectos (la misma del estudio). */
+export const GUARANTEE_DAYS = STUDIO_FACTS.guaranteeDays;
+
+/** Texto del botón principal. */
+export const BARBER_OS_CTA = "Quiero el sistema para mi barbería";
+
+/** WhatsApp con el mensaje listo para pedir el sistema y su prueba. */
 export const BARBER_OS_TRIAL_URL = `${WHATSAPP_URL}?text=${encodeURIComponent(
-  `Hola, quiero la prueba gratis de ${TRIAL_DAYS} días del Sistema para barberías (Barber OS).`
+  `Hola, quiero el sistema para mi barbería (Barber OS): ${MONTHLY_PRICE_LABEL} con ${TRIAL_DAYS} días de prueba gratis.`
 )}`;
 
 /** Regla de lealtad que usa CortMart (configurable por negocio). */
@@ -181,9 +192,8 @@ export const FAQS = [
       "Sí. Funciona para barberías y salones: los servicios, el equipo y los horarios se configuran según tu negocio.",
   },
   {
-    question: "¿Qué pasa cuando termina la prueba?",
-    answer:
-      "Si decides seguir, te compartimos el plan para continuar con tu sistema tal como quedó configurado. Si no, la prueba termina sin compromiso.",
+    question: "¿Cuánto cuesta cuando termina la prueba?",
+    answer: `Si decides seguir, la renta es de ${MONTHLY_PRICE_LABEL}, con el setup incluido y tu sistema tal como quedó configurado. Pagas con tarjeta, Mercado Pago o transferencia SPEI. Si no, la prueba termina sin compromiso.`,
   },
 ];
 
@@ -194,8 +204,8 @@ export const RELATED = [
   { label: "Mantenimiento web", href: "/mantenimiento-web-mexico" },
 ];
 
-const META_TITLE = "Sistema para barberías: reservas y lealtad | BryanF Design";
-const META_DESCRIPTION = `Barber OS: reservas en línea, tarjeta de lealtad con Google Wallet y QR, panel de administración y pagos con Stripe y Mercado Pago. Pruébalo ${TRIAL_DAYS} días gratis.`;
+const META_TITLE = `Sistema para barberías con reservas y lealtad: $${MONTHLY_PRICE}/mes, ${TRIAL_DAYS} días gratis`;
+const META_DESCRIPTION = `Barber OS: reservas en línea, tarjeta de lealtad con QR y Google Wallet, caja y panel para tu barbería. ${MONTHLY_PRICE_LABEL} con setup incluido. Pruébalo ${TRIAL_DAYS} días gratis.`;
 
 export const barberOsMetadata: Metadata = {
   title: META_TITLE,
@@ -213,7 +223,7 @@ export const barberOsMetadata: Metadata = {
         url: "/img/og-bryanf-apex.png",
         width: 1200,
         height: 630,
-        alt: `${BRAND_NAME}: Haz que pase`,
+        alt: `${BRAND_NAME}: sistema para barberías con reservas y lealtad`,
       },
     ],
   },
@@ -244,15 +254,32 @@ export function barberOsJsonLd() {
         name: BRAND_NAME,
         url: SITE_URL,
       },
-      offers: {
-        "@type": "Offer",
-        name: `Prueba gratis de ${TRIAL_DAYS} días`,
-        price: 0,
-        priceCurrency: "MXN",
-        description:
-          "Incluye la configuración con la marca, servicios, barberos y horarios del negocio. Los cambios de código a medida se cotizan aparte.",
-        url,
-      },
+      offers: [
+        {
+          "@type": "Offer",
+          name: `Prueba gratis de ${TRIAL_DAYS} días`,
+          price: 0,
+          priceCurrency: "MXN",
+          description:
+            "Incluye la configuración con la marca, servicios, barberos y horarios del negocio. Los cambios de código a medida se cotizan aparte.",
+          url,
+        },
+        {
+          "@type": "Offer",
+          name: "Renta mensual de Barber OS",
+          price: MONTHLY_PRICE,
+          priceCurrency: "MXN",
+          description: "Renta mensual con setup incluido.",
+          priceSpecification: {
+            "@type": "UnitPriceSpecification",
+            price: MONTHLY_PRICE,
+            priceCurrency: "MXN",
+            unitCode: "MON",
+            referenceQuantity: { "@type": "QuantitativeValue", value: 1, unitCode: "MON" },
+          },
+          url,
+        },
+      ],
       url,
     },
     {

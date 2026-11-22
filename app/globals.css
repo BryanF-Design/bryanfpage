@@ -664,6 +664,34 @@
    COMPONENTES
    ════════════════════════════════════════════════════════════════════════ */
 @layer components {
+  /* Enlaces del pie (antes, clases largas repetidas en cada enlace). */
+  .f-link {
+    @apply relative inline-flex min-h-11 items-center gap-1.5 text-[0.9375rem] text-white/70 transition-colors hover:text-white lg:min-h-10;
+  }
+  .f-col-link {
+    @apply relative inline-flex min-h-11 min-w-11 items-center gap-1.5 text-[0.9375rem] leading-snug text-white/80 transition-colors hover:text-white sm:leading-[inherit] sm:text-white/70 lg:min-h-10;
+  }
+  /* Flecha lima que asoma al pasar el puntero por un enlace del pie. */
+  .f-arrow {
+    @apply hidden text-[0.8rem] leading-none text-lime opacity-0 transition-[opacity,transform] duration-200 sm:block;
+    transform: translateX(-0.25rem);
+  }
+  .group\/link:hover .f-arrow {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Base de <Button>: píldora, elevación de 2 px con sombra suave al hover
+     y press a 0.97 (Revisión 1). */
+  .btn {
+    @apply relative inline-flex cursor-pointer select-none items-center justify-center gap-2.5 whitespace-nowrap rounded-full font-sans font-semibold leading-none tracking-[-0.005em] transition-[background-color,color,box-shadow,transform] duration-200 [transition-timing-function:var(--ease-out)] active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 [&_svg]:shrink-0;
+  }
+  @media (hover: hover) {
+    .btn:hover {
+      @apply -translate-y-0.5 shadow-[0_18px_40px_-18px_rgba(14,59,42,0.35)];
+    }
+  }
+
   /* Círculo con flecha que acompaña a los botones píldora. */
   .btn-arrow {
     display: inline-grid;
@@ -1283,7 +1311,8 @@ html.a11y-reduce-motion .hero-in {
 
 /* Lumina señala la sección a la que llevó: un halo lima que late dos veces. */
 .lumina-spot {
-  animation: lumina-spot 1.2s var(--ease-out, ease-out) 2;
+  /* Resaltado lima de 2 s que se apaga solo (Prompt 5). */
+  animation: lumina-spot 1s var(--ease-out, ease-out) 2;
   border-radius: var(--r-panel);
 }
 @keyframes lumina-spot {
@@ -2171,4 +2200,56 @@ html.a11y-reduce-motion .slash-sweep {
 /* Sobre tinta el slash se suma a la luz (screen): el texto blanco no se tapa. */
 .slash-sweep--dark::before {
   mix-blend-mode: screen;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   P1 · diagonales (Lumina y Nosotros), chips, proceso
+   ════════════════════════════════════════════════════════════════════════ */
+/* Diagonal reflejada: inclina hacia el otro lado (Nosotros). */
+.diag-cut--rev {
+  clip-path: polygon(0 0, 100% 7%, 100% 100%, 0 93%);
+}
+@media (max-width: 767px) {
+  .diag-cut--rev {
+    clip-path: polygon(0 0, 100% 3%, 100% 100%, 0 97%);
+  }
+}
+/* Chips de Lumina: suben 2 px y se encienden en lima al hover. */
+.lumina-chip {
+  transition:
+    transform 0.22s var(--ease-demo),
+    background-color 0.22s var(--ease-demo),
+    color 0.22s var(--ease-demo);
+}
+@media (hover: hover) {
+  .lumina-chip:hover {
+    transform: translateY(-2px);
+    background-color: hsl(var(--lime));
+    color: hsl(var(--ink));
+  }
+}
+.lumina-chip:active {
+  transform: scale(0.97);
+}
+/* FAQ: al pasar el cursor, la pregunta se marca en lima sutil. */
+@media (hover: hover) {
+  .faq-row[data-state="closed"]:hover {
+    background-color: hsl(var(--lime-soft) / 0.7);
+  }
+}
+
+/* Nombres del marquee (preset 05): Fraunces 560, separador "·" lima. */
+.client-marquee__name {
+  white-space: nowrap;
+  padding-inline: 1.5rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 560;
+  letter-spacing: -0.01em;
+  color: hsl(var(--ink));
+}
+.client-marquee__dot {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  color: hsl(var(--lime-deep));
 }

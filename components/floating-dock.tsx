@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ArrowUp } from "lucide-react";
-import { FaWhatsapp } from "react-icons/fa";
+import { FaWhatsapp } from "@/components/ui/wa-icon";
 
 import { useLanguage } from "@/lib/i18n/context";
 import { GestureIcon } from "@/components/ui/gesture-icon";
