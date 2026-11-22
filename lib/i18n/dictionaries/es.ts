@@ -39,7 +39,7 @@ const es = {
     sideHighlight: "venden",
     panelTitle: "Diseño y código para que te encuentren y te escriban",
     available: "Agenda abierta para nuevos proyectos",
-    proof: "+100 proyectos lanzados",
+    proof: "150+ proyectos, desde 2018",
     features: ["Entrega desde 3 días", "SEO técnico incluido", "Pago en línea seguro"],
     featured: "Proyecto destacado",
   },
@@ -52,7 +52,7 @@ const es = {
     loaderLine: "Diseño, código y movimiento a punto.",
     aligning: "Alineando la interfaz",
     routeReady: "Ruta lista",
-    skip: "Omitir entrada",
+    skip: "Saltar",
     enterHint: "Desliza para entrar",
     introAria: "Intro: una laptop se enciende y, al deslizar, la cámara entra a su pantalla",
     phaseDesign: "Diseño",
@@ -469,8 +469,7 @@ const es = {
       },
       {
         title: "¿Cuáles son los costos?",
-        content:
-          "Los proyectos empiezan en $3,500 MXN. El precio final depende de lo que necesites, y antes de arrancar te paso una propuesta con todo claro.",
+        content: "Hay opciones desde $350 MXN (firma de correo). Una landing cuesta $2,000 MXN y un sitio completo $3,500 MXN. El precio final depende de lo que necesites, y antes de arrancar te paso una propuesta con todo claro.",
       },
       {
         title: "¿Qué se necesita para empezar?",
@@ -723,6 +722,125 @@ const es = {
     label: "Idioma",
   },
   /** Inicio compacto: bloques que enlazan a las páginas movidas. */
+  v2: {
+    hero: {
+      badge: "Agenda abierta para nuevos proyectos",
+      titleA: "Páginas web que",
+      titleWord: "venden",
+      price: "Desde $2,000.",
+      subtitle: "Diseño y desarrollo web en México, lista en 3 días.",
+      ctaWhatsapp: "Quiero mi página",
+      ctaPrices: "Ver precios",
+      whatsappMsg: "Hola, quiero mi página desde $2,000.",
+      micro: ["150+ proyectos", "Desde 2018", "Garantía 60 días", "Solo 50% para empezar"],
+      photoAlt: "Bryan F., diseñador y desarrollador web",
+      wordB: "convierten",
+      priceTop: "Desde",
+      priceValue: "$2,000",
+      priceNote: "MXN · Landing lista en 3 días",
+      subtitle2: "Hablas directo conmigo, de la idea al lanzamiento.",
+    },
+    cases: {
+      title: "Trabajo real que ya está vendiendo.",
+      subtitle: "Tres proyectos, lo que se hizo y su número.",
+      seeCase: "Ver caso",
+      allCases: "Ver todos los casos",
+      cortmart: {
+        sector: "Barbería · Barber OS",
+        done: "Reservas, lealtad y caja en un solo lugar.",
+        stats: ["Visitas atendidas", "Asistencia", "Clientes atendidos", "Clientes registrados"],
+        note: "Cifras reales del panel de CortMart. Sin proyecciones ni datos de ejemplo.",
+      },
+      efficient: {
+        number: "3",
+        label: "herramientas en un flujo: buscador Pantone®, catálogo y cotización por WhatsApp",
+      },
+      koi: {
+        number: "4",
+        label: "etapas del servicio en un solo recorrido, con contacto directo al final",
+      },
+      marqueeLabel: "Negocios con su web en línea",
+      viewCase: "Ver caso",
+    },
+    pricing: {
+      title: "Precios claros, sin sorpresas.",
+      subtitle: "Elige un punto de partida; todo incluye garantía y trato directo.",
+      recommended: "Recomendado",
+      from: "Desde",
+      plans: {
+        landing: {
+          name: "Landing",
+          bullets: ["Diseño a medida, textos y botón de WhatsApp", "SEO básico, dominio y hosting el primer año", "Lista desde 3 días hábiles"],
+          cta: "Quiero mi landing",
+          msg: "Hola, quiero mi landing de $2,000.",
+        },
+        site: {
+          name: "Sitio completo",
+          bullets: ["Todo lo de Landing + hasta 5 secciones", "Correos y Google Business Profile", "Capacitación de 30 minutos"],
+          cta: "Quiero mi sitio",
+          msg: "Hola, quiero mi sitio completo de $3,500.",
+        },
+        software: {
+          name: "Software a medida",
+          bullets: ["Procesos, reservas, sistemas y automatización", "De 4 a 6 semanas", "Cotización según el alcance"],
+          cta: "Cotizar mi sistema",
+          msg: "Hola, quiero cotizar un software a medida (desde $10,000).",
+        },
+      },
+      extras: "Renovación $1,800 · Mantenimiento $1,000/mes · Kit presencia digital $1,500",
+      extrasLink: "Arma tu web",
+      micro: ["Garantía 60 días + 15 días de ajustes", "Pagas 50% para empezar, 50% al aprobar", "Tarjeta, Mercado Pago o transferencia SPEI"],
+    },
+    lumina: {
+      title: "Ella es Lumina.",
+      line: "Tu asesora en la página: te explica, te enseña ejemplos y te lleva justo a lo que buscas.",
+      cta: "Pregúntale a Lumina",
+      chips: ["¿Quién es Bryan?", "¿Cuánto cuesta una landing?", "¿Puedo pagar con Mercado Pago?"],
+    },
+    about: {
+      title: "Soy Bryan. Yo diseño y yo programo.",
+      line: "Trabajas directo conmigo, de la idea al lanzamiento. Desde 2018, 150+ proyectos.",
+      cta: "Conoce a Bryan",
+      photoAlt: "Bryan F. en su estudio",
+    },
+    faq: {
+      title: "Preguntas frecuentes",
+      more: "Ver todas las preguntas",
+      items: [
+        {
+          q: "¿Cuánto tarda mi página?",
+          a: "Desde 3 días hábiles, contando desde que tengo toda la información de tu negocio.",
+        },
+        {
+          q: "¿Cuánto cuesta?",
+          a: "Landing $2,000, sitio completo $3,500 y software desde $10,000. Hay servicios desde $350.",
+        },
+        {
+          q: "¿Qué necesito para empezar?",
+          a: "La información de tu negocio, una llamada corta y el 50% de anticipo. El otro 50% al aprobar.",
+        },
+        {
+          q: "¿Qué me entregas?",
+          a: "Tu sitio funcionando, tus accesos y una capacitación de 30 minutos. Dominio, hosting y archivos a tu nombre.",
+        },
+      ],
+    },
+    closing: {
+      title: "¿Empezamos tu web?",
+      price: "Desde $2,000, lista en 3 días.",
+      cta: "Quiero mi página",
+    },
+    footerPrice: "Páginas web desde $2,000",
+    clientAccess: "Acceso clientes",
+    nav: {
+      servicios: "Servicios",
+      casos: "Casos",
+      barberias: "Barberías",
+      conoceme: "Conóceme",
+    },
+    arcoLabel: "Derechos ARCO",
+    arcoLine: "Para acceder, rectificar, cancelar u oponerte al uso de tus datos, escríbenos a",
+  },
   home: {
     presence: "Proyectos en México, España y Francia",
     presenceLink: "Ver dónde",

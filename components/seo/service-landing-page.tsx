@@ -303,7 +303,7 @@ export function ServiceLandingPage({ page }: ServiceLandingPageProps) {
                   </TrackedWhatsAppLink>
                 </Button>
                 <Button asChild size="lg" variant="outline">
-                  <Link href="/#projects">
+                  <Link href="/#casos">
                     Ver proyectos
                     <ArrowRight aria-hidden className="h-4 w-4" />
                   </Link>

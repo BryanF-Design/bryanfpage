@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, LogIn, Menu, X } from "lucide-react";
+import { ArrowUpRight, ChevronDown, Menu, X } from "lucide-react";
 import {
   FaWhatsapp,
   FaInstagram,
@@ -13,7 +13,9 @@ import {
   FaGithub,
 } from "react-icons/fa";
 
-import { Button, ButtonArrow } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { GestureIcon } from "@/components/ui/gesture-icon";
+import { TrackedWhatsAppLink } from "@/components/analytics/tracked-whatsapp-link";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useLanguage } from "@/lib/i18n/context";
 import { DICTIONARIES } from "@/lib/i18n/dictionaries";
@@ -21,7 +23,8 @@ import { useReducedMotionPreference } from "@/lib/motion-preference";
 import { useFooterInView } from "@/lib/use-footer-in-view";
 import { cn } from "@/lib/utils";
 
-const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
+/** WhatsApp de la barra, con el mensaje de entrada prellenado. */
+const WHATSAPP_HREF = `https://wa.me/525663012505?text=${encodeURIComponent("Hola, quiero mi página desde $2,000.")}`;
 
 const social = [
   { Icon: FaInstagram, href: "https://www.instagram.com/bryanf_design/", label: "Instagram" },
@@ -53,13 +56,40 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const firstMenuLinkRef = useRef<HTMLAnchorElement>(null);
 
-  const links = [
-    { label: t.nav.proyectos, href: "/#projects" },
-    { label: t.nav.servicios, href: "/#servicios-entrada" },
-    { label: t.nav.lumina, href: "/lumina" },
-    { label: t.nav.precios, href: "/#precios" },
-    { label: t.nav.faq, href: "/#faq" },
+  // Menú: Servicios (las 6 páginas) · Casos · Barberías · Conóceme · Precios.
+  // El acceso de clientes vive en el pie.
+  const services = [
+    { label: t.footer.services.paginasNegocios, href: "/paginas-web-para-negocios" },
+    { label: t.footer.services.disenoWeb, href: "/diseno-web-mexico" },
+    { label: t.footer.services.desarrolloWeb, href: "/desarrollo-web-mexico" },
+    { label: t.footer.services.uxUi, href: "/diseno-ux-ui-mexico" },
+    { label: t.footer.services.softwareMedida, href: "/software-a-medida-mexico" },
+    { label: t.footer.services.mantenimientoWeb, href: "/mantenimiento-web-mexico" },
   ];
+  const links = [
+    { label: t.v2.nav.casos, href: "/casos" },
+    { label: t.v2.nav.barberias, href: "/sistema-para-barberias" },
+    { label: t.v2.nav.conoceme, href: "/conoceme" },
+    { label: t.nav.precios, href: "/#precios" },
+  ];
+  const [servicesOpen, setServicesOpen] = useState(false);
+  // Pulso del WhatsApp cada 6 s; se apaga al tocarlo (por sesión).
+  const [pulse, setPulse] = useState(true);
+  useEffect(() => {
+    try {
+      if (window.sessionStorage.getItem("bfd-wa-pulse-off") === "1") setPulse(false);
+    } catch {
+      /* sessionStorage bloqueado */
+    }
+  }, []);
+  const stopPulse = () => {
+    setPulse(false);
+    try {
+      window.sessionStorage.setItem("bfd-wa-pulse-off", "1");
+    } catch {
+      /* sessionStorage bloqueado */
+    }
+  };
 
   useEffect(() => {
     let frame = 0;
@@ -163,46 +193,69 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
           <nav
             aria-label={t.nav.menu}
             className="hidden items-center gap-1 lg:flex"
-            onMouseLeave={() => setHovered(null)}
+            onMouseLeave={() => setServicesOpen(false)}
           >
-            {links.map((l, i) => (
+            <div className="relative" onMouseEnter={() => setServicesOpen(true)}>
+              <button
+                type="button"
+                aria-expanded={servicesOpen}
+                aria-controls="nav-services"
+                onClick={() => setServicesOpen((v) => !v)}
+                onKeyDown={(e) => e.key === "Escape" && setServicesOpen(false)}
+                className="nav-underline relative inline-flex h-10 items-center gap-1 rounded-full px-4 text-[0.9375rem] font-semibold text-ink/75 transition-colors hover:text-ink xl:px-5"
+              >
+                {t.v2.nav.servicios}
+                <ChevronDown aria-hidden className={cn("h-4 w-4 transition-transform duration-300", servicesOpen && "rotate-180")} />
+              </button>
+              <AnimatePresence>
+                {servicesOpen && (
+                  <motion.ul
+                    id="nav-services"
+                    initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                    className="absolute left-0 top-full mt-2 w-64 rounded-2xl bg-white p-2 shadow-[0_18px_40px_-22px_hsl(var(--ink)/0.45)] ring-1 ring-ink/[0.06]"
+                  >
+                    {services.map((sv) => (
+                      <li key={sv.href}>
+                        <Link
+                          href={sv.href}
+                          onClick={() => setServicesOpen(false)}
+                          className="block rounded-xl px-3 py-2.5 text-[0.9375rem] font-medium text-ink/80 transition-colors hover:bg-lime-soft hover:text-ink"
+                        >
+                          {sv.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </motion.ul>
+                )}
+              </AnimatePresence>
+            </div>
+            {links.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
-                onMouseEnter={() => setHovered(i)}
-                onFocus={() => setHovered(i)}
-                onBlur={() => setHovered(null)}
-                className="relative inline-flex h-10 items-center rounded-full px-4 text-[0.9375rem] font-semibold text-ink/75 transition-colors hover:text-ink xl:px-5"
+                className="nav-underline relative inline-flex h-10 items-center rounded-full px-4 text-[0.9375rem] font-semibold text-ink/75 transition-colors hover:text-ink xl:px-5"
               >
-                {hovered === i && (
-                  <motion.span
-                    layoutId={reducedMotion ? undefined : "nav-hover-pill"}
-                    aria-hidden
-                    className="absolute inset-0 rounded-full bg-ink/[0.06]"
-                    transition={{ type: "spring", stiffness: 500, damping: 40 }}
-                  />
-                )}
-                <span className="relative">{l.label}</span>
+                {l.label}
               </Link>
             ))}
           </nav>
 
           <div className="flex items-center gap-1.5">
             {!spanishOnly && <LanguageSwitcher />}
-            <Link
-              href={CLIENT_PORTAL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden h-10 items-center gap-2 rounded-full px-4 text-sm font-semibold text-ink/75 transition-colors hover:bg-ink/[0.05] hover:text-ink xl:inline-flex"
+            {/* WhatsApp siempre visible: en teléfono, ícono + "WhatsApp". */}
+            <Button
+              asChild
+              className={cn("wa-pulse h-11 gap-2 bg-lime px-4 text-ink hover:-translate-y-0.5 sm:px-5", !pulse && "wa-pulse--off")}
             >
-              <LogIn className="h-4 w-4" />
-              {t.nav.cliente}
-            </Link>
-            <Button asChild variant="ink" className="hidden h-11 pl-5 pr-2 sm:inline-flex">
-              <Link href="/#precios">
-                {t.nav.armaTuWeb}
-                <ButtonArrow tone="lime" className="-mr-0.5" />
-              </Link>
+              <TrackedWhatsAppLink href={WHATSAPP_HREF} service="header_whatsapp" onPointerDown={stopPulse}>
+                <GestureIcon gesture="heart">
+                  <FaWhatsapp aria-hidden className="h-5 w-5" />
+                </GestureIcon>
+                WhatsApp
+              </TrackedWhatsAppLink>
             </Button>
             <button
               ref={menuButtonRef}
@@ -236,6 +289,25 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
           >
             <nav aria-label={t.nav.menu} className="flex flex-1 flex-col px-5 pb-6 pt-4 sm:px-8">
               <ul className="flex flex-col">
+                <li className="border-b border-ink/[0.07] py-3">
+                  <span className="display-title block text-[clamp(1.75rem,8vw,2.75rem)] text-ink">
+                    {t.v2.nav.servicios}
+                  </span>
+                  <ul className="mt-2 grid gap-1 sm:grid-cols-2">
+                    {services.map((sv, i) => (
+                      <li key={sv.href}>
+                        <Link
+                          ref={i === 0 ? firstMenuLinkRef : undefined}
+                          href={sv.href}
+                          onClick={() => setOpen(false)}
+                          className="flex min-h-11 items-center text-base font-medium text-ink/75 hover:text-ink"
+                        >
+                          {sv.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
                 {links.map((l, i) => (
                   <motion.li
                     key={l.href}
@@ -249,7 +321,6 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
                     className="border-b border-ink/[0.07]"
                   >
                     <Link
-                      ref={i === 0 ? firstMenuLinkRef : undefined}
                       href={l.href}
                       onClick={() => setOpen(false)}
                       className="group flex min-h-[4.25rem] items-center justify-between gap-4 py-2"
@@ -266,21 +337,15 @@ export function SiteHeader({ spanishOnly = false }: { spanishOnly?: boolean }) {
               </ul>
 
               <div className="mt-auto flex flex-col gap-3 pt-8 sm:flex-row">
-                <Button asChild size="lg" variant="ink" className="w-full pr-2 sm:flex-1">
-                  <Link href="/#precios" onClick={() => setOpen(false)}>
-                    {t.nav.armaTuWeb}
-                    <ButtonArrow tone="lime" className="ml-auto -mr-0.5" />
-                  </Link>
+                <Button asChild size="lg" className="w-full gap-2 bg-lime text-ink sm:flex-1">
+                  <TrackedWhatsAppLink href={WHATSAPP_HREF} service="menu_whatsapp">
+                    <FaWhatsapp aria-hidden className="h-5 w-5" />
+                    {t.v2.hero.ctaWhatsapp}
+                  </TrackedWhatsAppLink>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="w-full sm:flex-1">
-                  <Link
-                    href={CLIENT_PORTAL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setOpen(false)}
-                  >
-                    <LogIn className="h-4 w-4" />
-                    {t.nav.cliente}
+                  <Link href="/#precios" onClick={() => setOpen(false)}>
+                    {t.v2.hero.ctaPrices}
                   </Link>
                 </Button>
               </div>

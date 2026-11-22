@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
   const params = new URLSearchParams({ plan: selection.planId, mode: modalidad, currency });
   if (selection.moduleIds.length) params.set("modules", selection.moduleIds.join(","));
   if (selection.sections) params.set("sections", String(selection.sections));
-  const resumeUrl = `${getSiteUrl()}/crear-web?${params.toString()}#precios`;
+  const resumeUrl = `${getSiteUrl()}/crear-web?${params.toString()}#configurador`;
 
   const payLine =
     modalidad === "anticipo"

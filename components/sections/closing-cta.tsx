@@ -7,6 +7,8 @@ import { Heart, Sparkle } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
 import { Button, ButtonArrow } from "@/components/ui/button";
+import { GestureIcon } from "@/components/ui/gesture-icon";
+import { TrackedWhatsAppLink } from "@/components/analytics/tracked-whatsapp-link";
 import { useLanguage } from "@/lib/i18n/context";
 import { useHomeHref } from "@/lib/use-home-href";
 import { mobileShot } from "@/lib/projects";
@@ -190,40 +192,34 @@ export function ClosingCta() {
             </div>
 
             <div className="panel-ink relative z-[2] rounded-card p-5 shadow-pop sm:p-6 xl:p-7">
-              <p className="text-pretty text-[0.9375rem] leading-relaxed text-white/80 md:text-base">
-                {t.closingCta.subtitle}
+              <p className="display-title text-pretty text-[1.6rem] leading-tight text-white md:text-[1.9rem]">
+                {t.v2.closing.price}
               </p>
               <div className="mt-5 flex flex-col gap-2.5 sm:flex-row">
+                {/* WhatsApp grande, con pulso cada 6 s (se apaga al tocarlo). */}
                 <Button
                   asChild
                   size="lg"
-                  className="w-full bg-lime pr-2.5 text-ink sm:w-auto sm:flex-1 sm:pl-6"
+                  className="wa-pulse h-14 w-full gap-2.5 bg-lime pr-2.5 text-base text-ink sm:w-auto sm:flex-1 sm:pl-6"
                 >
-                  <Link href={pricesHref}>
-                    {t.closingCta.ctaPrimary}
-                    <ButtonArrow
-                      tone="ink"
-                      className="ml-auto -mr-0.5 sm:ml-2"
-                    />
-                  </Link>
+                  <TrackedWhatsAppLink
+                    href={`${WHATSAPP}?text=${encodeURIComponent("Hola, quiero mi página desde $2,000.")}`}
+                    service="cierre_quiero_mi_pagina"
+                  >
+                    <GestureIcon gesture="heart">
+                      <FaWhatsapp aria-hidden className="h-5 w-5" />
+                    </GestureIcon>
+                    {t.v2.closing.cta}
+                    <ButtonArrow tone="ink" className="ml-auto -mr-0.5 sm:ml-2" />
+                  </TrackedWhatsAppLink>
                 </Button>
                 <Button
                   asChild
                   size="lg"
                   variant="outline"
-                  className="w-full sm:w-auto sm:flex-1"
+                  className="h-14 w-full border-white/25 text-white sm:w-auto"
                 >
-                  <Link
-                    href={WHATSAPP}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <FaWhatsapp
-                      aria-hidden
-                      className="h-[1.1rem] w-[1.1rem] text-lime"
-                    />
-                    {t.closingCta.ctaSecondary}
-                  </Link>
+                  <Link href={pricesHref}>{t.v2.hero.ctaPrices}</Link>
                 </Button>
               </div>
             </div>

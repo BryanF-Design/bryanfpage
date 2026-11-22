@@ -4,13 +4,33 @@ import { useEffect, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, CreditCard, Heart, Search, Sparkle, Timer } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n/context";
 import { SitePreview } from "@/components/site-preview";
 import { desktopShot, mobileShot, projects } from "@/lib/projects";
+import { TrackedWhatsAppLink } from "@/components/analytics/tracked-whatsapp-link";
+import { GestureIcon, type Gesture } from "@/components/ui/gesture-icon";
+import { isReducedMotionRequested } from "@/lib/motion-preference";
 
 const FEATURE_ICONS = [Timer, Search, CreditCard];
+/** Gesto de cada ventaja: entrega (despega), SEO (se levanta), pago (late). */
+const FEATURE_GESTURES: Gesture[] = ["rocket", "design", "heart"];
+
+const WHATSAPP_HREF = `https://wa.me/525663012505?text=${encodeURIComponent("Hola, quiero mi página desde $2,000.")}`;
+
+/** "venden" ↔ "convierten" cada 4 s, sin mover el layout (ambas palabras
+ *  ocupan la misma celda; el ancho es el de la más larga). */
+function useAlternatingWord() {
+  const [second, setSecond] = useState(false);
+  useEffect(() => {
+    if (isReducedMotionRequested()) return;
+    const id = window.setInterval(() => setSecond((v) => !v), 4000);
+    return () => window.clearInterval(id);
+  }, []);
+  return second;
+}
 
 /** El proyecto que presume el hero: el mismo destacado del portafolio. */
 const FEATURED = projects.find((p) => p.slug === "mixteca-web-vercel-app") ?? projects[0];
@@ -48,11 +68,13 @@ function delay(ms: number) {
  */
 function wordEm(word: string) {
   let em = 0;
-  for (const ch of word.toUpperCase()) {
+  for (const ch of word) {
     if (/[\u3000-\u9fff\uff00-\uffef]/.test(ch)) em += 1;
-    else if (/[.,;:!'’I]/.test(ch)) em += 0.3;
-    else if (/[MW]/.test(ch)) em += 0.8;
-    else em += 0.58;
+    else if (/[.,;:!'’Iil]/.test(ch)) em += 0.3;
+    else if (/[MWmw]/.test(ch)) em += 0.85;
+    else if (/[0-9$]/.test(ch)) em += 0.62;
+    else if (/[A-Z]/.test(ch)) em += 0.7;
+    else em += 0.55;
   }
   return Math.max(em, 1);
 }
@@ -72,11 +94,14 @@ function wordEm(word: string) {
  */
 export function HeroPop() {
   const { t } = useLanguage();
+  const h = t.v2.hero;
   const cdmxTime = useCdmxTime();
+  const second = useAlternatingWord();
 
   // Ancho de cada palabra gigante; desde md comparten el tamaño de la mayor.
-  const fitTitle = wordEm(t.hero.titleHighlight);
-  const fitSide = wordEm(t.hero.sideHighlight);
+  // La palabra alterna mide lo de la más larga de las dos (+ el punto).
+  const fitTitle = Math.max(wordEm(`${h.titleWord}.`), wordEm(`${h.wordB}.`));
+  const fitSide = wordEm(h.priceValue);
   const fitShared = Math.max(fitTitle, fitSide);
   const fit = (own: number) =>
     ({ "--fit-own": own.toFixed(2), "--fit-shared": fitShared.toFixed(2) }) as CSSProperties;
@@ -91,41 +116,72 @@ export function HeroPop() {
       <div className="relative grid gap-1 md:grid-cols-2 md:items-end md:gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(16rem,26%)_minmax(0,1fr)] xl:gap-0">
         <h1
           id="hero-title"
-          className="hero-in hero-in-rise relative z-[1] min-w-0 text-ink [container-type:inline-size]"
-          style={delay(60)}
+          className="hero-title-in relative z-[1] min-w-0 text-ink [container-type:inline-size]"
         >
-          <span className="display-italic block text-[clamp(1.9rem,4.2vw,4.25rem)] leading-none">
-            {t.hero.titlePrefix}
+          {/* El H1 que lee Google: "Páginas web que venden. Desde $2,000 MXN."
+              La palabra alterna ("convierten") sale por CSS, fuera del texto. */}
+          <span className="hero-headline block">
+            <span className="display-italic block text-[clamp(1.9rem,4.2vw,4.25rem)] leading-none">
+              {h.titleA}
+            </span>
+            <span
+              className="display-xl fit-word hero-word-swap block [--fit-max:clamp(4.25rem,18vw,6rem)] md:[--fit-max:clamp(4.75rem,10.5vw,11rem)]"
+              style={fit(fitTitle)}
+            >
+              <span className="hero-word" data-on={!second}>
+                <span className="hero-keyword">{h.titleWord}</span>.
+              </span>
+              <span aria-hidden className="hero-word" data-on={second}>
+                <span className="hero-keyword hero-keyword--alt" data-word={h.wordB} />
+                <span className="hero-dot" />
+              </span>
+            </span>
           </span>
-          <span
-            className="display-xl fit-word block [--fit-max:clamp(4.25rem,18vw,6rem)] md:[--fit-max:clamp(4.75rem,10.5vw,11rem)]"
-            style={fit(fitTitle)}
-          >
-            {t.hero.titleHighlight}
+          <span className="sr-only">
+            {" "}
+            {h.priceTop} {h.priceValue} MXN.
           </span>
-          {/* El titular visible es la frase de marca; el h1 también dice qué
-              es el sitio (lo leen buscadores y lectores de pantalla). */}
-          <span className="sr-only"> {t.hero.eyebrow}</span>
         </h1>
         <div aria-hidden className="hidden xl:block" />
         <p
+          aria-hidden
           className="hero-in hero-in-rise relative z-[1] flex min-w-0 flex-wrap items-baseline gap-x-3 text-ink [container-type:inline-size] md:block md:text-right"
           style={delay(140)}
         >
           <span className="display-italic block text-[clamp(1.5rem,4.2vw,4.25rem)] leading-none">
-            {t.hero.sideTop}
+            {h.priceTop}
           </span>
           <span
             className="display-xl fit-word relative inline-block text-forest [--fit-max:clamp(3.1rem,13vw,4.5rem)] md:[--fit-max:clamp(4.75rem,10.5vw,11rem)]"
             style={fit(fitSide)}
           >
-            {t.hero.sideHighlight}
+            {h.priceValue}
             <Sparkle
               aria-hidden
-              className="float-y absolute -right-7 -top-3 h-7 w-7 fill-lime text-lime-deep sm:h-10 sm:w-10 md:-left-12 md:right-auto md:top-1 xl:-left-14"
+              className="float-y absolute -right-7 -top-3 h-7 w-7 fill-lime text-lime-deep max-md:hidden sm:h-10 sm:w-10 md:-left-12 md:right-auto md:top-1 xl:-left-14"
             />
           </span>
+          <span className="block w-full text-sm font-semibold text-ink/65 md:mt-2">{h.priceNote}</span>
         </p>
+      </div>
+
+      {/* Teléfono: WhatsApp + Ver precios en la primera pantalla, sin scrollear.
+          Desde md las mismas acciones viven dentro del panel lima. */}
+      <div className="hero-in hero-in-up relative z-[2] mt-5 flex flex-col gap-2.5 md:hidden" style={delay(200)}>
+        <Button asChild size="lg" className="wa-pulse h-14 gap-2.5 bg-lime text-base text-ink">
+          <TrackedWhatsAppLink href={WHATSAPP_HREF} service="hero_quiero_mi_pagina">
+            <GestureIcon gesture="heart">
+              <FaWhatsapp aria-hidden className="h-5 w-5" />
+            </GestureIcon>
+            {h.ctaWhatsapp}
+          </TrackedWhatsAppLink>
+        </Button>
+        <Button asChild size="lg" variant="white" className="h-14 text-base ring-1 ring-inset ring-ink/10">
+          <Link href="#precios" data-track-cta="hero_ver_precios">
+            {h.ctaPrices}
+          </Link>
+        </Button>
+        <p className="pt-1 text-center text-[0.8125rem] font-medium text-ink/60">{h.micro.join(" · ")}</p>
       </div>
 
       {/* Panel lima: propuesta, acciones y ventajas. Bryan sale de él. */}
@@ -157,7 +213,7 @@ export function HeroPop() {
               {/* Hasta lg la foto termina en un arco con base redondeada (un
                   marco limpio, sin difuminar el saco); en xl baja hasta el
                   canto de la tarjeta lima. */}
-              <div className="absolute inset-0 overflow-hidden rounded-b-[1.75rem] xl:overflow-visible xl:rounded-none">
+              <div className="hero-photo-parallax absolute inset-0 overflow-hidden rounded-b-[1.75rem] xl:overflow-visible xl:rounded-none">
                 <span aria-hidden className="absolute inset-x-0 bottom-0 top-[19%] rounded-t-full bg-forest" />
                 <Image
                   src="/img/brand/bryan-hero.webp"
@@ -165,7 +221,7 @@ export function HeroPop() {
                   fill
                   priority
                   sizes="(min-width: 1280px) 26rem, (min-width: 768px) 20rem, 10rem"
-                  className="object-cover object-top"
+                  className="hero-photo-zoom object-cover object-top"
                 />
               </div>
             </div>
@@ -179,8 +235,8 @@ export function HeroPop() {
               style={delay(260)}
             >
               <span aria-hidden className="relative flex size-2 shrink-0">
-                <span className="absolute inset-0 animate-ping rounded-full bg-forest/60 motion-reduce:animate-none" />
-                <span className="relative size-2 rounded-full bg-forest" />
+                <span className="absolute inset-0 animate-ping rounded-full bg-lime motion-reduce:animate-none" />
+                <span className="relative size-2 rounded-full bg-lime-deep" />
               </span>
               {t.hero.available}
               {cdmxTime && (
@@ -193,28 +249,38 @@ export function HeroPop() {
               className="hero-in hero-in-up display-title max-w-[22ch] text-balance text-[clamp(1.75rem,3vw,2.75rem)] text-ink"
               style={delay(300)}
             >
-              {t.hero.panelTitle}
+              {h.subtitle}
             </h2>
             <p
               className="hero-in hero-in-fade max-w-md text-pretty text-[0.975rem] leading-relaxed text-ink/75 max-sm:order-1 md:text-base"
               style={delay(360)}
             >
-              {t.hero.subtitle}
+              {h.subtitle2}
             </p>
             <div
-              className="hero-in hero-in-up flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:flex-wrap"
+              className="hero-in hero-in-up flex w-full flex-col gap-2.5 max-md:hidden sm:w-auto sm:flex-row sm:flex-wrap"
               style={delay(420)}
             >
-              <Button asChild size="lg" variant="ink" className="pr-2.5">
-                <Link href="#precios">
-                  {t.nav.armaTuWeb}
+              {/* Sobre el panel lima el principal va en tinta (la lima no se
+                  vería); el ícono y la flecha llevan la lima. */}
+              <Button asChild size="lg" variant="ink" className="wa-pulse gap-2.5 pr-2.5">
+                <TrackedWhatsAppLink href={WHATSAPP_HREF} service="hero_quiero_mi_pagina">
+                  <GestureIcon gesture="heart">
+                    <FaWhatsapp aria-hidden className="h-5 w-5 text-lime" />
+                  </GestureIcon>
+                  {h.ctaWhatsapp}
                   <ButtonArrow tone="lime" className="ml-auto -mr-0.5 sm:ml-2" />
-                </Link>
+                </TrackedWhatsAppLink>
               </Button>
               <Button asChild size="lg" variant="white">
-                <Link href="#projects">{t.nav.verProyectos}</Link>
+                <Link href="#precios" data-track-cta="hero_ver_precios">
+                  {h.ctaPrices}
+                </Link>
               </Button>
             </div>
+            <p className="hero-in hero-in-fade -mt-1 text-sm font-semibold text-ink/70 max-md:hidden" style={delay(450)}>
+              {h.micro.join(" · ")}
+            </p>
 
             <div
               className="hero-in hero-in-fade mt-1 flex max-w-full items-center gap-3 rounded-full bg-white/50 py-1.5 pl-1.5 pr-4 max-sm:order-2"
@@ -251,9 +317,11 @@ export function HeroPop() {
               {t.hero.features.map((feature, index) => {
                 const Icon = FEATURE_ICONS[index] ?? Timer;
                 return (
-                  <li key={feature} className="flex min-w-0 flex-col items-center gap-2 text-center">
+                  <li key={feature} data-gesture-host className="flex min-w-0 flex-col items-center gap-2 text-center">
                     <span className="grid size-11 place-items-center rounded-full bg-ink text-lime">
-                      <Icon aria-hidden className="h-5 w-5" />
+                      <GestureIcon gesture={FEATURE_GESTURES[index] ?? "lift"}>
+                        <Icon aria-hidden className="h-5 w-5" />
+                      </GestureIcon>
                     </span>
                     <span className="text-balance text-sm font-semibold leading-snug text-ink">
                       {feature}

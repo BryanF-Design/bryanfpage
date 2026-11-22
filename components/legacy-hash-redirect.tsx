@@ -13,6 +13,9 @@ const MOVED: Record<string, string> = {
   lumina: "/lumina",
   "lumina-journey": "/lumina",
   presencia: "/contacto#presencia",
+  // La tira de proyectos y las tarjetas de casos pasaron a ser los 3 casos.
+  projects: "/#casos",
+  "casos-de-estudio": "/#casos",
 };
 
 export function LegacyHashRedirect() {

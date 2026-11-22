@@ -18,7 +18,7 @@ function isDismissed() {
 }
 
 export function LanguageNotice() {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const pathname = usePathname();
   const [visible, setVisible] = useState(false);
   const configuratorInView = useConfiguratorInView();
@@ -36,7 +36,13 @@ export function LanguageNotice() {
 
   useEffect(() => {
     // El CV anuncia el idioma detectado en el primer diálogo de Lumina.
-    if (document.querySelector('main[data-language="es-only"]') || pathname?.startsWith("/cv")) {
+    // Sin pop-ups para el público principal: el aviso solo sale cuando el
+    // sitio cambió solo a otro idioma (visitas fuera de México).
+    if (
+      locale === "es" ||
+      document.querySelector('main[data-language="es-only"]') ||
+      pathname?.startsWith("/cv")
+    ) {
       setVisible(false);
       return;
     }
@@ -54,7 +60,7 @@ export function LanguageNotice() {
       window.clearTimeout(showTimer);
       window.clearTimeout(hideTimer);
     };
-  }, [pathname]);
+  }, [pathname, locale]);
 
   function markDismissed() {
     document.cookie = `${DISMISS_COOKIE}=1; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;

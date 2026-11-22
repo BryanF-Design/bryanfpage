@@ -120,7 +120,7 @@ export function CrearWebExperience() {
 
               <div className="hero-in hero-in-up" style={delay(360)}>
                 <Button asChild size="lg" variant="ink" className="w-full justify-between pl-6 pr-2.5 sm:w-auto">
-                  <Link href="#precios">
+                  <Link href="#configurador">
                     {t.nav.armaTuWeb}
                     <span aria-hidden className="ml-3 grid size-9 place-items-center rounded-full bg-lime text-ink transition-transform duration-300 group-hover:translate-y-0.5">
                       <ArrowDown className="h-4 w-4" />

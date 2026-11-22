@@ -18,11 +18,12 @@ import { projects } from "@/lib/projects";
 
 /** Secciones a las que Lumina puede llevar (marca → id en la página). */
 export const LUMINA_SECTIONS = {
-  proyectos: "projects",
-  casos: "casos-de-estudio",
+  proyectos: "casos",
+  casos: "casos",
   proceso: "proceso",
   servicios: "servicios-entrada",
   precios: "precios",
+  configurador: "configurador",
   faq: "faq",
 } as const;
 export type LuminaSection = keyof typeof LUMINA_SECTIONS;
@@ -142,7 +143,7 @@ export function quoteHref(quote: LuminaQuote) {
   if (quote.sections) params.set("sections", String(quote.sections));
   if (quote.mode) params.set("mode", quote.mode);
   // #precios: se llega directo al cotizador ya armado, no a la portada.
-  return `/crear-web?${params.toString()}#precios`;
+  return `/crear-web?${params.toString()}#configurador`;
 }
 
 /** Evento que escucha el cotizador de la página para armarse en vivo. */
@@ -201,7 +202,7 @@ PRESUPUESTO Y NEGOCIACIÓN (eres vendedora: ayudas a cerrar, pero con honestidad
 export function actionsPrompt(section: string) {
   const list = SHOWCASE.map((p) => `${p.slug} — ${p.name} — ${p.desc || "sitio web"}`).join("\n");
   return `ACCIONES EN EL SITIO: al final de tu respuesta puedes añadir marcas; el sitio las convierte en botones (no las expliques ni las pongas a mitad del texto):
-- [[ver:SECCION]] lleva al usuario a una sección. SECCION: proyectos, casos, proceso, servicios (servicios de entrada con sus precios), precios (el cotizador) o faq.
+- [[ver:SECCION]] lleva al usuario a una sección. SECCION: proyectos, casos, proceso, servicios (servicios de entrada con sus precios), precios (Landing, Sitio completo y Software con lo que incluyen), configurador (arma su web y paga) o faq.
 - [[pagina:PAGINA]] lleva a otra página del sitio. PAGINA: conoceme (quién es Bryan, el fundador y dueño), casos (casos de estudio completos), contacto (canales y todas las preguntas frecuentes), barberias (sistema para barberías) o cotizador (/crear-web).
 - [[proyecto:SLUG]] muestra la ficha de un proyecto real con su captura (máx. 3, solo slugs de la lista).
 - [[cotizar:PLAN|MODULOS|SECCIONES|MODO]] arma el cotizador en vivo frente al usuario. PLAN: full (sitio a medida), update (actualización) o maintenance (mantenimiento). MODULOS: ecommerce, payments, maintenance separados por coma, o vacío. SECCIONES extra: 0 a 10. MODO (opcional): anticipo (paga 50 % hoy) o liquidacion (paga todo). Ej.: [[cotizar:full|ecommerce,payments|0]] o [[cotizar:full||0|anticipo]].

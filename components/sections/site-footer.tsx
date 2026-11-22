@@ -14,6 +14,7 @@ import {
 } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 
+import { GestureIcon } from "@/components/ui/gesture-icon";
 import { useLanguage } from "@/lib/i18n/context";
 import { DICTIONARIES } from "@/lib/i18n/dictionaries";
 import { useReducedMotionPreference } from "@/lib/motion-preference";
@@ -41,15 +42,17 @@ const social = [
   { Icon: FaGithub, href: "https://github.com/BryanF-Design", label: "GitHub" },
 ];
 
-const CLIENT_PORTAL = "https://access.bryanfdesign.com.mx/";
+// Portal de clientes (Bitácora). Mismo proyecto de Vercel que el .com.mx,
+// con el dominio .com verificado: el sitio nunca enlaza al .mx.
+const CLIENT_PORTAL = "https://access.bryanfdesign.com/";
 
 const linkClass =
-  "group/link inline-flex min-h-11 items-center gap-1.5 text-[0.9375rem] text-white/70 transition-colors hover:text-white lg:min-h-10";
+  "link-grow group/link relative inline-flex min-h-11 items-center gap-1.5 text-[0.9375rem] text-white/70 transition-colors hover:text-white lg:min-h-10";
 // Navegación y servicios van lado a lado en dos columnas de texto desde el
 // teléfono (antes eran chips que ocupaban media pantalla).
 const listClass = "flex flex-col";
 const columnLinkClass =
-  "group/link inline-flex min-h-11 min-w-11 items-center gap-1.5 text-[0.9375rem] leading-snug text-white/80 transition-colors hover:text-white sm:leading-[inherit] sm:text-white/70 lg:min-h-10";
+  "link-grow group/link relative inline-flex min-h-11 min-w-11 items-center gap-1.5 text-[0.9375rem] leading-snug text-white/80 transition-colors hover:text-white sm:leading-[inherit] sm:text-white/70 lg:min-h-10";
 const headingClass =
   "mb-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-lime sm:mb-3";
 
@@ -89,7 +92,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
   const nav = [
     { label: t.nav.inicio, href: "/" },
     { label: t.nav.proceso, href: "/#proceso" },
-    { label: t.nav.proyectos, href: "/#projects" },
+    { label: t.nav.proyectos, href: "/#casos" },
     { label: t.nav.casos, href: "/casos" },
     { label: t.nav.serviciosEntrada, href: "/#servicios-entrada" },
     { label: t.nav.precios, href: "/#precios" },
@@ -197,6 +200,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                     {t.footer.tagline}
                   </span>
                   {t.footer.taglineRest}
+                  <span className="mt-3 block font-semibold text-white">{t.v2.footerPrice}</span>
                 </p>
                 <ul className="flex flex-wrap gap-2">
                   {social.map(({ Icon, href, label }) => (
@@ -208,7 +212,9 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                         aria-label={label}
                         className="grid size-11 place-items-center rounded-full bg-white/[0.08] text-white ring-1 ring-white/10 transition-[background-color,color,transform] duration-300 [transition-timing-function:var(--ease-out)] hover:-translate-y-1 hover:bg-lime hover:text-ink"
                       >
-                        <Icon className="h-4 w-4" />
+                        <GestureIcon gesture="lift">
+                          <Icon className="h-4 w-4" />
+                        </GestureIcon>
                       </Link>
                     </li>
                   ))}
@@ -264,7 +270,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                   className="mt-3 hidden min-h-11 w-auto items-center justify-start gap-2 rounded-full border border-lime/40 px-4 text-sm font-semibold text-lime transition-colors hover:bg-lime hover:text-ink sm:inline-flex"
                 >
                   <LogIn aria-hidden className="h-4 w-4" />
-                  {t.footer.clientQuestion}
+                  {t.v2.clientAccess}
                 </Link>
               </nav>
 
@@ -292,7 +298,7 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                 className="col-span-2 -mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-lime/40 px-4 text-sm font-semibold text-lime transition-colors hover:bg-lime hover:text-ink sm:hidden"
               >
                 <LogIn aria-hidden className="h-4 w-4" />
-                {t.footer.clientQuestion}
+                {t.v2.clientAccess}
               </Link>
 
               {/* Legal y contacto */}
@@ -309,13 +315,26 @@ export function SiteFooter({ spanishOnly = false }: { spanishOnly?: boolean }) {
                         className="group/link flex min-h-11 items-center gap-3 text-[0.9375rem] text-white/80 transition-colors hover:text-white"
                       >
                         <span className="grid size-9 shrink-0 place-items-center rounded-full bg-white/[0.08] text-lime transition-colors group-hover/link:bg-lime group-hover/link:text-ink">
-                          <Icon aria-hidden className="h-4 w-4" />
+                          <GestureIcon gesture="lift">
+                            <Icon aria-hidden className="h-4 w-4" />
+                          </GestureIcon>
                         </span>
                         <span className="min-w-0 break-words">{label}</span>
                       </a>
                     </li>
                   ))}
                 </ul>
+                {/* Derechos ARCO: correo visible y clicable (con asunto). */}
+                <p className="mt-3 text-sm leading-snug text-white/65">
+                  <span className="font-semibold text-white/85">{t.v2.arcoLabel}.</span>{" "}
+                  {t.v2.arcoLine}{" "}
+                  <a
+                    href="mailto:bryanf@bryanfdesign.com?subject=Derechos%20ARCO"
+                    className="font-semibold text-lime underline underline-offset-2 hover:text-white"
+                  >
+                    bryanf@bryanfdesign.com
+                  </a>
+                </p>
                 {/* Aviso/Términos ya están en la barra legal: en teléfono no se
                     repiten aquí. */}
                 <ul className="mt-3 hidden flex-col border-t border-white/10 pt-2 sm:flex">

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Instrument_Serif, Plus_Jakarta_Sans } from "next/font/google";
+import { Fraunces, Inter } from "next/font/google";
 import dynamic from "next/dynamic";
 import "./globals.css";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
@@ -24,31 +24,20 @@ const FloatingDock = dynamic(
   { ssr: false }
 );
 
-// Cuerpo e interfaz: Plus Jakarta Sans — redonda, clara y muy legible en
-// tamaños chicos (etiquetas, precios, chips).
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin", "latin-ext"],
+// Identidad BryanF: Inter para texto e interfaz y Fraunces para titulares y
+// acentos en itálica. Fuentes variables, solo el subconjunto latino (cubre
+// español, acentos y ñ), con font-display: swap.
+const inter = Inter({
+  subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
 });
 
-// Rótulos: Archivo variable con eje de ancho. Pesado y apretado para los
-// titulares grandes; en itálica para la primera línea ("Haz que…").
-const archivo = Archivo({
-  subsets: ["latin", "latin-ext"],
+const fraunces = Fraunces({
+  subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
   style: ["normal", "italic"],
-  axes: ["wdth"],
-});
-
-// Acento editorial: palabras sueltas en serif itálica.
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin", "latin-ext"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-serif",
-  display: "swap",
 });
 
 const SITE_DESCRIPTION =
@@ -131,7 +120,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   colorScheme: "light",
   // El lienzo claro del sitio: la barra del navegador continúa el fondo.
-  themeColor: "#eef2e6",
+  themeColor: "#f5f5f4",
 };
 
 const ORG_ID = `${SITE_URL}/#organization`;
@@ -263,11 +252,26 @@ const fxBootstrap = `
           }
         }
       }, { rootMargin: "0px 0px -4% 0px", threshold: 0.01 });
+      // Reveals .reveal (CSS con animation-timeline: view()): al completar su
+      // entrada quedan fijos, una sola vez. Sin scroll-timeline, este mismo
+      // observador dispara la transición de 350 ms.
+      var sup = !!(window.CSS && CSS.supports && CSS.supports("animation-timeline: view()"));
+      var ro = new IntersectionObserver(function (entries) {
+        for (var i = 0; i < entries.length; i++) {
+          if (entries[i].isIntersecting) {
+            entries[i].target.classList.add("reveal-done");
+            ro.unobserve(entries[i].target);
+          }
+        }
+      }, { rootMargin: sup ? "0px 0px -420px 0px" : "0px 0px -8% 0px", threshold: 0 });
       var watch = function (root) {
         if (root.nodeType !== 1) return;
         if (root.hasAttribute("data-fx") && !root.hasAttribute("data-fx-in")) io.observe(root);
         var list = root.querySelectorAll("[data-fx]:not([data-fx-in])");
         for (var j = 0; j < list.length; j++) io.observe(list[j]);
+        if (root.classList.contains("reveal") && !root.classList.contains("reveal-done")) ro.observe(root);
+        var rl = root.querySelectorAll(".reveal:not(.reveal-done)");
+        for (var k = 0; k < rl.length; k++) ro.observe(rl[k]);
       };
       var boot = function () {
         watch(document.body);
@@ -286,21 +290,26 @@ const fxBootstrap = `
   })();
 `;
 
-// Preloader de entrada: solo la primera vista de la sesión. Corre en el
-// <head>, antes de pintar: si ya se vio (o hay movimiento reducido, o es el
-// CV, que trae su propia intro, o el inicio, cuya intro 3D lo lleva en
-// pantalla), el telón ni aparece. El telón vive en el HTML
-// y se retira solo con CSS, así que nunca bloquea aunque el JS tarde.
+// Preloader de entrada: solo en escritorio y solo la primera vista de la
+// sesión, con un máximo de 1 segundo y botón "Saltar". Corre en el <head>,
+// antes de pintar: en móvil, en el inicio (el hero con precio y WhatsApp va
+// primero), en el CV (trae su propia intro), con movimiento reducido o si ya
+// se vio, el telón ni aparece. Vive en el HTML y se retira solo con CSS, así
+// que nunca bloquea aunque el JS tarde, y nunca recibe clics (salvo Saltar).
 const preloaderBootstrap = `
   try {
     var d = document.documentElement;
     var seen = false;
     try { seen = sessionStorage.getItem("bfd-preloaded") === "1"; sessionStorage.setItem("bfd-preloaded", "1"); } catch (_) {}
-    // En el inicio el preloader corre dentro de la pantalla de la intro 3D.
-    var introHome = location.pathname === "/";
-    if (seen || introHome || location.pathname.indexOf("/cv") === 0 || d.classList.contains("a11y-reduce-motion") ||
+    var home = location.pathname === "/";
+    var mobile = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
+    if (seen || home || mobile || location.pathname.indexOf("/cv") === 0 || d.classList.contains("a11y-reduce-motion") ||
       window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       d.classList.add("pl-skip");
+    } else {
+      document.addEventListener("click", function (e) {
+        if (e.target && e.target.closest && e.target.closest(".site-preloader__skip")) d.classList.add("pl-skip");
+      });
     }
   } catch (_) {}
 `;
@@ -313,7 +322,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${jakarta.variable} ${archivo.variable} ${instrumentSerif.variable}`}
+      className={`${inter.variable} ${fraunces.variable}`}
       suppressHydrationWarning
     >
       <head>
@@ -339,10 +348,14 @@ export default function RootLayout({
               width={720}
               height={253}
               decoding="async"
+              loading="lazy"
               className="site-preloader__logo"
             />
             <span className="site-preloader__bar" />
           </div>
+          <button type="button" tabIndex={-1} className="site-preloader__skip">
+            Saltar
+          </button>
         </div>
         <ClickTracking />
         <MotionPreferenceProvider>

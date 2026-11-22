@@ -15,8 +15,9 @@
 @layer base {
   :root {
     /* Lienzo y tinta. */
-    --canvas: 84 24% 93%;
-    --background: 84 24% 93%;
+    /* Crema de marca #F5F5F4. */
+    --canvas: 60 5% 96%;
+    --background: 60 5% 96%;
     --foreground: 160 30% 9%;
 
     --ink: 160 30% 9%;
@@ -31,7 +32,8 @@
     /* Lima de marca #B4E332: el color de conversión. */
     --primary: 76 76% 54%;
     --primary-foreground: 160 30% 9%;
-    --lime: 76 76% 54%;
+    /* Lima de marca #B3E331. */
+    --lime: 76.2 76% 54.1%;
     --lime-soft: 80 72% 88%;
     --lime-deep: 78 62% 34%;
 
@@ -61,7 +63,9 @@
     --ring: 160 30% 9%;
 
     /* Alias heredado: la "hoja" ahora es el lienzo claro. */
-    --sheet: 84 24% 93%;
+    --sheet: 60 5% 96%;
+    /* Los acentos en itálica también van en Fraunces. */
+    --font-serif: var(--font-display);
 
     /* Geometría. */
     --radius: 20px;
@@ -465,32 +469,27 @@
   /* Rótulo grande: Archivo pesado, un poco condensado, en mayúsculas. */
   .display-xl {
     font-family: var(--font-display);
-    font-weight: 800;
-    /* Eje de ancho de Archivo: condensado para que los rótulos XXL quepan. */
-    font-variation-settings: "wdth" 78;
-    text-transform: uppercase;
-    line-height: 0.9;
-    letter-spacing: -0.025em;
+    font-weight: 600;
+    line-height: 0.95;
+    letter-spacing: -0.035em;
   }
   /* Titular de sección en caja normal (estilo "Where Comfort Meets…"). */
   .display-title {
     font-family: var(--font-display);
-    font-weight: 750;
-    line-height: 0.98;
-    letter-spacing: -0.035em;
+    font-weight: 600;
+    line-height: 1.02;
+    letter-spacing: -0.028em;
   }
   /* Primera línea en itálica gruesa ("Define your…"). */
   .display-italic {
     font-family: var(--font-display);
     font-style: italic;
-    font-weight: 750;
-    letter-spacing: -0.03em;
+    font-weight: 500;
+    letter-spacing: -0.02em;
   }
   .ghost-word {
     font-family: var(--font-display);
-    font-weight: 900;
-    font-variation-settings: "wdth" 70;
-    text-transform: uppercase;
+    font-weight: 700;
     line-height: 0.8;
     white-space: nowrap;
     color: transparent;
@@ -801,7 +800,7 @@
      (`fab-tucked`, lo pone FloatingDock en <html>). Lumina se queda: es la
      entrada al chat y antes desaparecía casi todo el tiempo en teléfono. */
   @media (max-width: 1279px), (pointer: coarse) {
-    html.fab-tucked .fab-slot:not(.fab-slot-lumina) {
+    html.fab-tucked .fab-slot:not(.fab-slot-lumina):not(.fab-slot-dock) {
       transform: translateY(16px) scale(0.92);
       opacity: 0;
       visibility: hidden;
@@ -987,6 +986,7 @@ html.fx-on [data-fx="stagger"]:not([data-fx-done]) > :nth-child(n + 7) { transit
 }
 .device-intro__skip {
   position: absolute;
+  z-index: 2;
   top: calc(var(--gutter) * 2 + 0.25rem);
   right: calc(var(--gutter) * 2 + 0.25rem);
   /* Se retira antes de que el header aparezca por debajo del fundido. */
@@ -1047,6 +1047,15 @@ html[data-intro="pending"] .hero-in {
 }
 html.a11y-reduce-motion .device-intro {
   display: none;
+}
+/* En teléfono (o pantalla vertical) no hay intro 3D ni su preloader. */
+@media (max-width: 767px), (max-aspect-ratio: 3/4) {
+  .device-intro {
+    display: none;
+  }
+  html[data-intro] .hero-in {
+    animation-play-state: running;
+  }
 }
 html.a11y-reduce-motion .hero-in {
   animation-play-state: running;
@@ -1466,7 +1475,8 @@ html.lumina-fab-hidden .fab-slot-dock {
 
 /* ════════════════════════════════════════════════════════════════════════
    PRELOADER Y TRANSICIÓN ENTRE PÁGINAS
-   El telón de entrada llega en el HTML y se retira solo con CSS (~1.2 s):
+   El telón de entrada (solo escritorio, nunca en móvil ni en el inicio)
+   llega en el HTML y se retira solo con CSS en menos de 1 s:
    el logotipo oficial se revela de izquierda a derecha, una línea lima corre
    debajo y el telón sube. No bloquea la carga: el contenido se pinta debajo
    desde el primer momento y el telón nunca recibe clics.
@@ -1479,7 +1489,7 @@ html.lumina-fab-hidden .fab-slot-dock {
   place-items: center;
   background: hsl(var(--ink));
   pointer-events: none;
-  animation: pl-out 0.6s cubic-bezier(0.7, 0, 0.2, 1) 0.8s forwards;
+  animation: pl-out 0.4s cubic-bezier(0.7, 0, 0.2, 1) 0.55s forwards;
 }
 .site-preloader__inner {
   display: flex;
@@ -1487,14 +1497,14 @@ html.lumina-fab-hidden .fab-slot-dock {
   flex-direction: column;
   align-items: stretch;
   gap: 1.1rem;
-  animation: pl-lift 0.5s var(--ease-out) 0.8s forwards;
+  animation: pl-lift 0.35s var(--ease-out) 0.55s forwards;
 }
 .site-preloader__logo {
   display: block;
   width: 100%;
   height: auto;
   clip-path: inset(0 100% 0 0);
-  animation: pl-reveal 0.6s var(--ease-out) 0.05s forwards;
+  animation: pl-reveal 0.4s var(--ease-out) 0.05s forwards;
 }
 .site-preloader__bar {
   display: block;
@@ -1503,7 +1513,26 @@ html.lumina-fab-hidden .fab-slot-dock {
   background: hsl(var(--lime));
   transform: scaleX(0);
   transform-origin: left center;
-  animation: pl-bar 0.7s cubic-bezier(0.65, 0, 0.35, 1) 0.08s forwards;
+  animation: pl-bar 0.45s cubic-bezier(0.65, 0, 0.35, 1) 0.08s forwards;
+}
+.site-preloader__skip {
+  position: absolute;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  min-height: 2.75rem;
+  padding: 0 1.1rem;
+  border-radius: 999px;
+  background: hsl(0 0% 100% / 0.1);
+  color: hsl(0 0% 100%);
+  font-size: 0.875rem;
+  font-weight: 600;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.site-preloader__skip:hover,
+.site-preloader__skip:focus-visible {
+  background: hsl(var(--lime));
+  color: hsl(var(--ink));
 }
 @keyframes pl-reveal {
   to {
@@ -1529,6 +1558,12 @@ html.lumina-fab-hidden .fab-slot-dock {
 }
 html.pl-skip .site-preloader {
   display: none;
+}
+/* Nunca en móvil, aunque el script no haya corrido. */
+@media (max-width: 767px), (pointer: coarse) {
+  .site-preloader {
+    display: none;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .site-preloader {
@@ -1592,4 +1627,304 @@ html.pl-skip .site-preloader {
 }
 .a11y-reduce-motion .page-curtain {
   display: none;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   ANIMACIONES v2 (prompts por sección, 22 nov 2026)
+   UI sobria + contenido que se mueve + gestos que responden. Solo transform
+   y opacity; 300 a 400 ms; un gesto por hover con vuelta al reposo. Con
+   prefers-reduced-motion (o el ajuste del panel) todo aparece directo.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Prompt 0 · subrayado lima que crece bajo cada enlace del menú (300 ms). */
+.nav-underline::after {
+  content: "";
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 0.45rem;
+  height: 2px;
+  border-radius: 999px;
+  background: hsl(var(--lime-deep));
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.3s var(--ease-out);
+}
+.nav-underline:hover::after,
+.nav-underline:focus-visible::after,
+.nav-underline[aria-expanded="true"]::after {
+  transform: scaleX(1);
+}
+
+/* Prompt 10 · enlaces del pie: subrayado lima que crece (300 ms). */
+.link-grow::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 1.25rem;
+  bottom: 0.55rem;
+  height: 1.5px;
+  border-radius: 999px;
+  background: hsl(var(--lime));
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.3s var(--ease-out);
+}
+.link-grow:hover::after,
+.link-grow:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* WhatsApp: pulso suave cada 6 s; se apaga al tocarlo (.wa-pulse--off). */
+.wa-pulse {
+  position: relative;
+  isolation: isolate;
+}
+.wa-pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  border: 2px solid hsl(var(--lime));
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Prompt 1 · palabra en lima que alterna sin mover el layout. */
+.hero-word-swap {
+  display: grid;
+}
+/* Primero sale una palabra (200 ms) y después entra la otra (400 ms). */
+.hero-word {
+  grid-area: 1 / 1;
+  transition:
+    opacity 0.4s var(--ease-out) 0.2s,
+    transform 0.4s var(--ease-out) 0.2s;
+}
+.hero-word[data-on="false"] {
+  opacity: 0;
+  transform: translateY(0.12em);
+  pointer-events: none;
+  transition-duration: 0.2s;
+  transition-delay: 0s;
+}
+.hero-keyword {
+  position: relative;
+  display: inline-block;
+  color: hsl(var(--lime));
+  /* Filo de tinta para que la lima se lea sobre el blanco del hero. */
+  -webkit-text-stroke: 0.012em hsl(var(--ink));
+  paint-order: stroke fill;
+}
+.hero-keyword--alt::before {
+  content: attr(data-word);
+}
+.hero-dot::before {
+  content: ".";
+}
+.hero-keyword::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.04em;
+  height: 0.07em;
+  border-radius: 999px;
+  background: hsl(var(--ink));
+  transform-origin: left center;
+}
+/* En escritorio el titular se abre un poco al pasar el cursor. */
+@media (hover: hover) and (min-width: 1024px) {
+  .hero-headline {
+    transition: letter-spacing 0.3s var(--ease-out);
+  }
+  .hero-headline:hover {
+    letter-spacing: 0.012em;
+  }
+}
+
+/* Prompt 2 · tarjetas de caso: la imagen se oscurece y aparece "Ver caso →". */
+.case-card__shade {
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out);
+}
+.case-card__cta {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.3s var(--ease-out),
+    transform 0.3s var(--ease-out);
+}
+.case-card:hover .case-card__shade,
+.case-card:focus-visible .case-card__shade {
+  opacity: 1;
+}
+.case-card:hover .case-card__cta,
+.case-card:focus-visible .case-card__cta {
+  opacity: 1;
+  transform: none;
+}
+
+/* Prompt 3 · tarjetas de precio: suben 2 px con sombra; imagen al 103%. */
+.price-card {
+  transition:
+    transform 0.3s var(--ease-out),
+    box-shadow 0.3s var(--ease-out);
+}
+.price-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 44px -26px hsl(var(--ink) / 0.45);
+}
+.price-card__img {
+  transition: transform 0.5s var(--ease-out);
+}
+.price-card:hover .price-card__img {
+  transform: scale(1.03);
+}
+.price-glow {
+  opacity: 0;
+}
+
+/* Reveals: entrada desde fuera del lienzo, una sola vez (`reveal-done`). */
+.reveal {
+  --rx: -28px;
+  --ry: 0px;
+}
+.reveal-up {
+  --rx: 0px;
+  --ry: 14px;
+}
+@media (max-width: 767px) {
+  .reveal {
+    --rx: -14px;
+  }
+  .reveal-up {
+    --ry: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.a11y-reduce-motion) .wa-pulse:not(.wa-pulse--off)::after {
+    animation: wa-pulse 6s var(--ease-out) 2s infinite;
+  }
+  /* Titular: fade + subida de 12 px en 400 ms, una vez. */
+  html:not(.a11y-reduce-motion) .hero-title-in {
+    animation: hero-title-in 0.4s var(--ease-out) 0.06s both;
+  }
+  html:not(.a11y-reduce-motion) .hero-keyword::after {
+    transform: scaleX(0);
+    animation: grow-x 0.4s var(--ease-out) 0.45s forwards;
+  }
+  /* Foto de Bryan: zoom lentísimo 1.05 → 1 en 800 ms, una vez. */
+  html:not(.a11y-reduce-motion) .hero-photo-zoom {
+    animation: photo-zoom 0.8s var(--ease-out) both;
+  }
+  html:not(.a11y-reduce-motion) .price-glow.is-on {
+    animation: price-glow 0.9s var(--ease-out) 1;
+  }
+  @supports (animation-timeline: view()) {
+    html:not(.a11y-reduce-motion) .hero-photo-parallax {
+      animation: parallax-8 linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100vh;
+    }
+    html:not(.a11y-reduce-motion) .reveal:not(.reveal-done) {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry calc(var(--stagger, 0) * 40px) entry calc(260px + var(--stagger, 0) * 40px);
+    }
+    html:not(.a11y-reduce-motion) .phone-turn {
+      animation: phone-turn linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+  }
+  @supports not (animation-timeline: view()) {
+    html.fx-on .reveal:not(.reveal-done) {
+      opacity: 0;
+      transform: translate3d(var(--rx), var(--ry), 0);
+    }
+    html.fx-on .reveal {
+      transition:
+        opacity 0.35s var(--ease-out) calc(var(--stagger, 0) * 80ms),
+        transform 0.35s var(--ease-out) calc(var(--stagger, 0) * 80ms);
+    }
+  }
+}
+/* La intro de escritorio pausa la entrada del titular hasta que termina. */
+html[data-intro="pending"] .hero-title-in,
+html[data-intro="pending"] .hero-photo-zoom {
+  animation-play-state: paused;
+}
+
+@keyframes wa-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  16%,
+  100% {
+    transform: scale(1.18, 1.45);
+    opacity: 0;
+  }
+}
+@keyframes hero-title-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes grow-x {
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes photo-zoom {
+  from {
+    transform: scale(1.05);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes parallax-8 {
+  to {
+    transform: translateY(8px);
+  }
+}
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translate3d(var(--rx), var(--ry), 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes phone-turn {
+  from {
+    transform: perspective(900px) rotateY(-14deg) rotateZ(-2deg);
+  }
+  to {
+    transform: perspective(900px) rotateY(0deg) rotateZ(0deg);
+  }
+}
+@keyframes price-glow {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.25);
+  }
 }

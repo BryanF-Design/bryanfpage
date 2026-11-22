@@ -6,10 +6,12 @@ import { ArrowUp } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
 import { useLanguage } from "@/lib/i18n/context";
+import { GestureIcon } from "@/components/ui/gesture-icon";
 import { useConfiguratorInView } from "@/lib/use-configurator-in-view";
 import { useFooterInView } from "@/lib/use-footer-in-view";
 
-const WHATSAPP_URL = "https://wa.me/525663012505";
+const WHATSAPP_URL = `https://wa.me/525663012505?text=${encodeURIComponent("Hola, quiero mi página desde $2,000.")}`;
+const PULSE_KEY = "bfd-wa-pulse-off";
 
 /**
  * Dock de contacto: una sola píldora tinta, arriba del botón de Lumina, con
@@ -33,6 +35,28 @@ export function FloatingDock() {
   const [pastHero, setPastHero] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [teaserOpen, setTeaserOpen] = useState(false);
+  const [alwaysOn, setAlwaysOn] = useState(false);
+  const [pulse, setPulse] = useState(true);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1023px), (pointer: coarse)");
+    const sync = () => setAlwaysOn(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    try {
+      if (window.sessionStorage.getItem(PULSE_KEY) === "1") setPulse(false);
+    } catch {
+      /* sessionStorage bloqueado */
+    }
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  const stopPulse = () => {
+    setPulse(false);
+    try {
+      window.sessionStorage.setItem(PULSE_KEY, "1");
+    } catch {
+      /* sessionStorage bloqueado */
+    }
+  };
 
   // ¿Ya quedó atrás el hero? En el home se observa #home; en las demás
   // páginas basta con haber bajado más de media pantalla.
@@ -126,8 +150,10 @@ export function FloatingDock() {
   // La tarjeta digital trae su propia barra de contacto fija y el CV tiene a
   // Lumina abajo con sus propios botones.
   const onCard = (pathname?.startsWith("/tarjeta") || pathname?.startsWith("/cv")) ?? false;
-  const hidden =
-    onCard || !pastHero || footerInView || configuratorInView || chatOpen || teaserOpen;
+  // Teléfono/tableta: WhatsApp siempre visible (abajo a la derecha).
+  const hidden = alwaysOn
+    ? onCard || chatOpen || teaserOpen
+    : onCard || !pastHero || footerInView || configuratorInView || chatOpen || teaserOpen;
 
   return (
     <div
@@ -141,9 +167,13 @@ export function FloatingDock() {
           rel="noopener noreferrer"
           aria-label="WhatsApp"
           tabIndex={hidden ? -1 : 0}
-          className="fab-dock-btn fab-wa inline-flex"
+          data-track-service="whatsapp_flotante"
+          onPointerDown={stopPulse}
+          className={`fab-dock-btn fab-wa wa-pulse inline-flex${pulse ? "" : " wa-pulse--off"}`}
         >
-          <FaWhatsapp aria-hidden className="h-[1.375rem] w-[1.375rem]" />
+          <GestureIcon gesture="heart">
+            <FaWhatsapp aria-hidden className="h-[1.375rem] w-[1.375rem]" />
+          </GestureIcon>
           <span className="fab-label hidden pr-1.5 xl:inline">WhatsApp</span>
         </a>
         {/* En teléfono basta con tocar la barra de estado para subir. */}

@@ -9,6 +9,7 @@ import { ArrowDown, ArrowRight, ArrowUpRight, Calculator, MessageCircle, RotateC
 import { FaWhatsapp } from "react-icons/fa";
 
 import { cn } from "@/lib/utils";
+import { GestureIcon } from "@/components/ui/gesture-icon";
 import { useFooterInView } from "@/lib/use-footer-in-view";
 import { useLanguage } from "@/lib/i18n/context";
 import { useConfiguratorInView } from "@/lib/use-configurator-in-view";
@@ -776,7 +777,7 @@ export function LuminaChat() {
     // En escritorio, al ir al cotizador, el panel se muda a la izquierda para
     // no tapar el resumen ni los botones de pago (si no cabe, se recoge).
     if (isPhone) setOpen(false);
-    else if (id === "precios") {
+    else if (id === "configurador") {
       if (window.innerWidth >= 768) setDockLeft(true);
       else setOpen(false);
     }
@@ -854,7 +855,7 @@ export function LuminaChat() {
   function applyQuote(quote: LuminaQuote) {
     trackEvent("lumina_action", { action: "quote", plan: quote.plan });
     // Con el cotizador en la página, se arma en vivo; si no, se abre ya armado.
-    if (!document.getElementById("precios")) {
+    if (!document.getElementById("configurador")) {
       // El chat reaparece al llegar (con su historial) para que la cotización
       // que armó Lumina no se pierda de vista.
       try {
@@ -866,7 +867,7 @@ export function LuminaChat() {
       return;
     }
     window.dispatchEvent(new CustomEvent(LUMINA_QUOTE_EVENT, { detail: quote }));
-    revealSection("precios");
+    revealSection("configurador");
   }
 
   function whatsappHref() {
@@ -885,6 +886,7 @@ export function LuminaChat() {
       proceso: t.nav.proceso,
       servicios: t.nav.serviciosEntrada,
       precios: t.nav.precios,
+      configurador: t.nav.armaTuWeb,
       faq: t.nav.faq,
     };
     return labels[section];
@@ -1279,8 +1281,8 @@ export function LuminaChat() {
           tabIndex={hideFab ? -1 : 0}
           className={cn("fab justify-start px-1.5 text-left", open && "fab-ink")}
         >
-          <span className="relative size-10 shrink-0 sm:size-11">
-            <span className="absolute inset-0 overflow-hidden rounded-full bg-ink ring-2 ring-lime">
+          <GestureIcon gesture="lumina" className="relative size-10 shrink-0 sm:size-11">
+            <span className="relative block size-10 overflow-hidden rounded-full bg-ink ring-2 ring-lime sm:size-11">
               <Image src={MOOD_IMG.Normal} alt="" fill sizes="44px" priority unoptimized className="object-cover" />
             </span>
             <span
@@ -1290,7 +1292,7 @@ export function LuminaChat() {
                 mood === "Offline" ? "bg-ink/30" : "bg-lime"
               )}
             />
-          </span>
+          </GestureIcon>
           <span
             className={cn(
               "hidden min-w-0 pr-2.5 leading-tight lg:block",

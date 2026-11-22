@@ -702,7 +702,7 @@ export function Configurator({
 
   return (
     <section
-      id="precios"
+      id="configurador"
       // En /crear-web el titular de la portada ya se llama igual: sin
       // encabezado propio, la sección toma el nombre corto ("Configurador").
       aria-label={hideHeading ? t.configurator.eyebrow : t.configurator.title}

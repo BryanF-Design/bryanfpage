@@ -2,6 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
+    // Nunca variantes de 3840 px: el máximo es 1600 (hero). Tarjetas a 800 y
+    // miniaturas a 400 con los cargadores de lib/image-loaders.ts.
+    deviceSizes: [400, 640, 800, 1080, 1280, 1600],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 320],
+    formats: ["image/webp"],
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "lottie.host" },
