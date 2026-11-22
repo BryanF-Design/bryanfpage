@@ -959,25 +959,25 @@ html.fx-on [data-fx="stagger"]:not([data-fx-done]) > :nth-child(n + 7) { transit
 
 /* ════════════════════════════════════════════════════════════════════════
    INTRO DE DISPOSITIVO (components/intro/device-intro.tsx)
-   230svh de recorrido montados 100svh sobre el hero: al final del scroll el
-   hero ya está debajo y la escena se funde. `--intro-p` (0→1) lo escribe el
+   Capa fija sobre el hero; la rueda/teclado/gesto mueven la cámara y al
+   final la escena se funde y la capa se retira (una vez por sesión). `--intro-p` (0→1) lo escribe el
    componente; fundido, pista y botón salen de ahí, sin JS por cuadro. Sin JS
    o con movimiento reducido la sección no existe.
    ════════════════════════════════════════════════════════════════════════ */
 .device-intro {
   --intro-p: 0;
-  position: relative;
+  /* Revisión 2: capa fija fuera del flujo (el hero ya está arriba). */
+  position: fixed;
+  inset: 0;
   z-index: 110;
-  height: 230vh;
-  height: 230svh;
-  margin-bottom: -100vh;
-  margin-bottom: -100svh;
+}
+/* Mientras la intro corre, la página no se desplaza (la rueda mueve la cámara). */
+html.intro-lock {
+  overflow: hidden;
 }
 .device-intro__stage {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  height: 100svh;
+  position: absolute;
+  inset: 0;
   overflow: hidden;
   background: radial-gradient(120% 85% at 50% 58%, hsl(165 30% 14%) 0%, hsl(var(--ink)) 62%);
   opacity: calc((0.95 - var(--intro-p)) / 0.17);
@@ -2252,4 +2252,9 @@ html.a11y-reduce-motion .slash-sweep {
   font-family: var(--font-display);
   font-size: clamp(1.5rem, 3vw, 2.25rem);
   color: hsl(var(--lime-deep));
+}
+
+/* Revisión 2: la intro ya se vio en esta sesión → no existe (ni un cuadro). */
+html.intro-seen .device-intro {
+  display: none;
 }
