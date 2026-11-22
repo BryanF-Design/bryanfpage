@@ -13,28 +13,36 @@ import { SITE_URL, servicePages } from "@/lib/seo/service-pages";
  * - Las URLs .html heredadas y /fundador redirigen (next.config.mjs).
  */
 const COPY_PASS = new Date("2026-11-07T00:00:00.000Z");
+/**
+ * - 2026-11-21: P0 (precio y WhatsApp en el hero, Landing $2,000, Barber OS
+ *   $599/mes y 14 días) en inicio, cotizador, landings y barberías.
+ * - 2026-11-22: rearmado del inicio (casos, precios, Lumina navegadora) y
+ *   /crear-web con el proceso completo y los servicios de entrada.
+ */
+const P0_PASS = new Date("2026-11-21T00:00:00.000Z");
+const HOME_PASS = new Date("2026-11-22T00:00:00.000Z");
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
-    { url: SITE_URL, lastModified: COPY_PASS, changeFrequency: "weekly", priority: 1 },
+    { url: SITE_URL, lastModified: HOME_PASS, changeFrequency: "weekly", priority: 1 },
     // Cotizador con URL propia: arma y paga tu web.
     {
       url: `${SITE_URL}/crear-web`,
-      lastModified: COPY_PASS,
+      lastModified: HOME_PASS,
       changeFrequency: "monthly",
       priority: 0.8,
     },
     // Landings de servicio (lib/seo/service-pages.ts).
     ...servicePages.map((page) => ({
       url: `${SITE_URL}/${page.slug}`,
-      lastModified: COPY_PASS,
+      lastModified: P0_PASS,
       changeFrequency: "monthly" as const,
       priority: page.priority,
     })),
     // Barber OS: sistema de reservas y lealtad para barberías.
     {
       url: `${SITE_URL}/sistema-para-barberias`,
-      lastModified: COPY_PASS,
+      lastModified: P0_PASS,
       changeFrequency: "monthly",
       priority: 0.85,
     },

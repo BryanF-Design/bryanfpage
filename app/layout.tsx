@@ -52,7 +52,7 @@ const instrumentSerif = Instrument_Serif({
 });
 
 const SITE_DESCRIPTION =
-  "Diseño y desarrollo web en México, desde la CDMX. Hago páginas web rápidas, claras y a tu medida para negocios de todo el país. Entregas desde 3 días hábiles.";
+  "Páginas web para negocios desde $2,000, listas en 3 días. Diseño y desarrollo web en México, con garantía de 60 días. Escríbeme por WhatsApp.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -97,7 +97,7 @@ export const metadata: Metadata = {
     siteName: "BryanF Design",
     title: "Diseño y desarrollo web en México | BryanF Design",
     description:
-      "Páginas web a la medida de tu negocio, rápidas y claras, hechas desde la CDMX para todo México. Arma tu web y arrancamos.",
+      "Páginas web para negocios desde $2,000, listas en 3 días. Diseño y desarrollo web en México, con garantía de 60 días.",
     images: [
       {
         url: "/img/og-bryanf-apex.png",
@@ -111,7 +111,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Diseño y desarrollo web en México | BryanF Design",
     description:
-      "Páginas web a la medida de tu negocio, rápidas y claras, hechas desde la CDMX para todo México.",
+      "Páginas web para negocios desde $2,000, listas en 3 días, con garantía de 60 días.",
     images: ["/img/og-bryanf-apex.png"],
   },
   robots: {
@@ -142,7 +142,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": ["ProfessionalService", "Organization"],
+      "@type": ["ProfessionalService", "LocalBusiness", "Organization"],
       "@id": ORG_ID,
       name: "BryanF Design",
       alternateName: "BryanF Design Studio",
@@ -171,6 +171,7 @@ const jsonLd = {
       },
       geo: { "@type": "GeoCoordinates", latitude: 19.4326, longitude: -99.1332 },
       areaServed: [
+        { "@type": "City", name: "Ciudad de México" },
         { "@type": "Country", name: "México" },
         { "@type": "Country", name: "España" },
         { "@type": "Country", name: "Francia" },
