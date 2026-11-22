@@ -7,6 +7,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ArrowUpRight, X } from "lucide-react";
 import { FaWhatsapp } from "@/components/ui/wa-icon";
 
+import { SHOWREEL_SLUGS, ShowreelToggle, ShowreelVideo } from "@/components/pages/showreel";
 import { Button, ButtonArrow } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n/context";
 import { LIVE_CASE } from "@/lib/barber-os";
@@ -279,7 +280,8 @@ function CasoModal({ item, onClose }: { item: Item | null; onClose: () => void }
             <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-inner bg-mint">
               <Image src={item.image} alt={`Captura del sitio de ${item.name}`} fill loader={heroLoader} sizes="(min-width: 1024px) 56rem, 96vw" className="object-cover object-top" />
             </div>
-            <div className="flex flex-col gap-4 px-2 pb-2 pt-5 sm:px-4">
+            <div className="grid gap-5 px-2 pb-2 pt-5 sm:px-4 md:grid-cols-[minmax(0,1fr)_auto]">
+            <div className="flex min-w-0 flex-col gap-4">
               <h2 id="caso-modal-title" className="font-display text-3xl font-semibold tracking-[-0.02em] text-ink sm:text-4xl">
                 {item.name}
               </h2>
@@ -339,6 +341,19 @@ function CasoModal({ item, onClose }: { item: Item | null; onClose: () => void }
                   </Button>
                 )}
               </div>
+            </div>
+            {/* El recorrido en video de la página real (showreel), con la
+                misma pausa global de toda la página. */}
+            {SHOWREEL_SLUGS.has(item.id) && (
+              <div className="flex flex-col items-center gap-3 max-md:hidden">
+                <div className="w-[11rem] rounded-[1.9rem] bg-ink p-[0.4rem] shadow-float">
+                  <div className="relative aspect-[270/585] overflow-hidden rounded-[1.55rem] bg-white">
+                    <ShowreelVideo slug={item.id} eager />
+                  </div>
+                </div>
+                <ShowreelToggle />
+              </div>
+            )}
             </div>
           </motion.div>
         </motion.div>

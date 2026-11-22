@@ -804,6 +804,14 @@ const ja: Dictionary = {
       visit: "サイトを見る",
       open: "プロジェクトを見る",
     },
+    showreel: {
+      title: "ショーリール",
+      subtitle: "実際のサイトをスマホで短くスクロール。",
+      pause: "すべての動画を一時停止",
+      play: "すべての動画を再生",
+      pauseShort: "一時停止",
+      playShort: "再生",
+    },
     faq: {
       title: "よくある質問",
       more: "すべての質問を見る",

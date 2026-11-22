@@ -765,6 +765,14 @@ const zh: Dictionary = {
       visit: "访问网站",
       open: "查看项目",
     },
+    showreel: {
+      title: "作品集锦",
+      subtitle: "在手机上快速浏览每个真实网站。",
+      pause: "暂停所有视频",
+      play: "播放所有视频",
+      pauseShort: "暂停",
+      playShort: "播放",
+    },
     faq: {
       title: "常见问题",
       more: "查看全部问题",

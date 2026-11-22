@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 
 import { CasosIndex } from "@/components/pages/casos-index";
+import { Showreel } from "@/components/pages/showreel";
 import { PageIntro } from "@/components/pages/page-intro";
 import { SubPageShell } from "@/components/pages/sub-page-shell";
 import { ProjectCases } from "@/components/sections/projects-showcase";
@@ -24,6 +25,8 @@ export function CasosPage() {
       />
       {/* Índice con filtros (?tipo=) y modal; debajo, los casos contados a fondo. */}
       <CasosIndex />
+      {/* P2 · Showreel: cada sitio en movimiento, con pausa global. */}
+      <Showreel />
       <ProjectCases hideHeading />
       <ClosingCta />
     </SubPageShell>

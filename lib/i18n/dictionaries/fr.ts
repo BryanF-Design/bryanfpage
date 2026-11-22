@@ -810,6 +810,14 @@ const fr: Dictionary = {
       visit: "Visiter le site",
       open: "Voir le projet",
     },
+    showreel: {
+      title: "Showreel",
+      subtitle: "Un court défilement de chaque vrai site, sur mobile.",
+      pause: "Mettre toutes les vidéos en pause",
+      play: "Lire toutes les vidéos",
+      pauseShort: "Pause",
+      playShort: "Lire",
+    },
     faq: {
       title: "Questions fréquentes",
       more: "Voir toutes les questions",

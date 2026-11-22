@@ -810,6 +810,14 @@ const en: Dictionary = {
       visit: "Visit site",
       open: "View project",
     },
+    showreel: {
+      title: "Showreel",
+      subtitle: "A short scroll through each real site, on a phone.",
+      pause: "Pause all videos",
+      play: "Play all videos",
+      pauseShort: "Pause",
+      playShort: "Play",
+    },
     faq: {
       title: "Frequently asked questions",
       more: "See all questions",

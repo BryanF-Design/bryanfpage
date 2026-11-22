@@ -838,6 +838,14 @@ const es = {
       visit: "Visitar sitio",
       open: "Ver proyecto",
     },
+    showreel: {
+      title: "Showreel",
+      subtitle: "Un recorrido corto por cada página real, en el celular.",
+      pause: "Pausar todos los videos",
+      play: "Reproducir todos los videos",
+      pauseShort: "Pausa",
+      playShort: "Reproducir",
+    },
     faq: {
       title: "Preguntas frecuentes",
       more: "Ver todas las preguntas",
